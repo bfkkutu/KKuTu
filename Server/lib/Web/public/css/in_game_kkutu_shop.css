@@ -47,6 +47,12 @@
 .x-gm .users-name::before{ content: "[GM]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
 .chat-item>.x-gm::before{ content: "[GM]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
 .room-user-title>.x-gm::before{ content: "[GM]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.x-streamer .users-name::before{ content: "[스트리머]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.chat-item>.x-streamer::before{ content: "[스트리머]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.room-user-title>.x-streamer::before{ content: "[스트리머]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.x-word .users-name::before{ content: "[단어]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.chat-item>.x-word::before{ content: "[단어]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.room-user-title>.x-word::before{ content: "[단어]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
 
 .x-red_name{ color: #FF3333; }
 .x-orange_name{ color: #FFA533; }

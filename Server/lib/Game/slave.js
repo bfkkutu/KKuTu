@@ -19,13 +19,14 @@
 var WebSocket = require('ws');
 var File = require('fs');
 var Const = require("../const");
+var GLOBAL = require("../sub/global.json");
 var https = require('https');
-var Secure = require('../sub/secure');
+var secure = require('../sub/secure');
 var Server;
-var HTTPS_Server
+var HTTPS_Server;
 
-if(Const.IS_SECURED) {
-	const options = Secure();
+if(GLOBAL.IS_SECURED) {
+	const options = secure();
 	HTTPS_Server = https.createServer(options)
 		.listen(global.test ? (Const.TEST_PORT + 416) : process.env['KKUTU_PORT']);
 	Server = new WebSocket.Server({server: HTTPS_Server});
@@ -175,6 +176,8 @@ KKuTu.onClientMessage = function($c, msg){
 	if(!msg) return;
 	
 	switch(msg.type){
+		case 'drawingCanvas':
+			$c.drawingCanvas(msg)
 		case 'yell':
 			if(!msg.value) return;
 			if(!$c.admin) return;

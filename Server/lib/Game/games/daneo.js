@@ -49,7 +49,7 @@ exports.roundReady = function(){
 	if(my.game.round <= my.round){
 		my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
 		my.game.chain = [];
-		if(my.opts.mission) my.game.mission = getMission(my.rule.lang);
+		if(my.opts.mission && !my.opts.randommission) my.game.mission = getMission(my.rule.lang);
 		my.byMaster('roundReady', {
 			round: my.game.round,
 			theme: my.game.theme,
@@ -64,12 +64,12 @@ exports.turnStart = function(force){
 	var my = this;
 	var speed;
 	var si;
-	
 	if(!my.game.chain) return;
-	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 150000 - my.game.chain.length * 1500));
+	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 600000 - my.game.chain.length * 1500));
 	speed = my.getTurnSpeed(my.game.roundTime);
 	clearTimeout(my.game.turnTimer);
 	clearTimeout(my.game.robotTimer);
+	if(my.opts.randommission) my.game.mission = getMission(my.rule.lang);
 	my.game.late = false;
 	my.game.turnTime = 15000 - 1400 * speed;
 	my.game.turnAt = (new Date()).getTime();
@@ -145,10 +145,10 @@ exports.submit = function(client, text, data){
 					theme: $doc.theme,
 					wc: $doc.type,
 					score: score,
-					bonus: (my.game.mission === true) ? score - my.getScore(text, t, true) : 0,
+					bonus: (my.game.mission === true && !my.opts.randommission) ? score - my.getScore(text, t, true) : 0,
 					baby: $doc.baby
 				}, true);
-				if(my.game.mission === true){
+				if(my.game.mission === true && !my.opts.randommission){
 					my.game.mission = getMission(my.rule.lang);
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);

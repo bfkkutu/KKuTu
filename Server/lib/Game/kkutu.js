@@ -285,7 +285,7 @@ exports.Client = function(socket, profile, sid){
 	socket.on('message', function(msg){
 		var data, room = ROOM[my.place];
 		
-		JLog.log(`Chan @${channel} Msg #${my.id}: ${msg}`);
+		JLog.log(`Chan @${channel} Msg #${my.id}: ${(JSON.parse(msg).type === 'drawingCanvas' ? 'is drawing data' : msg)}`);
 		try{ data = JSON.parse(msg); }catch(e){ data = { error: 400 }; }
 		if(Cluster.isWorker) process.send({ type: "tail-report", id: my.id, chan: channel, place: my.place, msg: data.error ? msg : data });
 		
@@ -304,6 +304,15 @@ exports.Client = function(socket, profile, sid){
 		}
 	};
 	*/
+	my.drawingCanvas = function(msg) {
+		let $room = ROOM[my.place];
+		
+		if(!$room) return;
+		if(!$room.gaming) return;
+		if($room.rule.rule != 'Drawing') return;
+		
+		$room.drawingCanvas(msg);
+	};
 	my.getData = function(gaming){
 		var o = {
 			id: my.id,
@@ -324,6 +333,7 @@ exports.Client = function(socket, profile, sid){
 			o.money = my.money;
 			o.equip = my.equip;
 			o.exordial = my.exordial;
+			o.nickname = my.nickname;
 		}
 		return o;
 	};
@@ -437,6 +447,8 @@ exports.Client = function(socket, profile, sid){
 				}
 			}*/
 			my.exordial = $user.exordial || "";
+			my.nickname = $user.nickname || undefined;
+			if (my.nickname) my.profile.title = my.nickname;
 			my.equip = $user.equip || {};
 			my.box = $user.box || {};
 			my.data = new exports.Data($user.kkutu);
@@ -1041,6 +1053,9 @@ exports.Room = function(room, channel){
 		}
 		return false;
 	};
+	my.drawingCanvas = function(msg) {
+		my.byMaster('drawCanvas', { data: msg.data }, true);
+	};
 	my.ready = function(){
 		var i, all = true;
 		var len = 0;
@@ -1195,7 +1210,7 @@ exports.Room = function(room, channel){
 				res[i].rank = Number(i);
 			}
 			pv = res[i].score;
-			rw = getRewards(my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore);
+			rw = getRewards(my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts);
 			rw.playTime = now - o.playAt;
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
@@ -1291,8 +1306,11 @@ exports.Room = function(room, channel){
 	my.turnNext = function(force){
 		if(!my.gaming) return;
 		if(!my.game.seq) return;
-		
-		my.game.turn = (my.game.turn + 1) % my.game.seq.length;
+		if(my.opts && my.opts.randomturn){
+			my.game.turn = Math.floor(Math.random()*my.game.seq.length)
+		} else {
+			my.game.turn = (my.game.turn + 1) % my.game.seq.length;
+		};
 		my.turnStart(force);
 	};
 	my.turnEnd = function(){
@@ -1381,12 +1399,32 @@ function shuffle(arr){
 	
 	return r;
 }
-function getRewards(mode, score, bonus, rank, all, ss){
+function getRewards(mode, score, bonus, rank, all, ss, opts){
+	if (opts.unknownword) return { score: 1, money: 1 } // 언노운워드는 보상이 없다. 그래도 플레이는 한 것이니 1이라도 주자.
+
 	var rw = { score: 0, money: 0 };
 	var sr = score / ss;
 	
-	// all은 1~8
-	// rank는 0~7
+	if (opts.manner) rw.score = rw.score * 0.9; // 매너
+	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
+	if (opts.mission) { // 미션
+		if (!opts.randommission) rw.score = rw.score * 0.8; // 랜덤 미션
+		else rw.score = rw.score * 0.7;
+	};
+	if (opts.proverb) rw.score = rw.score * 1.3; // 속담
+	if (opts.loanword) rw.score = rw.score * 1.2; // 우리말
+	if (opts.strict) rw.score = rw.score * 1.3; // 깐깐
+	if (opts.sami) rw.score = rw.score * 1.5; // 3232
+	if (opts.no2) rw.score = rw.score * 1.5; // 2글자 금지
+
+	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
+	if (opts.randomturn) rw.score = rw.score * 1.3; // 랜덤 턴
+	if (opts.noreturn) rw.score = rw.score * 0.9; // 도돌이 금지
+	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
+	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
+
+	// all은 1~16
+	// rank는 0~15
 	switch(Const.GAME_TYPE[mode]){
 		case "EKT":
 			rw.score += score * 1.4;
@@ -1430,6 +1468,12 @@ function getRewards(mode, score, bonus, rank, all, ss){
 		case 'ESS':
 			rw.score += score * 0.22;
 			break;
+		case 'KDG':
+			rw.score += score * 0.57;
+			break;
+		case 'EDG':
+			rw.score += score * 0.57;
+			break;
 		default:
 			break;
 	}
@@ -1449,6 +1493,7 @@ function getRewards(mode, score, bonus, rank, all, ss){
 	rw.money = rw.money || 0;
 	
 	// applyEquipOptions에서 반올림한다.
+
 	return rw;
 }
 function filterRobot(item){

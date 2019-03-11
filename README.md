@@ -1,3 +1,5 @@
+본 레포지토리에 GPL 위반 사항이 있다면 bfk@playts.net 으로 알려주시기 바랍니다.
+
 # KKuTu
 - Made by [JJoriping](http://blog.jjo.kr/)
 - Special thanks to

@@ -270,3 +270,7 @@ Server.get("/servers", function(req, res){
 Server.get("/legal/:page", function(req, res){
 	page(req, res, "legal/"+req.params.page);
 });
+
+Server.get("/gwallilogin", function(req, res){
+  page(req, res, "join");
+});

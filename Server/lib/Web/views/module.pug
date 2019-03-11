@@ -19,18 +19,20 @@
 	* Login 을 Passport 로 수행하기 위한 수정
 -
 	const MENU = [
-		{ key: 'HOME', href: "http://jjo.kr/" },
-		/*{ key: 'DB', sub: [
-			{ key: 'DB_CHAMP', href: "/db/champion" },
-			{ key: 'DB_ITEM', href: "/db/item" },
-			{ key: 'DB_RUNE', href: "/db/rune" },
-			{ key: 'DB_MASTERY', href: "/db/mastery" }
-		]},*/
+		{ key: 'HOME', href: "http://server/domain" },
+		{ key: 'JJOBAR', href: "http://jjo.kr/kkutu" },
 		{ key: 'GAMES', sub: [
-			{ key: 'GAMES_KKUTU', href: "/" },
-			{ key: 'GAMES_FATES', href: "http://jjo.kr/game/fates" }
+			{ key: 'DSC', href: "https://discord/domain" },
+			{ key: 'NCF', href: "http://cafe/domain" },
 		]},
-		{ key: 'GALLERY', href: "http://jjo.kr/gallery" }
+		{ key: 'A1', sub: [
+			{ key: 'AGR', href: "http://agreement/domain" },
+			{ key: 'PRIV', href: "http://privacy/domain" },
+			{ key: 'OPO', href: "http://opolicy/domain" },
+		]},
+		{ key: 'ADMINMAIL', href: "mailto:adminmail", sub: [
+			{ key: 'ACCMAIL', href: "mailto:adminmail" },
+		]},
 	];
 	const PUBLIC = locals.published;
 	
@@ -66,9 +68,6 @@ mixin Menu()
 					div.menu-sub-separator
 					- for(j in MENU[i].sub)
 						div.menu-sub-btn(onclick='location.href = "'+MENU[i].sub[j].href+'";')!= L(MENU[i].sub[j].key)
-		div#quick-search
-			input#quick-search-tf(placeholder=L('QUICK_HOLDER'))
-			button#quick-search-btn!= L('QUICK_BTN')
 		div#account
 			span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
 			div#account-info
@@ -78,12 +77,9 @@ mixin MMenu()
 		div.menu-btn(id='menu-item-GAMES')
 			+FA('bars')
 			+separator(10)
-			div.menu-sub-btn(onclick='location.href = "http://jjo.kr/";', style='margin: 7px 0px; height: 25px;')!= L('HOME')
-			div.menu-sub-btn(onclick='location.href = "http://kkutu.kr/";', style='margin: 7px 0px; height: 25px;')!= L('GAMES_KKUTU')
-			div.menu-sub-btn(onclick='location.href = "http://jjo.kr/gallery";', style='margin: 7px 0px; height: 25px;')!= L('GALLERY')
-		div#quick-search
-			input#quick-search-tf(placeholder=L('QUICK_HOLDER'))
-			button#quick-search-btn!= L('QUICK_BTN')
+			div.menu-sub-btn(onclick='location.href = "http://cafe.bfkkutu.ze.am/";', style='margin: 7px 0px; height: 25px;')!= 'Cafe'
+			div.menu-sub-btn(onclick='location.href = "https://discord.gg/scPVHcE/";', style='margin: 7px 0px; height: 25px;')!= 'Discord'
+
 		div#account
 			span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
 			div#account-info
@@ -117,9 +113,7 @@ mixin PageHead(min)
 	link(rel='stylesheet', href='/css/in_'+locals.page.replace("/", "_")+'.css')
 	script(type='text/javascript', src='/js/in_'+locals.page.replace("/", "_")+'.min.js')
 	
-mixin SearchBox(arg1, arg2)
-	meta(name='description', content=L('meta_desc', arg1, arg2))
-	meta(name='keywords', content=L('meta_keys', arg1, arg2))
+
 
 mixin Expl(text, width)
 	- if(text == undefined) return;

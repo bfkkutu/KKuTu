@@ -51,7 +51,7 @@ exports.roundReady = function(){
 	if(my.game.round <= my.round){
 		my.game.theme = getTheme(2, my.game.done);
 		my.game.chain = [];
-		if(my.opts.mission) my.game.mission = getMission(my.game.theme);
+		if(my.opts.mission && !my.opts.randommission) my.game.mission = getMission(my.game.theme);
 		my.game.done.push(my.game.theme);
 		my.byMaster('roundReady', {
 			round: my.game.round,
@@ -68,8 +68,10 @@ exports.turnStart = function(force){
 	var speed;
 	var si;
 	
+	if(my.opts.randommission) my.game.mission = getMission(my.game.theme);
+
 	if(!my.game.chain) return;
-	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 150000 - my.game.chain.length * 1500));
+	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 600000 - my.game.chain.length * 1500));
 	speed = my.getTurnSpeed(my.game.roundTime);
 	clearTimeout(my.game.turnTimer);
 	clearTimeout(my.game.robotTimer);
@@ -150,7 +152,7 @@ exports.submit = function(client, text, data){
 						score: score,
 						bonus: (my.game.mission === true) ? score - my.getScore(text, t, true) : 0
 					}, true);
-					if(my.game.mission === true){
+					if(my.game.mission === true && !my.opts.randommission){
 						my.game.mission = getMission(my.game.theme);
 					}
 					setTimeout(my.turnNext, my.game.turnTime / 6);

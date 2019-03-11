@@ -18,7 +18,7 @@
 
 var GLOBAL = require("./sub/global.json");
 
-exports.KKUTU_MAX = 400;
+exports.KKUTU_MAX = 2000;
 exports.MAIN_PORTS = GLOBAL.MAIN_PORTS;
 exports.TEST_PORT = 4040;
 exports.SPAM_CLEAR_DELAY = 1600;
@@ -40,7 +40,13 @@ exports.OPTIONS = {
 	'prv': { name: "Proverb" },
 	'str': { name: "Strict" },
 	'k32': { name: "Sami" },
-	'no2': { name: "No2" }
+	'no2': { name: "No2" },
+	'ulm': { name: "Unlimited" },
+	'rms': { name: "RandomMission" },
+	'nrt': { name: "NoReturn" },
+	'rtu': { name: "RandomTurn" },
+	'uwd': { name: "UnknownWord" },
+	'rtn': { name: "Returns" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back" ];
@@ -70,39 +76,43 @@ exports.RULE = {
 		ewq: 현재 턴 나가면 라운드 종료?
 	}
 */
-	'EKT': { lang: "en",
+	'EKT': { lang: "en", // 영어 끄투
 		rule: "Classic",
-		opts: [ "man", "ext", "mis" ],
+		opts: [ "man", "ext", "mis", "rms", "rtu",
+		"nrt", "uwd", "upl", "rtn" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'ESH': { lang: "en",
+	'ESH': { lang: "en", // 영어 끝말잇기
 		rule: "Classic",
-		opts: [ "ext", "mis" ],
+		opts: [ "ext", "mis", "rms", "nrt", "rtu",
+		"uwd", "upl" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'KKT': { lang: "ko",
+	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "loa", "str", "k32" ],
+		opts: [ "man", "ext", "mis", "rms", "loa", "str",
+		"k32", "nrt", "rtu", "upl" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'KSH': { lang: "ko",
+	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "loa", "str" ],
+		opts: [ "man", "ext", "mis", "rms", "loa", "str",
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'CSQ': { lang: "ko",
+	'CSQ': { lang: "ko", // 한국어 자음퀴즈
 		rule: "Jaqwi",
 		opts: [ "ijp" ],
 		time: 1,
@@ -110,7 +120,7 @@ exports.RULE = {
 		big: false,
 		ewq: false
 	},
-	'KCW': { lang: "ko",
+	'KCW': { lang: "ko", // 한국어 십자말풀이
 		rule: "Crossword",
 		opts: [],
 		time: 2,
@@ -118,7 +128,7 @@ exports.RULE = {
 		big: true,
 		ewq: false
 	},
-	'KTY': { lang: "ko",
+	'KTY': { lang: "ko", // 한국어 타자대결
 		rule: "Typing",
 		opts: [ "prv" ],
 		time: 1,
@@ -126,7 +136,7 @@ exports.RULE = {
 		big: false,
 		ewq: false
 	},
-	'ETY': { lang: "en",
+	'ETY': { lang: "en", // 영어 타자대결
 		rule: "Typing",
 		opts: [ "prv" ],
 		time: 1,
@@ -134,40 +144,42 @@ exports.RULE = {
 		big: false,
 		ewq: false
 	},
-	'KAP': { lang: "ko",
+	'KAP': { lang: "ko", // 한국어 앞말잇기
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "loa", "str" ],
+		opts: [ "man", "ext", "mis", "rms", "loa", "str",
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn" ],
 		time: 1,
 		ai: true,
 		big: false,
 		_back: true,
 		ewq: true
 	},
-	'HUN': { lang: "ko",
+	'HUN': { lang: "ko", // 훈민정음
 		rule: "Hunmin",
-		opts: [ "ext", "mis", "loa", "str" ],
+		opts: [ "ext", "mis", "rms", "loa", "str",
+		"rtu", "upl" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'KDA': { lang: "ko",
+	'KDA': { lang: "ko", // 한국어 단어 대결
 		rule: "Daneo",
-		opts: [ "ijp", "mis" ],
+		opts: [ "ijp", "mis", "rms", "rtu", "upl" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'EDA': { lang: "en",
+	'EDA': { lang: "en", // 영어 단어 대결
 		rule: "Daneo",
-		opts: [ "ijp", "mis" ],
+		opts: [ "ijp", "mis", "rms", "rtu", "upl" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
-	'KSS': { lang: "ko",
+	'KSS': { lang: "ko", // 한국어 솎솎
 		rule: "Sock",
 		opts: [ "no2" ],
 		time: 1,
@@ -175,13 +187,29 @@ exports.RULE = {
 		big: true,
 		ewq: false
 	},
-	'ESS': { lang: "en",
+	'ESS': { lang: "en", // 영어 솎솎
 		rule: "Sock",
 		opts: [ "no2" ],
 		time: 1,
 		ai: false,
 		big: true,
 		ewq: false
+	},
+	'KDG': { lang: "ko",
+		rule: "Drawing",
+		opts: [ "ijp", "ulm", "new" ],
+		time: 1,
+		ai: false,
+		big: true,
+		ewq: true
+	},
+	'EDG': { lang: "en",
+		rule: "Drawing",
+		opts: [ "ijp", "ulm", "new" ],
+		time: 1,
+		ai: false,
+		big: true,
+		ewq: true
 	}
 };
 exports.getPreScore = function(text, chain, tr){
@@ -195,8 +223,8 @@ exports.EXAMPLE_TITLE = {
 	'ko': "가나다라마바사아자차",
 	'en': "abcdefghij"
 };
-exports.INIT_SOUNDS = [ "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ" ];
-exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하" ];
+exports.INIT_SOUNDS = [ "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "○" ];
+exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 exports.MISSION_en = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ];
 
 exports.KO_INJEONG = [
@@ -206,7 +234,9 @@ exports.KO_INJEONG = [
 	"MOB", "HYK", "CYP", "HRH", "STA", "OIJ",
 	"KGR", "ESB", "ELW", "OIM", "OVW", "NEX", /*"WOW",*/
 	"YRY", "KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
-	"HSS", "KMV", "HDC", "HOS"
+	"HSS", "KMV", "HDC", "HOS", "RUN", "MUDO",
+	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
+	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "NCN"
 ];
 exports.EN_INJEONG = [
 	"LOL"
@@ -216,7 +246,8 @@ exports.KO_THEME = [
 	"140", "150", "160", "170", "190",
 	"220", "230", "240", "270", "310",
 	"320", "350", "360", "420", "430",
-	"450", "490", "530", "1001"
+	"450", "490", "530", "1001", "900",
+	"440", "200"
 ];
 exports.EN_THEME = [
 	"e05", "e08", "e12", "e13", "e15",
@@ -229,7 +260,8 @@ exports.KO_IJP = exports.KO_INJEONG.concat(exports.KO_THEME).filter(function(ite
 exports.EN_IJP = exports.EN_INJEONG.concat(exports.EN_THEME).filter(function(item){ return !exports.IJP_EXCEPT.includes(item); });
 exports.REGION = {
 	'en': "en",
-	'ko': "kr"
+	'ko': "kr",
+	'zh': "cn"
 };
 exports.KOR_STRICT = /(^|,)(1|INJEONG)($|,)/;
 exports.KOR_GROUP = new RegExp("(,|^)(" + [

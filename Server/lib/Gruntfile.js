@@ -32,11 +32,13 @@ const KKUTU_LIST = [
 	"Web/lib/kkutu/head.js",
 	"Web/lib/kkutu/ready.js",
 	"Web/lib/kkutu/rule_classic.js",
+	"Web/lib/kkutu/rule_chclassic.js",
 	"Web/lib/kkutu/rule_jaqwi.js",
 	"Web/lib/kkutu/rule_crossword.js",
 	"Web/lib/kkutu/rule_typing.js",
 	"Web/lib/kkutu/rule_hunmin.js",
 	"Web/lib/kkutu/rule_daneo.js",
+	"Web/lib/kkutu/rule_drawing.js",
 	"Web/lib/kkutu/rule_sock.js",
 	"Web/lib/kkutu/body.js",
 	"Web/lib/kkutu/tail.js"

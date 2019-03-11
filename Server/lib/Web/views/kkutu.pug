@@ -42,6 +42,7 @@ block Subject
 
 block JS
 	script(type='text/javascript', src='/js/in_game_kkutu.min.js')
+	script(type='text/javascript', src='/js/fabric.min.js')
 	script(src='https://www.google.com/recaptcha/api.js')
 
 block CSS
@@ -66,7 +67,7 @@ block Jungle
 			<h5>${locals.EN_INJEONG.map(function(item){ return L('theme_' + item); })}</h5>`;
 
 block Middle
-	- var VERSION = L('version');
+	- var VERSION = L('version')
 	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
 	div#Intro
 		img#intro(src='/img/kkutu/intro.png')
@@ -134,14 +135,14 @@ block Middle
 			button#lb-next(style='margin-right: 6px;')= L('nextPage')
 			button#lb-me= L('myRank')
 			button#lb-prev= L('prevPage')
-	+Dialog('QuickDiag', 300, 230, L('quickRoom'))
+	+Dialog('QuickDiag', 300, 330, L('quickRoom'))
 		div.dialog-bar
 			h4= L('gameMode')
 			select#quick-mode
 				- for(var i in locals.MODE)
 					option(value=Number(i))= L('mode' + locals.MODE[i])
-		div.dialog-bar(style='height: 59px;')
-			h4(style='height: 45px;')= L('misc')
+		div.dialog-bar(style='height: 159px;')
+			h4(style='height: 145px;')= L('misc')
 			- for(var i in locals.OPTIONS)
 				+GameOption(i, 'quick')
 		div.dialog-bar
@@ -150,7 +151,7 @@ block Middle
 			h4(style='width: 100%; height: 20px;')#quick-queue
 		div.dialog-bar.tail-button
 			button#quick-ok= L('OK')
-	+Dialog('RoomDiag', 300, 375)
+	+Dialog('RoomDiag', 300, 470)
 		div.dialog-bar
 			h4= L('roomTitle')
 			input#room-title(placeholder=(nick || L('guest'))+L('roomDefault'), maxlength=20)
@@ -173,12 +174,14 @@ block Middle
 					option(value=12)= L('modeKSS')
 					option(value=4)= L('modeCSQ')
 					option(value=9)= L('modeHUN')
+					option(value=14)= L('modeKDG')
 				optgroup(label=L('mcEnglish'))
 					option(value=1)= L('modeESH')
 					option(value=0)= L('modeEKT')
 					option(value=7)= L('modeETY')
 					option(value=11)= L('modeEDA')
 					option(value=13)= L('modeESS')
+					option(value=15)= L('modeEDG')
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
 			h4
 			h4#game-mode-expl.dialog-bar-value(style='width: 100%; font-size: 11px;')
@@ -188,14 +191,17 @@ block Middle
 		div.dialog-bar
 			h4= L('roundTime')
 			select#room-time
-				option(value=10, style='color: #FF4444')
-				option(value=30)
-				option(value=60, selected)
+				option(value=5, style='color: #FF0000')
+				option(value=10, style='color: #FF5656')
+				option(value=30, style='color: #FF9191')
+				option(value=60, style='color: #FFA8A8')
 				option(value=90)
-				option(value=120)
-				option(value=150)
-		div.dialog-bar(style='height: 59px;')
-			h4(style='height: 45px;')= L('misc')
+				option(value=120, style='color: #74C5E8')
+				option(value=150, selected, style='color: #329AEF')
+				option(value=200, style='color: #3E7AF9')
+				option(value=300, style='color: #0933EF')
+		div.dialog-bar(style='height: 150px;')
+			h4(style='height: 90px;')= L('misc')
 			- for(var i in locals.OPTIONS)
 				+GameOption(i, 'room')
 			div.dialog-opt#room-injpick-panel
@@ -349,10 +355,13 @@ block Middle
 			h4.dialog-bar-value#replay-players -
 		div.dialog-bar.tail-button
 			button#replay-view= L('replayView')
-	+Dialog('DressDiag', 600, 280, L('dress'))
+	+Dialog('DressDiag', 600, 320, L('dress'))
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myExordial')
 			input#dress-exordial(type='textfield', placeholder=L('myExordialX'), style='width: 435px;', maxlength=100)
+		div.dialog-bar
+			h4(style='width: 150px;')= L('myNickname')
+			input#dress-nickname(type='textfield', placeholder=L('myNicknameX'), style='width: 435px;', maxlength=10)
 		div.dialog-bar(style='width: 150px;')
 			div.moremi#dress-view(style='float: left; width: 150px; height: 150px;')
 			h4(style='width: 100%; font-weight: bold;')= L('myMoremi')
@@ -412,6 +421,45 @@ block Middle
 		div.game-head
 			div.items
 			div.hints(style='display: none;')
+			div.tools(style='display: none;')
+				div(style="width: 100%")
+					div(style="float: left; width: 35%;")
+						span#themeis= L('themeis')
+					div(style="float: left; width: 65%;")
+						span#themeis-title
+				div(style="width: 100%")
+					div(style="float: left; width: 35%;")
+						span#drawing= L('wordis')
+					div(style="float: left; width: 65%;")
+						span#drawing-title
+				div(style="width: 100%")
+					label(for="drawing-line-width")= L('drawingLineWidth')
+					input#drawing-line-width(type="range", value="1", min="1", max="40")
+				.palette
+					div
+						button.button-color#color-red
+					div
+						button.button-color#color-orange
+					div
+						button.button-color#color-yellow
+					div
+						button.button-color#color-green
+					div
+						button.button-color#color-blue
+					div
+						button.button-color#color-indigo
+					div
+						button.button-color#color-violet
+					div
+						button.button-color#color-black
+					div
+						button.button-color#color-white
+				div(style="width: 100%")
+					div(style="float: left; width: 60%;")
+						label(for="drawing-color")= L('drawingColor')
+						input#drawing-color(type="color", value="#000000")
+					div(style="float: left; width: 40%;")
+						button#drawing-clear= L('drawingClear')
 			div.b-left.cwcmd(style='display: none;')
 				div.cw-q-head
 				input#cw-q-input(placeholder=L('inputHere'), style='width: 313px; height: 20px; font-size: 15px;')
@@ -456,3 +504,44 @@ block Middle
 block Bottom
 	div.bottom-legal!= L('dictionarySupport')
 	div.bottom-legal!= L('etcSupport')
+	div.bottom-legal!= L('textver123') + L('version_down')
+	script.
+		function setParam(name, value) {
+		var l = window.location;
+		/* build params */
+		var params = {};
+		var x = /(?:\\??)([^=&?]+)=?([^&?]*)/g;
+		var s = l.search;
+		for(var r = x.exec(s); r; r = x.exec(s))
+		{
+		r[1] = decodeURIComponent(r[1]);
+		if (!r[2]) r[2] = '%%';
+		params[r[1]] = r[2];
+		}
+		/* set param */
+		params[name] = encodeURIComponent(value);
+		/* build search */
+		var search = [];
+		for(var i in params)
+		{
+		var p = encodeURIComponent(i);
+		var v = params[i];
+		if (v != '%%') p += '=' + v;
+		search.push(p);
+		}
+		search = search.join('&');
+		/* execute search */
+		l.search = search;
+		}
+	div.bottom-legal!=L('BGMHelp')
+	div.bottom-legal!=L('PLAYTSHelp')
+	div.bottom-legal!="언어를 선택하세요 Please choose the language."
+	div.bottom-legal!="관리자가 대충 번역기 돌려서 번역 상태가 개판입니다."
+	a(href="javascript:setParam('locale', 'ko_KR');") 한국어 Korean
+	br
+	a(href="javascript:setParam('locale', 'en_US');") 영어 English
+	br
+	a(href="javascript:setParam('locale', 'zh_CN');") 중국어 Chinese
+	br
+	a(href="javascript:setParam('locale', 'ja_JP');") 일본어 Japanese
+	

@@ -17,7 +17,7 @@
 extends layout
 
 block Subject
-	title *** JJO.KR 관리 페이지 ***
+	title 관리자 페이지
 
 block JS
 	script(type="text/javascript", src="/js/in_admin.min.js")
@@ -47,56 +47,56 @@ block Middle
 	fieldset
 		legend 상점 DB 다루기
 		div
-			input#shop-word(placeholder='품목 (~ALL)')
+			input#shop-word(placeholder='품목 (~ALL = 전체 품목 표시)')
 			button#shop-go 조회
 			button#shop-hide 숨기기
 			div
 				table
 					thead: tr
-						td #
-						td cost
+						td 식별자
+						td 가격
 						td hit
 						td term
-						td group
+						td 장착 부위
 						td updatedAt
-						td options
-						td name_ko_KR
-						td desc_ko_KR
-						td name_en_US
-						td desc_en_US
+						td 능력
+						td 이름(한국어)
+						td 설명(한국어)
+						td 이름(영어)
+						td 설명(영어)
 					tbody#shop-data
-			button#shop-add 추가
-			button#shop-apply 적용
+			button#shop-add 품목 추가
+			button#shop-apply 변경 사항 적용
 	fieldset
 		legend 유저 DB 다루기
 		div
-			input#user-id(placeholder='ID')
-			input#user-nick(placeholder='닉네임')
+			input#user-id(placeholder='식별 번호')
+			input#user-nick(placeholder='별명')
 			button#user-go 조회
 			div
 				table
 					thead: tr
 						td #
-						td money
-						td kkutu
-						td box
-						td equip
-						td exordial
+						td 돈
+						td 전적
+						td 인벤토리
+						td 장착 중인 아이템
+						td 소개
 						td server
 						td lastLogin
-						td black
-						td friends
+						td 벤 사유
+						td 친구 목록
 					tbody#user-data
-			button#user-apply 적용
+			button#user-apply 변경 사항 적용
 	fieldset
 		legend 유저 감시하기
 		div
-			input#gamsi-id(placeholder='ID (,로 구분)')
+			input#gamsi-id(placeholder='식별 번호 (,로 구분)')
 			button#gamsi-go 감시
 			div
 				table
 					thead: tr
-						td #
+						td 식별 번호
 						td 닉네임
 						td 서버
 					tbody#gamsi-data
@@ -111,21 +111,26 @@ block Middle
 				table
 					thead: tr
 						td #
-						td type
-						td theme
-						td mean
+						td 타입
+						td 주제
+						td 뜻
 						td 행동
 					tbody#wd-data
 			div#word-flag
 			div#word-hit
-			button#word-add 추가
-			button#db-apply 적용
+			button#word-add 단어 추가
+			button#db-apply 변경 사항 적용
+	fieldset
+		legend 유저 벤 해제 (미구현)
+		textarea#pardonnick
+		div
+		button#pardonok 해제
 	fieldset
 		legend 끄투 DB에 단어 추가하기
 		div
 			input#db-theme(placeholder='주제 (~부터 적으면 검색)')
-			textarea#db-list(rows=20, cols=100)
-			button#db-ok 확인
+			textarea#db-list(rows=40, cols=100)
+			button#db-ok 단어 추가
 	fieldset
 		legend 끄투에서의 인기 단어
 		button#kpw-query 조회

@@ -122,14 +122,24 @@ Server.get("/shop", function(req, res){
 
 // POST
 Server.post("/exordial", function(req, res){
-	var text = req.body.data || "";
-	
-	if(req.session.profile){
-		text = text.slice(0, 100);
-		MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', text ]).on(function($res){
-			res.send({ text: text });
-		});
-	}else res.send({ error: 400 });
+var text = req.body.data || "";
+
+if(req.session.profile){
+				text = text.slice(0, 100);
+MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', text ]).on(function($res){
+res.send({ text: text });
+				});
+		}else res.send({ error: 400 });
+});
+Server.post("/nickname", function (req, res) {
+var text = req.body.data || "";
+
+if (req.session.profile) {
+		text = text.slice(0, 10);
+MainDB.users.update(['_id', req.session.profile.id]).set(['nickname', text]).on(function ($res) {
+res.send({ text: text });
+        });
+    } else res.send({ error: 400 });
 });
 Server.post("/buy/:id", function(req, res){
 	if(req.session.profile){
