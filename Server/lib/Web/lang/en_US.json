@@ -131,6 +131,7 @@
 		"withLine": "Login with Line ID",
 		"withInstagram": "Login with Instagram ID",
 		"withSpotify": "Login with Spotify ID",
+		"withOnly_Admin": "Admin Login",
 		"login_kkutu": "Sign in to use KKuTu Online."
 	},
 	"loginfail": {

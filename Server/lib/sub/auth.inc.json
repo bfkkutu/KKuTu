@@ -26,10 +26,6 @@
         "clientID": "",
 		"clientSecret": "",
         "callbackURL": "/login/twitch/callback"
-    }, "github": {
-        "clientID": "",
-		"clientSecret": "",
-        "callbackURL": "/login/github/callback"
     }, "line": {
         "clientID": "",
 		"clientSecret": "",
@@ -42,5 +38,9 @@
         "clientID": "",
 		"clientSecret": "",
         "callbackURL": "/login/spotify/callback"
+    }, "github": {
+        "clientID": "",
+		"clientSecret": "",
+        "callbackURL": "/login/github/callback"
     }
 }
