@@ -182,7 +182,7 @@
 						.append($("<td>").append(putter("ud-" + item._id + "-kkutu", 'l', JSON.stringify(item.kkutu || {}))))
 						.append($("<td>").append(putter("ud-" + item._id + "-box", 'l', JSON.stringify(item.box || {}))))
 						.append($("<td>").append(putter("ud-" + item._id + "-equip", 'l', JSON.stringify(item.equip || {}))))
-						.append($("<td>").append(putter("ud-" + item._id + "-exordial", 'g', item.exordial)))
+						.append($("<td>").append(putter("ud-" + item._id + "-nickname", 'g', item.nickname)))
 						.append($("<td>").append(putter("ud-" + item._id + "-server", 't', item.server)))
 						.append($("<td>").append(putter("ud-" + item._id + "-lastLogin", 't', item.lastLogin)))
 						.append($("<td>").append(putter("ud-" + item._id + "-black", 'g', item.black)))
@@ -202,7 +202,7 @@
 					kkutu: $data.get(2).value,
 					box: $data.get(3).value,
 					equip: $data.get(4).value,
-					exordial: $data.get(5).value,
+					nickname: $data.get(5).value,
 					server: $data.get(6).value,
 					lastLogin: $data.get(7).value,
 					black: $data.get(8).value,
