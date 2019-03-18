@@ -98,25 +98,23 @@ Server.use((req, res, next) => {
 	}
 });
 //볕뉘 수정 끝
-
-
+//디도스 감지 및 차단
 DDDoS = new DDDoS({
-	maxWeight: 6,
-	checkInterval: 10000,
+	maxWeight: 40,
+	checkInterval: 750,
 	rules: [{
 		regexp: "^/(cf|dict|gwalli)",
-		maxWeight: 20,
-		errorData: "429 Too Many Requests"
+		maxWeight: 40
 	}, {
-		regexp: ".*",
-		errorData: "429 Too Many Requests"
+		regexp: ".*"
 	}]
 });
 DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
-	JLog.warn(`DoS from IP ${ip} on ${path}`);
+	JLog.warn(`DoS from IP ${ip} on ${path}`); //패킷을 보낸놈의 아이피를 따고
+	process.exit(1); //서버를 조진다.
 };
 Server.use(DDDoS.express());
-
+//디도스 감지 및 차단
 WebInit.init(Server, true);
 DB.ready = function(){
 	setInterval(function(){
