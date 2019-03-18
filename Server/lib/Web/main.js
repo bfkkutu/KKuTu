@@ -98,7 +98,7 @@ Server.use((req, res, next) => {
 	}
 });
 //볕뉘 수정 끝
-/* use this if you want
+
 
 DDDoS = new DDDoS({
 	maxWeight: 6,
@@ -115,7 +115,7 @@ DDDoS = new DDDoS({
 DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	JLog.warn(`DoS from IP ${ip} on ${path}`);
 };
-Server.use(DDDoS.express());*/
+Server.use(DDDoS.express());
 
 WebInit.init(Server, true);
 DB.ready = function(){
@@ -248,9 +248,9 @@ Server.get("/", function(req, res){
 			'KO_THEME': Const.KO_THEME,
 			'EN_THEME': Const.EN_THEME,
 			'IJP_EXCEPT': Const.IJP_EXCEPT,
-			'ogImage': "http://kkutu.kr/img/kkutu/logo.png",
-			'ogURL': "http://kkutu.kr/",
-			'ogTitle': "글자로 놀자! 끄투 온라인",
+			'ogImage': "https://bfk.playts.net/img/kkutu/logo.png",
+			'ogURL': "https://bfk.playts.net/",
+			'ogTitle': "글자로 놀자! BF끄투",
 			'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
 		});
 	}
@@ -273,4 +273,8 @@ Server.get("/legal/:page", function(req, res){
 
 Server.get("/gwallilogin", function(req, res){
   page(req, res, "join");
+});
+
+Server.get("/donate", function(req, res){
+  page(req, res, "donate");
 });
