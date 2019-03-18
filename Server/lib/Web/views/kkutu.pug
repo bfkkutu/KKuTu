@@ -151,7 +151,7 @@ block Middle
 			h4(style='width: 100%; height: 20px;')#quick-queue
 		div.dialog-bar.tail-button
 			button#quick-ok= L('OK')
-	+Dialog('RoomDiag', 300, 470)
+	+Dialog('RoomDiag', 400, 520)
 		div.dialog-bar
 			h4= L('roomTitle')
 			input#room-title(placeholder=(nick || L('guest'))+L('roomDefault'), maxlength=20)
@@ -200,8 +200,8 @@ block Middle
 				option(value=150, selected, style='color: #329AEF')
 				option(value=200, style='color: #3E7AF9')
 				option(value=300, style='color: #0933EF')
-		div.dialog-bar(style='height: 150px;')
-			h4(style='height: 90px;')= L('misc')
+		div.dialog-bar(style='height: 200px;')
+			h4(style='height: 140px;')= L('misc')
 			- for(var i in locals.OPTIONS)
 				+GameOption(i, 'room')
 			div.dialog-opt#room-injpick-panel

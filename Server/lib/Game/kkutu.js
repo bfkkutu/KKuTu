@@ -1409,6 +1409,7 @@ function getRewards(mode, score, bonus, rank, all, ss, opts){
 	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
 	if (opts.mission) { // 미션
 		if (!opts.randommission) rw.score = rw.score * 0.8; // 랜덤 미션
+		if (!opts.abcmission) rw.score = rw.score * 0.8; //가나다 미션
 		else rw.score = rw.score * 0.7;
 	};
 	if (opts.proverb) rw.score = rw.score * 1.3; // 속담

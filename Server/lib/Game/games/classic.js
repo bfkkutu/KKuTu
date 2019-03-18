@@ -138,6 +138,7 @@ exports.roundReady = function(){
 		my.game.subChar = getSubChar.call(my, my.game.char);
 		my.game.chain = [];
 		if(my.opts.mission && !my.opts.randommission) my.game.mission = getMission(my.rule.lang);
+		if(my.opts.mission && !my.opts.abcmission) my.game.mission = getMission(my.rule.lang);
 		if(my.opts.sami) my.game.wordLength = 2;
 		
 		my.byMaster('roundReady', {
@@ -166,7 +167,11 @@ exports.turnStart = function(force){
 	my.game.turnAt = (new Date()).getTime();
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
 	
-	if(my.opts.randommission) my.game.mission = getMission(my.rule.lang);
+	if(my.opts.randommission && !my.opts.abcmission) my.game.mission = getMission(my.rule.lang);
+	
+	if(my.opts.abcmission && !my.opts.randommission) my.game.mission = getMission_abc(my.rule.lang);
+	
+	if(my.opts.abcmission && my.opts.abcmission) my.game.mission = getMission_abc(my.rule.lang);
 
 	my.byMaster('turnStart', {
 		turn: my.game.turn,
@@ -261,7 +266,9 @@ exports.submit = function(client, text){
 					bonus: (my.game.mission === true) ? score - my.getScore(text, t, true) : 0,
 					baby: $doc ? $doc.baby : null
 				}, true);
-				if(my.game.mission === true){
+				if(my.game.mission === true || my.opts.abcmission){
+					my.game.mission = getMission_abc(my.rule.lang);
+				} else if(my.game.mission === true || !my.opts.abcmission){
 					my.game.mission = getMission(my.rule.lang);
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
@@ -430,12 +437,20 @@ exports.readyRobot = function(robot){
 		return R;
 	}
 };
-function getMission(l){
+function getMission(l, force){
+	var my = this;
 	var arr = (l == "ko") ? Const.MISSION_ko : (l == "en") ? Const.MISSION_en : Const.MISSION_ja;
+
+	if(!arr) return "-";
+	return arr[Math.floor(Math.random() * arr.length)];
+};
+function getMission_abc(l, force){
+	var my = this;
+	var arr = (l == "ko") ? Const.MISSION_ko_abc : (l == "en") ? Const.MISSION_en : Const.MISSION_ja;
 	
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];
-}
+};
 function getAuto(char, subc, type){
 	/* type
 		0 무작위 단어 하나
