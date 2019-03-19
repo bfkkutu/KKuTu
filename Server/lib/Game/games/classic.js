@@ -26,9 +26,10 @@ const ROBOT_TYPE_COEF = [ 1250, 750, 500, 250, 0 ];
 const ROBOT_THINK_COEF = [ 4, 2, 1, 0, 0 ]; /* 생각하는 시간 */
 const ROBOT_HIT_LIMIT = [ 1000 ]; /* 횟수 제한 */
 const ROBOT_LENGTH_LIMIT = [ 3, 4, 9, 99, 99 ]; /* 길이 제한 */
-const RIEUL_TO_NIEUN = [4449, 4450, 4457, 4460, 4462, 4467];
-const RIEUL_TO_IEUNG = [4451, 4455, 4456, 4461, 4466, 4469];
-const NIEUN_TO_IEUNG = [4455, 4461, 4466, 4469];
+/* 두음 법칙 */
+const RIEUL_TO_NIEUN = [4449, 4450, 4457, 4460, 4462, 4467]; /* ㄹ - ㄴ */
+const RIEUL_TO_IEUNG = [4451, 4455, 4456, 4461, 4466, 4469]; /* ㄹ - ㅇ */
+const NIEUN_TO_IEUNG = [4455, 4461, 4466, 4469]; /* ㄴ - ㅇ */
 
 exports.init = function(_DB, _DIC){
 	DB = _DB;
@@ -137,8 +138,18 @@ exports.roundReady = function(){
 		my.game.char = my.game.title[my.game.round - 1];
 		my.game.subChar = getSubChar.call(my, my.game.char);
 		my.game.chain = [];
-		if(my.opts.mission && !my.opts.randommission) my.game.mission = getMission(my.rule.lang);
-		if(my.opts.mission && !my.opts.abcmission) my.game.mission = getMission(my.rule.lang);
+		if(my.opts.mission){
+			if(!my.opts.abcmission && my.opts.randommission){
+				my.game.mission = getMission(my.rule.lang);
+			} else if(my.opts.abcmission && !my.opts.randommission){
+				my.game.mission = getMission_abc();
+			} else if(my.opts.abcmission && my.opts.randommission){
+				my.game.mission = getMission_abc();
+			} else if(!my.opts.abcmission && !my.opts.randommission){
+				my.game.mission = getMission(my.rule.lang);
+			}
+		}
+			
 		if(my.opts.sami) my.game.wordLength = 2;
 		
 		my.byMaster('roundReady', {
@@ -167,12 +178,20 @@ exports.turnStart = function(force){
 	my.game.turnAt = (new Date()).getTime();
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
 	
-	if(my.opts.randommission && !my.opts.abcmission) my.game.mission = getMission(my.rule.lang);
-	
-	if(my.opts.abcmission && !my.opts.randommission) my.game.mission = getMission_abc(my.rule.lang);
-	
-	if(my.opts.abcmission && my.opts.abcmission) my.game.mission = getMission_abc(my.rule.lang);
-
+	if(my.opts.mission) {
+		if(!my.opts.abcmission && my.opts.randommission){
+			my.game.mission = getMission(my.rule.lang); //경우 1: 랜덤 미션이 있고 가나다 미션이 없을 때
+	} else if(my.opts.abcmission && !my.opts.randommission){
+			my.game.mission = getMission_abc(); //가나다 미션은 한국어만 지원 //경우 2: 가나다 미션이 있고 랜덤 미션이 없을 때
+	/* 이건 뭐냐 (Bug 2)
+		if(my.opts.abcmission && my.opts.abcmission) my.game.mission = getMission_abc(my.rule.lang); //이상한 경우
+	*/
+	} else if(my.opts.abcmission && my.opts.randommission){
+			my.game.mission = getMission_abc(); //가나다 미션은 한국어만 지원 //이게 정상임 경우 3: 둘다 있을 때
+	} else if(!my.opts.abcmission && !my.opts.randommission){
+		my.game.mission = getMission(my.rule.lang);
+	}
+}
 	my.byMaster('turnStart', {
 		turn: my.game.turn,
 		char: my.game.char,
@@ -266,10 +285,16 @@ exports.submit = function(client, text){
 					bonus: (my.game.mission === true) ? score - my.getScore(text, t, true) : 0,
 					baby: $doc ? $doc.baby : null
 				}, true);
-				if(my.game.mission === true || my.opts.abcmission){
-					my.game.mission = getMission_abc(my.rule.lang);
-				} else if(my.game.mission === true || !my.opts.abcmission){
-					my.game.mission = getMission(my.rule.lang);
+				if(my.game.mission === true){
+					if(my.opts.abcmission && !my.opts.randommission){
+						my.game.mission = getMission_abc();
+					} else if(!my.opts.abcmission && my.opts.randommission){
+						my.game.mission = getMission(my.rule.lang);
+					} else if(my.opts.abcmission && my.opts.randommission){
+						my.game.mission = getMission_abc();
+					} else if(!my.opts.abcmission && !my.opts.randommission){
+						my.game.mission = getMission(my.rule.lang);
+					}
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
 				if(!client.robot){
@@ -437,16 +462,16 @@ exports.readyRobot = function(robot){
 		return R;
 	}
 };
-function getMission(l, force){
+function getMission(l){
 	var my = this;
 	var arr = (l == "ko") ? Const.MISSION_ko : (l == "en") ? Const.MISSION_en : Const.MISSION_ja;
 
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];
 };
-function getMission_abc(l, force){
+function getMission_abc(l){
 	var my = this;
-	var arr = (l == "ko") ? Const.MISSION_ko_abc : (l == "en") ? Const.MISSION_en : Const.MISSION_ja;
+	var arr = Const.MISSION_ko_abc;
 	
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];
