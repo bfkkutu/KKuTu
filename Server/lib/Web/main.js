@@ -54,6 +54,8 @@ var ROUTES = [
 var page = WebInit.page;
 var gameServers = [];
 
+let moment = require('moment'); //moment.js를 사용 (DDDoS 기록)
+
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
 ];
@@ -110,8 +112,14 @@ DDDoS = new DDDoS({
 	}]
 });
 DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
+	var data = ip; //아이피를 data에 기록
+	var date = moment().format("MM_DD_HH_mm"); //지금 이 시간 (월 일 시 분)
 	JLog.warn(`DoS from IP ${ip} on ${path}`); //패킷을 보낸놈의 아이피를 따고
-	process.exit(1); //서버를 조진다.
+	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+date, 'utf8', function(err, ip, path) { //기록하고
+});
+		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
+		process.exit(0); //서버를 조진다.
+		process.exit(1); //서버를 조진다.
 };
 Server.use(DDDoS.express());
 //디도스 감지 및 차단
