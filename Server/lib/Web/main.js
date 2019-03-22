@@ -115,7 +115,7 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	var data = ip; //아이피를 data에 기록
 	var date = moment().format("MM_DD_HH_mm"); //지금 이 시간 (월 일 시 분)
 	JLog.warn(`DoS from IP ${ip} on ${path}`); //패킷을 보낸놈의 아이피를 따고
-	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+date, 'utf8', function(err, ip, path) { //기록하고
+	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+"  "+date, 'utf8', function(err, ip, path) { //기록하고
 });
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
 		process.exit(0); //서버를 조진다.
