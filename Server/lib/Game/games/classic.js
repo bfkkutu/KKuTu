@@ -27,9 +27,9 @@ const ROBOT_THINK_COEF = [ 4, 2, 1, 0, 0 ]; /* 생각하는 시간 */
 const ROBOT_HIT_LIMIT = [ 1000 ]; /* 횟수 제한 */
 const ROBOT_LENGTH_LIMIT = [ 3, 4, 9, 99, 99 ]; /* 길이 제한 */
 /* 두음 법칙 */
-const RIEUL_TO_NIEUN = [4449, 4450, 4457, 4460, 4462, 4467]; /* ㄹ - ㄴ */
-const RIEUL_TO_IEUNG = [4451, 4455, 4456, 4461, 4466, 4469]; /* ㄹ - ㅇ */
-const NIEUN_TO_IEUNG = [4455, 4461, 4466, 4469]; /* ㄴ - ㅇ */
+var RIEUL_TO_NIEUN = [4449, 4450, 4457, 4460, 4462, 4467]; /* ㄹ - ㄴ */
+var RIEUL_TO_IEUNG = [4451, 4455, 4456, 4461, 4466, 4469]; /* ㄹ - ㅇ */
+var NIEUN_TO_IEUNG = [4455, 4461, 4466, 4469]; /* ㄴ - ㅇ */
 
 exports.init = function(_DB, _DIC){
 	DB = _DB;
@@ -149,6 +149,11 @@ exports.roundReady = function(){
 				my.game.mission = getMission(my.rule.lang);
 			}
 		}
+	if(my.opts.ignoreinitial) {
+		RIEUL_TO_NIEUN = [ 0, 0, 0, 0, 0, 0 ]; //두음 법칙 무시
+		RIEUL_TO_IEUNG = [ 0, 0, 0, 0, 0, 0 ]; //두음 법칙 무시
+		NIEUN_TO_IEUNG = [ 0, 0, 0, 0 ]; //두음 법칙 무시
+	}
 			
 		if(my.opts.sami) my.game.wordLength = 2;
 		
@@ -192,6 +197,11 @@ exports.turnStart = function(force){
 		my.game.mission = getMission(my.rule.lang);
 	}
 }
+	if(my.opts.ignoreinitial) {
+		RIEUL_TO_NIEUN = [ 0, 0, 0, 0, 0, 0 ]; //두음 법칙 무시
+		RIEUL_TO_IEUNG = [ 0, 0, 0, 0, 0, 0 ]; //두음 법칙 무시
+		NIEUN_TO_IEUNG = [ 0, 0, 0, 0 ]; //두음 법칙 무시
+	}
 	my.byMaster('turnStart', {
 		turn: my.game.turn,
 		char: my.game.char,
@@ -295,6 +305,11 @@ exports.submit = function(client, text){
 					} else if(!my.opts.abcmission && !my.opts.randommission){
 						my.game.mission = getMission(my.rule.lang);
 					}
+				}
+				if(my.opts.ignoreinitial === true) {
+					RIEUL_TO_NIEUN = [ 0, 0, 0, 0, 0, 0 ]; //두음 법칙 무시
+					RIEUL_TO_IEUNG = [ 0, 0, 0, 0, 0, 0 ]; //두음 법칙 무시
+					NIEUN_TO_IEUNG = [ 0, 0, 0, 0 ]; //두음 법칙 무시
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
 				if(!client.robot){
@@ -607,17 +622,22 @@ function getSubChar(char){
 	var c = char.charCodeAt();
 	var k;
 	var ca, cb, cc;
+	var is_ignore_initial = false; //true가 무시
+	if(my.opts.ignoreinitial) {
+		is_ignore_initial = true;
+	}
 	
 	switch(Const.GAME_TYPE[my.mode]){
 		case "EKT":
 			if(char.length > 2) r = char.slice(1);
 			break;
 		case "KKT": case "KSH": case "KAP":
+		if(is_ignore_initial === false) {
 			k = c - 0xAC00;
 			if(k < 0 || k > 11171) break;
-			ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
-			cb = [ ca[0] + 0x1100, ca[1] + 0x1161, ca[2] + 0x11A7 ];
-			cc = false;
+				ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
+				cb = [ ca[0] + 0x1100, ca[1] + 0x1161, ca[2] + 0x11A7 ];
+				cc = false;
 			if(cb[0] == 4357){ // ㄹ에서 ㄴ, ㅇ
 				cc = true;
 				if(RIEUL_TO_NIEUN.includes(cb[1])) cb[0] = 4354;
@@ -628,11 +648,14 @@ function getSubChar(char){
 					cb[0] = 4363;
 					cc = true;
 				}
-			}
 			if(cc){
 				cb[0] -= 0x1100; cb[1] -= 0x1161; cb[2] -= 0x11A7;
 				r = String.fromCharCode(((cb[0] * 21) + cb[1]) * 28 + cb[2] + 0xAC00);
 			}
+			}
+		} else {
+			
+		}
 			break;
 		case "ESH": default:
 			break;

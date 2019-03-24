@@ -1,6 +1,6 @@
 {
   "GLOBAL": {
-    "GPL": "<div style='color: #666;'>글자로 놀자! 끄투 온라인 Copyright (C) 2018 BFKKuTu.PlayTS(<a target='_blank' href='mailto:bfk@playts.net'>bfk@playts.net</a>)<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a></div>",
+    "GPL": "<div style='color: #666;'>글자로 놀자! BF끄투 Copyright (C) 2018 BFKKuTu.PlayTS.이승훈(<a target='_blank' href='mailto:bfk@playts.net'>bfk@playts.net</a>)<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a></div>",
 
     "CREATOR": "개발자 블로그",
     "HOME": "FA{home}",
@@ -143,8 +143,8 @@
 	},
   "kkutu": {
     "title": "글자로 놀자! BF끄투",
-    "version": "3.2.0 User",
-	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.0 User</a>",
+    "version": "3.2.1 User",
+	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.1 User</a>",
 	"textver123": "버전: ",
 
     "meta_desc": "온라인 끝말잇기, 앞말잇기, 자음퀴즈, 십자말풀이, 타자 대결까지! 끄투에서 어휘력의 제왕이 되어 보세요.",
@@ -390,6 +390,8 @@
 	"explReturns": "이미 사용한 단어를 다시 사용 가능하게 합니다. 경험치 배율은 25%입니다.",
 	"optAbcMission": "가나다 미션",
 	"explAbcMission": "미션이 가~하만 나옵니다. 미션의 경험치 배율을 80%로 바꿉니다. (미션과 같이 사용해야함)",
+	"optIngoreInitial": "두음 법칙 무시",
+	"explIngoreInitial": "두음 법칙를 무시합니다. 경험치 배율은 160%입니다. [HardCore]",
     "hidden": "(미공개)",
     "pickInjeong": "주제 선택",
     "explInjPick": "게임에서 사용할 주제를 선택하세요.",

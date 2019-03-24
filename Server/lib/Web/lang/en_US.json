@@ -144,8 +144,8 @@
 	},
 	"kkutu": {
 		"title": "Rule the Word! KKuTu Online",
-		"version": "3.2.0 User",
-		"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.0 User</a>",
+		"version": "3.2.1 User",
+		"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.1 User</a>",
 		"textver123": "Version: ",
 		
 		"meta_desc": "Online ending, front talking, consonant quizzes, crossword puzzles, even typing competition! Be the King of Vocabulary at the end of the line.",
@@ -364,6 +364,8 @@
 		"explReturns": "이미 사용한 단어를 다시 사용 가능하게 합니다. 경험치 배율은 25%입니다.",
 		"optAbcMission": "가나다 미션",
 		"explAbcMission": "미션이 가~하만 나옵니다. 미션의 경험치 배율을 80%로 바꿉니다. (미션과 같이 사용해야함)",
+		"optIngoreInitial": "두음 법칙 무시",
+		"explIngoreInitial": "두음 법칙를 무시합니다. 경험치 배율은 160%입니다. [HardCore]",
 		"hidden": "(Hidden)",
 		"pickInjeong": "Select Topic",
 		"explInjPick": "Please select a topic to use in the game.",

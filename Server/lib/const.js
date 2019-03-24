@@ -47,7 +47,8 @@ exports.OPTIONS = {
 	'rtu': { name: "RandomTurn" },
 	'uwd': { name: "UnknownWord" },
 	'rtn': { name: "Returns" },
-	'abcm': { name: "AbcMission" }
+	'abcm': { name: "AbcMission" },
+	'igin': { name: "IngoreInitial" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back" ];
@@ -107,7 +108,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm", "igin" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -238,7 +239,8 @@ exports.KO_INJEONG = [
 	"YRY", "KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUDO",
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
-	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "NCN"
+	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "NCN", "BUS",
+	"DONG"
 ];
 exports.EN_INJEONG = [
 	"LOL"
