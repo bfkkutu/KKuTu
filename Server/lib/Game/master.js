@@ -80,6 +80,18 @@ function processAdmin(id, value){
 		case "yell":
 			KKuTu.publish('yell', { value: value });
 			return null;
+		case "fix": //점검
+			var fix = "곧 서버 점검이 있을 예정입니다." + value + " 분 뒤 서버가 종료됩니다.";
+			KKuTu.publish('yell', { value: fix });
+			return null;
+		case "serverend": //서버 종료
+			var serverend = "서버 종료 시간이 되어 " + value + " 분 뒤 서버가 종료됩니다.";
+			KKuTu.publish('yell', { value: serverend });
+			return null;
+		case "someerroroccor": //서버 에러
+			var someerroroccor = "서버에 문제가 발생하여 " + value + " 분 뒤 서버가 종료됩니다.";
+			KKuTu.publish('yell', { value: someerroroccor });
+			return null;
 		case "kill":
 			if(temp = DIC[value]){
 				temp.socket.send('{"type":"error","code":410}');
