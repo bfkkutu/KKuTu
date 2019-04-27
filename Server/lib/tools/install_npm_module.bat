@@ -8,5 +8,6 @@ cls
 echo.
 echo please enter the name of the module to install.
 set /p MD=
+cd ..
 npm i -S %MD%
 pause>nul

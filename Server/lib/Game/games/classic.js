@@ -139,15 +139,15 @@ exports.roundReady = function(){
 		my.game.subChar = getSubChar.call(my, my.game.char);
 		my.game.chain = [];
 		if(my.opts.mission){
-			if(!my.opts.abcmission && my.opts.randommission){
+			if(!my.opts.abcmission){
 				my.game.mission = getMission(my.rule.lang);
-			} else if(my.opts.abcmission && !my.opts.randommission){
+			} else if(my.opts.abcmission){
 				my.game.mission = getMission_abc();
-			} else if(my.opts.abcmission && my.opts.randommission){
-				my.game.mission = getMission_abc();
-			} else if(!my.opts.abcmission && !my.opts.randommission){
-				my.game.mission = getMission(my.rule.lang);
 			}
+		}
+		
+		if(my.opts.blockword){
+			my.game.blockword = getBlockWord();
 		}
 			
 		if(my.opts.sami) my.game.wordLength = 2;
@@ -179,19 +179,16 @@ exports.turnStart = function(force){
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
 	
 	if(my.opts.mission) {
-		if(!my.opts.abcmission && my.opts.randommission){
-			my.game.mission = getMission(my.rule.lang); //경우 1: 랜덤 미션이 있고 가나다 미션이 없을 때
-	} else if(my.opts.abcmission && !my.opts.randommission){
-			my.game.mission = getMission_abc(); //가나다 미션은 한국어만 지원 //경우 2: 가나다 미션이 있고 랜덤 미션이 없을 때
-	/* 이건 뭐냐 (Bug 2)
-		if(my.opts.abcmission && my.opts.abcmission) my.game.mission = getMission_abc(my.rule.lang); //이상한 경우
-	*/
-	} else if(my.opts.abcmission && my.opts.randommission){
-			my.game.mission = getMission_abc(); //가나다 미션은 한국어만 지원 //이게 정상임 경우 3: 둘다 있을 때
-	} else if(!my.opts.abcmission && !my.opts.randommission){
-		my.game.mission = getMission(my.rule.lang);
+		if(!my.opts.abcmission){
+			my.game.mission = getMission(my.rule.lang); //가나다 미션이 없으면
+		} else if(my.opts.abcmission){
+			my.game.mission = getMission_abc(); //있으면
+		}
 	}
-}
+	
+	if(my.opts.blockword){
+			my.game.blockword = getBlockWord();
+	}
 	my.byMaster('turnStart', {
 		turn: my.game.turn,
 		char: my.game.char,
@@ -286,15 +283,14 @@ exports.submit = function(client, text){
 					baby: $doc ? $doc.baby : null
 				}, true);
 				if(my.game.mission === true){
-					if(my.opts.abcmission && !my.opts.randommission){
+					if(my.opts.abcmission){
 						my.game.mission = getMission_abc();
-					} else if(!my.opts.abcmission && my.opts.randommission){
-						my.game.mission = getMission(my.rule.lang);
-					} else if(my.opts.abcmission && my.opts.randommission){
-						my.game.mission = getMission_abc();
-					} else if(!my.opts.abcmission && !my.opts.randommission){
+					}else if(!my.opts.abcmission){
 						my.game.mission = getMission(my.rule.lang);
 					}
+				}
+				if(my.game.blockword === true){
+					my.game.blockword = getBlockWord();
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
 				if(!client.robot){
@@ -472,6 +468,13 @@ function getMission(l){
 function getMission_abc(l){
 	var my = this;
 	var arr = Const.MISSION_ko_abc;
+	
+	if(!arr) return "-";
+	return arr[Math.floor(Math.random() * arr.length)];
+};
+function getBlockWord(l){
+	var my = this;
+	var arr = Const.BLOCKWORD_ko;
 	
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];

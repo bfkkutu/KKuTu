@@ -8,5 +8,6 @@ cls
 echo.
 echo please enter the name of the module to uninstall.
 set /p MD=
+cd ..
 npm uninstall -S %MD%
 pause>nul

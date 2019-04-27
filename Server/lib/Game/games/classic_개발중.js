@@ -20,6 +20,7 @@ var Const = require('../../const');
 var Lizard = require('../../sub/lizard');
 var DB;
 var DIC;
+var ii;
 /* 봇 정보 */
 const ROBOT_START_DELAY = [ 1200, 800, 400, 200, 0 ];
 const ROBOT_TYPE_COEF = [ 1250, 750, 500, 250, 0 ];
@@ -603,24 +604,31 @@ function getSubChar(char){
 	var c = char.charCodeAt();
 	var k;
 	var ca, cb, cc;
-	var RIEUL_TO_NIEUN = []; /* ㄹ - ㄴ */
-	var RIEUL_TO_IEUNG = []; /* ㄹ - ㅇ */
-	var NIEUN_TO_IEUNG = []; /* ㄴ - ㅇ */
+	var ii;
+	var RIEUL_TO_NIEUN;
+	var RIEUL_TO_IEUNG;
+	var NIEUN_TO_IEUNG;
 	
-	if(!my.opts.ignoreinitial) {
-		switch(Const.GAME_TYPE[my.mode]){
-			case "EKT":
-				if(char.length > 2) r = char.slice(1);
-				break;
-			case "KKT": case "KSH": case "KAP":
+	if(!my.opts.ignoreinitial){
+		ii = false;
+	}else if(my.opts.ignoreinitial){
+		ii = true;
+	}
+	
+	switch(Const.GAME_TYPE[my.mode]){
+		case "EKT":
+			if(char.length > 2) r = char.slice(1);
+			break;
+		case "KKT": case "KSH": case "KAP":
+			k = c - 0xAC00;
+			if(!ii){
 				RIEUL_TO_NIEUN = [4449, 4450, 4457, 4460, 4462, 4467]; /* ㄹ - ㄴ */
 				RIEUL_TO_IEUNG = [4451, 4455, 4456, 4461, 4466, 4469]; /* ㄹ - ㅇ */
 				NIEUN_TO_IEUNG = [4455, 4461, 4466, 4469]; /* ㄴ - ㅇ */
-				k = c - 0xAC00;
 				if(k < 0 || k > 11171) break;
-					ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
-					cb = [ ca[0] + 0x1100, ca[1] + 0x1161, ca[2] + 0x11A7 ];
-					cc = false;
+				ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
+				cb = [ ca[0] + 0x1100, ca[1] + 0x1161, ca[2] + 0x11A7 ];
+				cc = false;
 				if(cb[0] == 4357){ // ㄹ에서 ㄴ, ㅇ
 					cc = true;
 					if(RIEUL_TO_NIEUN.includes(cb[1])) cb[0] = 4354;
@@ -631,35 +639,38 @@ function getSubChar(char){
 						cb[0] = 4363;
 						cc = true;
 					}
+				}
 				if(cc){
-					cb[0] -= 0x1100; cb[1] -= 0x1161; cb[2] -= 0x11A7;
-					r = String.fromCharCode(((cb[0] * 21) + cb[1]) * 28 + cb[2] + 0xAC00);
+				cb[0] -= 0x1100; cb[1] -= 0x1161; cb[2] -= 0x11A7;
+				r = String.fromCharCode(((cb[0] * 21) + cb[1]) * 28 + cb[2] + 0xAC00);
 				}
-				}
-	}
-	
-	if(my.opts.ignoreinitial) {
-		switch(Const.GAME_TYPE[my.mode]){
-			case "EKT":
-				if(char.length > 2) r = char.slice(1);
-				break;
-			case "KKT": case "KSH": case "KAP":
+			}else if(ii){
+				RIEUL_TO_NIEUN = [9999, 9999, 9999, 9999, 9999, 9999]; /* ㄹ - ㄴ */
+				RIEUL_TO_IEUNG = [9999, 9999, 9999, 9999, 9999, 9999]; /* ㄹ - ㅇ */
+				NIEUN_TO_IEUNG = [9999, 9999, 9999, 9999]; /* ㄴ - ㅇ */
+				if(k < 0 || k > 11171) break;
+				ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
+				cb = [ ca[0] + 0x1100, ca[1] + 0x1161, ca[2] + 0x11A7 ];
+				cc = false;
 				if(cb[0] == 4357){ // ㄹ에서 ㄴ, ㅇ
-					if(RIEUL_TO_NIEUN.includes(cb[1])) {
-						break;
-					}else if(RIEUL_TO_IEUNG.includes(cb[1])){
-						break;
-					}
+					cc = true;
+					if(RIEUL_TO_NIEUN.includes(cb[1])) cb[0] = 4354;
+					else if(RIEUL_TO_IEUNG.includes(cb[1])) cb[0] = 4363;
+					else cc = false;
 				}else if(cb[0] == 4354){ // ㄴ에서 ㅇ
-					break;
 					if(NIEUN_TO_IEUNG.indexOf(cb[1]) != -1){
-						break;
+						cb[0] = 4363;
+						cc = true;
 					}
+				}
 				if(cc){
+				cb[0] -= 0x1100; cb[1] -= 0x1161; cb[2] -= 0x11A7;
+				r = String.fromCharCode(((cb[0] * 21) + cb[1]) * 28 + cb[2] + 0xAC00);
 				}
-					break;
-				}
-				break;
+			}
+			break;
+		case "ESH": default:
+			break;
 	}
 	return r;
 }
