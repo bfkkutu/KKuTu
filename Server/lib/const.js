@@ -26,7 +26,7 @@ exports.SPAM_ADD_DELAY = 750;
 exports.SPAM_LIMIT = 7;
 exports.BLOCKED_LENGTH = 10000;
 exports.KICK_BY_SPAM = 9;
-exports.MAX_OBSERVER = 4;
+exports.MAX_OBSERVER = 8;
 exports.TESTER = GLOBAL.ADMIN.concat([
 	"Input tester id here"
 ]);
@@ -48,7 +48,8 @@ exports.OPTIONS = {
 	'uwd': { name: "UnknownWord" },
 	'rtn': { name: "Returns" },
 	'abcm': { name: "AbcMission" },
-	'igin': { name: "IngoreInitial" }
+	'igin': { name: "IngoreInitial" },
+	'blw': { name: "BlockWord" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back" ];
@@ -108,7 +109,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm", "igin" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm", "igin", "blw" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -229,6 +230,7 @@ exports.INIT_SOUNDS = [ "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", 
 exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 exports.MISSION_ko_abc = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하" ];
 exports.MISSION_en = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ];
+exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 
 exports.KO_INJEONG = [
 	"IMS", "VOC", "KRR", "KTV",
@@ -240,7 +242,7 @@ exports.KO_INJEONG = [
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUDO",
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "NCN", "BUS",
-	"DONG"
+	"DONG", "MFA", "ZHS"
 ];
 exports.EN_INJEONG = [
 	"LOL"
@@ -249,13 +251,13 @@ exports.KO_THEME = [
 	"30", "40", "60", "80", "90",
 	"140", "150", "160", "170", "190",
 	"220", "230", "240", "270", "310",
-	"320", "350", "360", "420", "430",
+	"320", "350", "360", "380", "420", "430",
 	"450", "490", "530", "1001", "900",
 	"440", "200"
 ];
 exports.EN_THEME = [
 	"e05", "e08", "e12", "e13", "e15",
-	"e18", "e20", "e43"
+	"e18", "e20", "e43", "530"
 ];
 exports.IJP_EXCEPT = [
 	"OIJ"
