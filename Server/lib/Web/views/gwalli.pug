@@ -127,9 +127,10 @@ block Middle
 		button#pardonok 해제
 	fieldset
 		legend 끄투 DB에 단어 추가하기
+		td 추가전 주의 사항: 띄어쓰기 없는지, 규칙 위반되는 단어는 없는지, 주제 제대로 입력 했는지 확인.
 		div
-			input#db-theme(placeholder='주제 (~부터 적으면 검색)')
-			textarea#db-list(rows=40, cols=100)
+			input#db-theme(placeholder='주제 코드 (~주제 코드로 해당 주제 단어 검색)')
+			textarea#db-list(rows=40, cols=70)
 			button#db-ok 단어 추가
 	fieldset
 		legend 끄투에서의 인기 단어
@@ -137,3 +138,12 @@ block Middle
 		textarea#kpw-html
 		div#kpw-table
 		button#kpw-flush 반영
+	fieldset
+		legend 서버 마스터
+		td 서버 마스터 로그인
+		button#server-master-login 로그인
+		td 서버 종료 (악용시 제재)
+		button#server-dead 서버 종료
+		td 서버 마스터 명령어
+		button#server-command-input 명령어 실행
+		

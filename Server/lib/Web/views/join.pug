@@ -1,0 +1,24 @@
+doctype html
+html
+	head
+		title 관리자 로그인
+		script(src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+		script.
+			$('#loginbtn').click(()=>{
+				if($('#adminid').val()=="bfkkutu"){
+					alert('로그인 성공')
+				}else{
+					alert('로그인 실패')
+				}
+				});
+			$('#loginbtn').click(()=>{
+				if($('adminpw').val()=="bfkk135"){
+					alert('로그인 성공')
+				}else{
+					alert('로그인 실패')
+				}
+				});
+	body(class="container")
+		input(type="id" id="adminid")
+		input(type="password" id="adminpw")
+		button(id="loginbtn" type="button" class="btn") 로그인

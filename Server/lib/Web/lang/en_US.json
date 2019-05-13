@@ -19,6 +19,7 @@
 	"OURKKT": "OurKKuTu",
 	"MDKKT": "ModuKKuTu",
 	"IWANT": "I want to be an Alliance Server",
+	"BFSOFT": "BFSoft",
 	"ADMINMAIL": "Admin Mail",
 	"ACCMAIL": "bfk@playts.net",
     "GALLERY": "Gallery",
@@ -144,8 +145,8 @@
 	},
 	"kkutu": {
 		"title": "Rule the Word! KKuTu Online",
-		"version": "3.2.2 User",
-		"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.2 User</a>",
+		"version": "3.2.7 User",
+		"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.7 User</a>",
 		"textver123": "Version: ",
 		
 		"meta_desc": "Online ending, front talking, consonant quizzes, crossword puzzles, even typing competition! Be the King of Vocabulary at the end of the line.",
@@ -167,6 +168,7 @@
 		"dictionarySupport": "사전 정보 제공:<a href='http://wordnet.princeton.edu' target='_blank'>WordNet</a>, <a href='https://opendict.korean.go.kr' target='_blank'>우리말샘</a><br><label style='color: #777777;'>WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved.</label><br><label style='color: #777777;'>우리말샘 Copyright 2016 by 국립국어원. All rights reserved.</label>",
 		"sandbox": "SANDBOX :: SDBX",
 		"etcSupport": "Help:<a href='http://cafe.naver.com/sdbx' target='_blank'>SANDBOX :: SDBX</a>",
+		"madewith": "BFKKuTu is the web game which is developed by BFSoft and services by BFSoft, PlayTS.",
 		"BGMHelp": "BGM: <a href='https://www.youtube.com/watch?v=H8PX5PInrJY' target='_blank'>라크다르 - 새로운 시작</a>",
 		"PLAYTSHelp": "본 서버는 PlayTS 연맹의 도메인, 서비스를 사용하고 있습니다.",
 		"welcome": "Welcome.",
@@ -366,6 +368,8 @@
 		"explAbcMission": "미션이 가~하만 나옵니다. 미션의 경험치 배율을 80%로 바꿉니다. (미션과 같이 사용해야함)",
 		"optIngoreInitial": "두음 법칙 무시",
 		"explIngoreInitial": "두음 법칙를 무시합니다. 경험치 배율은 160%입니다. [HardCore]",
+		"optBlockWord": "단어 금지",
+		"explBlockWord": "매 턴마다 특정 단어가 금지됩니다.",
 		"hidden": "(Hidden)",
 		"pickInjeong": "Select Topic",
 		"explInjPick": "Please select a topic to use in the game.",
@@ -443,6 +447,7 @@
 		"theme_NCN": "Naver Card News",
 		"theme_BUS": "Bus Stop",
 		"theme_DONG": "Children's Song",
+		"theme_MFA": "Mafia42",
 
 		"class_1": "명",
 		"class_2": "대명",
