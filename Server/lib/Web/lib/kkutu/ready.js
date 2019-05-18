@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 $(document).ready(function(){
 	var i;
 	
@@ -791,6 +791,15 @@ $(document).ready(function(){
 	$stage.dialog.dressOK.on('click', function(e){
 		$(e.currentTarget).attr('disabled', true);
 		$.post("/exordial", { data: $("#dress-exordial").val() }, function(res){
+			$stage.dialog.dressOK.attr('disabled', false);
+			if(res.error) return fail(res.error);
+			
+			$stage.dialog.dress.hide();
+		});
+	});
+	$stage.dialog.dressOK.on('click', function(e){
+		$(e.currentTarget).attr('disabled', true);
+		$.post("/nickname", { data: $("#dress-nickname").val() }, function (res) {
 			$stage.dialog.dressOK.attr('disabled', false);
 			if(res.error) return fail(res.error);
 			

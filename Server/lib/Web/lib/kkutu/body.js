@@ -969,6 +969,11 @@ function userListBar(o, forInvite){
 function addonNickname($R, o){
 	if(o.equip['NIK']) $R.addClass("x-" + o.equip['NIK']);
 	if(o.equip['BDG'] == "b1_gm") $R.addClass("x-gm");
+	if(o.equip['BDG'] == "b5_streamer") $R.addClass("x-streamer");
+	if(o.equip['BDG'] == "b6_word") $R.addClass("x-word");
+	if(o.equip['BDG'] == "b6_design") $R.addClass("x-design");
+	if(o.equip['BDG'] == "b5_bj") $R.addClass("x-bj");
+	if(o.equip['BDG'] == "b9_bf") $R.addClass("x-bf");
 }
 function updateRoomList(refresh){
 	var i;
@@ -1235,6 +1240,7 @@ function drawMyDress(avGroup){
 	$(".dress-type.selected").removeClass("selected");
 	$("#dress-type-all").addClass("selected");
 	$("#dress-exordial").val(my.exordial);
+	$("#dress-nickname").val(my.nickname);
 	drawMyGoods(avGroup || true);
 }
 function renderGoods($target, preId, filter, equip, onClick){

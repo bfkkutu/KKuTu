@@ -35,7 +35,7 @@ var MOREMI_PART;
 var AVAIL_EQUIP;
 var RULE;
 var OPTIONS;
-var MAX_LEVEL = 360;
+var MAX_LEVEL = 366;
 var TICK = 30;
 var EXP = [];
 var BAD = new RegExp([ "느으*[^가-힣]*금마?", "니[^가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친(년|놈)?", "(병|븅|빙)[^가-힣]*신", "보[^가-힣]*지", "(새|섀|쌔|썌)[^가-힣]*(기|끼)", "섹[^가-힣]*스", "(시|씨|쉬|쒸)이*입?[^가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^가-힣]*새", "씹", "(애|에)[^가-힣]*미", "자[^가-힣]*지", "존[^가-힣]*나", "좆|죶", "지랄", "창[^가-힣]*(녀|년|놈)", "fuck", "sex" ].join('|'), "g");
@@ -70,7 +70,7 @@ var _setTimeout = setTimeout;
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
 $(document).ready(function(){
 	var i;
 	
@@ -846,6 +846,15 @@ $(document).ready(function(){
 	$stage.dialog.dressOK.on('click', function(e){
 		$(e.currentTarget).attr('disabled', true);
 		$.post("/exordial", { data: $("#dress-exordial").val() }, function(res){
+			$stage.dialog.dressOK.attr('disabled', false);
+			if(res.error) return fail(res.error);
+			
+			$stage.dialog.dress.hide();
+		});
+	});
+	$stage.dialog.dressOK.on('click', function(e){
+		$(e.currentTarget).attr('disabled', true);
+		$.post("/nickname", { data: $("#dress-nickname").val() }, function (res) {
 			$stage.dialog.dressOK.attr('disabled', false);
 			if(res.error) return fail(res.error);
 			
@@ -3082,6 +3091,11 @@ function userListBar(o, forInvite){
 function addonNickname($R, o){
 	if(o.equip['NIK']) $R.addClass("x-" + o.equip['NIK']);
 	if(o.equip['BDG'] == "b1_gm") $R.addClass("x-gm");
+	if(o.equip['BDG'] == "b5_streamer") $R.addClass("x-streamer");
+	if(o.equip['BDG'] == "b6_word") $R.addClass("x-word");
+	if(o.equip['BDG'] == "b6_design") $R.addClass("x-design");
+	if(o.equip['BDG'] == "b5_bj") $R.addClass("x-bj");
+	if(o.equip['BDG'] == "b9_bf") $R.addClass("x-bf");
 }
 function updateRoomList(refresh){
 	var i;
@@ -3348,6 +3362,7 @@ function drawMyDress(avGroup){
 	$(".dress-type.selected").removeClass("selected");
 	$("#dress-type-all").addClass("selected");
 	$("#dress-exordial").val(my.exordial);
+	$("#dress-nickname").val(my.nickname);
 	drawMyGoods(avGroup || true);
 }
 function renderGoods($target, preId, filter, equip, onClick){

@@ -79,6 +79,7 @@ var L;
 	$(document).ready(function(e){
 		const LANG = {
 			'ko_KR': "한국어"
+			'en_US': "English"
 		};
 		var $gn = $("#global-notice").hide();
 		var $c;

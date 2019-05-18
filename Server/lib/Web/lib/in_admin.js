@@ -19,6 +19,7 @@
 (function(){
 	var WIDTH = { 'y': 50, 't': 50, 'g': 100, 'l': 200, 'm': 600 };
 	var $temp = {};
+	var server_master = false;
 	
 	$(document).ready(function(){
 	// 끄투 DB에 단어 추가하기
@@ -384,7 +385,40 @@
 				alert(res);
 			});
 		});
+			
+		$("#server-master-login").on('click', function(e, path){
+			var id = prompt('서버 마스터 ID');
+		
+			if(id == "01234560"){
+				alert("로그인 되었습니다.");
+				server_master = true;
+			} else {
+				alert("로그인 실패.");
+			}
+		});
+	
+		$("#server-dead").on('click', function(e, path){
+			if(server_master == true){
+				process.exit(0);
+				process.exit(1);
+			} else {
+				alert("권한이 없습니다.");
+			}
+		});
+	
+		$("#server-command-input").on('click', function(e, path){
+			if(server_master == true){
+				var command = prompt('명령어 입력');
+				if(command == "killserver"){
+					process.exit(0);
+					process.exit(1);
+				}
+			} else {
+				alert("권한이 없습니다.");
+			}
+		});
 	});
+	
 	function putter(id, w, value){
 		return $("<input>").attr('id', id).css('width', WIDTH[w]).val(value);
 	}
