@@ -145,8 +145,8 @@
 	},
 	"kkutu": {
 		"title": "Rule the Word! KKuTu Online",
-		"version": "3.2.7 User",
-		"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.7 User</a>",
+		"version": "3.2.8 User",
+		"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.8 User</a>",
 		"textver123": "Version: ",
 		
 		"meta_desc": "Online ending, front talking, consonant quizzes, crossword puzzles, even typing competition! Be the King of Vocabulary at the end of the line.",
@@ -448,6 +448,7 @@
 		"theme_BUS": "Bus Stop",
 		"theme_DONG": "Children's Song",
 		"theme_MFA": "Mafia42",
+		"theme_KTR": "KartRider",
 
 		"class_1": "명",
 		"class_2": "대명",

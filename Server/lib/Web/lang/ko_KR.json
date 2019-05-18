@@ -144,8 +144,8 @@
 	},
   "kkutu": {
     "title": "글자로 놀자! BF끄투",
-    "version": "3.2.7 User",
-	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.7 User</a>",
+    "version": "3.2.8 User",
+	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.2.8 User</a>",
 	"textver123": "버전: ",
 
     "meta_desc": "온라인 끝말잇기, 앞말잇기, 자음퀴즈, 십자말풀이, 타자 대결까지! 끄투에서 어휘력의 제왕이 되어 보세요.",
@@ -475,6 +475,7 @@
 	"theme_DONG": "동요",
 	"theme_MFA": "마피아42",
 	"theme_ZHS": "좀비고등학교",
+	"theme_KTR": "카트라이더",
 
     "class_1": "명",
     "class_2": "대명",
