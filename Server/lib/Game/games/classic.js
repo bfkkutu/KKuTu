@@ -113,8 +113,11 @@ exports.getTitle = function(){
 			R.go(EXAMPLE);
 		}else{
 			len = title.length;
-			for(i=0; i<len; i++) list.push(getAuto.call(my, title[i], getSubChar.call(my, title[i]), 1));
-			
+			if(!my.opts.ignoreinitial){
+				for(i=0; i<len; i++) list.push(getAuto.call(my, title[i], getSubChar.call(my, title[i]), 1));
+			}else if(my.opts.ignoreinitial){
+				for(i=0; i<len; i++) list.push(getAuto.call(my, title[i], 1));
+			}
 			Lizard.all(list).then(function(res){
 				for(i in res) if(!res[i]) return R.go(EXAMPLE);
 				
@@ -136,7 +139,11 @@ exports.roundReady = function(){
 	my.game.roundTime = my.time * 1000;
 	if(my.game.round <= my.round){
 		my.game.char = my.game.title[my.game.round - 1];
+	if(!my.opts.ignoreinitial){
 		my.game.subChar = getSubChar.call(my, my.game.char);
+	}else if(my.opts.ignoreinitial){
+			my.game.subChar = null;
+		}
 		my.game.chain = [];
 		if(my.opts.mission){
 			if(!my.opts.abcmission){
@@ -252,7 +259,11 @@ exports.submit = function(client, text){
 	function onDB($doc){
 		if(!my.game.chain) return;
 		var preChar = getChar.call(my, text);
-		var preSubChar = getSubChar.call(my, preChar);
+		if(!my.opts.ignoreinitial){
+			var preSubChar = getSubChar.call(my, preChar);
+		}else if(my.opts.ignoreinitial){
+			var preSubChar;
+		}
 		var firstMove = my.game.chain.length < 1;
 		
 		function preApproved(){

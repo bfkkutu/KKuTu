@@ -48,8 +48,9 @@ exports.OPTIONS = {
 	'uwd': { name: "UnknownWord" },
 	'rtn': { name: "Returns" },
 	'abcm': { name: "AbcMission" },
-	'igin': { name: "IngoreInitial" },
-	'blw': { name: "BlockWord" }
+	'igin': { name: "IgnoreInitial" },
+	'blw': { name: "BlockWord" },
+	'eve': { name: "EventMode" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back" ];
@@ -109,7 +110,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm", "igin", "blw" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm", "igin" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -242,7 +243,7 @@ exports.KO_INJEONG = [
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUDO",
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "NCN", "BUS",
-	"DONG", "MFA", "ZHS"
+	"DONG", "MFA", "ZHS", "KTR"
 ];
 exports.EN_INJEONG = [
 	"LOL"
@@ -257,7 +258,7 @@ exports.KO_THEME = [
 ];
 exports.EN_THEME = [
 	"e05", "e08", "e12", "e13", "e15",
-	"e18", "e20", "e43", "530"
+	"e18", "e20", "e43", "530", "NEX"
 ];
 exports.IJP_EXCEPT = [
 	"OIJ"

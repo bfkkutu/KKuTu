@@ -55,6 +55,7 @@ var page = WebInit.page;
 var gameServers = [];
 
 let moment = require('moment'); //moment.js를 사용 (DDDoS 기록)
+const alert = require("alert-node"); //alert-node를 사용 (DDDoS alert)
 
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
@@ -118,6 +119,7 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+"  "+date, 'utf8', function(err, ip, path) { //기록하고
 });
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
+		alert("DDoS 공격을 받았습니다. IP 주소를 기록하였습니다."); //서버 컴퓨터에 알림을 보내고
 		process.exit(0); //서버를 조진다.
 		process.exit(1); //서버를 조진다.
 };

@@ -172,12 +172,15 @@ block Middle
 		div.dialog-bar
 			h4= L('roundTime')
 			select#room-time
-				option(value=10, style='color: #FF4444')
-				option(value=30)
-				option(value=60, selected)
+				option(value=5, style='color: #FF0000')
+				option(value=10, style='color: #FF5656')
+				option(value=30, style='color: #FF9191')
+				option(value=60, style='color: #FFA8A8')
 				option(value=90)
-				option(value=120)
-				option(value=150)
+				option(value=120, style='color: #74C5E8')
+				option(value=150, selected, style='color: #329AEF')
+				option(value=200, style='color: #3E7AF9')
+				option(value=300, style='color: #0933EF')
 		div.dialog-bar(style='height: 59px;')
 			h4(style='height: 45px;')= L('misc')
 			- for(var i in locals.OPTIONS)
@@ -219,6 +222,7 @@ block Middle
 				option(value=2, selected)= L('aiLevel2')
 				option(value=3)= L('aiLevel3')
 				option(value=4)= L('aiLevel4')
+				option(value=5)= L('aiLevel5')
 		div.dialog-bar
 			h4= L('team')
 			select#ai-team
@@ -423,7 +427,46 @@ block Middle
 	div#ad
 
 block Bottom
-	div#facebook-menu
-		div.fb-like(data-href='http://jjo.kr/kkutu', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
 	div.bottom-legal!= L('dictionarySupport')
 	div.bottom-legal!= L('etcSupport')
+	div.bottom-legal!= L('textver123') + L('version_down')
+	div.bottom-legal!= L('madewith')
+	script.
+		function setParam(name, value) {
+		var l = window.location;
+		/* build params */
+		var params = {};
+		var x = /(?:\\??)([^=&?]+)=?([^&?]*)/g;
+		var s = l.search;
+		for(var r = x.exec(s); r; r = x.exec(s))
+		{
+		r[1] = decodeURIComponent(r[1]);
+		if (!r[2]) r[2] = '%%';
+		params[r[1]] = r[2];
+		}
+		/* set param */
+		params[name] = encodeURIComponent(value);
+		/* build search */
+		var search = [];
+		for(var i in params)
+		{
+		var p = encodeURIComponent(i);
+		var v = params[i];
+		if (v != '%%') p += '=' + v;
+		search.push(p);
+		}
+		search = search.join('&');
+		/* execute search */
+		l.search = search;
+		}
+	div.bottom-legal!=L('BGMHelp')
+	div.bottom-legal!=L('PLAYTSHelp')
+	div.bottom-legal!="언어를 선택하세요 Please choose the language."
+	div.bottom-legal!="관리자가 대충 번역기 돌려서 번역 상태가 개판입니다."
+	a(href="javascript:setParam('locale', 'ko_KR');") 한국어 Korean
+	br
+	a(href="javascript:setParam('locale', 'en_US');") 영어 English
+	br
+	a(href="javascript:setParam('locale', 'zh_CN');") 중국어 Chinese
+	br
+	a(href="javascript:setParam('locale', 'ja_JP');") 일본어 Japanese
