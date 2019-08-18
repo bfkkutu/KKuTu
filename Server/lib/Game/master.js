@@ -28,6 +28,26 @@ var Const = require("../const");
 var JLog = require('../sub/jjlog');
 var Secure = require('../sub/secure');
 var Recaptcha = require('../sub/recaptcha');
+var electron = require("electron");
+var WS		 = require("ws");
+var Express	 = require("express");
+var Exession = require("express-session");
+var Redission= require("connect-redis")(Exession);
+var Redis	 = require("redis");
+var Parser	 = require("body-parser");
+var DDDoS	 = require("dddos");
+var Server	 = Express();
+//볕뉘 수정 구문삭제 (28)
+var JLog	 = require("../sub/jjlog");
+var WebInit	 = require("../sub/webinit");
+var GLOBAL	 = require("../sub/global.json");
+var Secure = require('../sub/secure');
+//볕뉘 수정
+var passport = require('passport');
+//볕뉘 수정 끝
+var Const	 = require("../const");
+var https	 = require('https');
+var fs		 = require('fs');
 
 var MainDB;
 
@@ -35,6 +55,7 @@ var Server;
 var DIC = {};
 var DNAME = {};
 var ROOM = {};
+var $data = {};
 
 var T_ROOM = {};
 var T_USER = {};
@@ -46,7 +67,7 @@ const DEVELOP = exports.DEVELOP = global.test || false;
 const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
 	'create': true,
 	'enter': true,
-	'talk': false,
+	'talk': true,
 	'practice': true,
 	'ready': true,
 	'start': true,
@@ -61,6 +82,15 @@ const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
 const MODE_LENGTH = exports.MODE_LENGTH = Const.GAME_TYPE.length;
 const PORT = process.env['KKUTU_PORT'];
 
+let moment = require('moment'); //moment.js를 사용 (IP Logs 기록)
+
+const log4js = require('log4js');
+log4js.configure({
+  appenders: { System: { type: 'file', filename: 'joinexit.log' } },
+  categories: { default: { appenders: ['System'], level: 'info' } }
+});
+const logger = log4js.getLogger('System');
+
 process.on('uncaughtException', function(err){
 	var text = `:${PORT} [${new Date().toLocaleString()}] ERROR: ${err.toString()}\n${err.stack}\n`;
 	
@@ -69,7 +99,27 @@ process.on('uncaughtException', function(err){
 		console.log(text);
 	});
 });
-function processAdmin(id, value){
+function getClientIp(req, res) {
+	var clientIp = req.info.connection.remoteAddress;
+	if (!clientIp) {
+		JLog.warn(`clientIp is empty.   (${clientIp})`)
+		return "";
+	}
+	if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
+	
+	return clientIp;
+}
+function getTempIp($c) {
+	var tempIp = $c.remoteAddress;
+	if (!tempIp) {
+		JLog.warn(`tempIp is empty.   (${tempIp})`)
+		return "";
+	}
+	if (tempIp.startsWith("::ffff:")) return tempIp.substr(7);
+	
+	return tempIp;
+}
+function processAdmin(id, value, requestId){
 	var cmd, temp, i, j;
 	
 	value = value.replace(/^(#\w+\s+)?(.+)/, function(v, p1, p2){
@@ -81,21 +131,92 @@ function processAdmin(id, value){
 			KKuTu.publish('yell', { value: value });
 			return null;
 		case "fix": //점검
-			var fix = "곧 서버 점검이 있을 예정입니다." + value + " 분 뒤 서버가 종료됩니다.";
+			var fix = "곧 서버 점검이 있을 예정입니다. " + value + " 뒤 서버가 종료됩니다.";
 			KKuTu.publish('yell', { value: fix });
 			return null;
-		case "serverend": //서버 종료
-			var serverend = "서버 종료 시간이 되어 " + value + " 분 뒤 서버가 종료됩니다.";
-			KKuTu.publish('yell', { value: serverend });
+		case "end": //서버 종료
+			var end = "서버 종료 시간이 되어 " + value + " 뒤 서버가 종료됩니다.";
+			KKuTu.publish('yell', { value: end });
 			return null;
-		case "someerroroccor": //서버 에러
-			var someerroroccor = "서버에 문제가 발생하여 " + value + " 분 뒤 서버가 종료됩니다.";
-			KKuTu.publish('yell', { value: someerroroccor });
+		case "error": //서버 에러
+			var error = "서버에 문제가 발생하여 " + value + " 뒤 서버가 종료됩니다.";
+			KKuTu.publish('yell', { value: error });
 			return null;
-		case "kill":
+		case "fixtime": //서버 종료
+			var fixtime = value + "에 서버 점검이 있을 예정입니다.";
+			KKuTu.publish('yell', { value: fixtime });
+			return null;
+		case "kick": // 유저 킥
 			if(temp = DIC[value]){
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var clientIp = temp.info.connection.remoteAddress;
+				
+				JLog.info(`[${clientId}](ID) was kicked At [${requestId}]`);
 				temp.socket.send('{"type":"error","code":410}');
 				temp.socket.close();
+			}
+			return null;
+		case "ban": // 유저 밴
+		case "ipban":
+			if(temp = DIC[value]){
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var clientIp = temp.info.connection.remoteAddress;
+				var IpFilters = JSON.parse(File.readFileSync("./lib/Web/filters/User.json"));
+				
+				if (IpFilters.ips.indexOf(clientIp) == -1) {
+					IpFilters.ips.push(clientIp);
+					IpFilters.ids.push(value);
+					
+					File.writeFile("./lib/Web/filters/User.json", JSON.stringify(IpFilters,null, "\t"), (err) => {
+						if(err) return JLog.error(`IP 차단 목록을 작성하는 중에 문제가 발생했습니다. (${err})`)
+						
+						JLog.info(`[${clientIp}](IP) was banned At [${requestId}]`);
+						temp.socket.send(`{"type":'error',"code":410}`);
+						temp.socket.close();
+					})
+				}
+			}
+			return null;
+		case "unban": // 유저 언밴(해제)
+		case "unipban":
+		case "ipunban":
+			if(DIC[id]) DIC[id].send('yell', { value: "해당 기능은 현재 지원하지 않습니다." });
+			/*if(temp = DIC[value]){
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var clientIp = temp.info.connection.remoteAddress;
+				var IpFilters = JSON.parse(File.readFileSync("./lib/Web/filters/User.json"));
+				
+				if(IpFilters.ids.indexOf(value) != -1){
+					var index = IpFilters.ids.indexOf(value);
+					IpFilters.ips.splice(index, 1)
+					IpFilters.ids.splice(index, 1)
+					
+					File.writeFile("./lib/Web/filters/User.json", JSON.stringify(IpFilters,null, "\t"), () => {
+						if(err) return JLog.error(`IP 차단 목록을 작성하는 중에 문제가 발생했습니다. (${err})`)
+						
+						JLog.info(`[${clientIp}](IP) was unbanned At [${requestId}]`);
+					})
+				}
+			}*/
+			return null;
+		case "warn": // 유저 경고
+			if(temp = DIC[value]){
+				var thisDate = moment().format("MM월-DD일|HH시-mm분");
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var warnList = JSON.parse(File.readFileSync("../../../"));
+				
+				if (value.startsWith("guest__"))
+					File.appendFileSync(`../../../Warn/log.txt`,`\n[${clientIp}] is Warned.     (${thisDate})`, 'utf8',(err) => {
+						if(err) return JLog.error(`경고 목록을 작성하는 중에 문제가 발생했습니다.   (${err})`)
+					})
+				else
+					File.appendFileSync(`../../../Warn/log.txt`,`\n[${clientId}] is Warned.     (${thisDate})`, 'utf8',(err) => {
+						if(err) return JLog.error(`경고 목록을 작성하는 중에 문제가 발생했습니다.   (${err})`)
+					})
 			}
 			return null;
 		case "tailroom":
@@ -172,7 +293,7 @@ Cluster.on('message', function(worker, msg){
 	
 	switch(msg.type){
 		case "admin":
-			if(DIC[msg.id] && DIC[msg.id].admin) processAdmin(msg.id, msg.value);
+			if(DIC[msg.id] && DIC[msg.id].admin) processAdmin(msg.id, msg.value, DIC[msg.id]);
 			break;
 		case "tail-report":
 			if(temp = T_ROOM[msg.place]){
@@ -297,15 +418,18 @@ exports.init = function(_SID, CHAN){
 				perMessageDeflate: false
 			});
 		}
-		Server.on('connection', function(socket){
-			var key = socket.upgradeReq.url.slice(1);
+		Server.on('connection', function(socket, info){
+			var key = info.url.slice(1);
 			var $c;
 			
 			socket.on('error', function(err){
-				JLog.warn("Error on #" + key + " on ws: " + err.toString());
+				var ec = err.toString();
+				if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
+					JLog.warn("Error on #" + key + " on ws: " + ec);
+				}
 			});
 			// 웹 서버
-			if(socket.upgradeReq.headers.host.match(/^127\.0\.0\.2:/)){
+			if(info.headers.host.match(/^127\.0\.0\.2:/)){
 				if(WDIC[key]) WDIC[key].socket.close();
 				WDIC[key] = new KKuTu.WebServer(socket);
 				JLog.info(`New web server #${key}`);
@@ -323,6 +447,7 @@ exports.init = function(_SID, CHAN){
 			MainDB.session.findOne([ '_id', key ]).limit([ 'profile', true ]).on(function($body){
 				$c = new KKuTu.Client(socket, $body ? $body.profile : null, key);
 				$c.admin = GLOBAL.ADMIN.indexOf($c.id) != -1;
+				$c.remoteAddress = info.connection.remoteAddress;
 				
 				if(DIC[$c.id]){
 					DIC[$c.id].sendError(408);
@@ -378,13 +503,20 @@ exports.init = function(_SID, CHAN){
 			});
 		});
 		Server.on('error', function (err) {
-			JLog.warn("Error on ws: " + err.toString());
+			var ec = err.toString();
+			if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
+				JLog.warn("Error on ws: " + ec);
+			}
 		});
 		KKuTu.init(MainDB, DIC, ROOM, GUEST_PERMISSION, CHAN);
 	};
 };
 
-function joinNewUser($c) {
+function joinNewUser($c, ip, path) {
+	var thisDate = moment().format("MM월-DD일|HH시-mm분");
+	var clientIp = getTempIp($c);
+	var clientId = $c.id;
+	
 	$c.send('welcome', {
 		id: $c.id,
 		guest: $c.guest,
@@ -400,8 +532,12 @@ function joinNewUser($c) {
 	});
 	narrateFriends($c.id, $c.friends, "on");
 	KKuTu.publish('conn', {user: $c.getData()});
-
-	JLog.info("New user #" + $c.id);
+	
+	logger.info(`New user #` + $c.id + ` IP: ${$c.remoteAddress}`);
+	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Join:[${$c.remoteAddress}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+	})
+	JLog.info(`New user #` + $c.id + ` IP: ${$c.remoteAddress}`);
 }
 
 KKuTu.onClientMessage = function ($c, msg) {
@@ -411,7 +547,7 @@ KKuTu.onClientMessage = function ($c, msg) {
 		processClientRequest($c, msg);
 	} else {
 		if (msg.type === 'recaptcha') {
-			Recaptcha.verifyRecaptcha(msg.token, $c.socket._socket.remoteAddress, function (success) {
+			Recaptcha.verifyRecaptcha(msg.token, $c.remoteAddress, function (success) {
 				if (success) {
 					$c.passRecaptcha = true;
 
@@ -419,7 +555,7 @@ KKuTu.onClientMessage = function ($c, msg) {
 
 					processClientRequest($c, msg);
 				} else {
-					JLog.warn(`Recaptcha failed from IP ${$c.socket._socket.remoteAddress}`);
+					JLog.warn(`Recaptcha failed from IP ${$c.remoteAddress}`);
 
 					$c.sendError(447);
 					$c.socket.close();
@@ -580,13 +716,22 @@ function processClientRequest($c, msg) {
 	}
 }
 
-KKuTu.onClientClosed = function($c, code){
+KKuTu.onClientClosed = function($c, code, ip, path){
 	delete DIC[$c.id];
 	if($c._error != 409) MainDB.users.update([ '_id', $c.id ]).set([ 'server', "" ]).on();
 	if($c.profile) delete DNAME[$c.profile.title || $c.profile.name];
 	if($c.socket) $c.socket.removeAllListeners();
 	if($c.friends) narrateFriends($c.id, $c.friends, "off");
 	KKuTu.publish('disconn', { id: $c.id });
-
-	JLog.alert("Exit #" + $c.id);
+	
+	
+	var thisDate = moment().format("MM월-DD일|HH시-mm분");
+	var clientIp = $c.remoteAddress;
+	var clientId = $c.id;
+	
+	logger.info(`Exit #` + $c.id + ` IP: ${$c.remoteAddress}`);
+	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Exit:[${$c.remoteAddress}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+	})
+	JLog.info(`Exit #` + $c.id + ` IP: ${$c.remoteAddress}`);
 };

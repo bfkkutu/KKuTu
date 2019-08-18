@@ -55,6 +55,8 @@ const ENABLE_ROUND_TIME = Master.ENABLE_ROUND_TIME;
 const ENABLE_FORM = Master.ENABLE_FORM;
 const MODE_LENGTH = Master.MODE_LENGTH;
 
+let moment = require('moment'); //moment.js를 사용 (Log 기록)
+
 JLog.info(`<< KKuTu Server:${Server.options.port} >>`);
 
 process.on('uncaughtException', function(err){
@@ -103,14 +105,17 @@ MainDB.ready = function(){
 	JLog.success("DB is ready.");
 	KKuTu.init(MainDB, DIC, ROOM, GUEST_PERMISSION);
 };
-Server.on('connection', function(socket){
-	var chunk = socket.upgradeReq.url.slice(1).split('&');
+Server.on('connection', function(socket, info){
+	var chunk = info.url.slice(1).split('&');
 	var key = chunk[0];
 	var reserve = RESERVED[key] || {}, room;
 	var $c;
 	
 	socket.on('error', function(err){
-		JLog.warn("Error on #" + key + " on ws: " + err.toString());
+		var ec = err.toString();
+		if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
+			JLog.warn("Error on #" + key + " on ws: " + ec);
+		}
 	});
 	if(CHAN != Number(chunk[1])){
 		JLog.warn(`Wrong channel value ${chunk[1]} on @${CHAN}`);
@@ -143,7 +148,7 @@ Server.on('connection', function(socket){
 			$c.socket.close();
 			return;
 		}
-		$c.refresh().then(function(ref){
+		$c.refresh().then(function(ref, ip, path){
 			if(ref.result == 200){
 				DIC[$c.id] = $c;
 				DNAME[($c.profile.title || $c.profile.name).replace(/\s/g, "")] = $c.id;
@@ -166,7 +171,10 @@ Server.on('connection', function(socket){
 	});
 });
 Server.on('error', function(err){
-	JLog.warn("Error on ws: " + err.toString());
+	var ec = err.toString();
+	if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
+		JLog.warn("Error on ws: " + ec);
+	}
 });
 KKuTu.onClientMessage = function($c, msg){
 	var stable = true;
@@ -396,6 +404,6 @@ KKuTu.onClientClosed = function($c, code){
 	if($c.profile) delete DNAME[$c.profile.title || $c.profile.name];
 	if($c.socket) $c.socket.removeAllListeners();
 	KKuTu.publish('disconnRoom', { id: $c.id });
-
+	
 	JLog.alert(`Chan @${CHAN} Exit #${$c.id}`);
 };
