@@ -33,6 +33,7 @@ var DB		 = require("./db");
 //볕뉘 수정 구문삭제 (28)
 var JLog	 = require("../sub/jjlog");
 var WebInit	 = require("../sub/webinit");
+var fs		 = require('fs');
 var GLOBAL	 = require("../sub/global.json");
 var Secure = require('../sub/secure');
 //볕뉘 수정
@@ -40,8 +41,6 @@ var passport = require('passport');
 //볕뉘 수정 끝
 var Const	 = require("../const");
 var https	 = require('https');
-var fs		 = require('fs');
-
 var Language = {
 	'ko_KR': require("./lang/ko_KR.json"),
 	'en_US': require("./lang/en_US.json")
@@ -52,6 +51,7 @@ var ROUTES = [
 ];
 //볕뉘 수정 끝
 var page = WebInit.page;
+var IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
 var gameServers = [];
 
 let moment = require('moment'); //moment.js를 사용 (DDDoS 기록)
@@ -62,8 +62,55 @@ WebInit.MOBILE_AVAILABLE = [
 ];
 
 require("../sub/checkpub");
-
 JLog.info("<< KKuTu Web >>");
+fs.watchFile("./lib/Web/filters/User.json", (res) => {
+	IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
+	JLog.info("IP-Ban Data is Auto-Updated at {lib/Web/main.js}")
+})
+fs.watchFile("./lib/sub/global.json", () => {
+	GLOBAL	 = require("../sub/global.json");
+	JLog.info("global.json is Auto-Updated at {lib/Web/main.js}");
+})
+fs.watchFile("./lib/Web/lang/ko_KR.json", () => {
+	Language = {
+		'ko_KR': require("./lang/ko_KR.json"),
+		'en_US': require("./lang/en_US.json")
+	};
+	JLog.info("ko_KR.json is Auto-Updated at {lib/Web/main.js}");
+})
+fs.watchFile("./lib/Web/lang/en_US.json", () => {
+	Language = {
+		'ko_KR': require("./lang/ko_KR.json"),
+		'en_US': require("./lang/en_US.json")
+	};
+	JLog.info("en_US.json is Auto-Updated at {lib/Web/main.js}");
+})
+fs.watchFile("./lib/const.js", () => {
+	GLOBAL	 = require("../const");
+	JLog.info("const.js is Auto-Updated at {lib/Web/main.js}");
+})
+function getClientIp(req, res){
+	var clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
+	
+	return clientIp;
+}
+Server.use((req, res, _next) => {
+	var clientIp = getClientIp(req, res);
+	
+	if(IpFilters.ips.indexOf(clientIp) == -1) _next();
+	else res.send(`<head><title>BF끄투 - 이용정지<style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><script>alert("회원님의 아이피는 영구적으로 이용이 제한되었습니다.")</script><center><h2>회원님의 아이피는 영구적으로 이용이 제한되었습니다.</h2></body></center>`);
+});
+/*Server.use((req, res, _next) => {
+	var clientIp = getClientIp(req, res);
+	var clientId = null;
+	var thisDate = moment().format('MM_DD_HH_mm');
+	
+	JLog.info(`사용자가 서버에 접속했습니다.   (IP:[${clientIp}])`)
+	fs.writeFileSync(`../IP-Log/IP-Log__${thisDate}.txt`,`[${clientIp}|${clientId}]: 서버에 접속이 요청됐습니다.    (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return JLog.error(`IP를 기록하는 중에 문제가 발생했습니다!   (${err.toString()})`)
+	})
+})*/
 Server.set('views', __dirname + "/views");
 Server.set('view engine', "pug");
 Server.use(Express.static(__dirname + "/public"));
@@ -117,11 +164,9 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	var date = moment().format("MM_DD_HH_mm"); //지금 이 시간 (월 일 시 분)
 	JLog.warn(`DoS from IP ${ip} on ${path}`); //패킷을 보낸놈의 아이피를 따고
 	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+"  "+date, 'utf8', function(err, ip, path) { //기록하고
-});
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
-		alert("DDoS 공격을 받았습니다. IP 주소를 기록하였습니다."); //서버 컴퓨터에 알림을 보내고
-		process.exit(0); //서버를 조진다.
-		process.exit(1); //서버를 조진다.
+		process.exit(1); //웹 서버를 조진다
+	})
 };
 Server.use(DDDoS.express());
 //디도스 감지 및 차단
@@ -279,10 +324,35 @@ Server.get("/legal/:page", function(req, res){
 	page(req, res, "legal/"+req.params.page);
 });
 
-Server.get("/gwallilogin", function(req, res){
-  page(req, res, "join");
-});
+/*Server.get("/gwallilogin", function(req, res){
+	page(req, res, "join");
+});*/
 
 Server.get("/donate", function(req, res){
-  page(req, res, "donate");
+	page(req, res, "donate");
+});
+
+Server.get("/server_status", function(req, res){
+	page(req, res, "server_status");
+});
+
+Server.get("/bfcloud", function(req, res){
+	page(req, res, "bfcloud");
+});
+
+Server.get("/beta/portal", function(req, res){
+	page(req, res, "betaportal");
+});
+
+Server.get("/beta/server_status", function(req, res){
+	page(req, res, "betaserver_status");
+});
+
+Server.get("/beta/servers", function(req, res){
+	var list = [];
+
+	gameServers.forEach(function(v, i){
+		list[i] = v.seek;
+	});
+	res.send({ list: list, max: Const.KKUTU_MAX });
 });

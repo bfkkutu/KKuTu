@@ -47,7 +47,7 @@ html
 		block CSS
 		block JS
 
-	body(style='min-width: 640px;')
+	body(style='min-width: 640px; background: blue;')
 		div#Top
 			+Menu()
 			div#global-notice
@@ -58,7 +58,7 @@ html
 		div#Jungle
 			span#mobile= locals.mobile
 			span#summonerID= DATA._id
-			img#Background(src='/img/bg/' + (locals.bg || 'def.png'))
+			//img#Background(src='/img/bg/' + (locals.bg || 'def.png'))
 			block Jungle
 		div#Middle
 			block Middle

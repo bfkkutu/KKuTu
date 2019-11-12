@@ -44,15 +44,45 @@
 	}
 
 /* NIK */
-.x-gm .users-name::before{ content: "[GM]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.chat-item>.x-gm::before{ content: "[GM]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.room-user-title>.x-gm::before{ content: "[GM]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.x-streamer .users-name::before{ content: "[스트리머]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.chat-item>.x-streamer::before{ content: "[스트리머]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.room-user-title>.x-streamer::before{ content: "[스트리머]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.x-word .users-name::before{ content: "[단어]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.chat-item>.x-word::before{ content: "[단어]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
-.room-user-title>.x-word::before{ content: "[단어]"; color: #2F77D9; text-shadow: 0px 0px 2px #2AF; }
+.x-bf .users-name::before{ content: "[총관리자]"; color: #37a515; text-shadow: 0px 0px 0px; }
+.chat-item>.x-bf::before{ content: "[총관리자]"; color: #37a515; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-bf::before{ content: "[총관리자]"; color: #37a515; text-shadow: 0px 0px 0px; }
+
+.x-yt .users-name::before{ content: "[YT]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-yt::before{ content: "[YT]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-yt::before{ content: "[YT]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-bj .users-name::before{ content: "[BJ]"; color: #106ae5; text-shadow: 0px 0px 0px; }
+.chat-item>.x-bj::before{ content: "[BJ]"; color: #106ae5; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-bj::before{ content: "[BJ]"; color: #106ae5; text-shadow: 0px 0px 0px; }
+
+.x-word .users-name::before{ content: "[단어부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-word::before{ content: "[단어부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-word::before{ content: "[단어부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-design .users-name::before{ content: "[디자인부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-design::before{ content: "[디자인부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-design::before{ content: "[디자인부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-uman .users-name::before{ content: "[유저관리부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-uman::before{ content: "[유저관리부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-uman::before{ content: "[유저관리부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-1yearbadge .users-name::before{ content: "[1주년]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-1yearbadge::before{ content: "[1주년]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x-1yearbadge::before{ content: "[1주년]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-develop .users-name::before{ content: "[개발부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-develop::before{ content: "[개발부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.develop::before{ content: "[개발부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-money .users-name::before{ content: "[총무]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-money::before{ content: "[총무]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.money::before{ content: "[총무]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
+.x-master .users-name::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.chat-item>.x-master::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.master::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
 
 .x-red_name{ color: #FF3333; }
 .x-orange_name{ color: #FFA533; }
@@ -61,3 +91,20 @@
 .x-indigo_name{ color: #1C18B9; }
 .x-purple_name{ color: #A939CC; }
 .x-pink_name{ color: #F15F9A; }
+.x-gray_name{ color: #808080; }
+.x-emerald_name{ color: #00b07b; }
+.x-yellow_name{ color: #FFFF00; }
+.x-lightblue_name{ color: #66ffff; }
+.x-rainbow_name{
+  background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.x-blink_name{
+  background-image: linear-gradient(to left, violet, indigo, blue, green, yellow, orange, red);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+.x-gradient_name{
+  background: -webkit-linear-gradient(to right, #b79891, #94716b);
+}

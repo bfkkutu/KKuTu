@@ -82,14 +82,58 @@ const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
 const MODE_LENGTH = exports.MODE_LENGTH = Const.GAME_TYPE.length;
 const PORT = process.env['KKUTU_PORT'];
 
+let moment = require('moment'); //moment.js를 사용 (IP Logs 기록)
+
+const log4js = require('log4js');
+log4js.configure({
+  appenders: { System: { type: 'file', filename: 'joinexit.log' } },
+  categories: { default: { appenders: ['System'], level: 'info' } }
+});
+const logger = log4js.getLogger('System');
+
+File.watchFile("./lib/kkutu.js", () => {
+	KKuTu = require('./kkutu');
+	JLog.info("kkutu.js is Auto-Updated at {lib/Game/master.js}");
+})
+File.watchFile("./lib/sub/global.json", () => {
+	GLOBAL = require("../sub/global.json");
+	JLog.info("global.json is Auto-Updated at {lib/Game/master.js}");
+})
+File.watchFile("./lib/const.js", () => {
+	Const = require("../const");
+	JLog.info("const.js is Auto-Updated at {lib/Game/master.js}");
+})
+
 process.on('uncaughtException', function(err){
 	var text = `:${PORT} [${new Date().toLocaleString()}] ERROR: ${err.toString()}\n${err.stack}\n`;
 	
 	File.appendFile("/jjolol/KKUTU_ERROR.log", text, function(res){
-		JLog.error(`ERROR OCCURRED ON THE MASTER!`);
-		console.log(text);
+		if(text.indexOf("$not")==-1){
+			JLog.error(`ERROR OCCURRED ON THE MASTER!`);
+			console.log(text);
+		}
 	});
 });
+function getClientIp(req, res) {
+	var clientIp = req.info.connection.remoteAddress;
+	if (!clientIp) {
+		JLog.warn(`clientIp is empty.   (${clientIp})`)
+		return "";
+	}
+	if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
+	
+	return clientIp;
+}
+function getTempIp($c) {
+	var tempIp = $c.remoteAddress;
+	if (!tempIp) {
+		JLog.warn(`tempIp is empty.   (${tempIp})`)
+		return "";
+	}
+	if (tempIp.startsWith("::ffff:")) return tempIp.substr(7);
+	
+	return tempIp;
+}
 function processAdmin(id, value, requestId){
 	var cmd, temp, i, j;
 	
@@ -126,6 +170,68 @@ function processAdmin(id, value, requestId){
 				JLog.info(`[${clientId}](ID) was kicked At [${requestId}]`);
 				temp.socket.send('{"type":"error","code":410}');
 				temp.socket.close();
+			}
+			return null;
+		case "ban": // 유저 밴
+		case "ipban":
+			if(temp = DIC[value]){
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var clientIp = temp.info.connection.remoteAddress;
+				var IpFilters = JSON.parse(File.readFileSync("./lib/Web/filters/User.json"));
+				
+				if (IpFilters.ips.indexOf(clientIp) == -1) {
+					IpFilters.ips.push(clientIp);
+					IpFilters.ids.push(value);
+					
+					File.writeFile("./lib/Web/filters/User.json", JSON.stringify(IpFilters,null, "\t"), (err) => {
+						if(err) return JLog.error(`IP 차단 목록을 작성하는 중에 문제가 발생했습니다. (${err})`)
+						
+						JLog.info(`[${clientIp}](IP) was banned At [${requestId}]`);
+						temp.socket.send(`{"type":'error',"code":410}`);
+						temp.socket.close();
+					})
+				}
+			}
+			return null;
+		case "unban": // 유저 언밴(해제)
+		case "unipban":
+		case "ipunban":
+			if(DIC[id]) DIC[id].send('yell', { value: "해당 기능은 현재 지원하지 않습니다." });
+			/*if(temp = DIC[value]){
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var clientIp = temp.info.connection.remoteAddress;
+				var IpFilters = JSON.parse(File.readFileSync("./lib/Web/filters/User.json"));
+				
+				if(IpFilters.ids.indexOf(value) != -1){
+					var index = IpFilters.ids.indexOf(value);
+					IpFilters.ips.splice(index, 1)
+					IpFilters.ids.splice(index, 1)
+					
+					File.writeFile("./lib/Web/filters/User.json", JSON.stringify(IpFilters,null, "\t"), () => {
+						if(err) return JLog.error(`IP 차단 목록을 작성하는 중에 문제가 발생했습니다. (${err})`)
+						
+						JLog.info(`[${clientIp}](IP) was unbanned At [${requestId}]`);
+					})
+				}
+			}*/
+			return null;
+		case "warn": // 유저 경고
+			if(temp = DIC[value]){
+				var thisDate = moment().format("MM월-DD일|HH시-mm분");
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				//var warnList = JSON.parse(File.readFileSync("../../../"));
+				
+				if (value.startsWith("guest__"))
+					File.appendFileSync(`../../../Warn/log.txt`,`\n[${clientIp}] is Warned.     (${thisDate})`, 'utf8',(err) => {
+						if(err) return JLog.error(`경고 목록을 작성하는 중에 문제가 발생했습니다.   (${err})`)
+					})
+				else
+					File.appendFileSync(`../../../Warn/log.txt`,`\n[${clientId}] is Warned.     (${thisDate})`, 'utf8',(err) => {
+						if(err) return JLog.error(`경고 목록을 작성하는 중에 문제가 발생했습니다.   (${err})`)
+					})
 			}
 			return null;
 		case "tailroom":
@@ -422,11 +528,16 @@ exports.init = function(_SID, CHAN){
 };
 
 function joinNewUser($c, ip, path) {
+	var thisDate = moment().format("MM월-DD일|HH시-mm분");
+	var clientIp = getTempIp($c);
+	var clientId = $c.id;
+	
 	$c.send('welcome', {
 		id: $c.id,
 		guest: $c.guest,
 		box: $c.box,
 		playTime: $c.data.playTime,
+		rankPoint: $c.data.rankPoint,
 		okg: $c.okgCount,
 		users: KKuTu.getUserList(),
 		rooms: KKuTu.getRoomList(),
@@ -437,7 +548,12 @@ function joinNewUser($c, ip, path) {
 	});
 	narrateFriends($c.id, $c.friends, "on");
 	KKuTu.publish('conn', {user: $c.getData()});
-	JLog.info(`New user #` + $c.id);
+	
+	logger.info(`New user #` + $c.id + ` IP: ${$c.remoteAddress}`);
+	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Join:[${$c.remoteAddress}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+	})
+	JLog.info(`New user #` + $c.id + ` IP: ${$c.remoteAddress}`);
 }
 
 KKuTu.onClientMessage = function ($c, msg) {
@@ -624,5 +740,14 @@ KKuTu.onClientClosed = function($c, code, ip, path){
 	if($c.friends) narrateFriends($c.id, $c.friends, "off");
 	KKuTu.publish('disconn', { id: $c.id });
 	
-	JLog.info(`Exit #` + $c.id);
+	
+	var thisDate = moment().format("MM월-DD일|HH시-mm분");
+	var clientIp = $c.remoteAddress;
+	var clientId = $c.id;
+	
+	logger.info(`Exit #` + $c.id + ` IP: ${$c.remoteAddress}`);
+	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Exit:[${$c.remoteAddress}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+	})
+	JLog.info(`Exit #` + $c.id + ` IP: ${$c.remoteAddress}`);
 };

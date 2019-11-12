@@ -16,14 +16,24 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+const fs = require('fs');
 const Spawn = require("child_process").spawn;
+const Request = require('request');
 const JLog = require("./lib/sub/jjlog");
 const PKG = require("./package.json");
 const LANG = require("../language.json");
 const SETTINGS = require("../settings.json");
+//let ServerChecker = require("./ServerChecker.js");
+let Config = require("./lib/sub/config.json");
+let def_Server = false;
 const SCRIPTS = {
-	'server-on': startServer,
-	'server-off': stopServer,
+	'server-on':()=> {
+		startServer(def_Server)
+		def_Server = true;
+	},
+	'server-off':()=> {
+		stopServer()
+	},
 	'program-info': () => {
 		exports.send('alert', [
 			`=== ${PKG.name} ===`,
@@ -38,6 +48,65 @@ const SCRIPTS = {
 	'program-repo': () => exports.send('external', "https://github.com/JJoriping/KKuTu"),
 	'exit': () => process.exit(0)
 };
+// 해티 수정 (42~97)
+if (SETTINGS.log.enabled) {
+	const winston = require('winston');
+	const winstonDaily = require('winston-daily-rotate-file');
+	const moment = require('moment');
+	
+	function timeStampFormat() {
+		return moment().format('YYYY-MM-DD HH:mm:ss.SSS ZZ');
+	};
+	
+	var logger = winston.createLogger({
+		format: winston.format.simple(),
+		transports: [
+			new (winstonDaily)({
+				name: 'info-file',
+				filename: SETTINGS.log.infopath,
+				datePattern: SETTINGS.log.datepattern,
+				colorize: false,
+				maxsize: SETTINGS.log.maxsize,
+				maxFiles: SETTINGS.log.maxfile,
+				level: 'info',
+				showLevel: true,
+				json: false,
+				timestamp: timeStampFormat
+			}),
+			new (winston.transports.Console)({
+				name: 'debug-console',
+				colorize: true,
+				level: 'debug',
+				showLevel: true,
+				json: false,
+				timestamp: timeStampFormat
+			})
+		],
+		exceptionHandlers: [
+			new (winstonDaily)({
+				name: 'exception-file',
+				filename: SETTINGS.log.exceptionpath,
+				datePattern: SETTINGS.log.datepattern,
+				colorize: false,
+				maxsize: SETTINGS.log.maxsize,
+				maxFiles: SETTINGS.log.maxfile,
+				level: 'error',
+				showLevel: true,
+				json: false,
+				timestamp: timeStampFormat
+			}),
+			new (winston.transports.Console)({
+				name: 'exception-console',
+				colorize: true,
+				level: 'debug',
+				showLevel: true,
+				json: false,
+				timestamp: timeStampFormat
+			})
+		]
+	})
+};
+// 해티 수정 끝
 exports.MAIN_MENU = [
 	{
 		label: LANG['menu-server'],
@@ -80,6 +149,19 @@ exports.MAIN_MENU = [
 				click: () => exports.run("exit")
 			}
 		]
+	},
+	{
+		label: "서버상태 봇",
+		submenu: [
+			{
+				label: "재부팅",
+				//click: ServerChecker.reboot
+			},
+			{
+				label: "재로드",
+				//click:()=> ServerChecker = require("./ServerChecker.js")
+			}
+		]
 	}
 ];
 exports.run = (cmd) => {
@@ -94,10 +176,14 @@ class ChildProcess{
 		this.process = Spawn(cmd, argv);
 		this.process.stdout.on('data', msg => {
 			exports.send('log', 'n', msg);
+			// 해티 수정
+			if (SETTINGS.log.enabled) logger.info(msg);
 		});
 		this.process.stderr.on('data', msg => {
 			console.error(`${id}: ${msg}`);
 			exports.send('log', 'e', msg);
+			// 해티 수정
+			if (SETTINGS.log.enabled) logger.error("[ERROR]"+msg);
 		});
 		this.process.on('close', code => {
 			let msg;
@@ -108,6 +194,8 @@ class ChildProcess{
 
 			exports.send('log', 'e', msg);
 			exports.send('server-status', getServerStatus());
+			// 해티 수정
+			if (SETTINGS.log.enabled) logger.error("[ERROR]"+msg);
 		});
 	}
 	kill(sig){
@@ -117,23 +205,94 @@ class ChildProcess{
 let webServer, gameServers;
 
 function startServer(){
-	stopServer();
+	stopServer(false);
 	if(SETTINGS['server-name']) process.env['KKT_SV_NAME'] = SETTINGS['server-name'];
-	
-	webServer = new ChildProcess('W', "node", `${__dirname}/lib/Web/cluster.js`, SETTINGS['web-num-cpu']);
-	gameServers = [];
-	
-	for(let i=0; i<SETTINGS['game-num-inst']; i++){
-		gameServers.push(new ChildProcess('G', "node", `${__dirname}/lib/Game/cluster.js`, i, SETTINGS['game-num-cpu']));
+	if(SETTINGS.web.enabled) webServer = new ChildProcess('W', "node", `${__dirname}/lib/Web/cluster.js`, SETTINGS.web.cpu);
+	if(SETTINGS.game.enabled) {
+		gameServers = [];	
+		for(let i=0; i<SETTINGS.game.inst; i++){
+			gameServers.push(new ChildProcess('G', "node", `${__dirname}/lib/Game/cluster.js`, i, SETTINGS.game.cpu));
+		}
 	}
 	exports.send('server-status', getServerStatus());
+	//ServerChecker.sendNotice(":white_check_mark: 열림", 3066993)
 }
-function stopServer(){
+function stopServer(notice){
 	if(webServer) webServer.kill();
 	if(gameServers) gameServers.forEach(v => v.kill());
+	//if(notice) ServerChecker.sendNotice(":negative_squared_cross_mark: 닫힘*(수동)*", 10038562)
 }
 function getServerStatus(){
-	if(!webServer || !gameServers) return 0;
-	if(webServer.process && gameServers.every(v => v.process)) return 2;
+	// 해티 수정 (203~209)
+	if(SETTINGS.web.enabled && SETTINGS.game.enabled) {
+		if(!webServer || !gameServers) return 0;
+		if(webServer.process && gameServers.every(v => v.process)) return 2;
+	} else if(SETTINGS.web.enabled || SETTINGS.game.enabled) {
+		if(!webServer && !gameServers) return 0;
+		if(webServer.process || gameServers.every(v => v.process)) return 2;
+	}
 	return 1;
 }
+//ServerChecker.ready(function(){
+	/*let userCount = ServerChecker.getUsers();
+	ServerChecker.setGame()
+	setInterval(ServerChecker.setGame, 7000)
+	setInterval(()=> {
+		userCount = ServerChecker.getUsers();
+	}, 5000)*/
+	/*setInterval(()=> {
+		Request(Config.serverUrl+"servers", (err, res, html)=> {
+			if(err != null) return console.error(err)
+			if(!html) return ServerChecker.Bot.user.setActivity(`현재 ${Config.serverName}는 닫혀 있습니다.`);
+			
+			var userCount = JSON.parse(html).list[0];
+			
+			if(userCount == null || userCount == 0) return ServerChecker.Bot.user.setActivity(`현재 ${Config.serverName}에 접속되어 있는 유저가 없습니다.`);
+			else ServerChecker.Bot.user.setActivity(`현재 ${Config.serverName}에 ${JSON.parse(html).list[0]}명이 접속되어 있습니다.`);
+		})
+	}, 2100);
+	
+	
+	ServerChecker.on('message', (message)=> {
+		var cmsg = message.content;
+		
+		if(cmsg.startsWith(Config.prefix+"서버상태") || cmsg.startsWith(Config.prefix+"서버확인") || cmsg.startsWith(Config.prefix+"서버")) {
+			var statusCode = getServerStatus();
+			
+			function sendStatus(value, color){
+				message.channel.send("", {
+					embed: {
+						title:"서버 상태",
+						description:value,
+						color:color
+					}
+				})
+			}
+			switch(statusCode){
+				case 0:
+					sendStatus(":negative_squared_cross_mark: 닫힘*(수동)*", 10038562);
+					break;
+				case 1:
+					sendStatus(":negative_squared_cross_mark: 닫힘*(오류)*", 15158332);
+					break;
+				case 2:
+					sendStatus(":white_check_mark: 열림", 3066993);
+					break;
+			}
+		}
+		if(cmsg.startsWith(Config.prefix+"접속자") || cmsg.startsWith(Config.prefix+"접속유저") || cmsg.startsWith(Config.prefix+"접속수")){
+			Request(Config.serverUrl+"servers", (err, res, html)=> {
+				if(err != null) return console.error(err)
+				if(!html) return "접속자를 계산할 수 없습니다 (서버 닫힘)";
+				
+				message.channel.send("", {
+					embed: {
+						title:"접속자 카운트",
+						description:JSON.parse(html).list[0],
+						color:3066993
+					}
+				})
+			})
+		}
+	});
+})*/

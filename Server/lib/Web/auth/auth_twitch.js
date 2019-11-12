@@ -6,6 +6,7 @@ module.exports.config = {
     fontColor: '#FFFFFF',
     vendor: 'twitch',
     displayName: 'withTwitch'
+	//authImage: '/img/auth/twitch.png'
 }
 
 module.exports.strategyConfig = {
@@ -16,7 +17,7 @@ module.exports.strategyConfig = {
     scope: "user_read"
 }
 
-module.exports.strategy = (process, MainDB, Ajae) => {
+module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
     return (req, accessToken, refreshToken, profile, done) => {
         const $p = {};
 
@@ -24,10 +25,10 @@ module.exports.strategy = (process, MainDB, Ajae) => {
 
         $p.authType = "twitch";
         $p.id = $p.authType+"-"+profile.id;
-        $p.name = profile.username;
-        $p.title = profile.username;
+        $p.name = profile.displayName;
+        $p.title = profile.displayName;
         $p.image = profile.avatar;
 
-        process(req, accessToken, MainDB, $p, done);
+        strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }

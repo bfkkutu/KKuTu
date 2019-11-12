@@ -6,6 +6,7 @@ module.exports.config = {
     fontColor: '#FFFFFF',
     vendor: 'line',
     displayName: 'withLine'
+	//authImage: '/img/auth/line.png'
 }
 
 module.exports.strategyConfig = {
@@ -15,18 +16,15 @@ module.exports.strategyConfig = {
     passReqToCallback: true,
 }
 
-module.exports.strategy = (process, MainDB, Ajae) => {
+module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
     return (req, accessToken, refreshToken, profile, done) => {
         const $p = {};
-
-        // var fullname = profile.username+"#"+profile.discriminator;
 
         $p.authType = "line";
         $p.id = $p.authType+"-"+profile.id;
         $p.name = profile.displayName;
         $p.title = profile.displayName;
         $p.image = profile.avatar;
-
-        process(req, accessToken, MainDB, $p, done);
+        strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }

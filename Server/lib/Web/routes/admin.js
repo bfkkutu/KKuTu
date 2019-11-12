@@ -16,29 +16,75 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+const log4js = require('log4js');
+log4js.configure({
+  appenders: { System: { type: 'file', filename: 'WordInit.log' } },
+  categories: { default: { appenders: ['System'], level: 'info' } }
+});
+const logger = log4js.getLogger('System');
 var File	 = require("fs");
+var fs		 = require("fs");
 var MainDB	 = require("../db");
 var GLOBAL	 = require("../../sub/global.json");
 var JLog	 = require("../../sub/jjlog");
 var Lizard	 = require("../../sub/lizard.js");
+//var Bander	 = require("./../filters/User.json");
 
+File.watchFile("./lib/sub/global.json", () => {
+	GLOBAL = require("../../sub/global.json");
+	JLog.info("global.json is Auto-Updated at {lib/Web/routes/admin.js}");
+})
+File.watchFile("./lib/Web/db", () => {
+	MainDB = require("../db");
+	JLog.info("db.js is Auto-Updated at {lib/Web/routes/admin.js}");
+})
 exports.run = function(Server, page){
 
-Server.get("/gwalli", function(req, res){
+/*Server.get("/gwalli", function(req, res) {
 	if(!checkAdmin(req, res)) return;
 	
 	req.session.admin = true;
 	page(req, res, "gwalli");
+});*/
+Server.get("/admin/developer", function(req, res) {
+	if(!checkAdmin(req, res, 'DEVELOPER')) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_developer");
+});
+Server.get("/admin/words", function(req, res) {
+	if(!checkAdmin(req, res, 'WORDS')) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_words");
+});
+Server.get("/admin/users", function(req, res) {
+	if(!checkAdmin(req, res, 'USERS')) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_users");
+});
+/*Server.get("/admin/manager", function(req, res) {
+	if(!checkAdmin(req, res, 'MANAGER')) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_manager");
+});*/
+Server.get("/admin/designer", function(req, res) {
+	if(!checkAdmin(req, res, 'DESIGNER')) return;
+	
+	req.session.admin = true;
+	page(req, res, "admin_designer");
 });
 Server.get("/gwalli/injeong", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'WORDS')) return;
 	
 	MainDB.kkutu_injeong.find([ 'theme', { $not: "~" } ]).limit(100).on(function($list){
 		res.send({ list: $list });
 	});
 });
 Server.get("/gwalli/gamsi", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'USERS')) return;
 	
 	MainDB.users.findOne([ '_id', req.query.id ]).limit([ 'server', true ]).on(function($u){
 		if(!$u) return res.sendStatus(404);
@@ -51,7 +97,7 @@ Server.get("/gwalli/gamsi", function(req, res){
 	});
 });
 Server.get("/gwalli/users", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'USERS')) return;
 	
 	if(req.query.name){
 		MainDB.session.find([ 'profile.title', req.query.name ]).on(function($u){
@@ -89,8 +135,33 @@ Server.get("/gwalli/users", function(req, res){
 		return R;
 	}
 });
+Server.post("/gwalli/ip_log", function(req, res) {
+	if(!checkAdmin(req, res, 'USERS')) return;
+	
+	res.send(File.readFileSync("./../IP-Log/Join_Exit.txt",'utf8'));
+});
+Server.post("/gwalli/kkutu_log", function(req, res) {
+	if(!checkAdmin(req, res, 'DEVELOPER')) return;
+	
+	res.send("Sorry, This feature is not supported(Undeveloped).");
+	/*fs.readFileSync("./../kkutu_log.txt",'utf8', function(error, response) {
+		if(!error) return res.sendStatus(400);
+		
+		res.send(response);
+	})*/
+});
+Server.post("/gwalli/kkutu_error", function(req, res) {
+	if(!checkAdmin(req, res, 'DEVELOPER')) return;
+	
+	res.send("Sorry, This feature is not supported(Undeveloped).");
+	/*fs.readFileSync("./../kkutu_error.txt",'utf8', function(error, response) {
+		if(!error) return res.sendStatus(400);
+		
+		res.send(response);
+	})*/
+});
 Server.get("/gwalli/kkutudb/:word", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'WORDS')) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
@@ -101,7 +172,7 @@ Server.get("/gwalli/kkutudb/:word", function(req, res){
 	});
 });
 Server.get("/gwalli/kkututheme", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'USERS')) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
@@ -111,19 +182,52 @@ Server.get("/gwalli/kkututheme", function(req, res){
 		res.send({ list: $docs.map(v => v._id) });
 	});
 });
-Server.get("/gwalli/kkutuhot", function(req, res){
+/*Server.get("/gwalli/kkutuhot", function(req, res){
 	if(!checkAdmin(req, res)) return;
 	
 	File.readFile(GLOBAL.KKUTUHOT_PATH, function(err, file){
 		var data = JSON.parse(file.toString());
 		
-		parseKKuTuHot().then(function($kh){
+0		parseKKuTuHot().then(function($kh){
 			res.send({ prev: data, data: $kh });
 		});
 	});
+});*/
+Server.post("/gwalli/users/ipban", function(req, res) {
+	if(!checkAdmin(req, res, 'USERS')) return;
+	
+	var IpFilters = JSON.parse(File.readFileSync("./lib/Web/filters/User.json"));
+	req.params.list.forEach((ip, index) => {
+		if (IpFilters.ips.indexOf(ip) == -1) IpFilters.ips.push(ip);
+		
+		if (req.params.list.length == index) {
+			File.writeFile("./lib/Web/filters/User.json", JSON.stringify(IpFilters,null, "\t"), () => {
+				if (!err) return res.sendStatus(400);
+				
+				JLog.info(`[${clientIp}](IP) was banned At [${requestId}]`);
+				res.send("OK")
+			})
+		}
+	});
+});
+Server.post("/gwalli/editor/getfile", function(req, res){
+	if(!checkAdmin(req, res, 'DEVELOPER')) return;
+	
+	File.readFile(req.params.path, 'utf8',function(err, data) {
+		if (!err) return res.sendStatus(400);
+		res.send(data)
+	});
+});
+Server.post("/gwalli/editor/setfile", function(req, res){
+	if(!checkAdmin(req, res, 'DEVELOPER')) return;
+	
+	File.writeFile(req.params.path,req.params.value, 'utf8',function(err, data) {
+		if (!err) return res.sendStatus(400);
+		res.send(File.readFileSync("./../../../"+req.params.path))
+	});
 });
 Server.get("/gwalli/shop/:key", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'DESIGNER')) return;
 	
 	var q = (req.params.key == "~ALL") ? undefined : [ '_id', req.params.key ];
 	
@@ -134,7 +238,7 @@ Server.get("/gwalli/shop/:key", function(req, res){
 	});
 });
 Server.post("/gwalli/injeong", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'WORDS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -160,7 +264,7 @@ Server.post("/gwalli/injeong", function(req, res){
 });
 Server.post("/gwalli/kkutudb", onKKuTuDB);
 function onKKuTuDB(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'WORDS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var theme = req.body.theme;
@@ -191,11 +295,12 @@ function onKKuTuDB(req, res){
 				JLog.warn(`Word '${item}' already has the theme '${theme}'!`);
 			}
 		});
+		itemLog(item, req, theme, list.length);
 	});
 	if(!req.body.nof) res.sendStatus(200);
 }
 Server.post("/gwalli/kkutudb/:word", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'WORDS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	var TABLE = MainDB.kkutu[req.body.lang];
 	var data = JSON.parse(req.body.data);
@@ -214,7 +319,21 @@ Server.post("/gwalli/kkutudb/:word", function(req, res){
 		});
 	}
 });
-Server.post("/gwalli/kkutuhot", function(req, res){
+Server.post("/gwalli/kkutuDdb/:word", function(req, res){
+	if(!checkAdmin(req, res, 'WORDS')) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	var TABLE = MainDB.kkutu[req.body.lang];
+	var data = JSON.parse(req.body.data);
+	
+	if(!TABLE) res.sendStatus(400);
+	if(!TABLE.upsert) res.sendStatus(400);
+	
+	noticeAdmin(req, data._id);
+	TABLE.remove([ '_id', data._id ]).on(function($res){
+		res.send($res.toString());
+	});
+});
+/*Server.post("/gwalli/kkutuhot", function(req, res){
 	if(!checkAdmin(req, res)) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
@@ -231,9 +350,9 @@ Server.post("/gwalli/kkutuhot", function(req, res){
 			res.send(err);
 		});
 	});
-});
+});*/
 Server.post("/gwalli/users", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'USERS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -244,7 +363,7 @@ Server.post("/gwalli/users", function(req, res){
 	res.sendStatus(200);
 });
 Server.post("/gwalli/shop", function(req, res){
-	if(!checkAdmin(req, res)) return;
+	if(!checkAdmin(req, res, 'DESIGNER')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var list = JSON.parse(req.body.list).list;
@@ -259,23 +378,38 @@ Server.post("/gwalli/shop", function(req, res){
 
 };
 function noticeAdmin(req, ...args){
-	JLog.info(`[ADMIN] ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
+	logger.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
+	fs.appendFileSync(`../IP-Log/WordInit.txt`,`\n[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+	})
+	JLog.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
 }
-function checkAdmin(req, res){
+function itemLog(item, req, ...args){
+	logger.info(`[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`);
+	fs.appendFileSync(`../IP-Log/WordInit.txt`,`\n[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`, 'utf8',(err, ip, path) => { //기록하고
+		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+	})
+	JLog.info(`[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`);
+}
+function checkAdmin(req, res, type){
 	if(global.isPublic){
 		if(req.session.profile){
-			if(GLOBAL.ADMIN.indexOf(req.session.profile.id) == -1){
+			if(GLOBAL.ADMINS['MANAGER'].indexOf(req.session.profile.id) != -1) return true;
+			
+			if(GLOBAL.ADMINS[type].indexOf(req.session.profile.id) == -1){
 				req.session.admin = false;
-				return res.send({ error: 400 }), false;
+				JLog.warn(`권한이 없는 회원이 관리자 페이지에 접근을 시도했습니다.　\n시용자(ID | IP): [${req.session.profile.id}] | [${req.connection.remoteAddress}]`);
+				return res.send(`<title>BF끄투 - 404</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>404 not found</h2><div>당신은 관리자가 아닙니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없을 수 있습니다.</li><li>접속한 페이지가 자신의 부서와 맞는지 확인해 보세요.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>이제 막 권한이 변경됐을 수 있으니, <a target='_blank' href='https://bfk.playts.net/'>다시 시도해 보세요.</a></li></ul>`), false;
 			}
 		}else{
 			req.session.admin = false;
-			return res.send({ error: 400 }), false;
+			JLog.warn(`권한이 없는 비회원이 관리자 페이지에 접근을 시도했습니다.　\n사용자(IP): [${req.connection.remoteAddress}]`);
+			return res.send(`<title>BF끄투 - 404</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>404 not found</h2><div>당신은 관리자가 아닙니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없을 수 있습니다.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>관리자 계정으로 로그인 후에 다시 시도해 보세요.</li></ul>`), false;
 		}
 	}
 	return true;
 }
-function parseKKuTuHot(){
+/*function parseKKuTuHot(){
 	var R = new Lizard.Tail();
 		
 	Lizard.all([
@@ -296,4 +430,4 @@ function parseKKuTuHot(){
 		return R;
 	}
 	return R;
-}
+}*/

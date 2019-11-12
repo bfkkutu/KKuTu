@@ -35,10 +35,10 @@ var MOREMI_PART;
 var AVAIL_EQUIP;
 var RULE;
 var OPTIONS;
-var MAX_LEVEL = 366;
+var MAX_LEVEL = 360;
 var TICK = 30;
 var EXP = [];
-var BAD = new RegExp([ "느으*[^가-힣]*금마?", "니[^가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친(년|놈)?", "(병|븅|빙)[^가-힣]*신", "보[^가-힣]*지", "(새|섀|쌔|썌)[^가-힣]*(기|끼)", "섹[^가-힣]*스", "(시|씨|쉬|쒸)이*입?[^가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^가-힣]*새", "씹", "(애|에)[^가-힣]*미", "자[^가-힣]*지", "존[^가-힣]*나", "좆|죶", "지랄", "창[^가-힣]*(녀|년|놈)", "fuck", "sex" ].join('|'), "g");
+var BAD = new RegExp([ "느으*[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*금마?", "니[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*(엄|앰|엠)", "(ㅄ|ㅅㅂ|ㅂㅅ)", "미친(년|놈)?", "(병|븅|빙)[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*신", "보[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*지", "(새|섀|쌔|썌)[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*(기|끼)", "섹[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*스", "(시|씨|쉬|쒸)이*입?[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*(발|빨|벌|뻘|팔|펄)", "십[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*새", "씹", "(애|에)[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*미", "자[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*지", "존[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*나", "좆|죶", "지랄", "창[^0-9a-zA-Zㄱ-ㅎㅏ-ㅣ가-힣]*(녀|년|놈)", "fuck", "sex" ].join('|'), "g");
 
 var ws, rws;
 var $stage;
@@ -81,6 +81,7 @@ $(document).ready(function(){
 	$data.shop = {};
 	$data._okg = 0;
 	$data._playTime = 0;
+	//$data._rankPoint = 0;
 	$data._kd = "";
 	$data._timers = [];
 	$data._obtain = [];
@@ -103,6 +104,7 @@ $(document).ready(function(){
 			createBanner: $("<div>").addClass("rooms-item rooms-create").append($("<div>").html(L['newRoom']))
 		},
 		chat: $("#Chat"),
+		onchating: $("#Chating"),
 		chatLog: $("#chat-log-board"),
 		talk: $("#Talk"),
 		chatBtn: $("#ChatBtn"),
@@ -319,6 +321,13 @@ $(document).ready(function(){
 			return false;
 		}
 	});
+	$stage.talk.on('keydown',function(e){
+		$("#Chating").html(L['CHATING']);
+	});
+	$stage.talk.on('keyup',function(e){
+		$("#Chating").html(L['NOCHATING']);
+	});
+	
 	$data.opts = $.cookie('kks');
 	if($data.opts){
 		applyOptions(JSON.parse($data.opts));
@@ -679,8 +688,10 @@ $(document).ready(function(){
 	});
 	$stage.dialog.settingOK.on('click', function(e){
 		applyOptions({
+			vb: $("#bgmvol").val($data.bgmuvol),
 			mb: $("#mute-bgm").is(":checked"),
 			me: $("#mute-effect").is(":checked"),
+			bf: $("#badwordfilter").val($data.bwf),
 			di: $("#deny-invite").is(":checked"),
 			dw: $("#deny-whisper").is(":checked"),
 			df: $("#deny-friend").is(":checked"),
@@ -2186,11 +2197,14 @@ function showDialog($d, noToggle){
 function applyOptions(opt){
 	$data.opts = opt;
 	
+	$data.bgmuvol = $data.opts.vb;
 	$data.muteBGM = $data.opts.mb;
 	$data.muteEff = $data.opts.me;
 	
+	$("#bgmvol").val($data.bgmuvol);
 	$("#mute-bgm").attr('checked', $data.muteBGM);
 	$("#mute-effect").attr('checked', $data.muteEff);
+	$("#badwordfilter").val($data.bwf);
 	$("#deny-invite").attr('checked', $data.opts.di);
 	$("#deny-whisper").attr('checked', $data.opts.dw);
 	$("#deny-friend").attr('checked', $data.opts.df);
@@ -2203,6 +2217,9 @@ function applyOptions(opt){
 		if($data.muteBGM){
 			$data.bgm.volume = 0;
 			$data.bgm.stop();
+		}else if($data.bgmuvol){
+			$data.bgm.volume = $data.bgmuvol;
+			$data.bgm = playBGM($data.bgm.key, true);
 		}else{
 			$data.bgm.volume = 1;
 			$data.bgm = playBGM($data.bgm.key, true);
@@ -2335,7 +2352,7 @@ function onMessage(data){
         case 'recaptcha':
             var $introText = $("#intro-text");
             $introText.empty();
-            $introText.html('게스트는 캡챠 인증이 필요합니다.' +
+            $introText.text('게스트는 캡챠 인증이 필요합니다.' +
                 '<br/>로그인을 하시면 캡챠 인증을 건너뛰실 수 있습니다.' +
                 '<br/><br/>');
             $introText.append($('<div class="g-recaptcha" id="recaptcha" style="display: table; margin: 0 auto;"></div>'));
@@ -2356,6 +2373,7 @@ function onMessage(data){
 			$data.friends = data.friends;
 			$data._friends = {};
 			$data._playTime = data.playTime;
+			/*$data._rankPoint = data.rankPoint;*/
 			$data._okg = data.okg;
 			$data._gaming = false;
 			$data.box = data.box;
@@ -3090,10 +3108,11 @@ function userListBar(o, forInvite){
 }
 function addonNickname($R, o){
 	if(o.equip['NIK']) $R.addClass("x-" + o.equip['NIK']);
-	if(o.equip['BDG'] == "b1_gm") $R.addClass("x-gm");
 	if(o.equip['BDG'] == "b5_streamer") $R.addClass("x-streamer");
 	if(o.equip['BDG'] == "b6_word") $R.addClass("x-word");
+	if(o.equip['BDG'] == "b6_develop") $R.addClass("x-develop");
 	if(o.equip['BDG'] == "b6_design") $R.addClass("x-design");
+	if(o.equip['BDG'] == "b6_usermanage") $R.addClass("x-uman");
 	if(o.equip['BDG'] == "b5_bj") $R.addClass("x-bj");
 	if(o.equip['BDG'] == "b9_bf") $R.addClass("x-bf");
 }
@@ -3125,6 +3144,8 @@ function updateRoomList(refresh){
 }
 function roomListBar(o){
 	var $R, $ch;
+	var u;
+	var isAdminRoom = "user";
 	var opts = getOptions(o.mode, o.opts);
 	
 	$R = $("<div>").attr('id', "room-"+o.id).addClass("rooms-item")
@@ -3142,7 +3163,15 @@ function roomListBar(o){
 		if(e.target == $ch.get(0)) return;
 		tryJoin($(e.currentTarget).attr('id').slice(5));
 	});
+	for(i in $data.room.players){
+		u = $data.users[$data.room.players[i]] || $data.room.players[i];
+	}
+	if(u.id=="bf"){
+		isAdminRoom = "admin";
+	}
 	if(o.gaming) $R.addClass("rooms-gaming");
+	if(isAdminRoom=="admin") $R.addClass("rooms-admin"+(o.gaming?"-gaming":""));
+	if(o.testing) $R.addClass("rooms-testing"+(o.gaming?"-gaming":""));
 	if(o.password) $R.addClass("rooms-locked");
 	
 	return $R;
@@ -3673,6 +3702,19 @@ function requestRoomInfo(id){
 	});
 	showDialog($stage.dialog.roomInfo);
 	$stage.dialog.roomInfo.show();
+}
+function requestAdminRoom(id){
+	var o = $data.rooms[id];
+	var isAdminRoom = "n";
+	
+	//if(o.players.indexOf("베프") != -1){ //Admin이 방에 있으면
+	o.players.forEach(function(p, i){
+		p = $data.users[p] || NULL_USER;
+		if(p.equip.b9_bf == true){
+			isAdminRoom = "y";
+		}
+	});
+	return isAdminRoom;
 }
 function requestProfile(id){
 	var o = $data.users[id] || $data.robots[id];
@@ -4625,10 +4667,26 @@ function getLevel(score){
 	for(i=0; i<l; i++) if(score < EXP[i]) break;
 	return i+1;
 }
-function getLevelImage(score){
-	var lv = getLevel(score) - 1;
+function getLevelImage(score, profile, sid){
+	var my = this;
+	
+	if(score<="-1"){
+		var lv = "admin";
+	}else{
+		var lv = getLevel(score) - 1;
+	}
+	
 	var lX = (lv % 25) * -100;
 	var lY = Math.floor(lv * 0.04) * -100;
+	
+	if(lv=="admin"){
+		return $("<div>").css({
+			'float': "left",
+			'background-image': "url('/img/kkutu/lv/lvGM.png')",
+			'background-position': lX + "% " + lY + "%",
+			'background-size': "100%"
+		});
+	}
 	
 	// return getImage("/img/kkutu/lv/lv" + zeroPadding(lv+1, 4) + ".png");
 	return $("<div>").css({
@@ -4729,32 +4787,33 @@ function stopBGM(){
 function playSound(key, loop){
 	var src, sound;
 	var mute = (loop && $data.muteBGM) || (!loop && $data.muteEff);
-	
+	var bvol = loop ? $data.bgmuvol;
+	if (bvol == undefined) bvol = 1;
+
 	sound = $sound[key] || $sound.missing;
 	if(window.hasOwnProperty("AudioBuffer") && sound instanceof AudioBuffer){
+		var gain = typeof audioContext.createGain == 'function' ? audioContext.createGain() : null;
+
 		src = audioContext.createBufferSource();
 		src.startedAt = audioContext.currentTime;
 		src.loop = loop;
-		if(mute){
-			src.buffer = audioContext.createBuffer(2, sound.length, audioContext.sampleRate);
-		}else{
-			src.buffer = sound;
+		src.buffer = sound;
+		if (gain) {
+			gain.gain.value = (bvol*bvol*bvol)*2-1;
+			gain.connect(audioContext.destination);
+			src.connect(gain);
 		}
 		src.connect(audioContext.destination);
 	}else{
 		if(sound.readyState) sound.audio.currentTime = 0;
 		sound.audio.loop = loop || false;
-		sound.audio.volume = mute ? 0 : 1;
+		sound.audio.bvol = bvol;
 		src = sound;
 	}
 	if($_sound[key]) $_sound[key].stop();
 	$_sound[key] = src;
 	src.key = key;
 	src.start();
-	/*if(sound.readyState) sound.currentTime = 0;
-	sound.loop = loop || false;
-	sound.volume = ((loop && $data.muteBGM) || (!loop && $data.muteEff)) ? 0 : 1;
-	sound.play();*/
 	
 	return src;
 }
@@ -4786,7 +4845,15 @@ function forkChat(){
 	$stage.chat.scrollTop(999999999);
 }
 function badWords(text){
-	return text.replace(BAD, "♥♥");
+	if($data.bf1){
+		return text.replace(BAD, "**");
+	}else if($data.bf2){
+		return text.replace(BAD, "♥♥");
+	}else if($data.bf3){
+		return text.replace(BAD, "★★");
+	}else{
+		return text;
+	}
 }
 function chatBalloon(text, id, flag){
 	$("#cb-" + id).remove();
@@ -4827,11 +4894,16 @@ function chat(profile, msg, from, timestamp){
 		$bar = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0);
 		chatBalloon(msg, profile.id, $bar);
 	}
-	$stage.chat.append($item = $("<div>").addClass("chat-item")
+	/*$stage.chat.append($item = $("<div>").addClass("chat-item")
 		.append($bar = $("<div>").addClass("chat-head ellipse").text(profile.title || profile.name))
 		.append($msg = $("<div>").addClass("chat-body").text(msg))
 		.append($("<div>").addClass("chat-stamp").text(time.toLocaleTimeString()))
-	);
+	);*/
+	$stage.chat.append($item = $("<div>").addClass("chat-item")
+ 		.append($bar = $("<div>").addClass("chat-head ellipse").text(profile.title || profile.name))
+ 		.append($msg = equip["BDG"]==="b6_develop"||equip["BDG"]==="b9_bf"?$("<div>").addClass("chat-body").html(msg):$("<div>").addClass("chat-body").text(msg))
+ 		.append($("<div>").addClass("chat-stamp").text(time.toLocaleTimeString()))
+ 	);
 	if(timestamp) $bar.prepend($("<i>").addClass("fa fa-video-camera"));
 	$bar.on('click', function(e){
 		requestProfile(profile.id);
@@ -4863,7 +4935,7 @@ function notice(msg, head){
 	stackChat();
 	$("#Chat,#chat-log-board").append($("<div>").addClass("chat-item chat-notice")
 		.append($("<div>").addClass("chat-head").text(head || L['notice']))
-		.append($("<div>").addClass("chat-body").html(msg))
+		.append($("<div>").addClass("chat-body").text(msg))
 		.append($("<div>").addClass("chat-stamp").text(time.toLocaleTimeString()))
 	);
 	$stage.chat.scrollTop(999999999);

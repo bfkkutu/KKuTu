@@ -24,12 +24,15 @@ doctype html
 html
 	head
 		title= L('title')
+		script(src="/js/in_$request.min.js")
 		+PageHead()
 	body
 		span#locale= JSON.stringify(LANG)
 		//볕뉘 수정 구문삭제(30)
 		div.login-with= locals.text ? L(locals.text) : L('loginWith')
 		//볕뉘 수정
+		a(href="/")
+			button(style="background: url('/img/kkutu/short_logo.png'); width: 165px; height: 75px;")
 		each val in loginList
 			a(href="/login/" + val.vendor)
 				button(style="color: " + val.fontColor + "; background-color: " + val.color + ";")= L(val.displayName)

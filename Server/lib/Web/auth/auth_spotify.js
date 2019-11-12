@@ -6,6 +6,7 @@ module.exports.config = {
     fontColor: '#000000',
     vendor: 'spotify',
     displayName: 'withSpotify'
+	//authImage: '/img/auth/spotify.png'
 }
 
 module.exports.strategyConfig = {
@@ -15,7 +16,7 @@ module.exports.strategyConfig = {
     passReqToCallback: true
 }
 
-module.exports.strategy = (process, MainDB, Ajae) => {
+module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
     return (req, accessToken, refreshToken, profile, done) => {
         const $p = {};
 		
@@ -24,9 +25,9 @@ module.exports.strategy = (process, MainDB, Ajae) => {
         $p.authType = "spotify";
         $p.id = $p.authType+"-"+profile.id;
         $p.name = profile.displayName;
-        $p.title = profile.displayName;
+		$p.title = profile.displayName;
         $p.image = profile._json.profile_image;
 
-        process(req, accessToken, MainDB, $p, done);
+        strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }

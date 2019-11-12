@@ -18,6 +18,7 @@
 
 const PKG = require("./package.json");
 const SETTINGS = require("../settings.json");
+const ServerChecker = require("./ServerChecker.js")
 const {
 	app: App,
 	BrowserWindow,
@@ -29,6 +30,7 @@ const Pug = require('electron-pug')({ pretty: true }, {
 	serverName: SETTINGS['server-name'] || process.env['KKT_SV_NAME']
 });
 const Runner = require("./runner.js");
+
 
 let mainWindow;
 
@@ -49,7 +51,7 @@ Runner.send = (...argv) => {
 
 function main(){
 	Menu.setApplicationMenu(Menu.buildFromTemplate(Runner.MAIN_MENU));
-
+	
 	mainWindow = new BrowserWindow({
 		title: `${PKG['name']} ${PKG['version']} - Now loading`,
 		width: 800,

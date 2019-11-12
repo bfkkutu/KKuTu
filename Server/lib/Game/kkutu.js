@@ -21,6 +21,7 @@ var Cluster = require("cluster");
 var Const = require('../const');
 var Lizard = require('../sub/lizard');
 var JLog = require('../sub/jjlog');
+var File = require('fs');
 // 망할 셧다운제 var Ajae = require("../sub/ajae");
 var DB;
 var SHOP;
@@ -36,6 +37,11 @@ const NUM_SLAVES = 4;
 const GUEST_IMAGE = "/img/kkutu/guest.png";
 const MAX_OKG = 18;
 const PER_OKG = 600000;
+
+File.watchFile("./lib/const.js", () => {
+	Const = require('../const');
+	JLog.info("const.js is Auto-Updated at {lib/Game/kkutu.js}");
+})
 
 exports.NIGHT = false;
 exports.init = function(_DB, _DIC, _ROOM, _GUEST_PERMISSION, _CHAN){
@@ -172,6 +178,7 @@ exports.Data = function(data){
 	
 	this.score = data.score || 0;
 	this.playTime = data.playTime || 0;
+	this.rankPoint = data.rankPoint || 0;
 	this.connectDate = data.connectDate || 0;
 	this.record = {};
 	for(i in Const.GAME_TYPE){
@@ -211,36 +218,54 @@ exports.Client = function(socket, profile, sid){
 	var my = this;
 	var gp, okg;
 	
+	my.send = function(type, data){
+		var i, r = data || {};
+		
+		r.type = type;
+		
+		if(socket.readyState == 1) socket.send(JSON.stringify(r));
+	};
+	my.sendError = function(code, msg){
+		my.send('error', { code: code, message: msg });
+	};
+	
 	if(profile){
-		my.id = profile.id;
-		my.profile = profile;
-		/* 망할 셧다운제
-		if(Cluster.isMaster){
-			my.isAjae = Ajae.checkAjae(profile.birth, profile._age);
-		}else{
-			my.isAjae = true;
-		}
-		my._birth = profile.birth;
-		my._age = profile._age;
-		delete my.profile.birth;
-		delete my.profile._age;
-		*/
-		delete my.profile.token;
-		delete my.profile.sid;
+		if(sid.indexOf("undefined")==-1){ //식별번호가 정상일 경우에만 처리한다. (테러 방지)
+			my.id = profile.id;
+			my.profile = profile;
+			/* 망할 셧다운제
+			if(Cluster.isMaster){
+				my.isAjae = Ajae.checkAjae(profile.birth, profile._age);
+			}else{
+				my.isAjae = true;
+			}
+			my._birth = profile.birth;
+			my._age = profile._age;
+			delete my.profile.birth;
+			delete my.profile._age;
+			*/
+			delete my.profile.token;
+			delete my.profile.sid;
 
-		if(my.profile.title) my.profile.name = "anonymous";
-	}else{
+			if(my.profile.title) my.profile.name = "anonymous";
+		}
+	}else{ // 로그인 안된 상태로 접속시
+		my.sendError(402); // 에러를 보내고
+		socket.close(); // 소켓 연결을 끊는다.
+	}/*else{
 		gp = guestProfiles[Math.floor(Math.random() * guestProfiles.length)];
 		
-		my.id = "guest__" + sid;
-		my.guest = true;
-		my.isAjae = false;
-		my.profile = {
-			id: sid,
-			title: getGuestName(sid),
-			image: GUEST_IMAGE
-		};
-	}
+		if(sid.indexOf("MAINBOT")==-1){ // 망할 테러
+			my.id = "guest__" + sid;
+			my.guest = true;
+			my.isAjae = false;
+			my.profile = {
+				id: sid,
+				title: getGuestName(sid),
+				image: GUEST_IMAGE
+			};
+		}
+	}*/
 	my.socket = socket;
 	my.place = 0;
 	my.team = 0;
@@ -453,6 +478,7 @@ exports.Client = function(socket, profile, sid){
 			my.box = $user.box || {};
 			my.data = new exports.Data($user.kkutu);
 			my.money = Number($user.money);
+			//my.data.rankPoint = Number($user.rankPoint);
 			my.friends = $user.friends || {};
 			if(first) my.flush();
 			else{
@@ -475,6 +501,7 @@ exports.Client = function(socket, profile, sid){
 		}
 		DB.users.upsert([ '_id', my.id ]).set(
 			!isNaN(my.money) ? [ 'money', my.money ] : undefined,
+			//!isNaN(my.data.rankPoint) ? [ 'rankPoint', my.data.rankPoint ] : undefined,
 			(my.data && !isNaN(my.data.score)) ? [ 'kkutu', my.data ] : undefined,
 			box ? [ 'box', my.box ] : undefined,
 			equip ? [ 'equip', my.equip ] : undefined,
@@ -482,7 +509,7 @@ exports.Client = function(socket, profile, sid){
 		).on(function(__res){
 			DB.redis.getGlobal(my.id).then(function(_res){
 				DB.redis.putGlobal(my.id, my.data.score).then(function(res){
-					JLog.log(`FLUSHED [${my.id}] PTS=${my.data.score} MNY=${my.money}`);
+					JLog.log(`FLUSHED [${my.id}] PTS=${my.data.score} MNY=${my.money} RP=${my.data.rankPoint}`);
 					R.go({ id: my.id, prev: _res });
 				});
 			});
@@ -1138,6 +1165,19 @@ exports.Room = function(room, channel){
 			o.game.item = [/*0, 0, 0, 0, 0, 0*/];
 			o.game.wpc = [];
 		}
+		my.game.blockword = null;
+		for(i in my.game.seq){
+			o = DIC[my.game.seq[i]] || my.game.seq[i];
+			if(!o) continue;
+			if(!o.game) continue;
+			
+			o.playAt = now;
+			o.ready = false;
+			o.game.score = 0;
+			o.game.bonus = 0;
+			o.game.item = [/*0, 0, 0, 0, 0, 0*/];
+			o.game.wpc = [];
+		}
 		my.game.hum = hum;
 		my.getTitle().then(function(title){
 			my.game.title = title;
@@ -1210,16 +1250,31 @@ exports.Room = function(room, channel){
 				res[i].rank = Number(i);
 			}
 			pv = res[i].score;
-			rw = getRewards(my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts);
+			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts);
 			rw.playTime = now - o.playAt;
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
-				if(o.game.wpc) o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+				if(o.game.wpc){
+					//o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					var list = [
+						"할", "로", "윈", "좀", "비", "사", "탕", "유", "령"
+						, "잭", "오", "랜", "턴", "호", "박", "프", "랑", "켄"
+						, "파", "티"
+					];
+					var luck = getRandomInt(130); //할로윈 이벤트
+					if(luck >= 21){
+						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					}else{
+						o.obtain("$WPC" + list[luck], 1); //할로윈 이벤트
+					}
+					//o.obtain("", 1); // 이벤트 용
+				}
 				o.onOKG(rw.playTime);
 			}
 			res[i].reward = rw;
 			o.data.score += rw.score || 0;
 			o.money += rw.money || 0;
+			o.data.rankPoint += rw.rankPoint || 0;
 			o.data.record[Const.GAME_TYPE[my.mode]][2] += rw.score || 0;
 			o.data.record[Const.GAME_TYPE[my.mode]][3] += rw.playTime;
 			if(!my.practice && rw.together){
@@ -1383,6 +1438,9 @@ function getFreeChannel(){
 		return channel || 0;
 	}
 }
+function getRandomInt(i){
+	return Math.floor(Math.random() * i) + 1;
+}
 function getGuestName(sid){
 	var i, len = sid.length, res = 0;
 	
@@ -1399,12 +1457,14 @@ function shuffle(arr){
 	
 	return r;
 }
-function getRewards(mode, score, bonus, rank, all, ss, opts){
-	if (opts.unknownword) return { score: 1, money: 1 } // 언노운워드는 보상이 없다. 그래도 플레이는 한 것이니 1이라도 주자.
-
-	var rw = { score: 0, money: 0 };
-	var sr = score / ss;
+function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
+	if (opts.unknownword) return { score: 1, money: 1, rankPoint: 0 } // 언노운워드는 보상이 없다. 그래도 플레이는 한 것이니 1이라도 주자.
 	
+	//score 점수, rw.score 획득 점수, rankPoint 랭크 포인트, rw.rankPoint 획득 랭크 포인트
+	
+	var rw = { score: 0, money: 0, rankPoint: 0 };
+	var sr = score / ss;
+	/*
 	if (opts.manner) rw.score = rw.score * 0.9; // 매너
 	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
 	if (opts.mission) { // 미션
@@ -1424,7 +1484,33 @@ function getRewards(mode, score, bonus, rank, all, ss, opts){
 	if (opts.ignoreinitial) rw.score = rw.score * 1.6; // 두음 법칙 파괴
 	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
 	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
+	*/
+	if (opts.manner) rw.score = rw.score * 1.3; // 매너
+	if (opts.injeong) rw.score = rw.score * 1.0; // 어인정
+	if (opts.mission) { // 미션
+		if (!opts.randommission){
+			rw.score = rw.score * 1.1;
+		} else {
+			rw.score = rw.score * 0.9;
+		}
+		if (opts.moremission) {
+			rw.score = rw.score * 0.5;
+		} else {
+			rw.score = rw.score * 1.1;
+		}
+	};
+	if (opts.proverb) rw.score = rw.score * 2.1; // 속담
+	if (opts.loanword) rw.score = rw.score * 1.9; // 우리말
+	if (opts.strict) rw.score = rw.score * 2.1; // 깐깐
+	if (opts.sami) rw.score = rw.score * 2.5; // 3232
+	if (opts.no2) rw.score = rw.score * 2.5; // 2글자 금지
 
+	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
+	if (opts.randomturn) rw.score = rw.score * 2.1; // 랜덤 턴
+	if (opts.noreturn) rw.score = rw.score * 1.3; // 도돌이 금지
+	if (opts.ignoreinitial) rw.score = rw.score * 2.7; // 두음 법칙 파괴
+	if (opts.blockword) rw.score = rw.score * 1.1; // 단어 금지
+	if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15
 	switch(Const.GAME_TYPE[mode]){
@@ -1470,11 +1556,29 @@ function getRewards(mode, score, bonus, rank, all, ss, opts){
 		case 'ESS':
 			rw.score += score * 0.22;
 			break;
-		case 'KDG':
-			rw.score += score * 0.57;
+		case 'KDG': //한국어 그림 퀴즈
+			rw.score += score * 0.1;
 			break;
-		case 'EDG':
-			rw.score += score * 0.57;
+		case 'EDG': //영어 그림 퀴즈
+			rw.score += score * 0.1;
+			break;
+		case 'JSH':
+			rw.score += score * 0.55;
+			break;
+		/*case 'KTS':
+			rw.score += score * 0.55;
+			break;
+		case 'ETS':
+			rw.score += score * 0.55;
+			break;*/
+		case 'KTS':
+			rw.score += score * 0.8;
+			break;
+		case 'KUT': //한국어 끄투
+			rw.score += score * 1.4;
+			break;
+		case 'KLH': //한국어 길이제한 끝말잇기
+			rw.score += score * 1.0;
 			break;
 		default:
 			break;
@@ -1483,18 +1587,38 @@ function getRewards(mode, score, bonus, rank, all, ss, opts){
 		* (0.77 + 0.05 * (all - rank) * (all - rank)) // 순위
 		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
 	;
+	
+	// TODO: 랭크 포인트 획득 알고리즘 개선하기
+	rw.rankPoint = rw.rankPoint
+		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
+	;
+	
 	rw.money = 1 + rw.score * 0.01;
 	if(all < 2){
 		rw.score = rw.score * 0.05;
 		rw.money = rw.money * 0.05;
+		rw.rankPoint = rw.rankPoint * 0.05;
 	}else{
 		rw.together = true;
 	}
 	rw.score += bonus;
 	rw.score = rw.score || 0;
 	rw.money = rw.money || 0;
+	if (opts.rankgame){ //랭크게임 이라면
+		rw.rankPoint = rw.score * 0.05 //점수에 0.05를 곱하고
+		rw.rankPoint = Math.round(rw.rankPoint); //아이템 효과 없이 바로 반영되므로 여기서 반올림한다.
+	}else{ //아니라면
+		rw.rankPoint = 0; //없어도 되지만 확실히 0으로 하자.
+	}
+	
+	if (score <= "-1") rw.score = 0; //관리자 레벨 유지
+	if (rankScore >= 5000){
+		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
+	}
 	
 	// applyEquipOptions에서 반올림한다.
+	
+	//rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
 
 	return rw;
 }

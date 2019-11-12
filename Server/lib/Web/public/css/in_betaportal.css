@@ -1,0 +1,108 @@
+/**
+ * Rule the words! KKuTu Online
+ * Copyright (C) 2017 JJoriping(op@jjo.kr)
+ * 
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ */
+
+
+body {
+	margin: 0;
+}
+#holder{
+	width: 200px;
+	text-align: center;
+	text-shadow: 0px 0px 4px #333;
+	font-weight: bold;
+}
+#logo{
+	margin-top: -40px;
+}
+#kkutu-bulletin{
+	border: 0px;
+	margin-bottom: 5px;
+}
+
+#menu-bar a{
+	display: block;
+	width: 300px;
+	padding: 20px 0px 20px 0px;
+	border-radius: 30px;
+	margin-top: 10px;
+	font-size: 18px;
+	text-align: center;
+	margin-left: -160px;
+}
+
+#game-start{
+	float: left;
+	width: 315px;
+	height: 70px;
+	font-size: 20px;
+	font-weight: bold;
+	border: none;
+	background: #6699CC;
+	border: solid white;
+	border-bottom-left-radius: inherit;
+	border-bottom-right-radius: inherit;
+	margin-left: 33%;
+	margin-right: 50%;
+	border-radius: 50px;
+
+}
+	#game-start:hover{ font-size: 24px; background-color: rgba(0, 0, 0, 0.5); }
+.server-list-box{
+	float: right;
+	width: 320px;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+.server-list-title{
+	padding: 2px 0px;
+	width: 100%;
+	background-color: rgba(0, 0, 0, 0.4);
+}
+#server-refresh{
+	margin: 0px 5px;
+	cursor: pointer;
+}
+.server{
+	float: left;
+	margin: 2px 0px;
+	width: 320px;
+	height: 16px;
+	font-size: 13px;
+	cursor: pointer;
+}
+	.server>div{ float: left; }
+	.server-status{ border-radius: 6px; margin: 2px; width: 12px; height: 12px; }
+		.ss-o{ background-color: #3E3; }
+		.ss-p{ background-color: #EE3; }
+		.ss-q{ background-color: #F55; }
+		.ss-x{ background-color: #777; }
+	.server-name{ width: 60px; }
+	.server-people{ width: 190px; height: 100%; }
+		.server-people>.graph-bar{ background-image: url(/img/blue_gauge.png); }
+		.server-people>label{ position: relative; display: block; top: -14px; width: 100%; text-align: center; font-size: 11px; }
+	.server-enter{ width: 50px; text-align: center; }
+	.server:hover{ background-color: rgba(255, 255, 255, 0.1); }
+
+#bb{
+	background-image: url('/img/beta-background.png');
+	background-size: cover;
+	background-repeat: no-repeat;
+	padding: none;
+	width: 98vw;
+	height: 100vh;
+	margin: 0;
+}

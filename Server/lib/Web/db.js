@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const LANG = [ "ko", "en" ];
+const LANG = [ "ko", "en", "ja" ];
 
 var PgPool	 = require("pg").Pool;
 var GLOBAL	 = require("../sub/global.json");
@@ -24,6 +24,7 @@ var JLog	 = require("../sub/jjlog");
 var Collection = require("../sub/collection");
 var Pub = require("../sub/checkpub");
 var Lizard = require("../sub/lizard");
+var File	 = require("fs");
 
 const FAKE_REDIS_FUNC = () => {
 	var R = new Lizard.Tail();
@@ -37,6 +38,11 @@ const FAKE_REDIS = {
 	getPage: FAKE_REDIS_FUNC,
 	getSurround: FAKE_REDIS_FUNC
 };
+
+File.watchFile("./lib/sub/global.json", () => {
+	GLOBAL = require("../sub/global.json");
+	JLog.info("global.json is Auto-Updated at {lib/Web/db.js}");
+})
 
 Pub.ready = function(isPub){
 	var Redis	 = require("redis").createClient();

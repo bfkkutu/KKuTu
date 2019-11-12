@@ -18,7 +18,7 @@
 
 var GLOBAL = require("./sub/global.json");
 
-exports.KKUTU_MAX = 2000;
+exports.KKUTU_MAX = 100;
 exports.MAIN_PORTS = GLOBAL.MAIN_PORTS;
 exports.TEST_PORT = 4040;
 exports.SPAM_CLEAR_DELAY = 1600;
@@ -26,7 +26,7 @@ exports.SPAM_ADD_DELAY = 750;
 exports.SPAM_LIMIT = 7;
 exports.BLOCKED_LENGTH = 10000;
 exports.KICK_BY_SPAM = 9;
-exports.MAX_OBSERVER = 8;
+exports.MAX_OBSERVER = 16; //관전자수
 exports.TESTER = GLOBAL.ADMIN.concat([
 	"Input tester id here"
 ]);
@@ -42,23 +42,27 @@ exports.OPTIONS = {
 	'k32': { name: "Sami" },
 	'no2': { name: "No2" },
 	'ulm': { name: "Unlimited" },
-	'rms': { name: "RandomMission" },
+	'sht': { name: "Short" },
+	//'rms': { name: "RandomMission" },
 	'nrt': { name: "NoReturn" },
 	'rtu': { name: "RandomTurn" },
 	'uwd': { name: "UnknownWord" },
 	'rtn': { name: "Returns" },
-	'abcm': { name: "AbcMission" },
+	'rms': { name: "AbcMission" },
 	'igin': { name: "IgnoreInitial" },
 	'blw': { name: "BlockWord" },
-	'eve': { name: "EventMode" }
+	'eve': { name: "EventMode" },
+	'mms': { name: "MoreMission" },
+	'rank': { name: "RankGame" }
 };
-exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
-exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back" ];
+exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front', 'mskin' ];
+exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "mskin" ];
 exports.AVAIL_EQUIP = [
 	"NIK", "BDG1", "BDG2", "BDG3", "BDG4",
-	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback"
+	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "Mmskin"
 ];
 exports.GROUPS = {
+	
 	'spec': [ "PIX", "PIY", "PIZ", "CNS" ],
 	'skin': [ "NIK" ],
 	'badge': [ "BDG1", "BDG2", "BDG3", "BDG4" ],
@@ -67,7 +71,8 @@ exports.GROUPS = {
 	'mouth': [ "Mmouth" ],
 	'clothes': [ "Mclothes" ],
 	'hs': [ "Mhand", "Mshoes" ],
-	'back': [ "Mback", "Mfront" ]
+	'back': [ "Mback", "Mfront" ],
+	'mskin': [ "Mmskin" ]
 };
 exports.RULE = {
 /*
@@ -92,16 +97,24 @@ exports.RULE = {
 	'ESH': { lang: "en", // 영어 끝말잇기
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "nrt", "rtu",
-		"uwd", "upl" ],
+		"uwd", "upl", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
 	},
+	/*'ETS': { lang: "en", // 영어 주제 끝말잇기
+		rule: "Themeword",
+		opts: [ "ext", "ijp" ],
+		time: 1,
+		ai: false,
+		big: false,
+		ewq: true
+	},*/
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"k32", "nrt", "rtu", "upl" ],
+		"k32", "nrt", "rtu", "upl", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -110,7 +123,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "abcm", "igin" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -160,7 +173,7 @@ exports.RULE = {
 	},
 	'HUN': { lang: "ko", // 훈민정음
 		rule: "Hunmin",
-		opts: [ "ext", "mis", "rms", "loa", "str",
+		opts: [ "ext", "mis", "loa", "str",
 		"rtu", "upl" ],
 		time: 1,
 		ai: true,
@@ -169,7 +182,7 @@ exports.RULE = {
 	},
 	'KDA': { lang: "ko", // 한국어 단어 대결
 		rule: "Daneo",
-		opts: [ "ijp", "mis", "rms", "rtu", "upl" ],
+		opts: [ "ijp", "mis", "rms", "rtu", "upl", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -177,7 +190,7 @@ exports.RULE = {
 	},
 	'EDA': { lang: "en", // 영어 단어 대결
 		rule: "Daneo",
-		opts: [ "ijp", "mis", "rms", "rtu", "upl" ],
+		opts: [ "ijp", "mis", "rms", "rtu", "upl", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -199,20 +212,62 @@ exports.RULE = {
 		big: true,
 		ewq: false
 	},
-	'KDG': { lang: "ko",
+	'KDG': { lang: "ko", // 한국어 그림퀴즈
 		rule: "Drawing",
-		opts: [ "ijp", "ulm", "new" ],
+		opts: [ "ijp", "sht", "ulm", "new" ],
 		time: 1,
 		ai: false,
 		big: true,
 		ewq: true
 	},
-	'EDG': { lang: "en",
+	'EDG': { lang: "en", // 영어 그림퀴즈
 		rule: "Drawing",
-		opts: [ "ijp", "ulm", "new" ],
+		opts: [ "ijp", "sht", "ulm", "new" ],
 		time: 1,
 		ai: false,
 		big: true,
+		ewq: true
+	},
+	'JSH': { lang: "ja", // 일본어 끝말잇기(미개발)
+		rule: "Classic",
+		opts: [ "ext" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
+	},
+	/*'EAP': { lang: "en", // 영어 앞말잇기 임시 비활성화
+		rule: "Classic",
+		opts: [ "ext", "mis", "rms", "nrt", "rtu",
+		"uwd", "upl" ],
+		time: 1,
+		ai: true,
+		big: false,
+		_back: true,
+		ewq: true
+	}*/
+	'KTS': { lang: "ko", // 한국어 주제 끝말잇기
+		rule: "DaneoClassic",
+		opts: [ "man", "ext", "ijp", "rank" ],
+		time: 1,
+		ai: false,
+		big: false,
+		ewq: true
+	},
+	'KUT': { lang: "ko", // 한국어 끄투
+		rule: "Classic",
+		opts: [ "man", "ext" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
+	},
+	'KLH': { lang: "ko", // 한국어 길이 제한 끝말잇기
+		rule: "Classic",
+		opts: [ "man", "ext" ],
+		time: 1,
+		ai: false,
+		big: false,
 		ewq: true
 	}
 };
@@ -225,11 +280,13 @@ exports.getPenalty = function(chain, score){
 exports.GAME_TYPE = Object.keys(exports.RULE);
 exports.EXAMPLE_TITLE = {
 	'ko': "가나다라마바사아자차",
-	'en': "abcdefghij"
+	'en': "abcdefghij",
+	'ja': "あいうえお"
 };
 exports.INIT_SOUNDS = [ "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "○" ];
-exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
-exports.MISSION_ko_abc = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하" ];
+exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하" ];
+exports.MISSION_ko_more = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
+exports.MISSION_ja = [ "あ", "い", "う", "え", "お" ];
 exports.MISSION_en = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ];
 exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 
@@ -242,10 +299,14 @@ exports.KO_INJEONG = [
 	"YRY", "KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUDO",
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
-	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "NCN", "BUS",
-	"DONG", "MFA", "ZHS", "KTR"
+	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "BUS",
+	"DONG", "MFA", "ZHS", "KTR", "BBF", "ILN", "TRR",
+	"THP"
 ];
 exports.EN_INJEONG = [
+	"LOL", "LVL", "ENANI"
+];
+exports.JA_INJEONG = [
 	"LOL"
 ];
 exports.KO_THEME = [
@@ -268,7 +329,8 @@ exports.EN_IJP = exports.EN_INJEONG.concat(exports.EN_THEME).filter(function(ite
 exports.REGION = {
 	'en': "en",
 	'ko': "kr",
-	'zh': "cn"
+	'zh': "cn",
+	'ja': "jp"
 };
 exports.KOR_STRICT = /(^|,)(1|INJEONG)($|,)/;
 exports.KOR_GROUP = new RegExp("(,|^)(" + [

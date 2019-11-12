@@ -20,6 +20,16 @@ var Web		 = require("request");
 var MainDB	 = require("../db");
 var JLog	 = require("../../sub/jjlog");
 var Const	 = require("../../const");
+var File	 = require("fs");
+
+File.watchFile("./lib/Web/db", () => {
+	MainDB = require("../db");
+	JLog.info("db.js is Auto-Updated at {lib/Web/routes/major.js}");
+})
+File.watchFile("./lib/const.js", () => {
+	Const	 = require("../../const");
+	JLog.info("const.js is Auto-Updated at {lib/Web/routes/major.js}");
+})
 
 function obtain($user, key, value, term, addValue){
 	var now = (new Date()).getTime();

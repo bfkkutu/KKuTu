@@ -25,8 +25,14 @@
 	// 끄투 DB에 단어 추가하기
 		$("#db-ok").on('click', function(e){
 			var forView = $("#db-theme").val().charAt() == "~";
+			var forView2 = $("#db-theme").val().charAt() == "-";
 			
 			if(forView){
+				$("#db-list").val("");
+				$.get("/gwalli/kkututheme?theme=" + $("#db-theme").val().slice(1) + "&lang=" + $("#db-lang").val(), function(res){
+					$("#db-list").val(res.list.join('\n'));
+				});
+			}else if(forView2){
 				$("#db-list").val("");
 				$.get("/gwalli/kkututheme?theme=" + $("#db-theme").val().slice(1) + "&lang=" + $("#db-lang").val(), function(res){
 					$("#db-list").val(res.list.join('\n'));

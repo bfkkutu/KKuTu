@@ -25,7 +25,10 @@ const GLOBAL	 = require("../../sub/global.json");
 const config = require('../../sub/auth.json');
 const path = require('path')
 
-function process(req, accessToken, MainDB, $p, done) {
+//const HttpsProxyAgent = require('https-proxy-agent');
+//const agent = new HttpsProxyAgent(process.env.HTTP_PROXY || "http://172.30.0.12:999");
+
+function strategyProcess(req, accessToken, MainDB, $p, done) {
     $p.token = accessToken;
     $p.sid = req.session.id;
 
@@ -40,9 +43,9 @@ function process(req, accessToken, MainDB, $p, done) {
     MainDB.users.findOne([ '_id', $p.id ]).on(($body) => {
         req.session.profile = $p;
         MainDB.users.update([ '_id', $p.id ]).set([ 'lastLogin', now ]).on();
+		done(null, $p);
     });
 
-    done(null, $p);
 }
 
 exports.run = (Server, page) => {
@@ -65,7 +68,9 @@ exports.run = (Server, page) => {
 				successRedirect: '/',
 				failureRedirect: '/loginfail'
 			}))
-			passport.use(new auth.config.strategy(auth.strategyConfig, auth.strategy(process, MainDB /*, Ajae */)));
+			const aStrategy = new auth.config.strategy(auth.strategyConfig, auth.strategy(strategyProcess, MainDB /*, Ajae */))
+			//aStrategy._oauth2.setAgent(agent);
+			passport.use(aStrategy);
 			strategyList[auth.config.vendor] = {
 				vendor: auth.config.vendor,
 				displayName: auth.config.displayName,

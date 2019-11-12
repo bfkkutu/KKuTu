@@ -46,10 +46,19 @@ exports.roundReady = function(){
 	clearTimeout(my.game.turnTimer);
 	my.game.round++;
 	my.game.roundTime = my.time * 1000;
+	my.opts.randomMission = my.opts.abcmission;
 	if(my.game.round <= my.round){
 		my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
 		my.game.chain = [];
-		if(my.opts.mission && !my.opts.randommission) my.game.mission = getMission(my.rule.lang);
+		if(my.opts.mission) {
+			if (my.opts.moremission) { // 더 많은 미션이 있으면
+				my.game.mission = getMission(my.rule.lang, 'more');
+			} else if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+				my.game.mission = getMission(my.rule.lang, 'random');
+			} else {
+				my.game.mission = getMission(my.rule.lang, 'normal');
+			}
+		}
 		my.byMaster('roundReady', {
 			round: my.game.round,
 			theme: my.game.theme,
@@ -64,12 +73,21 @@ exports.turnStart = function(force){
 	var my = this;
 	var speed;
 	var si;
+	
 	if(!my.game.chain) return;
+	my.opts.randomMission = my.opts.abcmission;
 	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 600000 - my.game.chain.length * 1500));
 	speed = my.getTurnSpeed(my.game.roundTime);
 	clearTimeout(my.game.turnTimer);
 	clearTimeout(my.game.robotTimer);
-	if(my.opts.randommission) my.game.mission = getMission(my.rule.lang);
+	if(my.opts.mission) {
+		if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+			my.game.mission = getMission(my.rule.lang, 'random');
+		}
+		if (my.opts.moremission && my.opts.randomMission) {
+			my.game.mission = getMission(my.rule.lang, 'more');
+		}
+	}
 	my.game.late = false;
 	my.game.turnTime = 15000 - 1400 * speed;
 	my.game.turnAt = (new Date()).getTime();
@@ -125,6 +143,7 @@ exports.submit = function(client, text, data){
 	if(my.game.chain.indexOf(text) == -1){
 		l = my.rule.lang;
 		my.game.loading = true;
+		my.opts.randomMission = my.opts.abcmission;
 		function onDB($doc){
 			function preApproved(){
 				if(my.game.late) return;
@@ -132,6 +151,7 @@ exports.submit = function(client, text, data){
 				
 				my.game.loading = false;
 				my.game.late = true;
+				my.opts.randomMission = my.opts.abcmission;
 				clearTimeout(my.game.turnTimer);
 				t = tv - my.game.turnAt;
 				score = my.getScore(text, t);
@@ -148,8 +168,14 @@ exports.submit = function(client, text, data){
 					bonus: (my.game.mission === true && !my.opts.randommission) ? score - my.getScore(text, t, true) : 0,
 					baby: $doc.baby
 				}, true);
-				if(my.game.mission === true && !my.opts.randommission){
-					my.game.mission = getMission(my.rule.lang);
+				if(my.game.mission === true){
+					if (my.opts.moremission) { // 더 많은 미션이 있으면
+						my.game.mission = getMission(my.rule.lang, 'more');
+					} else if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+						my.game.mission = getMission(my.rule.lang, 'random');
+					} else {
+						my.game.mission = getMission(my.rule.lang, 'normal');
+					}
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
 				if(!client.robot){
@@ -181,7 +207,14 @@ exports.getScore = function(text, delay, ignoreMission){
 	
 	if(!ignoreMission) if(arr = text.match(new RegExp(my.game.mission, "g"))){
 		score += score * 0.5 * arr.length;
-		my.game.mission = true;
+		if (my.opts.moremission)
+			my.game.mission = getMission(my.rule.lang, 'more');
+		
+		else if (!my.opts.moremission && my.opts.randomMission)
+			my.game.mission = getMission(my.rule.lang, 'random');
+		
+		else
+			my.game.mission = getMission(my.rule.lang, 'normal');
 	}
 	return Math.round(score);
 };
@@ -220,8 +253,29 @@ exports.readyRobot = function(robot){
 function toRegex(theme){
 	return new RegExp(`(^|,)${theme}($|,)`);
 }
-function getMission(l){
-	var arr = (l == "ko") ? Const.MISSION_ko : Const.MISSION_en;
+function getMission(l, mode) {
+	var my = this;
+	if (l == 'ko') {
+		var nrm = Const.MISSION_ko; //일반 미션
+		var more = Const.MISSION_ko_more; //더 많은 미션
+	}
+	if (l == 'en') {
+		var nrm = Const.MISSION_en; //일반 미션
+		var more = Const.MISSION_en;
+	}
+	
+	if (!mode || (mode == 'normal'||mode == 'random')) {
+		if(!nrm) return "-";
+		return nrm[Math.floor(Math.random() * nrm.length)];
+	}
+	if (mode == 'more') {
+		if(!more) return "-";
+		return more[Math.floor(Math.random() * more.length)];
+	}
+}
+function getMission_abc(l){
+	var my = this;
+	var arr = Const.MISSION_ko_abc;
 	
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];

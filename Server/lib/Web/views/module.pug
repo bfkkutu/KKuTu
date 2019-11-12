@@ -19,7 +19,7 @@
 	* Login 을 Passport 로 수행하기 위한 수정
 -
 	const MENU = [
-		{ key: 'HOME', href: "http://bfkkutu.ze.am" },
+		{ key: 'HOME', href: "https://bfk.playts.net" },
 		{ key: 'JJOBAR', href: "http://jjo.kr/kkutu" },
 		{ key: 'GAMES', sub: [
 			{ key: 'DSC', href: "https://discord.gg/scPVHcE" },
@@ -34,6 +34,7 @@
 			{ key: 'PLAYTS', href: "http://playts.net" },
 			{ key: 'OURKKT', href: "https://ourkkutu.net/" },
 			{ key: 'MDKKT', href: "https://modukkutu.kro.kr" },
+			{ key: 'KKT25', href: "http://kt24.playts.net/" },
 			{ key: 'IWANT', href: "http://alliance.bfkkutu.ze.am" },
 		]},
 		{ key: 'BFSOFT', href: "http://bfsoft.kro.kr", sub: [
@@ -133,7 +134,7 @@ mixin Expl(text, width)
 			h5= text
 
 mixin Product(id)
-	div(class=id+'Box Product')
+	div(class=id+'Box Product', style='display: ' + (id === 'AD' ? 'block' : 'none'))
 		h5.product-title!= L(id)
 		div.product-body
 			if block

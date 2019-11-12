@@ -18,7 +18,12 @@
 
 var MainDB	 = require("../db");
 var JLog	 = require("../../sub/jjlog");
+var File	 = require("fs");
 
+File.watchFile("./lib/Web/db", () => {
+	MainDB = require("../db");
+	JLog.info("db.js is Auto-Updated at {lib/Web/routes/consume.js}");
+})
 exports.run = function(Server, page){
 
 Server.post("/consume/:id", function(req, res){

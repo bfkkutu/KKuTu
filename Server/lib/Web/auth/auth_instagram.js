@@ -6,6 +6,7 @@ module.exports.config = {
     fontColor: '#FFFFFF',
     vendor: 'instagram',
     displayName: 'withInstagram'
+	//authImage: '/img/auth/instagram.png'
 }
 
 module.exports.strategyConfig = {
@@ -15,7 +16,7 @@ module.exports.strategyConfig = {
     passReqToCallback: true,
 }
 
-module.exports.strategy = (process, MainDB, Ajae) => {
+module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
     return (req, accessToken, refreshToken, profile, done) => {
         const $p = {};
 
@@ -24,9 +25,9 @@ module.exports.strategy = (process, MainDB, Ajae) => {
         $p.authType = "instagram";
         $p.id = $p.authType+"-"+profile.id;
         $p.name = profile.username;
-        $p.title = profile.username;
+		$p.title = profile.username;
         $p.image = profile.avatar;
 
-        process(req, accessToken, MainDB, $p, done);
+        strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }

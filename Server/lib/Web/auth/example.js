@@ -25,8 +25,9 @@ module.exports.strategy = (process, MainDB, Ajae) => {
         $p.id = profile.id;
         $p.name = profile.displayName;
         $p.title = profile.displayName;
-        $p.image = profile._json.profile_image;
-        
+        if (!!profile._json.hasOwnProperty("profile_image")) $p.image = profile._json.profile_image;
+        else $p.image = "https://img.lovepik.com/element/40081/3369.png_300.png";
+		
         /* 망할 셧다운제
         $p._age = profile._json.age.split('-').map(Number);
         $p._age = { min: ($p._age[0] || 0) - 1, max: $p._age[1] - 1 };

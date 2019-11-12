@@ -422,8 +422,10 @@ block Middle
 			input#game-input(placeholder=L('yourTurn')+' '+L('inputHere'))
 	+Product('Chat')
 		div#Chat
-		input#Talk(maxlength=200)
-		button#ChatBtn= L('send')
+		input#Talk(style="display: none;")
+		button#ChatBtn(style="display: none;")
+		input(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
+		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	div#ad
 
 block Bottom

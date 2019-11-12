@@ -64,7 +64,12 @@ exports.getTitle = function(){
 			break;
 		case 'KKT':
 			my.game.wordLength = 3;
+		case 'KUT':
 		case 'KSH':
+			ja = 44032 + 588 * Math.floor(Math.random() * 18);
+			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
+			break;
+		case 'KLH':
 			ja = 44032 + 588 * Math.floor(Math.random() * 18);
 			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
 			break;
@@ -137,6 +142,7 @@ exports.roundReady = function(){
 	clearTimeout(my.game.turnTimer);
 	my.game.round++;
 	my.game.roundTime = my.time * 1000;
+	my.opts.randomMission = my.opts.abcmission;
 	if(my.game.round <= my.round){
 		my.game.char = my.game.title[my.game.round - 1];
 	if(!my.opts.ignoreinitial){
@@ -145,12 +151,15 @@ exports.roundReady = function(){
 			my.game.subChar = null;
 		}
 		my.game.chain = [];
-		if(my.opts.mission){
-			if(!my.opts.abcmission){
-				my.game.mission = getMission(my.rule.lang);
-			} else if(my.opts.abcmission){
-				my.game.mission = getMission_abc();
+		if(my.opts.mission) {
+			if (my.opts.moremission) { // 더 많은 미션이 있으면
+				my.game.mission = getMission(my.rule.lang, 'more');
+			} else if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+				my.game.mission = getMission(my.rule.lang, 'random');
+			} else {
+				my.game.mission = getMission(my.rule.lang, 'normal');
 			}
+			//if(my.opts.randomMission) my.game.mission = getMission(my.rule.lang);
 		}
 		
 		if(my.opts.blockword){
@@ -176,6 +185,7 @@ exports.turnStart = function(force){
 	var si;
 	
 	if(!my.game.chain) return;
+	my.opts.randomMission = my.opts.abcmission;
 	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 600000 - my.game.chain.length * 1500));
 	speed = my.getTurnSpeed(my.game.roundTime);
 	clearTimeout(my.game.turnTimer);
@@ -186,10 +196,18 @@ exports.turnStart = function(force){
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
 	
 	if(my.opts.mission) {
-		if(!my.opts.abcmission){
+		/*if(!my.opts.abcmission){
 			my.game.mission = getMission(my.rule.lang); //가나다 미션이 없으면
 		} else if(my.opts.abcmission){
 			my.game.mission = getMission_abc(); //있으면
+		}*/
+		
+		// my.game.mission = getMission(my.rule.lang, my.opts);
+		if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+			my.game.mission = getMission(my.rule.lang, 'random');
+		}
+		if (my.opts.moremission && my.opts.randomMission) {
+			my.game.mission = getMission(my.rule.lang, 'more');
 		}
 	}
 	
@@ -256,9 +274,10 @@ exports.submit = function(client, text){
 	
 	l = my.rule.lang;
 	my.game.loading = true;
+	my.opts.randomMission = my.opts.abcmission;
 	function onDB($doc){
 		if(!my.game.chain) return;
-		var preChar = getChar.call(my, text);
+		var preChar = getChar.call(my, text, my.game.round);
 		if(!my.opts.ignoreinitial){
 			var preSubChar = getSubChar.call(my, preChar);
 		}else if(my.opts.ignoreinitial){
@@ -272,6 +291,7 @@ exports.submit = function(client, text){
 				if(!my.game.chain) return;
 				if(!my.game.dic) return;
 				
+				my.opts.randomMission = my.opts.abcmission;
 				my.game.loading = false;
 				my.game.late = true;
 				clearTimeout(my.game.turnTimer);
@@ -294,14 +314,20 @@ exports.submit = function(client, text){
 					baby: $doc ? $doc.baby : null
 				}, true);
 				if(my.game.mission === true){
-					if(my.opts.abcmission){
+					/*if(my.opts.abcmission){
 						my.game.mission = getMission_abc();
-					}else if(!my.opts.abcmission){
+					} else if (!my.opts.abcmission){
 						my.game.mission = getMission(my.rule.lang);
+					}*/
+					if (my.opts.moremission) { // 더 많은 미션이 있으면
+						my.game.mission = getMission(my.rule.lang, 'more');
+					} else if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+						my.game.mission = getMission(my.rule.lang, 'random');
+					} else {
+						my.game.mission = getMission(my.rule.lang, 'normal');
 					}
 				}
 				if(my.game.blockword === true){
-					my.game.blockword = getBlockWord();
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
 				if(!client.robot){
@@ -312,7 +338,7 @@ exports.submit = function(client, text){
 			}
 			if(!my.opts.unknownword && (firstMove || my.opts.manner)) getAuto.call(my, preChar, preSubChar, 1).then(function(w){
 				if(w) approved();
-				else{
+				else {
 					my.game.loading = false;
 					client.publish('turnError', { code: firstMove ? 402 : 403, value: text }, true);
 					if(client.robot){
@@ -329,6 +355,10 @@ exports.submit = function(client, text){
 		function check_word(word){
 			return word.match(/^[ \-\_0-9A-Za-zぁ-ヾㄱ-ㅣ가-힣]*$/)
 		}
+		/*function replaceWord(word) {
+			if (word.match(/^[ \-\_0-9A-Za-zぁ-ヾㄱ-ㅣ가-힣]*$/)) return word.replace(/^[ \-\_0-9A-Za-zぁ-ヾㄱ-ㅣ가-힣]*$/gi, "");
+			return word;
+		}*/
 		if($doc){
 			var gamemode = Const.GAME_TYPE[my.mode]
 			if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
@@ -337,6 +367,8 @@ exports.submit = function(client, text){
 			else if(my.opts.leng && (text.length > my.leng.max)) denied(410);
 			else if(my.opts.leng && (text.length < my.leng.min)) denied(411);
 			else if(my.opts.noreturn && (((gamemode == 'EKT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'EKT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
+			else if(my.opts.noreturn && (((gamemode == 'KUT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'KUT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
+			else if(my.opts.noreturn && (((gamemode == 'KLH') && ((text.substr(0,2) == text.substr((text.length-my.game.round),2))) || (text.substr(0,3) == text.substr((text.length-my.game.round),3))) || ((gamemode != 'KUT') && (text.substr(0,1) == text.substr((text.length-my.game.round),1))))) denied(412);
 			else {
 				if(my.opts.unknownword) denied(414);
 				else if (!check_word(text)) denied(413);
@@ -377,11 +409,19 @@ exports.getScore = function(text, delay, ignoreMission){
 	
 	if(!text || !my.game.chain || !my.game.dic) return 0;
 	score = Const.getPreScore(text, my.game.chain, tr);
+	my.opts.randomMission = my.opts.abcmission;
 	
 	if(my.game.dic[text]) score *= 15 / (my.game.dic[text] + 15);
 	if(!ignoreMission) if(arr = text.match(new RegExp(my.game.mission, "g"))){
 		score += score * 0.5 * arr.length;
-		my.game.mission = true;
+		if (my.opts.moremission)
+			my.game.mission = getMission(my.rule.lang, 'more');
+		
+		else if (!my.opts.moremission && my.opts.randomMission)
+			my.game.mission = getMission(my.rule.lang, 'random');
+		
+		else
+			my.game.mission = getMission(my.rule.lang, 'normal');
 	}
 	return Math.round(score);
 };
@@ -469,7 +509,7 @@ exports.readyRobot = function(robot){
 		return R;
 	}
 };
-function getMission(l){
+/*function getMission(l, r){
 	var my = this;
 	var arr = (l == "ko") ? Const.MISSION_ko : (l == "en") ? Const.MISSION_en : Const.MISSION_ja;
 
@@ -482,7 +522,39 @@ function getMission_abc(l){
 	
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];
-};
+};*/
+function getMission(l, mode) {
+	var my = this;
+	if (l == 'ko') {
+		var nrm = Const.MISSION_ko; //일반 미션
+		var more = Const.MISSION_ko_more; //더 많은 미션
+	}
+	if (l == 'en') {
+		var nrm = Const.MISSION_en; //일반 미션
+		var more = Const.MISSION_en;
+	}
+	
+	if (!mode || (mode == 'normal'||mode == 'random')) {
+		if(!nrm) return "-";
+		return nrm[Math.floor(Math.random() * nrm.length)];
+	}
+	if (mode == 'more') {
+		if(!more) return "-";
+		return more[Math.floor(Math.random() * more.length)];
+	}
+	/*if ((mode.mission||mode.randomMission) || (mode.mission&&mode.randomMission)) {
+		if(!nrm) return "-";
+		return nrm[Math.floor(Math.random() * nrm.length)];
+	}
+	if (mode.randomMission) {
+		if(!nrm) return "-";
+		return nrm[Math.floor(Math.random() * nrm.length)];
+	}
+	if (mode.moremission) {
+		if(!more) return "-";
+		return more[Math.floor(Math.random() * more.length)];
+	}*/
+}
 function getBlockWord(l){
 	var my = this;
 	var arr = Const.BLOCKWORD_ko;
@@ -506,10 +578,14 @@ function getAuto(char, subc, type){
 	
 	adc = char + (subc ? ("|"+subc) : "");
 	switch(gameType){
+		case 'KUT':
 		case 'EKT':
 			adv = `^(${adc})..`;
 			break;
 		case 'KSH':
+			adv = `^(${adc}).`;
+			break;
+		case 'KLH':
 			adv = `^(${adc}).`;
 			break;
 		case 'ESH':
@@ -570,7 +646,9 @@ function getAuto(char, subc, type){
 				break;
 		}
 		DB.kkutu[my.rule.lang].find.apply(this, aqs).limit(bool ? 1 : 123).on(function($md){
-			forManner($md);
+			if(!my.opts.unknownword){
+				forManner($md);
+			}
 			if(my.game.chain) aft($md.filter(function(item){ return !my.game.chain.includes(item); }));
 			else aft($md);
 		});
@@ -602,11 +680,13 @@ function shuffle(arr){
 	
 	return r;
 }
-function getChar(text){
+function getChar(text, lim){
 	var my = this;
 	
 	switch(Const.GAME_TYPE[my.mode]){
 		case 'EKT': return text.slice(text.length - 3);
+		case 'KUT': return text.slice(text.length - 2);
+		case 'KLH': return text.slice(text.length - lim);
 		case 'ESH':
 		case 'KKT':
 		case 'KSH': return text.slice(-1);
@@ -623,10 +703,10 @@ function getSubChar(char){
 	var ca, cb, cc;
 	
 	switch(Const.GAME_TYPE[my.mode]){
-		case "EKT":
+		case "EKT": case "KUT":
 			if(char.length > 2) r = char.slice(1);
 			break;
-		case "KKT": case "KSH": case "KAP":
+		case "KKT": case "KSH": case "KAP": case "KLH":
 			k = c - 0xAC00;
 			if(k < 0 || k > 11171) break;
 			ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
@@ -648,7 +728,7 @@ function getSubChar(char){
 				r = String.fromCharCode(((cb[0] * 21) + cb[1]) * 28 + cb[2] + 0xAC00);
 			}
 			break;
-		case "ESH": default:
+		case "ESH": case "EAP": default:
 			break;
 	}
 	return r;

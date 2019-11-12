@@ -1,0 +1,77 @@
+//-
+	Rule the words! KKuTu Online
+	Copyright (C) 2017 JJoriping(op@jjo.kr)
+	
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
+	
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+	
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
+extends layout
+
+block Subject
+	title 관리자 페이지
+
+block JS
+	script(type="text/javascript", src="/js/admin_users.min.js")
+	script(type="text/javascript", src="/js/in_$request.obfus.js")
+	
+block Middle
+	fieldset
+		legend 자격
+		input#db-password(type='password', placeholder='암호')
+		input#db-lang(placeholder='테이블')
+	fieldset
+		legend 유저 DB 다루기
+		div
+			input#user-id(placeholder='식별 번호')
+			input#user-nick(placeholder='별명')
+			button#user-go 조회
+			div
+				table
+					thead: tr
+						td ID
+						td 돈
+						td 전적
+						td 인벤토리
+						td 장착 중인 아이템
+						td 별명
+						td 접속된 서버
+						td 최근 로그인
+						td 밴 사유
+						td 친구 목록
+					tbody#user-data
+			button#user-apply 변경사항 적용
+	fieldset
+		legend 유저 감시하기
+		div
+			input#gamsi-id(placeholder='식별 번호 (,로 구분)')
+			button#gamsi-go 감시
+			div
+				table
+					thead: tr
+						td 식별 번호
+						td 별명
+						td 서버
+					tbody#gamsi-data
+	fieldset
+		legend 유저 관리하기
+		fieldset
+			legend 유저 이용정지
+			textarea#ipban-list(rows="17",cols="26", placeholder="아이피")
+			div
+				button#ipban-ok OK
+		fieldset
+			legend 아이피 정보(IP) 조회
+			textarea#out-iplog(rows="26",cols="100", placeholder="아이피 정보",readonly)
+			div
+				button#get-iplog 조회
+				button#clear-iplog 모두 지우기
+				button#auto-iplog 자동조회 시작

@@ -26,6 +26,7 @@ $(document).ready(function(){
 	$data.shop = {};
 	$data._okg = 0;
 	$data._playTime = 0;
+	//$data._rankPoint = 0;
 	$data._kd = "";
 	$data._timers = [];
 	$data._obtain = [];
@@ -48,6 +49,7 @@ $(document).ready(function(){
 			createBanner: $("<div>").addClass("rooms-item rooms-create").append($("<div>").html(L['newRoom']))
 		},
 		chat: $("#Chat"),
+		onchating: $("#Chating"),
 		chatLog: $("#chat-log-board"),
 		talk: $("#Talk"),
 		chatBtn: $("#ChatBtn"),
@@ -264,6 +266,13 @@ $(document).ready(function(){
 			return false;
 		}
 	});
+	$stage.talk.on('keydown',function(e){
+		$("#Chating").html(L['CHATING']);
+	});
+	$stage.talk.on('keyup',function(e){
+		$("#Chating").html(L['NOCHATING']);
+	});
+	
 	$data.opts = $.cookie('kks');
 	if($data.opts){
 		applyOptions(JSON.parse($data.opts));
@@ -624,8 +633,10 @@ $(document).ready(function(){
 	});
 	$stage.dialog.settingOK.on('click', function(e){
 		applyOptions({
+			vb: $("#bgmvol").val($data.bgmuvol),
 			mb: $("#mute-bgm").is(":checked"),
 			me: $("#mute-effect").is(":checked"),
+			bf: $("#badwordfilter").val($data.bwf),
 			di: $("#deny-invite").is(":checked"),
 			dw: $("#deny-whisper").is(":checked"),
 			df: $("#deny-friend").is(":checked"),
