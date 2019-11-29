@@ -1255,8 +1255,8 @@ exports.Room = function(room, channel){
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
 				if(o.game.wpc){
-					//o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
-					var list = [
+					o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					/*var list = [
 						"할", "로", "윈", "좀", "비", "사", "탕", "유", "령"
 						, "잭", "오", "랜", "턴", "호", "박", "프", "랑", "켄"
 						, "파", "티"
@@ -1266,7 +1266,7 @@ exports.Room = function(room, channel){
 						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					}else{
 						o.obtain("$WPC" + list[luck], 1); //할로윈 이벤트
-					}
+					}*/
 					//o.obtain("", 1); // 이벤트 용
 				}
 				o.onOKG(rw.playTime);
