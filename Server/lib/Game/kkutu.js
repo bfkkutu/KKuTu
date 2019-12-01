@@ -22,7 +22,6 @@ var Const = require('../const');
 var Lizard = require('../sub/lizard');
 var JLog = require('../sub/jjlog');
 var File = require('fs');
-var markDownSet = require('discord-markdown');
 // 망할 셧다운제 var Ajae = require("../sub/ajae");
 var DB;
 var SHOP;
