@@ -677,7 +677,7 @@ iframe{
 				.word-m3-head{ color: #EEEEEE; }
 					.word-m3-head::before{ content: "("; }
 					.word-m3-head::after{ content: ")"; }
-			.word-theme{ color: #8ACFFF; }
+			.word-theme{ color: /*#8ACFFF*/#98FF8A; }
 				.word-theme::before{ content: "<"; }
 				.word-theme::after{ content: ">"; }
 	.game-input{

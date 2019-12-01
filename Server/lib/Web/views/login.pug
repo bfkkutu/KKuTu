@@ -26,6 +26,7 @@ html
 		title= L('title')
 		script(src="/js/in_$request.min.js")
 		+PageHead()
+		meta(name='viewport' content='width = device-width')
 	body
 		span#locale= JSON.stringify(LANG)
 		//볕뉘 수정 구문삭제(30)
@@ -37,5 +38,5 @@ html
 			a(href="/login/" + val.vendor)
 				button(style="color: " + val.fontColor + "; background-color: " + val.color + ";")= L(val.displayName)
 		//볕뉘 수정 끝
-
 		div.login-legal!= L('loginLegal')
+		

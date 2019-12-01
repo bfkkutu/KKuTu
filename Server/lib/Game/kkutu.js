@@ -22,6 +22,7 @@ var Const = require('../const');
 var Lizard = require('../sub/lizard');
 var JLog = require('../sub/jjlog');
 var File = require('fs');
+var markDownSet = require('discord-markdown');
 // 망할 셧다운제 var Ajae = require("../sub/ajae");
 var DB;
 var SHOP;
@@ -867,6 +868,7 @@ exports.Room = function(room, channel){
 			limit: my.limit,
 			mode: my.mode,
 			round: my.round,
+			wordLimit: my.wordLimit,
 			time: my.time,
 			master: my.master,
 			players: pls,
@@ -874,6 +876,7 @@ exports.Room = function(room, channel){
 			gaming: my.gaming,
 			game: {
 				round: my.game.round,
+				wordLimit: my.game.wordLimit,
 				turn: my.game.turn,
 				seq: seq,
 				title: my.game.title,
@@ -1029,6 +1032,7 @@ exports.Room = function(room, channel){
 		my.mode = room.mode;
 		my.rule = Const.getRule(room.mode);
 		my.round = Math.round(room.round);
+		my.wordLimit = room.wordLimit;
 		my.time = room.time * my.rule.time;
 		if(room.opts && my.opts){
 			for(i in Const.OPTIONS){
@@ -1080,6 +1084,7 @@ exports.Room = function(room, channel){
 		}
 		return false;
 	};
+	
 	my.drawingCanvas = function(msg) {
 		my.byMaster('drawCanvas', { data: msg.data }, true);
 	};
@@ -1255,8 +1260,8 @@ exports.Room = function(room, channel){
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
 				if(o.game.wpc){
-					//o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
-					var list = [
+					o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					/*var list = [
 						"할", "로", "윈", "좀", "비", "사", "탕", "유", "령"
 						, "잭", "오", "랜", "턴", "호", "박", "프", "랑", "켄"
 						, "파", "티"
@@ -1266,7 +1271,7 @@ exports.Room = function(room, channel){
 						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					}else{
 						o.obtain("$WPC" + list[luck], 1); //할로윈 이벤트
-					}
+					}*/
 					//o.obtain("", 1); // 이벤트 용
 				}
 				o.onOKG(rw.playTime);

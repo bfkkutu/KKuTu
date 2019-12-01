@@ -228,14 +228,14 @@ exports.RULE = {
 		big: true,
 		ewq: true
 	},
-	'JSH': { lang: "ja", // 일본어 끝말잇기(미개발)
+	/*'JSH': { lang: "ja", // 일본어 끝말잇기(미개발)
 		rule: "Classic",
 		opts: [ "ext" ],
 		time: 1,
 		ai: true,
 		big: false,
 		ewq: true
-	},
+	},*/
 	/*'EAP': { lang: "en", // 영어 앞말잇기 임시 비활성화
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "nrt", "rtu",
@@ -266,7 +266,7 @@ exports.RULE = {
 		rule: "Classic",
 		opts: [ "man", "ext" ],
 		time: 1,
-		ai: false,
+		ai: true,
 		big: false,
 		ewq: true
 	}

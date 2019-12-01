@@ -62,14 +62,15 @@ exports.getTitle = function(){
 		case 'EAP':
 			eng = String.fromCharCode(97 + Math.floor(Math.random() * 26)) + "$";
 			break;
+		case 'KLH':
+			my.game.wordLength = my.wordLimit;
+			ja = 44032 + 588 * Math.floor(Math.random() * 18);
+			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
+			break;
 		case 'KKT':
 			my.game.wordLength = 3;
 		case 'KUT':
 		case 'KSH':
-			ja = 44032 + 588 * Math.floor(Math.random() * 18);
-			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
-			break;
-		case 'KLH':
 			ja = 44032 + 588 * Math.floor(Math.random() * 18);
 			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
 			break;
@@ -170,6 +171,7 @@ exports.roundReady = function(){
 		
 		my.byMaster('roundReady', {
 			round: my.game.round,
+			wordLimit: my.game.wordLimit,
 			char: my.game.char,
 			subChar: my.game.subChar,
 			mission: my.game.mission
@@ -223,6 +225,7 @@ exports.turnStart = function(force){
 		turnTime: my.game.turnTime,
 		mission: my.game.mission,
 		wordLength: my.game.wordLength,
+		wordLimit: my.game.wordLimit,
 		seq: force ? my.game.seq : undefined
 	}, true);
 	my.game.turnTimer = setTimeout(my.turnEnd, Math.min(my.game.roundTime, my.game.turnTime + 100));
@@ -368,7 +371,6 @@ exports.submit = function(client, text){
 			else if(my.opts.leng && (text.length < my.leng.min)) denied(411);
 			else if(my.opts.noreturn && (((gamemode == 'EKT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'EKT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
 			else if(my.opts.noreturn && (((gamemode == 'KUT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'KUT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
-			else if(my.opts.noreturn && (((gamemode == 'KLH') && ((text.substr(0,2) == text.substr((text.length-my.game.round),2))) || (text.substr(0,3) == text.substr((text.length-my.game.round),3))) || ((gamemode != 'KUT') && (text.substr(0,1) == text.substr((text.length-my.game.round),1))))) denied(412);
 			else {
 				if(my.opts.unknownword) denied(414);
 				else if (!check_word(text)) denied(413);
@@ -586,7 +588,7 @@ function getAuto(char, subc, type){
 			adv = `^(${adc}).`;
 			break;
 		case 'KLH':
-			adv = `^(${adc}).`;
+			adv = `^(${adc}).{${my.game.wordLength-1}}$`;
 			break;
 		case 'ESH':
 			adv = `^(${adc})...`;
@@ -686,8 +688,8 @@ function getChar(text, lim){
 	switch(Const.GAME_TYPE[my.mode]){
 		case 'EKT': return text.slice(text.length - 3);
 		case 'KUT': return text.slice(text.length - 2);
-		case 'KLH': return text.slice(text.length - lim);
 		case 'ESH':
+		case 'KLH':
 		case 'KKT':
 		case 'KSH': return text.slice(-1);
 		case 'EAP':

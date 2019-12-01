@@ -63,6 +63,11 @@ var T_USER = {};
 var SID;
 var WDIC = {};
 
+// Discord Markdown and Emojify
+const { toHTML } = require('discord-markdown');
+const emoji = require('node-emoji');
+// Discord Markdown and Emojify
+
 const DEVELOP = exports.DEVELOP = global.test || false;
 const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
 	'create': true,
@@ -115,7 +120,8 @@ process.on('uncaughtException', function(err){
 	});
 });
 function getClientIp(req, res) {
-	var clientIp = req.info.connection.remoteAddress;
+	var clientIp = req.remoteAddress;
+	//var clientIp = req.info.connection.remoteAddress;
 	if (!clientIp) {
 		JLog.warn(`clientIp is empty.   (${clientIp})`)
 		return "";
@@ -621,7 +627,8 @@ function processClientRequest($c, msg) {
 					}
 				});
 			} else {
-				$c.chat(msg.value);
+				var mmsg = markdownEmoji(msg.value);
+				$c.chat(mmsg);
 			}
 			break;
 		case 'friendAdd':
@@ -666,6 +673,7 @@ function processClientRequest($c, msg) {
 			if (!msg.title) stable = false;
 			if (!msg.limit) stable = false;
 			if (!msg.round) stable = false;
+			//if (!msg.wordLimit) stable = false;
 			if (!msg.time) stable = false;
 			if (!msg.opts) stable = false;
 
@@ -673,11 +681,13 @@ function processClientRequest($c, msg) {
 			msg.limit = Number(msg.limit);
 			msg.mode = Number(msg.mode);
 			msg.round = Number(msg.round);
+			//msg.wordLimit = Number(msg.wordLimit);
 			msg.time = Number(msg.time);
 
 			if (isNaN(msg.limit)) stable = false;
 			if (isNaN(msg.mode)) stable = false;
 			if (isNaN(msg.round)) stable = false;
+			//if (isNaN(msg.wordLimit)) stable = false;
 			if (isNaN(msg.time)) stable = false;
 
 			if (stable) {
@@ -690,6 +700,13 @@ function processClientRequest($c, msg) {
 				if (msg.mode < 0 || msg.mode >= MODE_LENGTH) stable = false;
 				if (msg.round < 1 || msg.round > 10) {
 					msg.code = 433;
+					stable = false;
+				}
+				if (msg.wordLimit < 2) {
+					msg.code = 434;
+					stable = false;
+				}else if (msg.wordLimit > 9) {
+					msg.code = 434;
 					stable = false;
 				}
 				if (ENABLE_ROUND_TIME.indexOf(msg.time) == -1) stable = false;
@@ -730,6 +747,15 @@ function processClientRequest($c, msg) {
 		default:
 			break;
 	}
+}
+
+function markdownEmoji(msg){
+	var onMissing = function (name) {
+		return name;
+	};
+	var markdowned = toHTML(msg);
+	var emojified = emoji.emojify(markdowned, onMissing);
+	return emojified;
 }
 
 KKuTu.onClientClosed = function($c, code, ip, path){

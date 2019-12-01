@@ -108,7 +108,8 @@ block Middle
 		div.dialog-bar
 			h4= L('bgmselect')
 			select#bgmselect
-				option(value=L('bgm_bfkkutu'), selected)= L('bgm_bfkkutu')
+				option(value=L('bgm_allgro'), selected)= L('bgm_allgro')
+				option(value=L('bgm_bfkkutu'))= L('bgm_bfkkutu')
 				option(value=L('bgm_newstart'))= L('bgm_newstart')
 		div.dialog-bar
 			h4= L('BADWORDFILTER')
@@ -187,9 +188,9 @@ block Middle
 				optgroup(label=L('mcKorean'))
 					option(value=3)= L('modeKSH')
 					option(value=2)= L('modeKKT')
-					option(value=18)= L('modeKUT')
+					option(value=17)= L('modeKUT')
 					//-option(value=17)= L('modeKTS')-//
-					option(value=19)= L('modeKLH')
+					option(value=18)= L('modeKLH')
 					option(value=8)= L('modeKAP')
 					option(value=6)= L('modeKTY')
 					option(value=10)= L('modeKDA')
@@ -206,9 +207,9 @@ block Middle
 					option(value=11)= L('modeEDA')
 					option(value=13)= L('modeESS')
 					option(value=15)= L('modeEDG')
-				optgroup(label=L('mcJapanese'))
+				//-optgroup(label=L('mcJapanese'))
 					option(value=16)= L('modeJSH')
-				optgroup(label=L('mcTesting'))
+				optgroup(label=L('mcTesting'))-//
 					
 					//-option(value=99)= L('modeETS')-//
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
@@ -217,6 +218,9 @@ block Middle
 		div.dialog-bar
 			h4= L('numRound')
 			input#room-round(type='number', min=1, max=10, step=1, value=5)
+		div.dialog-bar#room-wordLimit-panel
+			h4= L('numWordLimit')
+			input#room-wordLimit(type='number', min=1, max=9, step=1, value=2)
 		div.dialog-bar
 			h4= L('roundTime')
 			select#room-time
@@ -545,6 +549,7 @@ block Middle
 		input(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	+Product('AD')
+		img(src='/img/ad1.png')
 
 block Bottom
 	div.bottom-legal!= L('dictionarySupport')
@@ -595,4 +600,5 @@ block Bottom
 	
 	div.bottom-legal!= L('AGREEMENT_LINK')
 	div.bottom-legal!= L('PRIVACY_LINK')
-	div.bottom-legal!= L('OPOLICY_LINK')
+	div.bottom-legal!= L('OPOLICY_LINK1')
+	div.bottom-legal!= L('OPOLICY_LINK2')
