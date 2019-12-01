@@ -703,10 +703,10 @@ function processClientRequest($c, msg) {
 					stable = false;
 				}
 				if (msg.wordLimit < 2) {
-					msg.code = 434;
+					msg.code = 439;
 					stable = false;
 				}else if (msg.wordLimit > 9) {
-					msg.code = 434;
+					msg.code = 439;
 					stable = false;
 				}
 				if (ENABLE_ROUND_TIME.indexOf(msg.time) == -1) stable = false;
