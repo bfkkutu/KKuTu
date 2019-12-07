@@ -27,7 +27,7 @@ block Middle
 	div(style='float: left; width: 100%;')
 	label= L('textver123') + L('version')
 		div(style='float: left; padding-left: 70px;')
-			h3#holder= L('title').replace(/\[.+?\]/g, "")
+			h3#holder= L('title_none').replace(/\[.+?\]/g, "")
 			img#logo(src='/img/kkutu/short_logo.png')
 		div#menu-bar(style='float: right; margin-top: 25px;')
 			a(target='_blank', href='http://cafe.bfkkutu.ze.am/', style='background-color: #189E47;')= 'Naver Cafe'
@@ -63,6 +63,7 @@ block Bottom
 	div.bottom-legal!= L('MEANSUPPORT')
 	img(src='/img/kkutu/meansupport.png')
 	div.bottom-legal!= L('textver123') + L('version_down')
+	div.bottom-legal!= L('textversec') + L('security_version')
 	div.bottom-legal!= L('madewith')
 	script.
 		function setParam(name, value) {

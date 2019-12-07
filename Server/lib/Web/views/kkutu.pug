@@ -70,11 +70,13 @@ block Jungle
 
 block Middle
 	- var VERSION = L('version')
+	- var SECVER = L('security_version')
 	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
 	div#Intro
 		img#intro(src='/img/kkutu/intro.png')
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
 		div#version= VERSION
+		div#secver= SECVER
 		div#intro-text= L('LOADING')
 	div.kkutu-menu
 		button#HelpBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #BBBBBB;')!= L('help')
@@ -557,6 +559,7 @@ block Bottom
 	div.bottom-legal!= L('MEANSUPPORT')
 	img(src='/img/kkutu/meansupport.png')
 	div.bottom-legal!= L('textver123') + L('version_down')
+	div.bottom-legal!= L('textversec') + L('security_version')
 	div.bottom-legal!= L('madewith')
 	script.
 		function setParam(name, value) {

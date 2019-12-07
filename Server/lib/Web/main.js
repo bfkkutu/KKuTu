@@ -57,6 +57,17 @@ var gameServers = [];
 let moment = require('moment'); //moment.js를 사용 (DDDoS 기록)
 const alert = require("alert-node"); //alert-node를 사용 (DDDoS alert)
 
+var multer = require('multer'); // multer 모듈 사용 (파일 업로드)
+var storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, 'lib/Web/public/uploaded') // cb 콜백함수를 통해 전송된 파일 저장 디렉토리 설정
+	},
+	filename: function (req, file, cb) {
+		cb(null, file.originalname) // cb 콜백함수를 통해 전송된 파일 이름 설정
+	}
+})
+var upload = multer({ storage: storage })
+
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
 ];
@@ -318,6 +329,10 @@ Server.get("/servers", function(req, res){
 	res.send({ list: list, max: Const.KKUTU_MAX });
 });
 
+Server.get("/isAdmin", function(req, res){
+	res.send({ admin: GLOBAL.ADMIN });
+});
+
 //볕뉘 수정 구문 삭제(274~353)
 
 Server.get("/legal/:page", function(req, res){
@@ -356,3 +371,11 @@ Server.get("/beta/servers", function(req, res){
 	});
 	res.send({ list: list, max: Const.KKUTU_MAX });
 });
+Server.get('/upload', function(req, res){
+	res.render('upload');
+});
+Server.post('/upload', upload.single('userfile'), function(req, res){
+	res.send('Uploaded! : '+req.file); // object를 리턴함
+	console.log(req.file); // 콘솔(터미널)을 통해서 req.file Object 내용 확인 가능.
+});
+Server.use('/uploaded', Express.static('uploads'));

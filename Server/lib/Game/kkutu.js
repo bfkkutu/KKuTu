@@ -1615,7 +1615,10 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 		rw.rankPoint = 0; //없어도 되지만 확실히 0으로 하자.
 	}
 	
-	if (score <= "-1") rw.score = 0; //관리자 레벨 유지
+	if(score <= "-1"){
+		rw.score = 0;
+	}
+	
 	if (rankScore >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}
