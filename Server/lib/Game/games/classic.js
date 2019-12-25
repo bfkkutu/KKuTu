@@ -163,8 +163,8 @@ exports.roundReady = function(){
 			//if(my.opts.randomMission) my.game.mission = getMission(my.rule.lang);
 		}
 		
-		if(my.opts.blockword){
-			my.game.blockword = getBlockWord();
+		if(my.opts.blockWord){
+			my.game.blockWord = getBlockWord(my.rule.lang);
 		}
 			
 		if(my.opts.sami) my.game.wordLength = 2;
@@ -174,7 +174,8 @@ exports.roundReady = function(){
 			wordLimit: my.game.wordLimit,
 			char: my.game.char,
 			subChar: my.game.subChar,
-			mission: my.game.mission
+			mission: my.game.mission,
+			blockWord: my.game.blockWord
 		}, true);
 		my.game.turnTimer = setTimeout(my.turnStart, 2400);
 	}else{
@@ -213,8 +214,8 @@ exports.turnStart = function(force){
 		}
 	}
 	
-	if(my.opts.blockword){
-			my.game.blockword = getBlockWord();
+	if(my.opts.blockWord){
+		my.game.blockWord = getBlockWord(my.rule.lang);
 	}
 	my.byMaster('turnStart', {
 		turn: my.game.turn,
@@ -224,6 +225,7 @@ exports.turnStart = function(force){
 		roundTime: my.game.roundTime,
 		turnTime: my.game.turnTime,
 		mission: my.game.mission,
+		blockWord: my.game.blockWord,
 		wordLength: my.game.wordLength,
 		wordLimit: my.game.wordLimit,
 		seq: force ? my.game.seq : undefined
@@ -330,7 +332,8 @@ exports.submit = function(client, text){
 						my.game.mission = getMission(my.rule.lang, 'normal');
 					}
 				}
-				if(my.game.blockword === true){
+				if(my.game.blockWord === true){
+					my.game.blockWord = getBlockWord(my.rule.lang);
 				}
 				setTimeout(my.turnNext, my.game.turnTime / 6);
 				if(!client.robot){
@@ -364,6 +367,12 @@ exports.submit = function(client, text){
 		}*/
 		if($doc){
 			var gamemode = Const.GAME_TYPE[my.mode]
+			if(my.opts.blockWord && my.opts.mission) denied();
+			if(my.opts.blockWord){
+				if(text.match(blockWord)){
+					denied(415);
+				}
+			}
 			if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
 			else if(my.opts.strict && (!$doc.type.match(Const.KOR_STRICT) || $doc.flag >= 4)) denied(406);
 			else if(my.opts.loanword && ($doc.flag & Const.KOR_FLAG.LOANWORD)) denied(405);
@@ -416,6 +425,7 @@ exports.getScore = function(text, delay, ignoreMission){
 	if(my.game.dic[text]) score *= 15 / (my.game.dic[text] + 15);
 	if(!ignoreMission) if(arr = text.match(new RegExp(my.game.mission, "g"))){
 		score += score * 0.5 * arr.length;
+		if (my.opts.blockWord) my.game.blockWord = getBlockWord(my.rule.lang);
 		if (my.opts.moremission)
 			my.game.mission = getMission(my.rule.lang, 'more');
 		
@@ -559,7 +569,7 @@ function getMission(l, mode) {
 }
 function getBlockWord(l){
 	var my = this;
-	var arr = Const.BLOCKWORD_ko;
+	var arr = Const.MISSION_ko;
 	
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];

@@ -19,17 +19,8 @@
 include module
 
 head
-	title BF끄투 - 서버 상태
+	title BFCloud
 	script(type='text/javascript', src='/js/jquery.js')
-	script(type='text/javascript', src='/js/server_status.obfus.js')
 	
-h2 메인화면
-label.status#status_portal -
-br
-br
-h2 인게임(끄투)
-label.status#status_kkutu -
-br
-br
-h2 핵 방지 시스템
-label.status#status_dfcmacro -
+div(style='float: left; width: calc(100% - 4px); border: 1px solid #CCC; margin-top: 10px; background-color: #EEE;')
+iframe#music(width='100%', height='400px', src='/cloud/music/input.html')

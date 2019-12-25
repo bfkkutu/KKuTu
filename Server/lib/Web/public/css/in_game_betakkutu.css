@@ -55,13 +55,10 @@ equ{
 	z-index: 5;
 }
 #Top{
-	background-color: #7CC4F8;
-	background-image: none;
+	/*메뉴 CSS 부분*/
 }
 #Top .menu-btn{
-	color: #111111;
-	background-color: #7CC4F8;
-	background-image: none;
+	/*메뉴 CSS 버튼 부분*/
 }
 #Top .menu-sub-btn{ color: #222222; }
 #Bottom .bottom-text{ display: none; }

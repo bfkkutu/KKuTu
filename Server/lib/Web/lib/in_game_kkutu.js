@@ -1099,6 +1099,9 @@ $lib.Classic.roundReady = function(data){
 	if($data.room.opts.mission){
 		$stage.game.items.show().css('opacity', 1).html($data.mission = data.mission);
 	}
+	if($data.room.opts.blockWord){
+		$stage.game.itemsbw.show().css('opacity', 1).html($data.blockWord = data.blockWord);
+	}
 	if(MODE[$data.room.mode] == "KAP"){
 		$(".jjoDisplayBar .graph-bar").css({ 'float': "right", 'text-align': "left" });
 	}
@@ -1123,6 +1126,7 @@ $lib.Classic.turnStart = function(data){
 		}
 	}
 	$stage.game.items.html($data.mission = data.mission);
+	$stage.game.itemsbw.html($data.blockWord = data.blockWord);
 	
 	ws.onmessage = _onMessage;
 	clearInterval($data._tTime);
@@ -3703,19 +3707,6 @@ function requestRoomInfo(id){
 	showDialog($stage.dialog.roomInfo);
 	$stage.dialog.roomInfo.show();
 }
-function requestAdminRoom(id){
-	var o = $data.rooms[id];
-	var isAdminRoom = "n";
-	
-	//if(o.players.indexOf("베프") != -1){ //Admin이 방에 있으면
-	o.players.forEach(function(p, i){
-		p = $data.users[p] || NULL_USER;
-		if(p.equip.b9_bf == true){
-			isAdminRoom = "y";
-		}
-	});
-	return isAdminRoom;
-}
 function requestProfile(id){
 	var o = $data.users[id] || $data.robots[id];
 	var $rec = $("#profile-record").empty();
@@ -4788,7 +4779,7 @@ function playSound(key, loop){
 	var src, sound;
 	var mute = (loop && $data.muteBGM) || (!loop && $data.muteEff);
 	var bvol = loop ? $data.bgmuvol;
-	if (bvol == undefined) bvol = 1;
+	if (bvol === undefined) bvol = 1;
 
 	sound = $sound[key] || $sound.missing;
 	if(window.hasOwnProperty("AudioBuffer") && sound instanceof AudioBuffer){

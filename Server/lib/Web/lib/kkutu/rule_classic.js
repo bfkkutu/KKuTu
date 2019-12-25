@@ -27,6 +27,9 @@ $lib.Classic.roundReady = function(data){
 	if($data.room.opts.mission){
 		$stage.game.items.show().css('opacity', 1).html($data.mission = data.mission);
 	}
+	if($data.room.opts.blockWord){
+		$stage.game.itemsbw.show().css('opacity', 1).html($data.blockWord = data.blockWord);
+	}
 	if(MODE[$data.room.mode] == "KAP"){
 		$(".jjoDisplayBar .graph-bar").css({ 'float': "right", 'text-align': "left" });
 	}
@@ -51,6 +54,7 @@ $lib.Classic.turnStart = function(data){
 		}
 	}
 	$stage.game.items.html($data.mission = data.mission);
+	$stage.game.itemsbw.html($data.blockWord = data.blockWord);
 	
 	ws.onmessage = _onMessage;
 	clearInterval($data._tTime);

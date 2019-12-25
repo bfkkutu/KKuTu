@@ -180,7 +180,7 @@
 				break;
 			case "yell":
 				if(a.value == "debug"){
-					prompt("DebugMenu is not defined.");
+					loadShop(), updateUI();
 				}else{
 					yell(a.value), notice(a.value, L.yell);
 				}
@@ -546,22 +546,7 @@
 			d = getLevel(b.data.score),
 			e = EXP[d - 2] || 0,
 			f = EXP[d - 1],
-			g;
-		if(b.data.rankPoint < 50){
-			g = 'UNRANKED';
-		} else if(b.data.rankPoint >= 50 && b.data.rankPoint < 500){
-			g = 'BRONZE';
-		} else if(b.data.rankPoint >= 500 && b.data.rankPoint < 1500){
-			g = 'SILVER';
-		} else if(b.data.rankPoint >= 1500 && b.data.rankPoint < 2500){
-			g = 'GOLD';
-		} else if(b.data.rankPoint >= 2500 && b.data.rankPoint < 3500){
-			g = 'PLATINUM';
-		} else if(b.data.rankPoint >= 3500 && b.data.rankPoint < 5000){
-			g = 'DIAMOND';
-		} else if(b.data.rankPoint >= 5000){
-			g = 'MASTER';
-		}
+			g = getMyRank(b.data.rankPoint);
 		for (a in b.data.record) c += b.data.record[a][1];
 		renderMoremi(".my-image", b.equip), $(".my-stat-level").replaceWith(getLevelImage(b.data.score).addClass("my-stat-level")), $(".my-stat-name").text(b.profile.title || b.profile.name), $(".my-stat-record").html(L.globalWin + " " + c + L.W), $(".my-stat-ping").html(commify(b.money) + L.ping), $(".my-rankPoint").html(b.data.rankPoint + L['LP']), $(".my-rank").html(L[g]), $(".my-okg .graph-bar").width($data._playTime % 6e5 / 6e3 + "%"), $(".my-okg-text").html(prettyTime($data._playTime)), $(".my-level").html(L.LEVEL + " " + d), $(".my-gauge .graph-bar").width((b.data.score - e) / (f - e) * 190), $(".my-gauge-text").html(commify(b.data.score) + " / " + commify(f))
 	}
@@ -702,7 +687,7 @@
 	function drawMyDress(a) {
 		var b = $("#dress-view"),
 			c = $data.users[$data.id];
-		renderMoremi(b, c.equip), $(".dress-type.selected").removeClass("selected"), $("#dress-type-all").addClass("selected"), $("#dress-exordial").val(c.exordial), $("#dress-nickname").val(c.nickname), drawMyGoods(a || !0)
+		renderMoremi(b, c.equip), $(".dress-type.selected").removeClass("selected"), $("#dress-type-all").addClass("selected"), $("#dress-nickname").val(c.nickname), $("#dress-exordial").val(c.exordial), drawMyGoods(a || !0)
 	}
 
 	function renderGoods(a, b, c, d, e) {
@@ -830,6 +815,10 @@
 			d = d ? d.profile.title || d.profile.name : L.hidden, a.score = Number(a.score), b.append($("<tr>").attr("id", "ranking-" + a.id).addClass("ranking-" + (a.rank + 1)).append($("<td>").html(a.rank + 1)).append($("<td>").append(getLevelImage(a.score).addClass("ranking-image")).append($("<label>").css("padding-top", 2).html(getLevel(a.score)))).append($("<td>").html(d)).append($("<td>").html(commify(a.score))))
 		}), $("#ranking-" + $data.id).addClass("ranking-me"), $stage.dialog.lbPage.html(L.page + " " + d), $stage.dialog.lbPrev.attr("disabled", d <= 1), $stage.dialog.lbNext.attr("disabled", a.data.length < 15), $stage.dialog.lbMe.attr("disabled", !!$data.guest), $data._lbpage = d - 1
 	}
+	
+	function getRanker(a) {
+		return Number(a.data[0].score);
+	}
 
 	function updateCommunity() {
 		function a(a) {
@@ -889,8 +878,11 @@
 	function requestProfile(a) {
 		var b, c, d, e = $data.users[a] || $data.robots[a],
 			f = $("#profile-record").empty(),
-			z = $data.users[a],
-			x;
+			z = $data.users[a];
+		if(!e.robot){
+			var x = getMyRank(z.data.rankPoint);
+		}
+		
 		if (!e) return void notice(L.error_405);
 		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
@@ -898,23 +890,6 @@
 				"font-size": "11px"
 			}).text(e.exordial))), e.robot) $stage.dialog.profileLevel.show(), $stage.dialog.profileLevel.prop("disabled", $data.id != $data.room.master), $("#rank").html(L['UNRANKED']), $("#rankpoint").html(L['0LP']), $("#profile-place").html($data.room.id + L.roomNumber);
 		else {
-			if(z.data.rankPoint < 50){
-				x = 'UNRANKED';
-			} else if(z.data.rankPoint >= 50 && z.data.rankPoint < 500){
-				x = 'BRONZE';
-			} else if(z.data.rankPoint >= 500 && z.data.rankPoint < 1500){
-				x = 'SILVER';
-			} else if(z.data.rankPoint >= 1500 && z.data.rankPoint < 2500){
-				x = 'GOLD';
-			} else if(z.data.rankPoint >= 2500 && z.data.rankPoint < 3500){
-				x = 'PLATINUM';
-			} else if(z.data.rankPoint >= 3500 && z.data.rankPoint < 5000){
-				x = 'DIAMOND';
-			} else if(z.data.rankPoint >= 5000){
-				x = 'MASTER';
-			} else {
-				x = 'UNDEFINED';
-			}
 			$stage.dialog.profileLevel.hide(), $("#rank").html(L[x]), $("#rankpoint").html(z.data.rankPoint + L['LP']), $("#profile-place").html(e.place ? e.place + L.roomNumber : L.lobby);
 			for (d in e.data.record) {
 				var g = e.data.record[d];
@@ -1373,10 +1348,11 @@
 
 	function getLevelImage(score, profile, sid) {
 		var my = this;
-		var admin = getAdmin(score);
+		//var a = $data.users[$data.id];
+		//var isAdmin = getAdmin(a);
 		
-		/*if(admin.indexOf($data.users[$data.id]) != -1){
-			var lv = "admin";
+		/*if(isAdmin=="admin"){
+			var lv = isAdmin;
 		}else{
 			var lv = getLevel(score) - 1;
 		}*/
@@ -1402,6 +1378,20 @@
 			'background-size': "2560%"
 		});
 	}
+	
+	function getAdmin(a){
+		var isAdmin = "user";
+		switch(a.equip.BDG){
+			case 'b9_bf':
+				isAdmin = "admin";
+				break;
+			case 'b6_word':
+				isAdmin = "admin";
+				break;
+		}
+		return isAdmin;
+	}
+	
 	function getRank(a){
 		if(a == 0){
 			return "UNRANKED";
@@ -1420,15 +1410,6 @@
 		}else{
 			return "UNRANKED";
 		}
-	}
-	
-	function getAdmin(a){
-		$.getJSON('https://bfk.playts.net/isAdmin', function(data) {
-			$.each(data, function(i, item) {
-				return item;
-			});
-		});
-		return "";
 	}
 
 	function getImage(a) {
@@ -1565,6 +1546,32 @@
 			++badCount;
 			return a.replace(BAD, "**");
 		} else return a;
+	}
+	
+	function getFirstRank(){
+		$.get("/ranking", function(a) {
+			return getRanker(a);
+		})
+	}
+	
+	function getMyRank(a){
+		if(a < 50){
+			return 'UNRANKED';
+		} else if(a >= 50 && a < 1000){
+			return 'BRONZE';
+		} else if(a >= 1000 && a < 2000){
+			return 'SILVER';
+		} else if(a >= 2000 && a < 3000){
+			return 'GOLD';
+		} else if(a >= 3000 && a < 4000){
+			return 'PLATINUM';
+		} else if(a >= 4000 && a < 5000){
+			return 'DIAMOND';
+		} else if(a >= 5000){
+			return 'MASTER';
+		} else {
+			return "";
+		}
 	}
 
 	function chatBalloon(a, b, c) {
@@ -1736,7 +1743,7 @@
 		MOREMI_PART, AVAIL_EQUIP, RULE, OPTIONS, MAX_LEVEL = 366,
 		TICK = 30,
 		EXP = [],
-		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,})[^가-힣]*(바|파|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저세|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|유|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|징|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(레|래|럐|례|랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
+		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,})[^가-힣]*(바|파|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|유|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|징|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
 		ws, rws, $stage, $sound = {},
 		$_sound = {},
 		$data = {},
@@ -2102,21 +2109,24 @@
 				$data._injpick = $data.room.opts.injpick, showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.setRoom)
 			}), $("#quick-mode, #QuickDiag .game-option").on("change", function(a) {
 				var b, f, g = $("#quick-mode").val(),
+					//t = $("#quick-time").val(),
 					h = 0;
 				"quick-mode" == a.currentTarget.id && $("#QuickDiag .game-option").prop("checked", !1), f = d("quick"), c(RULE[MODE[g]].opts, "quick");
-				for (b in $data.rooms) e($data.rooms[b], g, f, !0) && h++;
+				//"quick-time" == a.currentTarget.id, t = d("quick"), c(RULE[MODE[t]].roundTime, "quick");
+				for (b in $data.rooms) e($data.rooms[b], g, f, t, !0) && h++;
 				$("#quick-status").html(L.quickStatus + " " + h)
 			}), $stage.menu.quickRoom.on("click", function(a) {
-				$stage.dialog.room.hide(), showDialog($stage.dialog.quick), $stage.dialog.quick.is(":visible") && ($("#QuickDiag>.dialog-body").find("*").prop("disabled", !1), $("#quick-mode").trigger("change"), $("#quick-queue").html(""), $stage.dialog.quickOK.removeClass("searching").html(L.OK))
+				$stage.dialog.room.hide(), showDialog($stage.dialog.quick), $stage.dialog.quick.is(":visible") && ($("#QuickDiag>.dialog-body").find("*").prop("disabled", !1), $("#quick-mode").trigger("change"), /*$("#quick-time").trigger("change"),*/ $("#quick-queue").html(""), $stage.dialog.quickOK.removeClass("searching").html(L.OK))
 			}), $stage.dialog.quickOK.on("click", function(a) {
 				function b() {
 					var a, b = [];
 					if (!$stage.dialog.quick.is(":visible")) return void clearTimeout($data._quickT);
 					$("#quick-queue").html(L.quickQueue + " " + prettyTime(1e3 * $data._quickn++));
-					for (a in $data.rooms) e($data.rooms[a], c, f) && b.push(a);
+					for (a in $data.rooms) e($data.rooms[a], c, f, t) && b.push(a);
 					b.length && (a = b[Math.floor(Math.random() * b.length)], $data._preQuick = !0, $("#room-" + a).trigger("click"))
 				}
 				var c = $("#quick-mode").val(),
+					//t = $("#quick-time").val(),
 					f = d("quick");
 				if ("for-lobby" == getOnly()) {
 					if ($stage.dialog.quickOK.hasClass("searching")) return $stage.dialog.quick.hide(), b(), void $stage.menu.quickRoom.trigger("click");
@@ -2303,6 +2313,7 @@
 				if($("#dress-nickname").val().match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
 				if($("#dress-nickname").val().match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
 				if($("#dress-nickname").val().match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
 				
 				$(a.currentTarget).attr("disabled", !0), $.post("/nickname", {
 					data: $("#dress-nickname").val()
@@ -2398,14 +2409,14 @@
 		}, 1e3)
 	}), $lib.Classic.roundReady = function(a) {
 		$data.room.game.title.length;
-		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $stage.game.display.html(getCharText(a.char, a.subChar)), $stage.game.chain.show().html($data.chain = 0), $data.room.opts.mission && $stage.game.items.show().css("opacity", 1).html($data.mission = a.mission), "KAP" == MODE[$data.room.mode] && $(".jjoDisplayBar .graph-bar").css({
+		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $stage.game.display.html(getCharText(a.char, a.subChar)), $stage.game.chain.show().html($data.chain = 0), $data.room.opts.mission && $stage.game.items.show().css("opacity", 1).html($data.mission = a.mission), /*$data.room.opts.blockWord && $stage.game.items.show().css("opacity", 1).html($data.blockWord = a.blockWord),*/ "KAP" == MODE[$data.room.mode] && $(".jjoDisplayBar .graph-bar").css({
 			float: "right",
 			"text-align": "left"
 		}), drawRound(a.round), playSound("round_start"), recordEvent("roundReady", {
 			data: a
 		})
 	}, $lib.Classic.turnStart = function(a) {
-		$data.room.game.turn = a.turn, a.seq && ($data.room.game.seq = a.seq), ($data._tid = $data.room.game.seq[a.turn]) && ($data._tid.robot && ($data._tid = $data._tid.id), a.id = $data._tid, $stage.game.display.html($data._char = getCharText(a.char, a.subChar, a.wordLength)), $("#game-user-" + a.id).addClass("game-user-current"), $data._replay || ($stage.game.here.css("display", a.id == $data.id ? "block" : "none"), a.id == $data.id && (mobile ? $stage.game.hereText.val("").focus() : $stage.talk.focus())), $stage.game.items.html($data.mission = a.mission), ws.onmessage = _onMessage, clearInterval($data._tTime), clearTrespasses(), $data._chars = [a.char, a.subChar], $data._speed = a.speed, $data._tTime = addInterval(turnGoing, TICK), $data.turnTime = a.turnTime, $data._turnTime = a.turnTime, $data._roundTime = a.roundTime, $data._turnSound = playSound("T" + a.speed), recordEvent("turnStart", {
+		$data.room.game.turn = a.turn, a.seq && ($data.room.game.seq = a.seq), ($data._tid = $data.room.game.seq[a.turn]) && ($data._tid.robot && ($data._tid = $data._tid.id), a.id = $data._tid, $stage.game.display.html($data._char = getCharText(a.char, a.subChar, a.wordLength)), $("#game-user-" + a.id).addClass("game-user-current"), $data._replay || ($stage.game.here.css("display", a.id == $data.id ? "block" : "none"), a.id == $data.id && (mobile ? $stage.game.hereText.val("").focus() : $stage.talk.focus())), $stage.game.items.html($data.mission = a.mission), /*$stage.game.items.html($data.blockWord = a.blockWord),*/ ws.onmessage = _onMessage, clearInterval($data._tTime), clearTrespasses(), $data._chars = [a.char, a.subChar], $data._speed = a.speed, $data._tTime = addInterval(turnGoing, TICK), $data.turnTime = a.turnTime, $data._turnTime = a.turnTime, $data._roundTime = a.roundTime, $data._turnSound = playSound("T" + a.speed), recordEvent("turnStart", {
 			data: a
 		}))
 	}, $lib.Classic.turnGoing = function() {

@@ -164,6 +164,18 @@ block Middle
 			select#quick-mode
 				- for(var i in locals.MODE)
 					option(value=Number(i))= L('mode' + locals.MODE[i])
+		//-div.dialog-bar
+			h4= L('roundTime')
+			select#quick-time
+				option(value=5, style='color: #FF0000')
+				option(value=10, style='color: #FF5656')
+				option(value=30, style='color: #FF9191')
+				option(value=60, style='color: #FFA8A8')
+				option(value=90)
+				option(value=120, style='color: #74C5E8')
+				option(value=150, selected, style='color: #329AEF')
+				option(value=200, style='color: #3E7AF9')
+				option(value=300, style='color: #0933EF')-//
 		div.dialog-bar(style='height: 159px;')
 			h4(style='height: 145px;')= L('misc')
 			- for(var i in locals.OPTIONS)
@@ -184,6 +196,11 @@ block Middle
 		div.dialog-bar
 			h4= L('userLimit')
 			input#room-limit(type='number', min=2, max=8, step=1, value=8)
+		//-div.dialog-bar
+			h4= L('roomBackground')
+			select#room-background
+				option(value=0)= L('normalroom')
+				option(value=1)= L('kkuturoom')-//
 		div.dialog-bar
 			h4= L('gameMode')
 			select#room-mode
@@ -402,11 +419,11 @@ block Middle
 			button#CVC= L('CLANVSCLAN') -//
 	+Dialog('DressDiag', 600, 320, L('dress'))
 		div.dialog-bar
-			h4(style='width: 150px;')= L('myExordial')
-			input#dress-exordial(type='textfield', placeholder=L('myExordialX'), style='width: 435px;', maxlength=100)
-		div.dialog-bar
 			h4(style='width: 150px;')= L('myNickname')
 			input#dress-nickname(type='textfield', placeholder=L('myNicknameX'), style='width: 435px;', maxlength=10)
+		div.dialog-bar
+			h4(style='width: 150px;')= L('myExordial')
+			input#dress-exordial(type='textfield', placeholder=L('myExordialX'), style='width: 435px;', maxlength=100)
 		div.dialog-bar(style='width: 150px;')
 			div.moremi#dress-view(style='float: left; width: 150px; height: 150px;')
 			h4(style='width: 100%; font-weight: bold;')= L('myMoremi')

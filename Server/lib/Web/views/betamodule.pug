@@ -18,7 +18,7 @@
 	볕뉘 수정사항:
 	* Login 을 Passport 로 수행하기 위한 수정
 -
-	const MENU = [
+	/*const MENU = [
 		{ key: 'HOME', href: "https://bfk.playts.net" },
 		{ key: 'JJOBAR', href: "http://jjo.kr/kkutu" },
 		{ key: 'GAMES', sub: [
@@ -43,8 +43,9 @@
 		{ key: 'ADMINMAIL', href: "mailto:bfk@playts.net", sub: [
 			{ key: 'ACCMAIL', href: "mailto:bfk@playts.net" },
 		]},
-	];
+	];*/
 	const PUBLIC = locals.published;
+	
 	
 	var DATA = locals.data || {};
 	var LANG = locals.locale;
@@ -68,19 +69,22 @@
 		return res.join("").toString();
 	};
 
+
 mixin Menu()
-	div.Menu
-		- for(i in MENU)
-			- if(MENU[i].href)
-				button.menu-btn(id='menu-item-'+MENU[i].key, onclick='location.href = "'+MENU[i].href+'";')!= L(MENU[i].key)
-			- else if(MENU[i].sub)
-				div.menu-btn(id='menu-item-'+MENU[i].key)!= L(MENU[i].key)
-					div.menu-sub-separator
-					- for(j in MENU[i].sub)
-						div.menu-sub-btn(onclick='location.href = "'+MENU[i].sub[j].href+'";')!= L(MENU[i].sub[j].key)
-		div#account
-			span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
-			div#account-info
+	nav(class='navbar navbar-expand-sm bg-light')
+		a(class='navbar-brand' href='https://bfk.playts.net') BF 끄투
+		ul(class='navbar-nav')
+			li(class='nav-item' style='color: gray;') 제휴
+		ul(class='navbar-nav')
+			li(class='nav-item' href='mailto:bfk@playts.net')
+				a(href='mailto:bfk@playts.net') 관리자메일
+		ul(class='navbar-nav')
+			li(class='nav-item')
+				// -
+					div#account
+				div(id='accounts')
+					span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
+				div#account-info
 
 mixin MMenu()
 	div.Menu
@@ -107,10 +111,14 @@ mixin separator(len)
 	
 mixin PageHead(min)
 	if !min
+	
 		link(rel='stylesheet', href=(locals.mobile && !locals.as_pc) ? '/css/m_betastyle.css' : '/css/betastyle.css')
 		link(rel='stylesheet', href='/css/fa.css')
 		link(rel='stylesheet', href='/css/expl.css')
-	script(type='text/javascript', src='/js/jquery.js')
+		//link(rel='stylesheet', href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css')
+
+	script(type='text/javascript', src='https://code.jquery.com/jquery-3.4.1.js')
+	//script(src='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js')
 	script(type='text/javascript', src='/language/'+locals.page.replace("/", "_")+'/'+locals.lang)
 	
 	if PUBLIC && !SESSION.admin

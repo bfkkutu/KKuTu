@@ -151,6 +151,31 @@ function processAdmin(id, value, requestId){
 		case "yell":
 			KKuTu.publish('yell', { value: value });
 			return null;
+		case "reload":
+			if(value == "kkutu"){
+				KKuTu = require('./kkutu');
+			}else if(value == "shop"){
+				MainDB = require('../Web/db');
+			}else{
+				return null;
+			}
+			return null;
+		case "ban":
+			MainDB.users.update([ '_id', value ]).set([ 'black', "차단되었습니다. 관리자에게 문의하세요." ]).on();
+			if(temp = DIC[value]){
+				var clientId = temp.id;
+				var clientIp = getClientIp(temp);
+				temp.socket.send('{"type":"error","code":456}');
+				temp.socket.close();
+			}
+			KKuTu.publish('yell', { value: value + "님이 차단되었습니다." });
+			return null;
+		case "unban":
+			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
+			return null;
+		case "chatban":
+			MainDB.users.update([ '_id', value ]).set([ 'black', "chat" ]).on();
+			return null;
 		case "fix": //점검
 			var fix = "곧 서버 점검이 있을 예정입니다. " + value + " 뒤 서버가 종료됩니다.";
 			KKuTu.publish('yell', { value: fix });
@@ -178,7 +203,6 @@ function processAdmin(id, value, requestId){
 				temp.socket.close();
 			}
 			return null;
-		case "ban": // 유저 밴
 		case "ipban":
 			if(temp = DIC[value]){
 				var clientId = temp.id;
@@ -200,7 +224,6 @@ function processAdmin(id, value, requestId){
 				}
 			}
 			return null;
-		case "unban": // 유저 언밴(해제)
 		case "unipban":
 		case "ipunban":
 			if(DIC[id]) DIC[id].send('yell', { value: "해당 기능은 현재 지원하지 않습니다." });

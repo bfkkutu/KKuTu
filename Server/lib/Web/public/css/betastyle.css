@@ -16,6 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
+@font-face { font-family: 'Cafe24Simplehae'; src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.1/Cafe24Simplehae.woff') format('woff'); font-weight: normal; font-style: normal; }
 @font-face {
 	font-family: 'NBGothic';
 	src: url('../media/NanumBarunGothicLight.woff') format('woff');
@@ -25,8 +26,8 @@ body{
 	color: #EEEEEE;
 	padding: 0px;
 	margin: 0px;
-	min-width: 480px;
 	font-family: NBGothic, 돋움;
+	min-width: 100vw;
 }
 a{
 	color: inherit;
@@ -60,7 +61,7 @@ input:focus, textarea:focus, button:focus{
 span{
 	display: none;
 }
-.Menu{ min-width: 500px; }
+/*.Menu{ min-width: 500px; }
 .Menu .menu-btn{
 	float: left;
 	padding: 7px 5px 5px 5px;
@@ -96,7 +97,7 @@ span{
 	}
 	.Menu .menu-btn:hover .menu-sub-separator{ display: block; }
 	.Menu .menu-btn:hover .menu-sub-btn{ display: block; }
-	.Menu .menu-btn .menu-sub-btn:hover{ color: inherit; }
+	.Menu .menu-btn .menu-sub-btn:hover{ color: inherit; }*/
 #quick-search{ float: right; margin: 1px; }
 #quick-search-tf{
 	float: left;
@@ -126,24 +127,48 @@ span{
 	background-color: #222222;
 	background-color: rgba(0, 0, 0, 0.8);
 }
+.navbar {
+	width: 100vw;
+	background: white;
+	float: left;
+}
+.navbar-brand{
+	color: gray;
+	font-size: 25px;
+	float: left;
+	height: 100%;
+	padding: 10px;
+	margin-left: 100px;
+	margin-top: 8px;
+	font-family: 'Cafe24Simplehae';
+	cursor: pointer;
+}
+li {
+	color: black;
+	font-size: 19px;
+	list-style: none;
+	margin-left: -10px;
+}
+li #accounts {
+	margin-left: calc(100vw - 530px);
+}
+.navbar ul {
+	float: left;
+}
 	.autocomp-item{ margin: 1px 0px; }
 	.autocomp-item:hover, .autocomp-select{ color: #FFFFFF; background-color: rgba(50, 50, 50, 0.8); }
-#account{ float: right; margin: 1px; font-size: 11px; color: #444444; }
+#account{margin: 1px; color: #444444; cursor: pointer;}
 #account-setting{
-	float: left;
+	float: right;
 	padding-top: 8px;
 	width: 50px;
 	text-align: center;
+	cursor: pointer;
 }
 #account-info{
-	float: left;
-	padding-top: 8px;
-	width: 80px;
-	text-align: center;
+	float: right;
 	cursor: pointer;
-	transition: color 300ms ease;
 }
-#account-info:hover{ color: #EEEEEE; }
 #global-notice{
 	padding: 3px 0px;
 	margin-top: 30px;
@@ -268,14 +293,14 @@ span{
 .auto-item:hover{ background-color: #333; }
 .auto-selected{ color: #EEEE44; background-color: #3B3B3B; }
 
-#Top{
+/*#Top{
 	position: fixed;
 	width: 100%;
 	height: 30px;
 	box-shadow: 0px 2px 2px #111111;
 	background-image: url('/img/topbg.png');
 	z-index: 5;
-}
+}*/
 #Middle{
 	float: left;
 	margin-top: 50px;

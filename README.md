@@ -105,7 +105,5 @@ This repository provides you what you have to prepare to play **KKuTu**.
 - 모든 소스 코드에 대해: [GNU 일반 공중 사용 라이선스](https://github.com/JJoriping/KKuTu/blob/master/LICENSE)
 - 모든 이미지 및 소리에 대해: [크리에이티브 커먼즈 라이선스 CC BY](https://creativecommons.org/licenses/by/4.0/)
 	- 다만 본 레포지토리에서 제공하는 소스 코드로 끄투 서비스를 운영하기 위해 이들을 사용하는 경우 저작자 표시(BY)를 생략할 수 있습니다.
-- 변경 예정: [Affero GPL]
-	- 2020년 1월 1일 변경 예정
 
 [dev-blog]: http://blog.jjo.kr/220935346136

@@ -264,8 +264,12 @@ exports.Client = function(socket, profile, sid){
 				title: getGuestName(sid),
 				image: GUEST_IMAGE
 			};
+		}else{
+			my.sendError(402); // 에러를 보내고
+			socket.close(); // 소켓 연결을 끊는다.
 		}
 	}*/
+	my.nickname = null;
 	my.socket = socket;
 	my.place = 0;
 	my.team = 0;
@@ -477,6 +481,7 @@ exports.Client = function(socket, profile, sid){
 			my.equip = $user.equip || {};
 			my.box = $user.box || {};
 			my.data = new exports.Data($user.kkutu);
+			if(my.data.nickname) my.profile.name = my.profile.title = my.data.nickname;
 			my.money = Number($user.money);
 			//my.data.rankPoint = Number($user.rankPoint);
 			my.friends = $user.friends || {};
@@ -757,6 +762,7 @@ exports.Client = function(socket, profile, sid){
 		
 		rw._score = Math.round(rw.score);
 		rw._money = Math.round(rw.money);
+		rw._rankPoint = Math.round(rw.rankPoint);
 		rw._blog = [];
 		my.checkExpire();
 		for(i in my.equip){
@@ -768,6 +774,8 @@ exports.Client = function(socket, profile, sid){
 				else if(j == "hEXP") rw.score += $obj.options[j] * pm;
 				else if(j == "gMNY") rw.money += rw._money * $obj.options[j];
 				else if(j == "hMNY") rw.money += $obj.options[j] * pm;
+				else if(j == "gRPT") rw.rankPoint += rw._rankPoint * $obj.options[j];
+				else if(j == "hRPT") rw.rankPoint += $obj.options[j] * pm;
 				else continue;
 				rw._blog.push("q" + j + $obj.options[j]);
 			}
@@ -783,6 +791,7 @@ exports.Client = function(socket, profile, sid){
 		}
 		rw.score = Math.round(rw.score);
 		rw.money = Math.round(rw.money);
+		rw.rankPoint = Math.round(rw.rankPoint);
 	};
 	my.obtain = function(k, q, flush){
 		if(my.guest) return;
@@ -879,7 +888,8 @@ exports.Room = function(room, channel){
 				turn: my.game.turn,
 				seq: seq,
 				title: my.game.title,
-				mission: my.game.mission
+				mission: my.game.mission,
+				blockWord: my.game.blockWord
 			},
 			practice: my.practice ? true : false,
 			opts: my.opts
@@ -1157,19 +1167,7 @@ exports.Room = function(room, channel){
 			}
 		}
 		my.game.mission = null;
-		for(i in my.game.seq){
-			o = DIC[my.game.seq[i]] || my.game.seq[i];
-			if(!o) continue;
-			if(!o.game) continue;
-			
-			o.playAt = now;
-			o.ready = false;
-			o.game.score = 0;
-			o.game.bonus = 0;
-			o.game.item = [/*0, 0, 0, 0, 0, 0*/];
-			o.game.wpc = [];
-		}
-		my.game.blockword = null;
+		my.game.blockWord = null;
 		for(i in my.game.seq){
 			o = DIC[my.game.seq[i]] || my.game.seq[i];
 			if(!o) continue;
@@ -1513,7 +1511,7 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	if (opts.randomturn) rw.score = rw.score * 2.1; // 랜덤 턴
 	if (opts.noreturn) rw.score = rw.score * 1.3; // 도돌이 금지
 	if (opts.ignoreinitial) rw.score = rw.score * 2.7; // 두음 법칙 파괴
-	if (opts.blockword) rw.score = rw.score * 1.1; // 단어 금지
+	if (opts.blockWord) rw.score = rw.score * 1.1; // 단어 금지
 	if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15
@@ -1622,6 +1620,11 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	if (rankScore >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}
+	
+	// 크리스마스 이벤트
+	/*rw.score = rw.score * 2;
+	rw.money = rw.money * 2;
+	rw.rankPoint = rw.rankPoint * 2;*/
 	
 	// applyEquipOptions에서 반올림한다.
 	

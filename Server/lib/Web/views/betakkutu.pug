@@ -14,7 +14,7 @@
 	
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
-extends betalayout
+extends layout
 
 mixin Dialog(id, w, h, t, nocls)
 	div.dialog(id=id, style=`width: ${w}px; height: ${h}px;`)
@@ -41,7 +41,7 @@ block Subject
 	title= L('title')
 
 block JS
-	script(type='text/javascript', src='/js/in_game_betakkutu.min.js')
+	script(type='text/javascript', src='/js/in_game_kkutu.min.js')
 	script(type='text/javascript', src='/js/in_game_kkutu.obfus.js')
 	script(type="text/javascript", src="/js/in_$request.obfus.js")
 	script(type='text/javascript', src='/js/fabric.min.js')
@@ -70,11 +70,13 @@ block Jungle
 
 block Middle
 	- var VERSION = L('version')
+	- var SECVER = L('security_version')
 	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
 	div#Intro
 		img#intro(src='/img/kkutu/intro.png')
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
 		div#version= VERSION
+		div#secver= SECVER
 		div#intro-text= L('LOADING')
 	div.kkutu-menu
 		button#HelpBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #BBBBBB;')!= L('help')
@@ -105,6 +107,12 @@ block Middle
 			h4= L('BGMext')
 			+SettingOption('mute-bgm', L('bgm'))
 			+SettingOption('mute-effect', L('effect'))
+		div.dialog-bar
+			h4= L('bgmselect')
+			select#bgmselect
+				option(value=L('bgm_allgro'), selected)= L('bgm_allgro')
+				option(value=L('bgm_bfkkutu'))= L('bgm_bfkkutu')
+				option(value=L('bgm_newstart'))= L('bgm_newstart')
 		div.dialog-bar
 			h4= L('BADWORDFILTER')
 			select#badwordfilter
@@ -156,6 +164,18 @@ block Middle
 			select#quick-mode
 				- for(var i in locals.MODE)
 					option(value=Number(i))= L('mode' + locals.MODE[i])
+		//-div.dialog-bar
+			h4= L('roundTime')
+			select#quick-time
+				option(value=5, style='color: #FF0000')
+				option(value=10, style='color: #FF5656')
+				option(value=30, style='color: #FF9191')
+				option(value=60, style='color: #FFA8A8')
+				option(value=90)
+				option(value=120, style='color: #74C5E8')
+				option(value=150, selected, style='color: #329AEF')
+				option(value=200, style='color: #3E7AF9')
+				option(value=300, style='color: #0933EF')-//
 		div.dialog-bar(style='height: 159px;')
 			h4(style='height: 145px;')= L('misc')
 			- for(var i in locals.OPTIONS)
@@ -182,9 +202,9 @@ block Middle
 				optgroup(label=L('mcKorean'))
 					option(value=3)= L('modeKSH')
 					option(value=2)= L('modeKKT')
-					option(value=18)= L('modeKUT')
+					option(value=17)= L('modeKUT')
 					//-option(value=17)= L('modeKTS')-//
-					option(value=19)= L('modeKLH')
+					option(value=18)= L('modeKLH')
 					option(value=8)= L('modeKAP')
 					option(value=6)= L('modeKTY')
 					option(value=10)= L('modeKDA')
@@ -201,9 +221,9 @@ block Middle
 					option(value=11)= L('modeEDA')
 					option(value=13)= L('modeESS')
 					option(value=15)= L('modeEDG')
-				optgroup(label=L('mcJapanese'))
+				//-optgroup(label=L('mcJapanese'))
 					option(value=16)= L('modeJSH')
-				optgroup(label=L('mcTesting'))
+				optgroup(label=L('mcTesting'))-//
 					
 					//-option(value=99)= L('modeETS')-//
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
@@ -212,6 +232,9 @@ block Middle
 		div.dialog-bar
 			h4= L('numRound')
 			input#room-round(type='number', min=1, max=10, step=1, value=5)
+		div.dialog-bar#room-wordLimit-panel
+			h4= L('numWordLimit')
+			input#room-wordLimit(type='number', min=1, max=9, step=1, value=2)
 		div.dialog-bar
 			h4= L('roundTime')
 			select#room-time
@@ -540,6 +563,7 @@ block Middle
 		input(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	+Product('AD')
+		img(src='/img/ad1.png')
 
 block Bottom
 	div.bottom-legal!= L('dictionarySupport')
@@ -547,6 +571,7 @@ block Bottom
 	div.bottom-legal!= L('MEANSUPPORT')
 	img(src='/img/kkutu/meansupport.png')
 	div.bottom-legal!= L('textver123') + L('version_down')
+	div.bottom-legal!= L('textversec') + L('security_version')
 	div.bottom-legal!= L('madewith')
 	script.
 		function setParam(name, value) {
@@ -590,4 +615,5 @@ block Bottom
 	
 	div.bottom-legal!= L('AGREEMENT_LINK')
 	div.bottom-legal!= L('PRIVACY_LINK')
-	div.bottom-legal!= L('OPOLICY_LINK')
+	div.bottom-legal!= L('OPOLICY_LINK1')
+	div.bottom-legal!= L('OPOLICY_LINK2')

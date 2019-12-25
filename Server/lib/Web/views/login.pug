@@ -33,7 +33,7 @@ html
 		div.login-with= locals.text ? L(locals.text) : L('loginWith')
 		//볕뉘 수정
 		a(href="/")
-			button(style="background: url('/img/kkutu/short_logo.png'); width: 165px; height: 75px;")
+			button(style="background: url('/img/kkutu/short_logo_x.png'); width: 165px; height: 75px;")
 		each val in loginList
 			a(href="/login/" + val.vendor)
 				button(style="color: " + val.fontColor + "; background-color: " + val.color + ";")= L(val.displayName)

@@ -109,6 +109,8 @@ function getClientIp(req, res){
 Server.use((req, res, _next) => {
 	var clientIp = getClientIp(req, res);
 	
+	//console.log(`Packet from ${clientIp}`);
+	
 	if(IpFilters.ips.indexOf(clientIp) == -1) _next();
 	else res.send(`<head><title>BF끄투 - 이용정지<style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><script>alert("회원님의 아이피는 영구적으로 이용이 제한되었습니다.")</script><center><h2>회원님의 아이피는 영구적으로 이용이 제한되었습니다.</h2></body></center>`);
 });
@@ -176,8 +178,8 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	JLog.warn(`DoS from IP ${ip} on ${path}`); //패킷을 보낸놈의 아이피를 따고
 	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+"  "+date, 'utf8', function(err, ip, path) { //기록하고
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
-		process.exit(1); //웹 서버를 조진다
 	})
+	process.exit(1); //웹 서버를 조진다
 };
 Server.use(DDDoS.express());
 //디도스 감지 및 차단
@@ -363,13 +365,8 @@ Server.get("/beta/server_status", function(req, res){
 	page(req, res, "betaserver_status");
 });
 
-Server.get("/beta/servers", function(req, res){
-	var list = [];
-
-	gameServers.forEach(function(v, i){
-		list[i] = v.seek;
-	});
-	res.send({ list: list, max: Const.KKUTU_MAX });
+Server.get("/beta/kkutu", function(req, res){
+	page(req, res, "betakkutu");
 });
 Server.get('/upload', function(req, res){
 	res.render('upload');

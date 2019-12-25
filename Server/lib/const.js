@@ -123,7 +123,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "blw" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -301,7 +301,7 @@ exports.KO_INJEONG = [
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "BUS",
 	"DONG", "MFA", "ZHS", "KTR", "BBF", "ILN", "TRR",
-	"THP"
+	"THP", "UND", "TLR", "LDB", "HKI"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"

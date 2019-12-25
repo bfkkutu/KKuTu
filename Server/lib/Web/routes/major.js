@@ -142,13 +142,16 @@ res.send({ text: text });
 		}else res.send({ error: 400 });
 });
 Server.post("/nickname", function (req, res) {
-var text = req.body.data || "";
+	var text = req.body.data || "";
 
-if (req.session.profile) {
+	if (req.session.profile) {
 		text = text.slice(0, 10);
-MainDB.users.update(['_id', req.session.profile.id]).set(['nickname', text]).on(function ($res) {
-res.send({ text: text });
-        });
+		MainDB.users.findOne([ 'nickname', text ]).on(function($user){
+			if($user) return res.send({ error: 600 });
+			MainDB.users.update(['_id', req.session.profile.id]).set(['nickname', text]).on(function ($res) {
+				res.send({ text: text });
+			});
+		});
     } else res.send({ error: 400 });
 });
 Server.post("/buy/:id", function(req, res){

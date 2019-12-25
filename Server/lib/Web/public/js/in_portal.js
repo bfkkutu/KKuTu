@@ -58,6 +58,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		})
 	}
 	var b, c, d = 2e3;
+	d = 100; // 최대 수용 인원
 	$(document).ready(function() {
 		b = {
 			list: $("#server-list"),

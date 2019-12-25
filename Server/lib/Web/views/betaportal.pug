@@ -14,6 +14,7 @@
 
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
+	(style='width: 100%; text-align: center; height: 100vh; width: 100vw'); (30줄)
 extends betalayout
 
 block Subject
@@ -24,32 +25,28 @@ block CSS
 
 block Middle
 	+separator(5)
+		
 	div(style='width: 100%; text-align: center; height: 100vh;')
 		div(style='margin-top: 100px;')
 			img#logo(src='/img/kkutu/short_logo.png')
 		div#menu-bar(style='margin-top: 25px; margin-left: 50%; margin-right: 100%;')
-			a(target='_blank', href='http://cafe.bfkkutu.ze.am/', style='background-color: #189E47;')= 'Naver Cafe'
-			a(target='_blank', href='//discord.gg/scPVHcE', style='background-color: #233599;')= 'Discord'
+			a(target='_blank', href='http://cafe.bfkkutu.ze.am/', style='color: white; text-decoration: none; cursur: pointer;')
+				img(src='https://is1-ssl.mzstatic.com/image/thumb/Purple113/v4/31/28/f5/3128f5c3-161e-485f-b944-44c74436d039/AppIcon-0-0-1x_U007emarketing-0-0-0-7-0-0-sRGB-0-0-0-GLES2_U002c0-512MB-85-220-0-0.png/246x0w.png', width='100px', style='border-radius: 50%;')
+			a(target='_blank', href='//discord.gg/scPVHcE', style='color: white; text-decoration: none; cursur: pointer;')
+				img(src='https://media.discordapp.net/attachments/559205319872479233/574465132894093327/discord.png', width='100px')
 		div.jjoriping(style='margin-top: 40px; text-align: center;')
 		button#game-start.jjo-display 게임 시작
-	div(style='text-align: center; margin-top: -120px;')
-		//div.server-list-box
-			h3.server-list-title
-				a#server-refresh
-					+FA('refresh')
-					+Expl(L('serverRefresh'))
-				label= L('serverList')
-				label#server-total(style='color: #AAA; font-size: 13px;')
-	div#server-list(style='display: none;')
-	//div(style='float: left; width: calc(100% - 4px); border: 1px solid #CCC; margin-top: 10px; background-color: #EEE;')
-		iframe#error(width='100%', height='40px', scrolling='no', src='/server_status.html')
-	//div(style='float: left; width: calc(100% - 4px); border: 1px solid #CCC; margin-top: 10px; background-color: #EEE;')
-		iframe#kkutu-bulletin(width='100%', height='400px', src='/kkutu_bulletin.html')
-	//div(style='float: left; width: calc(37.5% - 4px); border: 0px solid #CCC; margin-top: 10px; background-color: #7289da;')
-		iframe#discord-widget(width='100%', height='80px', src='/discord_widget.html')
-	+separator(10)
-
-block Bottom
+	//
+	div(class='ani_box' style='width: 100%; height: 50px; margin-top: 100px; border-radius: 50px;')
+		h1(style='line-height: 50px') 
+	div(class='ani_box' style='width: 100%; height: 50px; margin-top: 100px; border-radius: 50px;')
+		h1(style='line-height: 50px') 
+	
+	script(src='/public/js/animation_scroll.js')
+	script(src='https://raw.githubusercontent.com/AdferoInteractive/jScrollability/master/jScrollability.js')
+		
+block Bottom	
+	div(style='margin-top: 300px;')
 	//-div(style='float: left; width: calc(37.5% - 4px); border: 0px solid #CCC; margin-top: 10px;')
 		iframe#ad1(width='100%', height='80px', src='/ad.html')-//
 	div.bottom-legal!= L('dictionarySupport')
