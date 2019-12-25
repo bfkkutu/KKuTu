@@ -1,5 +1,4 @@
 const config = require('../../sub/auth.json');
-const bfsid = "SERVER";
 
 module.exports.config = {
     strategy: require('passport-discord').Strategy,
@@ -20,22 +19,13 @@ module.exports.strategyConfig = {
 module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
     return (req, accessToken, refreshToken, profile, done) => {
         const $p = {};
-
         // var fullname = profile.username+"#"+profile.discriminator;
 		
-		if(profile.username == "베프"){
-			$p.authType = "discord";
-			$p.id = bfsid;
-			$p.name = profile.username;
-			$p.title = profile.username;
-			$p.image = profile.avatar;
-		} else {
-			$p.authType = "discord";
-			$p.id = $p.authType+"-"+profile.id;
-			$p.name = profile.username;
-			$p.title = profile.username;
-			$p.image = profile.avatar;
-		}
+		$p.authType = "discord";
+		$p.id = $p.authType+"-"+profile.id;
+		$p.name = profile.username;
+		$p.title = profile.username;
+		$p.image = profile.avatar;
         strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }
