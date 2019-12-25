@@ -353,10 +353,6 @@ Server.get("/server_status", function(req, res){
 	page(req, res, "server_status");
 });
 
-Server.get("/bfcloud", function(req, res){
-	page(req, res, "bfcloud");
-});
-
 Server.get("/beta/portal", function(req, res){
 	page(req, res, "betaportal");
 });
