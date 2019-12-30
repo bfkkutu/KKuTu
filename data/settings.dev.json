@@ -1,0 +1,9 @@
+{
+  "$schema": "./settings.schema.json",
+
+  "log": {
+    "directory": "logs",
+    "directory-k-hot": "k-hot",
+    "interval": 0
+  }
+}
