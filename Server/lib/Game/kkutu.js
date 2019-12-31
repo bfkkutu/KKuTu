@@ -1491,32 +1491,32 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
 	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
 	*/
-	if (opts.manner) rw.score = rw.score * 1.3; // 매너
-	if (opts.injeong) rw.score = rw.score * 1.0; // 어인정
+	if (opts.manner) rw.score = rw.score * 1.2; // 매너
+	if (opts.injeong) rw.score = rw.score * 0.9; // 어인정
 	if (opts.mission) { // 미션
 		if (!opts.randommission){
-			rw.score = rw.score * 1.1;
+			rw.score = rw.score * 1.0;
 		} else {
-			rw.score = rw.score * 0.9;
+			rw.score = rw.score * 0.8;
 		}
 		if (opts.moremission) {
-			rw.score = rw.score * 0.5;
+			rw.score = rw.score * 0.4;
 		} else {
-			rw.score = rw.score * 1.1;
+			rw.score = rw.score * 1.0;
 		}
 	};
-	if (opts.proverb) rw.score = rw.score * 2.1; // 속담
-	if (opts.loanword) rw.score = rw.score * 1.9; // 우리말
-	if (opts.strict) rw.score = rw.score * 2.1; // 깐깐
-	if (opts.sami) rw.score = rw.score * 2.5; // 3232
-	if (opts.no2) rw.score = rw.score * 2.5; // 2글자 금지
+	if (opts.proverb) rw.score = rw.score * 2.0; // 속담
+	if (opts.loanword) rw.score = rw.score * 1.8; // 우리말
+	if (opts.strict) rw.score = rw.score * 2.0; // 깐깐
+	if (opts.sami) rw.score = rw.score * 2.4; // 3232
+	if (opts.no2) rw.score = rw.score * 2.4; // 2글자 금지
 
-	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
-	if (opts.randomturn) rw.score = rw.score * 2.1; // 랜덤 턴
-	if (opts.noreturn) rw.score = rw.score * 1.3; // 도돌이 금지
-	if (opts.ignoreinitial) rw.score = rw.score * 2.7; // 두음 법칙 파괴
-	if (opts.blockWord) rw.score = rw.score * 1.1; // 단어 금지
-	if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
+	if (opts.returns) rw.score = rw.score * 0.15 // 리턴
+	if (opts.randomturn) rw.score = rw.score * 2.0; // 랜덤 턴
+	if (opts.noreturn) rw.score = rw.score * 1.2; // 도돌이 금지
+	if (opts.ignoreinitial) rw.score = rw.score * 2.6; // 두음 법칙 파괴
+	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
+	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15
 	switch(Const.GAME_TYPE[mode]){
