@@ -101,6 +101,8 @@
     "OPTS_hEXP": "분당 추가 경험치",
     "OPTS_gMNY": "획득 핑",
     "OPTS_hMNY": "분당 추가 핑",
+	"OPTS_gRPT": "획득 랭크 포인트",
+    "OPTS_hRPT": "분당 추가 랭크 포인트",
 
     "GROUP_PIX": "글자 조각",
     "GROUP_CNS": "소모품",
@@ -156,8 +158,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "3.9.1 User",
-	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.9.1 User</a>",
+    "version": "3.9.3 User",
+	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.9.3 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "1.03",

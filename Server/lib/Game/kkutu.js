@@ -783,11 +783,15 @@ exports.Client = function(socket, profile, sid){
 		if(rw.together && my.okgCount > 0){
 			i = 0.05 * my.okgCount;
 			j = 0.05 * my.okgCount;
+			z = 0.05 * my.okgCount;
 			
 			rw.score += rw._score * i;
 			rw.money += rw._money * j;
+			rw.rankPoint += rw._rankPoint * z;
+			
 			rw._blog.push("kgEXP" + i);
 			rw._blog.push("kgMNY" + j);
+			rw._blog.push("kgRPT" + z);
 		}
 		rw.score = Math.round(rw.score);
 		rw.money = Math.round(rw.money);
@@ -1590,6 +1594,13 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
 	;
 	
+	if (opts.rankgame){ //랭크게임 이라면
+		rw.rankPoint = rw.score * 0.05 //점수에 0.05를 곱하고
+		//rw.rankPoint = Math.round(rw.rankPoint); //아이템 효과 없이 바로 반영되므로 여기서 반올림한다.
+	}else{ //아니라면
+		rw.rankPoint = 0; //없어도 되지만 확실히 0으로 하자.
+	}
+	
 	// TODO: 랭크 포인트 획득 알고리즘 개선하기
 	rw.rankPoint = rw.rankPoint
 		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
@@ -1606,12 +1617,7 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	rw.score += bonus;
 	rw.score = rw.score || 0;
 	rw.money = rw.money || 0;
-	if (opts.rankgame){ //랭크게임 이라면
-		rw.rankPoint = rw.score * 0.05 //점수에 0.05를 곱하고
-		rw.rankPoint = Math.round(rw.rankPoint); //아이템 효과 없이 바로 반영되므로 여기서 반올림한다.
-	}else{ //아니라면
-		rw.rankPoint = 0; //없어도 되지만 확실히 0으로 하자.
-	}
+	rw.rankPoint = rw.rankPoint || 0;
 	
 	if(score <= "-1"){
 		rw.score = 0;

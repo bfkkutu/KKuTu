@@ -417,7 +417,7 @@ block Middle
 		div.dialog-bar
 			button#NewClan= L('NEWCLAN')
 			button#CVC= L('CLANVSCLAN') -//
-	+Dialog('DressDiag', 600, 320, L('dress'))
+	+Dialog('DressDiag', 650, 320, L('dress'))
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myNickname')
 			input#dress-nickname(type='textfield', placeholder=L('myNicknameX'), style='width: 435px;', maxlength=10)
@@ -427,7 +427,7 @@ block Middle
 		div.dialog-bar(style='width: 150px;')
 			div.moremi#dress-view(style='float: left; width: 150px; height: 150px;')
 			h4(style='width: 100%; font-weight: bold;')= L('myMoremi')
-		div.dialog-bar(style='padding: 5px; width: 440px;')
+		div.dialog-bar(style='padding: 5px; width: 490px;')
 			div(style='border-bottom: 1px solid #CCCCCC; height: 20px;')
 				- for(var i in locals.CATEGORIES)
 					- var v = locals.GROUPS[locals.CATEGORIES[i]] || [];
