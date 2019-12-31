@@ -195,9 +195,13 @@ declare namespace KKuTu{
       // 채팅 내용을 보내는 경우.
       'talk': {
         /**
+         * 차례를 넘기기 위해 입력한 단어 여부.
+         */
+        'relay': boolean,
+        /**
          * 대화 내용.
          */
-        value: string
+        'value': string
       }
       'welcome': never
     };
