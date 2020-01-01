@@ -1627,6 +1627,8 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}
 	
+	rw.rankPoint = rw.rankPoint * 0.5;
+	
 	// 크리스마스 이벤트
 	/*rw.score = rw.score * 2;
 	rw.money = rw.money * 2;
