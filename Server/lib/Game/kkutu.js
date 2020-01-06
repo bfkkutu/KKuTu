@@ -1464,7 +1464,8 @@ function shuffle(arr){
 	return r;
 }
 function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
-	if (opts.unknownword) return { score: 1, money: 1, rankPoint: 0 } // 언노운워드는 보상이 없다. 그래도 플레이는 한 것이니 1이라도 주자.
+	if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 } // 언노운워드는 보상이 없다.
+	if (Const.GAME_TYPE[mode] == "ADL") return { score: 0, money: 0, rankPoint: 0 } // 노운워드는 보상이 없다.
 	
 	//score 점수, rw.score 획득 점수, rankPoint 랭크 포인트, rw.rankPoint 획득 랭크 포인트
 	
@@ -1491,30 +1492,30 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
 	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
 	*/
-	if (opts.manner) rw.score = rw.score * 1.2; // 매너
-	if (opts.injeong) rw.score = rw.score * 0.9; // 어인정
+	if (opts.manner) rw.score = rw.score * 1.1; // 매너
+	if (opts.injeong) rw.score = rw.score * 0.8; // 어인정
 	if (opts.mission) { // 미션
 		if (!opts.randommission){
-			rw.score = rw.score * 1.0;
+			rw.score = rw.score * 0.9;
 		} else {
-			rw.score = rw.score * 0.8;
+			rw.score = rw.score * 0.7;
 		}
 		if (opts.moremission) {
-			rw.score = rw.score * 0.4;
+			rw.score = rw.score * 0.3;
 		} else {
-			rw.score = rw.score * 1.0;
+			rw.score = rw.score * 0.9;
 		}
 	};
-	if (opts.proverb) rw.score = rw.score * 2.0; // 속담
-	if (opts.loanword) rw.score = rw.score * 1.8; // 우리말
-	if (opts.strict) rw.score = rw.score * 2.0; // 깐깐
-	if (opts.sami) rw.score = rw.score * 2.4; // 3232
-	if (opts.no2) rw.score = rw.score * 2.4; // 2글자 금지
+	if (opts.proverb) rw.score = rw.score * 1.9; // 속담
+	if (opts.loanword) rw.score = rw.score * 1.7; // 우리말
+	if (opts.strict) rw.score = rw.score * 1.9; // 깐깐
+	if (opts.sami) rw.score = rw.score * 2.3; // 3232
+	if (opts.no2) rw.score = rw.score * 2.3; // 2글자 금지
 
-	if (opts.returns) rw.score = rw.score * 0.15 // 리턴
-	if (opts.randomturn) rw.score = rw.score * 2.0; // 랜덤 턴
-	if (opts.noreturn) rw.score = rw.score * 1.2; // 도돌이 금지
-	if (opts.ignoreinitial) rw.score = rw.score * 2.6; // 두음 법칙 파괴
+	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
+	if (opts.randomturn) rw.score = rw.score * 1.8; // 랜덤 턴
+	if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
+	if (opts.ignoreinitial) rw.score = rw.score * 2.5; // 두음 법칙 파괴
 	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
@@ -1610,7 +1611,7 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	if(all < 2){
 		rw.score = rw.score * 0.05;
 		rw.money = rw.money * 0.05;
-		rw.rankPoint = rw.rankPoint * 0.05;
+		rw.rankPoint = rw.rankPoint * 0.04;
 	}else{
 		rw.together = true;
 	}

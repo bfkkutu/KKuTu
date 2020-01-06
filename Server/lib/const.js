@@ -269,6 +269,14 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
+	},
+	'ADL': { lang: "ko", // 한국어 노운워드
+		rule: "Daneo",
+		opts: [ "mis" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
 	}
 };
 exports.getPreScore = function(text, chain, tr){

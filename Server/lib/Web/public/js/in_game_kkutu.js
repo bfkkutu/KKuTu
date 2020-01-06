@@ -360,6 +360,17 @@
 	
 	function welcome(){
 		var Blocker = window.$Request;
+		var n = $data.users[$data.id].nickname;
+		
+		if(n == "불건전닉네임"){
+			resetNick();
+			ws.close();
+		}
+		
+		if(n == "잘못된닉네임"){
+			resetNick();
+			ws.close();
+		}
 		
 		if (!$data.admin) delete window.$Request;
 		playBGM("lobby"), $("#Intro").animate({
@@ -369,7 +380,6 @@
 		}, 1e3), $("#intro-text").text(L.welcome), addTimeout(function() {
 			$("#Intro").hide()
 		}, 2e3), $data.admin && console.log("Administrator Mode\n(관리자 모드)")
-		
 		
 		// Block the Devtools
 		Blocker('devtools', () => {
@@ -385,6 +395,26 @@
 			return ws.close();
 		})
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
+	}
+	
+	function resetNick(){
+		var a = prompt("불건전하거나 잘못된 닉네임을 사용하였으므로 닉네임이 강제로 변경되었습니다. 새로운 닉네임을 입력해 주세요.");
+		
+		if(a == null) return resetNick();
+		if(a == undefined) return resetNick();
+		if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), resetNick();
+		if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
+		if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
+		
+		$.post("/nickname", {
+			data: a
+		})
+		return alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요.");
 	}
 
 	function getKickText(a, b) {
@@ -587,7 +617,7 @@
 	}
 
 	function addonNickname(a, b) {
-		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b6_money" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master")
+		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager")
 	}
 
 	function updateRoomList(a) {
@@ -2314,6 +2344,8 @@
 				if($("#dress-nickname").val().match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
 				if($("#dress-nickname").val().match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
 				if($("#dress-nickname").val().match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+				if($("#dress-nickname").val().match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 				
 				$(a.currentTarget).attr("disabled", !0), $.post("/nickname", {
 					data: $("#dress-nickname").val()

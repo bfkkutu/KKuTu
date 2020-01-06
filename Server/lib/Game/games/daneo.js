@@ -42,13 +42,15 @@ exports.getTitle = function(){
 exports.roundReady = function(){
 	var my = this;
 	var ijl = my.opts.injpick.length;
+	var gamemode = Const.GAME_TYPE[my.mode];
 	
 	clearTimeout(my.game.turnTimer);
 	my.game.round++;
 	my.game.roundTime = my.time * 1000;
 	my.opts.randomMission = my.opts.abcmission;
 	if(my.game.round <= my.round){
-		my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
+		if(gamemode == "ADL") my.game.theme = "KWW";
+		else my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
 		my.game.chain = [];
 		if(my.opts.mission) {
 			if (my.opts.moremission) { // 더 많은 미션이 있으면
@@ -187,11 +189,15 @@ exports.submit = function(client, text, data){
 				my.game.loading = false;
 				client.publish('turnError', { code: code || 404, value: text }, true);
 			}
-			if($doc){
-				if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
-				else preApproved();
+			if(my.game.theme != "KWW"){
+				if($doc){
+					if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
+					else preApproved();
+				}else{
+					denied();
+				}
 			}else{
-				denied();
+				preApproved();
 			}
 		}
 		DB.kkutu[l].findOne([ '_id', text ]).on(onDB);
