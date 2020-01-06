@@ -17,6 +17,8 @@
  */
 
 import { RuleOption } from "back/utils/Rule";
+import { sendWhisper } from "./Chat";
+import { UIPhase } from "./enums/UIPhase";
 import { G } from "./Global";
 
 /**
@@ -24,14 +26,17 @@ import { G } from "./Global";
  */
 export const $stage:Partial<{
   'chat':JQuery,
+  'chatLog':JQuery,
   'talk':JQuery,
   'intro':JQuery,
   'introText':JQuery,
   'loading':JQuery,
+  'balloons':JQuery,
   'box':{
     'chat':JQuery
   },
   'dialog':{
+    'chat-log':JQuery,
     'extended-theme':JQuery,
     'help':JQuery,
     'quick':JQuery,
@@ -74,6 +79,10 @@ export const $data:Partial<{
    */
   'bgm':AudioBuffer,
   /**
+   * 차단한 사용자 목록 객체.
+   */
+  'blacklist':Table<true>,
+  /**
    * 최근 설정된 어인정 주제 목록.
    */
   'extensions':string[],
@@ -82,6 +91,10 @@ export const $data:Partial<{
    * CSS 선택자의 접두어.
    */
   'extensionPrefix':string,
+  /**
+   * 현재 접속한 계정의 식별자.
+   */
+  'id':string,
   /**
    * 최근 설정된 배경 음악 음소거 여부.
    */
@@ -117,6 +130,10 @@ export const $data:Partial<{
     'prepared':boolean
   },
   /**
+   * 최근 이 클라이언트로 귓속말을 보낸 계정 식별자.
+   */
+  'recentFrom':string,
+  /**
    * 이 클라이언트가 입장한 방 정보 객체.
    */
   'room':KKuTu.Game.Room,
@@ -139,32 +156,40 @@ export const $data:Partial<{
    */
   'url':string,
   /**
+   * 현재 접속 중인 사용자 목록 객체.
+   */
+  'users':Table<KKuTu.Game.User>,
+  /**
    * 귓속말 상대.
    */
   'whisper':string
 }> = {};
 
-/**
- * 현재 보일 UI 화면 열거형.
- */
-export enum UIPhase{
-  /**
-   * 로비 화면.
-   */
-  LOBBY = "lobby",
-  /**
-   * 방장의 대기실 화면.
-   */
-  MASTER = "master",
-  /**
-   * 방장이 아닌 방 인원의 대기실 화면.
-   */
-  NORMAL = "normal",
-  /**
-   * 게임 화면.
-   */
-  GAMING = "gaming"
-}
+const SIZE_CHAT_WIDTH = 790;
+const SIZE_CHAT_HEIGHT = 190;
+const SIZE_INNER_CHAT_HEIGHT = 120;
+const COMMAND_TABLE:Table<(chunk:string[]) => void> = {
+  ㄱ: () => {
+    if(!$data.room){
+      return;
+    }
+    if($data.room.master === $data.id){
+      $stage.menu.start.trigger('click');
+    }else{
+      $stage.menu.ready.trigger('click');
+    }
+  },
+  ㄹ: () => {
+    showDialog($stage.dialog['chat-log']);
+    $stage.chatLog.scrollTop(Number.MAX_SAFE_INTEGER);
+  },
+  귓: chunk => {
+    sendWhisper(chunk[1], chunk.slice(2).join(' '));
+  },
+  청소: () => {
+    $stage.chat.empty();
+  }
+};
 
 /**
  * 대화상자를 보인다.
@@ -214,7 +239,13 @@ export function getGameOptions(prefix:string):{
  * @param chunk 명령 내용.
  */
 export function runCommand(chunk:string[]):void{
+  const runner = COMMAND_TABLE[chunk[0]];
 
+  if(runner){
+    runner(chunk);
+  }else{
+
+  }
 }
 /**
  * 주어진 특수 규칙 목록에 맞게 객체의 표시 여부를 전환한다.
@@ -272,8 +303,8 @@ export function updateUI():void{
   for(const $v of Object.values($stage.box)){
     $v.hide();
   }
-  $stage.box.chat.show().width(790).height(190);
-  $stage.chat.height(120);
+  $stage.box.chat.show().width(SIZE_CHAT_WIDTH).height(SIZE_CHAT_HEIGHT);
+  $stage.chat.height(SIZE_INNER_CHAT_HEIGHT);
 
   switch($data.phase){
     case UIPhase.LOBBY:

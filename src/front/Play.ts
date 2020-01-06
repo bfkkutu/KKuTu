@@ -21,10 +21,11 @@ import $ = require("jquery");
 import { DateUnit } from "back/utils/enums/DateUnit";
 import { Rule, RULE_TABLE, RuleOption } from "back/utils/Rule";
 import { loadSounds } from "./utils/Audio";
+import { UIPhase } from "./utils/enums/UIPhase";
 import { prettyTime } from "./utils/Format";
 import { connectLobby, send } from "./utils/GameClient";
 import { initialize, L } from "./utils/Global";
-import { $data, $stage, getGameOptions, runCommand, showDialog, UIPhase, updateGameOptions, updateLoading } from "./utils/PlayUtility";
+import { $data, $stage, getGameOptions, runCommand, showDialog, updateGameOptions, updateLoading } from "./utils/PlayUtility";
 import { isRoomMatched } from "./utils/Room";
 import { applySettings, checkCompatibility } from "./utils/Utility";
 
@@ -36,6 +37,7 @@ $(document).ready(async () => {
     return;
   }
   $stage.chat = $("#chat");
+  $stage.chatLog = $("#chat-log-board");
   $stage.talk = $("#talk");
   $stage.intro = $("#intro");
   $stage.introText = $("#intro-text");
@@ -43,7 +45,9 @@ $(document).ready(async () => {
   $stage.box = {
     chat: $(".chat-box")
   };
+  $stage.balloons = $("#balloons");
   $stage.dialog = {
+    'chat-log': $("#dialog-chat-log"),
     'help': $("#dialog-help"),
     'settings': $("#dialog-settings"),
     'room': $("#dialog-room"),
@@ -75,6 +79,7 @@ $(document).ready(async () => {
 
   $data.options = Object.values(RuleOption).filter(w => w.length === 3);
   $data.rooms = [];
+  $data.users = {};
   $data.url = $("#url").text();
 
   await loadSounds();
