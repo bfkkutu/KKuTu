@@ -1256,7 +1256,7 @@ exports.Room = function(room, channel){
 				res[i].rank = Number(i);
 			}
 			pv = res[i].score;
-			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts);
+			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts, DIC[my.game.seq[i]] || my.game.seq[i].robot);
 			rw.playTime = now - o.playAt;
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
@@ -1463,7 +1463,7 @@ function shuffle(arr){
 	
 	return r;
 }
-function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
+function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts, robot){
 	if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 } // 언노운워드는 보상이 없다.
 	if (Const.GAME_TYPE[mode] == "ADL") return { score: 0, money: 0, rankPoint: 0 } // 노운워드는 보상이 없다.
 	
@@ -1590,10 +1590,6 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 		default:
 			break;
 	}
-	rw.score = rw.score
-		* (0.77 + 0.05 * (all - rank) * (all - rank)) // 순위
-		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
-	;
 	
 	if (opts.rankgame){ //랭크게임 이라면
 		rw.rankPoint = rw.score * 0.05 //점수에 0.05를 곱하고
@@ -1601,6 +1597,11 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	}else{ //아니라면
 		rw.rankPoint = 0; //없어도 되지만 확실히 0으로 하자.
 	}
+	
+	rw.score = rw.score
+		* (0.77 + 0.05 * (all - rank) * (all - rank)) // 순위
+		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
+	;
 	
 	// TODO: 랭크 포인트 획득 알고리즘 개선하기
 	rw.rankPoint = rw.rankPoint
@@ -1611,9 +1612,14 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	if(all < 2){
 		rw.score = rw.score * 0.05;
 		rw.money = rw.money * 0.05;
-		rw.rankPoint = rw.rankPoint * 0.04;
+		rw.rankPoint = 0;
 	}else{
 		rw.together = true;
+	}
+	if(robot){
+		rw.score = rw.score * 0.001;
+		rw.money = rw.money * 0.001;
+		rw.rankPoint = 0;
 	}
 	rw.score += bonus;
 	rw.score = rw.score || 0;
@@ -1622,10 +1628,6 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	
 	if(score <= "-1"){
 		rw.score = 0;
-	}
-	
-	if (rankScore >= 5000){
-		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}
 	
 	rw.rankPoint = rw.rankPoint * 0.5;
@@ -1638,6 +1640,10 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	// applyEquipOptions에서 반올림한다.
 	
 	//rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
+	
+	if (rankScore >= 5000){
+		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
+	}
 
 	return rw;
 }
