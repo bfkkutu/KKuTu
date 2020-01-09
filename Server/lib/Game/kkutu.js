@@ -1256,7 +1256,7 @@ exports.Room = function(room, channel){
 				res[i].rank = Number(i);
 			}
 			pv = res[i].score;
-			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts, DIC[my.game.seq[i]] || my.game.seq[i].robot);
+			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts);
 			rw.playTime = now - o.playAt;
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
@@ -1463,7 +1463,7 @@ function shuffle(arr){
 	
 	return r;
 }
-function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts, robot){
+function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 } // 언노운워드는 보상이 없다.
 	if (Const.GAME_TYPE[mode] == "ADL") return { score: 0, money: 0, rankPoint: 0 } // 노운워드는 보상이 없다.
 	
@@ -1471,6 +1471,7 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts, robot){
 	
 	var rw = { score: 0, money: 0, rankPoint: 0 };
 	var sr = score / ss;
+	var rr = rankPoint / ss;
 	/*
 	if (opts.manner) rw.score = rw.score * 0.9; // 매너
 	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
@@ -1605,7 +1606,8 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts, robot){
 	
 	// TODO: 랭크 포인트 획득 알고리즘 개선하기
 	rw.rankPoint = rw.rankPoint
-		* 1.25 / (1 + 1.25 * sr * sr) // 점차비(양학했을 수록 ↓)
+		* (0.77 + 0.05 * (all - rank) * (all - rank)) // 순위
+		* 1.25 / (1 + 1.25 * rr * rr) // 점차비(양학했을 수록 ↓)
 	;
 	
 	rw.money = 1 + rw.score * 0.01;
@@ -1616,11 +1618,11 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts, robot){
 	}else{
 		rw.together = true;
 	}
-	if(robot){
+	/*if(robot){
 		rw.score = rw.score * 0.001;
 		rw.money = rw.money * 0.001;
 		rw.rankPoint = 0;
-	}
+	}*/
 	rw.score += bonus;
 	rw.score = rw.score || 0;
 	rw.money = rw.money || 0;
@@ -1631,6 +1633,10 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts, robot){
 	}
 	
 	rw.rankPoint = rw.rankPoint * 0.5;
+	
+	if(rw.rankPoint <= 0){
+		rw.rankPoint = 0;
+	}
 	
 	// 크리스마스 이벤트
 	/*rw.score = rw.score * 2;
