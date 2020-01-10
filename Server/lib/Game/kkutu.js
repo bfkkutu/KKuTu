@@ -1463,7 +1463,7 @@ function shuffle(arr){
 	
 	return r;
 }
-function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
+function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 } // 언노운워드는 보상이 없다.
 	if (Const.GAME_TYPE[mode] == "ADL") return { score: 0, money: 0, rankPoint: 0 } // 노운워드는 보상이 없다.
 	
@@ -1647,7 +1647,7 @@ function getRewards(rankScore, mode, score, bonus, rank, all, ss, opts){
 	
 	//rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
 	
-	if (rankScore >= 5000){
+	if (rankPoint >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}
 
