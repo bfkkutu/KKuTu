@@ -103,7 +103,7 @@ block Middle
 	+Dialog('SettingDiag', 320, 340, L('settingsText'))
 		div.dialog-bar
 			h4= L('BGMVOL')
-			input#bgmvol(type='range' min='0' max='1' value='0.5' step='0.01' style='width:50%;')
+			input#bgmvol(type='range' min='0' max='1' value='1' step='0.01' style='width:50%;')
 			h4= L('BGMext')
 			+SettingOption('mute-bgm', L('bgm'))
 			+SettingOption('mute-effect', L('effect'))
@@ -208,7 +208,7 @@ block Middle
 					option(value=3)= L('modeKSH')
 					option(value=2)= L('modeKKT')
 					option(value=17)= L('modeKUT')
-					//-option(value=17)= L('modeKTS')-//
+					//-option(value=19)= L('modeADL')-//
 					option(value=18)= L('modeKLH')
 					option(value=8)= L('modeKAP')
 					option(value=6)= L('modeKTY')

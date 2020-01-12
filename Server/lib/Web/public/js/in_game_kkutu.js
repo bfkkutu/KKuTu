@@ -62,7 +62,7 @@
 		$data.muteBGM = $data.opts.mb, 
 		$data.muteEff = $data.opts.me, 
 		/*$data.bwf = $data.opts.bf,*/ 
-		/*$("#bgmvol").val($data.bgmuvol),*/
+		/*$("#bgmvol").val($data.bgmvolume),*/
 		$("#mute-bgm").attr("checked", $data.muteBGM), 
 		$("#mute-effect").attr("checked", $data.muteEff), 
 		/*$("#badwordfilter").val($data.opts.bwf),*/ 
@@ -1496,16 +1496,17 @@
 			var bgmtype;
 			a = $("#bgmselect").val().substr(0, 1);
 		}
-		return $data.bgm && $data.bgm.stop(), $data.bgm = playSound(a, !0, $("#bgmvol").val());
+		return $data.bgm && $data.bgm.stop(), $data.bgm = playSound(a, !0);
 	}
 
 	function stopBGM() {
 		$data.bgm && ($data.bgm.stop(), !$data.admin ? delete $data.bgm : null)
 	}
 
-	function playSound(a, b, g) {
+	function playSound(a, b) {
 		var c, d, e = b && $data.muteBGM || !b && $data.muteEff;
-		return d = $sound[a] || $sound.missing, window.hasOwnProperty("AudioBuffer") && d instanceof AudioBuffer ? (c = audioContext.createBufferSource(), c.startedAt = audioContext.currentTime, c.loop = b, c.buffer = e ? audioContext.createBuffer(2, d.length, audioContext.sampleRate) : d, c.connect(audioContext.destination)) : (d.readyState && (d.audio.currentTime = 0), d.audio.loop = b || !1, d.audio.volume = e ? 0 : 1, c = d), $_sound[a] && $_sound[a].stop(), $_sound[a] = c, c.key = a, c.start(), c
+		//e = $("#bgmvol").val();
+		return d = $sound[a] || $sound.missing, window.hasOwnProperty("AudioBuffer") && d instanceof AudioBuffer ? (c = audioContext.createBufferSource(), c.startedAt = audioContext.currentTime, c.loop = b, c.buffer = e ? audioContext.createBuffer(2, d.length, audioContext.sampleRate) : d, c.connect(audioContext.destination)) : (d.readyState && (d.audio.currentTime = 0), d.audio.loop = b || !1, d.audio.volume = e ? 0 : $("#bgmvol").val(), c = d), $_sound[a] && $_sound[a].stop(), $_sound[a] = c, c.key = a, c.start(), c
 	}
 
 	function stopAllSounds() {
@@ -2715,8 +2716,8 @@ $(document).ready(function() {
 
 
 document.onload = function() { //호환성 조정
-	if (navigator.appName == "Microsoft Internet Explorer") {
-		alert("해당 브라우저는 현재 지원하지 않습니다.\n다른 브라우저를 사용해 주세요.");
+	if (navigator.appName == "Internet Explorer") {
+		alert("지원하지 않는 브라우저입니다.\n다른 브라우저를 사용해 주세요.");
 		
 		$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
 		$("#Bottom").remove();

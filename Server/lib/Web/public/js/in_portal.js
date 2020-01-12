@@ -21,6 +21,14 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	let isHacker = true;
 	let _setInterval = window.setInterval;
 	
+	$(document).ready(function() { //호환성 조정
+		if (jQuery.browser.name == "msie"){
+			alert("지원하지 않는 브라우저입니다.\n다른 브라우저를 사용해 주세요.");
+			$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
+			$("#Bottom").remove();
+		}
+	});
+	
 	function detectHacker(type, callback) {
 		if (type == 'devtools') {
 			delete window.WebSocket, delete window.setInterval;
@@ -94,13 +102,3 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		})
 	})
 })();
-
-
-document.onload = function() { //호환성 조정
-	if (navigator.appName == "Microsoft Internet Explorer") {
-		alert("해당 브라우저는 현재 지원하지 않습니다.\n다른 브라우저를 사용해 주세요.");
-		
-		$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
-		$("#Bottom").remove();
-	}
-};

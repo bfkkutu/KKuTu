@@ -158,8 +158,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "3.9.8 User",
-	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.9.8 User</a>",
+    "version": "3.9.9 User",
+	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>3.9.9 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "1.03",
@@ -850,6 +850,12 @@
     "wpFail_406": "실패 - 신청 기준에 맞지 않는 단어입니다.",
     "wpFail_409": "실패 - 이미 등록된 단어입니다.",
     "wpFail_429": "실패 - 잠시 후 시도해 주세요."
+  },
+  "bfsoft": {
+	"BFSoft": "BF Soft",
+	"BFKKuTu": "BF KKuTu BF끄투",
+	"BFKKuTu_warn": "(일부 브라우저에서는 정상적으로 플레이하실 수 없습니다.)",
+	"Mail": "관리자 메일: bfk@playts.net / admin@bfsoft.kro.kr"
   },
 	"game/fates": {
 		"title": "카드 뽑기",
