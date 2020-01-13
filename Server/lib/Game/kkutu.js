@@ -38,6 +38,11 @@ const GUEST_IMAGE = "/img/kkutu/guest.png";
 const MAX_OKG = 18;
 const PER_OKG = 600000;
 
+// Discord Markdown and Emojify
+const { toHTML } = require('discord-markdown');
+const emoji = require('node-emoji');
+// Discord Markdown and Emojify
+
 File.watchFile("./lib/const.js", () => {
 	Const = require('../const');
 	JLog.info("const.js is Auto-Updated at {lib/Game/kkutu.js}");
@@ -166,7 +171,7 @@ exports.Robot = function(target, place, level){
 		}
 	};
 	my.chat = function(msg, code){
-		my.publish('chat', { value: msg });
+		my.publish('chat', { value: markdownEmoji(msg) });
 	};
 	my.setLevel(level);
 	my.setTeam(0);
@@ -407,7 +412,7 @@ exports.Client = function(socket, profile, sid){
 	};
 	my.chat = function(msg, code){
 		if(my.noChat) return my.send('chat', { notice: true, code: 443 });
-		my.publish('chat', { value: msg, notice: code ? true : false, code: code });
+		my.publish('chat', { value: markdownEmoji(msg), notice: code ? true : false, code: code });
 	};
 	my.checkExpire = function(){
 		var now = new Date();
@@ -1463,6 +1468,14 @@ function shuffle(arr){
 	
 	return r;
 }
+function markdownEmoji(msg){
+	var onMissing = function (name) {
+		return name;
+	};
+	var markdowned = toHTML(msg);
+	var emojified = emoji.emojify(markdowned, onMissing);
+	return emojified;
+}
 function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 } // 언노운워드는 보상이 없다.
 	if (Const.GAME_TYPE[mode] == "ADL") return { score: 0, money: 0, rankPoint: 0 } // 노운워드는 보상이 없다.
@@ -1529,7 +1542,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 			rw.score += score * 0.5;
 			break;
 		case "KKT":
-			rw.score += score * 1.42;
+			rw.score += score * 1.25;
 			break;
 		case "KSH":
 			rw.score += score * 0.55;
@@ -1632,7 +1645,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 		rw.score = 0;
 	}
 	
-	rw.rankPoint = rw.rankPoint * 0.5;
+	//rw.rankPoint = rw.rankPoint * 0.65;
 	
 	if(rw.rankPoint <= 0){
 		rw.rankPoint = 0;
