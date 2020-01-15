@@ -171,7 +171,7 @@ exports.Robot = function(target, place, level){
 		}
 	};
 	my.chat = function(msg, code){
-		my.publish('chat', { value: markdownEmoji(msg) });
+		my.publish('chat', { value: msg });
 	};
 	my.setLevel(level);
 	my.setTeam(0);
@@ -412,7 +412,7 @@ exports.Client = function(socket, profile, sid){
 	};
 	my.chat = function(msg, code){
 		if(my.noChat) return my.send('chat', { notice: true, code: 443 });
-		my.publish('chat', { value: markdownEmoji(msg), notice: code ? true : false, code: code });
+		my.publish('chat', { value: msg, notice: code ? true : false, code: code });
 	};
 	my.checkExpire = function(){
 		var now = new Date();

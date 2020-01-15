@@ -288,13 +288,11 @@ exports.getPenalty = function(chain, score){
 exports.GAME_TYPE = Object.keys(exports.RULE);
 exports.EXAMPLE_TITLE = {
 	'ko': "가나다라마바사아자차",
-	'en': "abcdefghij",
-	'ja': "あいうえお"
+	'en': "abcdefghij"
 };
 exports.INIT_SOUNDS = [ "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "○" ];
 exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하" ];
 exports.MISSION_ko_more = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
-exports.MISSION_ja = [ "あ", "い", "う", "え", "お" ];
 exports.MISSION_en = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ];
 exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 
@@ -313,9 +311,6 @@ exports.KO_INJEONG = [
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"
-];
-exports.JA_INJEONG = [
-	"LOL"
 ];
 exports.KO_THEME = [
 	"30", "40", "60", "80", "90",
@@ -336,9 +331,7 @@ exports.KO_IJP = exports.KO_INJEONG.concat(exports.KO_THEME).filter(function(ite
 exports.EN_IJP = exports.EN_INJEONG.concat(exports.EN_THEME).filter(function(item){ return !exports.IJP_EXCEPT.includes(item); });
 exports.REGION = {
 	'en': "en",
-	'ko': "kr",
-	'zh': "cn",
-	'ja': "jp"
+	'ko': "kr"
 };
 exports.KOR_STRICT = /(^|,)(1|INJEONG)($|,)/;
 exports.KOR_GROUP = new RegExp("(,|^)(" + [

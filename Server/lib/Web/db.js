@@ -16,7 +16,7 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const LANG = [ "ko", "en", "ja" ];
+const LANG = [ "ko", "en" ];
 
 var PgPool	 = require("pg").Pool;
 var GLOBAL	 = require("../sub/global.json");
