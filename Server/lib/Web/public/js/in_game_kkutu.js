@@ -576,7 +576,7 @@
 			d = getLevel(b.data.score),
 			e = EXP[d - 2] || 0,
 			f = EXP[d - 1],
-			g = getMyRank(b.data.rankPoint);
+			g = getRank(b.data.rankPoint);
 		for (a in b.data.record) c += b.data.record[a][1];
 		renderMoremi(".my-image", b.equip), $(".my-stat-level").replaceWith(getLevelImage(b.data.score).addClass("my-stat-level")), $(".my-stat-name").text(b.profile.title || b.profile.name), $(".my-stat-record").html(L.globalWin + " " + c + L.W), $(".my-stat-ping").html(commify(b.money) + L.ping), $(".my-rankPoint").html(b.data.rankPoint + L['LP']), $(".my-rank").html(L[g]), $(".my-okg .graph-bar").width($data._playTime % 6e5 / 6e3 + "%"), $(".my-okg-text").html(prettyTime($data._playTime)), $(".my-level").html(L.LEVEL + " " + d), $(".my-gauge .graph-bar").width((b.data.score - e) / (f - e) * 190), $(".my-gauge-text").html(commify(b.data.score) + " / " + commify(f))
 	}
@@ -910,7 +910,25 @@
 			f = $("#profile-record").empty(),
 			z = $data.users[a];
 		if(!e.robot){
-			var x = getMyRank(z.data.rankPoint);
+			var x = getRank(z.data.rankPoint);
+			
+			if(x == "BRONZE"){
+				$(".profile-head").bgColor("#CD7F32");
+			}else if(x == "SILVER"){
+				$(".profile-head").bgColor("#C0C0C0");
+			}else if(x == "GOLD"){
+				$(".profile-head").bgColor("#FFD700");
+			}else if(x == "PLATINUM"){
+				$(".profile-head").bgColor("#7BCCB5");
+			}else if(x == "DIAMOND"){
+				$(".profile-head").bgColor("#4EE2EC");
+			}else if(x == "MASTER"){
+				$(".profile-head").css({
+					'background-image': "url('/img/kkutu/master.png')"
+				});
+			}else{
+				$(".profile-head").bgColor("");
+			}
 		}
 		
 		if (!e) return void notice(L.error_405);
@@ -1422,26 +1440,6 @@
 		}
 		return isAdmin;
 	}
-	
-	function getRank(a){
-		if(a == 0){
-			return "UNRANKED";
-		}else if(a > 0 && a <= 100){
-			return "BRONZE";
-		}else if(a > 100 && a <= 500){
-			return "SILVER";
-		}else if(a > 500 && a <= 1000){
-			return "GOLD";
-		}else if(a > 1000 && a <= 2500){
-			return "PLATINUM";
-		}else if(a > 2500 && a <= 5000){
-			return "DIAMOND";
-		}else if(a > 5000 && a <= 9999){
-			return "MASTER";
-		}else{
-			return "UNRANKED";
-		}
-	}
 
 	function getImage(a) {
 		return $("<div>").addClass("jt-image").css("background-image", "url('" + a + "')")
@@ -1590,7 +1588,7 @@
 		})
 	}
 	
-	function getMyRank(a){
+	function getRank(a){
 		if(a < 50){
 			return 'UNRANKED';
 		} else if(a >= 50 && a < 1000){

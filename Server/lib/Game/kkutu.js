@@ -1645,6 +1645,14 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 		rw.score = 0;
 	}
 	
+	if(rankPoint >= 2850 && rankPoint <= 2999){ // 빡센 구간 손수 제작
+		rw.rankPoint = rw.rankPoint * 0.7;
+	}else if(rankPoint >= 3700 && rankPoint <= 3999){
+		rw.rankPoint = rw.rankPoint * 0.6;
+	}else if(rankPoint >= 4500 && rankPoint <= 4999){
+		rw.rankPoint = rw.rankPoint * 0.5;
+	}
+	
 	//rw.rankPoint = rw.rankPoint * 0.65;
 	
 	if(rw.rankPoint <= 0){
