@@ -617,7 +617,7 @@
 	}
 
 	function addonNickname(a, b) {
-		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager")
+		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager")
 	}
 
 	function updateRoomList(a) {
@@ -1273,14 +1273,14 @@
 
 	function pushDisplay(a, b, c, d) {
 		var e, f, g, h, i, j, z = MODE[$data.room.mode],
-			k = "KKT" == j,
-			z = "KLH" == j,
-			l = "KAP" == j,
+			RULE = JSON.parse($("#RULE").html()),
+			k = "KKT" == MODE[$data.room.mode],
+			l = "KAP" == MODE[$data.room.mode],
 			m = BEAT[e = a.length],
 			n = 0,
 			o = $data.turnTime / 96,
 			p = $data.turnTime / 12;
-		if ($stage.game.display.empty(), m ? (f = "As" + $data._speed, m = m.split("")) : /*"en" == RULE[j].lang &&*/ e < 10 ? f = "As" + $data._speed : (f = "Al", vibrate(e)), g = "K" + $data._speed, m) {
+		if ($stage.game.display.empty(), m ? (f = "As" + $data._speed, m = m.split("")) : "en" == RULE[MODE[$data.room.mode]].lang && e < 10 ? f = "As" + $data._speed : (f = "Al", vibrate(e)), g = "K" + $data._speed, m) {
 			for (h in m) "0" != m[h] && ($stage.game.display.append(i = $("<div>").addClass("display-text").css({
 				float: l ? "right" : "left",
 				"margin-top": -6,
@@ -1304,7 +1304,7 @@
 			}, Number(h) * p / e, a[h]);
 		addTimeout(function() {
 			for (h = 0; h < 3; h++) addTimeout(function(a) {
-				if (k || z) {
+				if (k) {
 					if (1 == a) return;
 					playSound("kung")
 				}(m ? $stage.game.display.children(".display-text") : $stage.game.display).css("font-size", 21).animate({
@@ -2711,9 +2711,18 @@
 	var spamWarning = 0,
 		spamCount = 0,
 		badCount = 0,
-		badSign = "NONE";
+		badSign = "NONE",
+		_z = console;
 		isHacker = true;
 	const allowCountry = ['KR'];
+	
+	// Disable DevTools Console.
+	Object.defineProperty(_z, '_commandLineAPI', {
+		get : function() {
+			throw '보안 정책 상 개발자 도구는 사용하실 수 없습니다.';
+		}
+	})
+	
 })();
 $(document).ready(function() {
 	$(document).on("contextmenu selectstart", function(e) {

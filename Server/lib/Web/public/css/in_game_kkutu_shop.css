@@ -80,6 +80,10 @@
 .chat-item>.x-money::before{ content: "[총무]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
 .room-user-title>.x.money::before{ content: "[총무]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
 
+.x-premanager .users-name::before{ content: "[부관리자]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.chat-item>.x-premanager::before{ content: "[부관리자]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.premanager::before{ content: "[부관리자]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
+
 .x-master .users-name::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
 .chat-item>.x-master::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
 .room-user-title>.x.master::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
