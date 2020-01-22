@@ -913,21 +913,46 @@
 			var x = getRank(z.data.rankPoint);
 			
 			if(x == "BRONZE"){
-				$(".profile-head").bgColor("#CD7F32");
+				//$(".profile-head").bgColor("#CD7F32");
+				$(".profile-head").css({
+					'background-image': "",
+					'background-color': "#CD7F32"
+				});
 			}else if(x == "SILVER"){
-				$(".profile-head").bgColor("#C0C0C0");
+				//$(".profile-head").bgColor("#C0C0C0");
+				$(".profile-head").css({
+					'background-image': "",
+					'background-color': "#C0C0C0"
+				});
 			}else if(x == "GOLD"){
-				$(".profile-head").bgColor("#FFD700");
+				//$(".profile-head").bgColor("#FFD700");
+				$(".profile-head").css({
+					'background-image': "",
+					'background-color': "#FFD700"
+				});
 			}else if(x == "PLATINUM"){
-				$(".profile-head").bgColor("#7BCCB5");
+				//$(".profile-head").bgColor("#7BCCB5");
+				$(".profile-head").css({
+					'background-image': "",
+					'background-color': "#7BCCB5"
+				});
 			}else if(x == "DIAMOND"){
-				$(".profile-head").bgColor("#4EE2EC");
+				//$(".profile-head").bgColor("#4EE2EC");
+				$(".profile-head").css({
+					'background-image': "",
+					'background-color': "#4EE2EC"
+				});
 			}else if(x == "MASTER"){
 				$(".profile-head").css({
-					'background-image': "url('/img/kkutu/master.png')"
+					'background-image': "url('/img/kkutu/master.png')",
+					'background-color': ""
 				});
 			}else{
-				$(".profile-head").bgColor("");
+				//$(".profile-head").bgColor("");
+				$(".profile-head").css({
+					'background-image': "",
+					'background-color': ""
+				});
 			}
 		}
 		
