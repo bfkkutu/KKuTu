@@ -72,6 +72,9 @@ const hpkp_DIS = 7776000;
 //Referrer Policy
 const referrerPolicy = require('referrer-policy');
 
+//CSP
+const csp = require('helmet-csp');
+
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
 ];
@@ -277,6 +280,76 @@ function GameClient(id, url){
 ROUTES.forEach(function(v){
 	require(`./routes/${v}`).run(Server, WebInit.page);
 });
+
+Server.listen(3000); //For XSS
+
+Server.use(xssFilter());
+Server.use(xFrameOptions());
+Server.use(nosniff());
+
+Server.use(hsts({
+  maxAge: 31536000,        // Must be at least 1 year to be approved
+  includeSubDomains: true, // Must be enabled to be approved
+  preload: true
+}));
+
+Server.use(hpkp({
+	maxAge: hpkp_DIS,
+	sha256s: ['AbCdEf123=', 'ZyXwVu456='],
+	
+	// Set the header based on a condition.
+	// This is optional.
+	setIf: function (req, res) {
+		return req.secure
+	}
+}));
+
+Server.use(referrerPolicy({ policy: 'same-origin' }));
+// Referrer-Policy: same-origin
+ 
+Server.use(referrerPolicy({ policy: 'unsafe-url' }));
+// Referrer-Policy: unsafe-url
+ 
+Server.use(referrerPolicy());
+// Referrer-Policy: no-referrer
+
+/*Server.use(csp({
+	// Specify directives as normal.
+	directives: {
+		defaultSrc: ["'self'", 'https://bfk.playts.net/'],
+		scriptSrc: ["'self'", 'https://bfk.playts.net/js/', "'unsafe-inline'"],
+		styleSrc: ["'self'", 'https://bfk.playts.net/css/'],
+		fontSrc: ['https://bfk.playts.net/media/'],
+		mediaSrc: ['https://bfk.playts.net/media/'],
+		imgSrc: ["'self'", 'https://bfk.playts.net/img/', 'data:'],
+		sandbox: ['allow-forms', 'allow-scripts'],
+		objectSrc: ["'none'"],
+		upgradeInsecureRequests: true,
+		workerSrc: false  // This is not set.
+	},
+	
+	// This module will detect common mistakes in your directives and throw errors
+	// if it finds any. To disable this, enable "loose mode".
+	loose: false,
+	
+	// Set to true if you only want browsers to report errors, not block them.
+	// You may also set this to a function(req, res) in order to decide dynamically
+	// whether to use reportOnly mode, e.g., to allow for a dynamic kill switch.
+	reportOnly: false,
+	
+	// Set to true if you want to blindly set all headers: Content-Security-Policy,
+	// X-WebKit-CSP, and X-Content-Security-Policy.
+	setAllHeaders: false,
+	
+	// Set to true if you want to disable CSP on Android where it can be buggy.
+	disableAndroid: false,
+	
+	// Set to false if you want to completely disable any user-agent sniffing.
+	// This may make the headers less compatible but it will be much faster.
+	// This defaults to `true`.
+	browserSniff: true
+}));*/
+
 Server.get("/", function(req, res){
 	var server = req.query.server;
 	
@@ -370,35 +443,3 @@ Server.get("/beta/kkutu", function(req, res){
 Server.get("/bfsoft", function(req, res){
 	page(req, res, "bfsoft");
 });
-
-Server.listen(3000); //For XSS
-
-Server.use(xssFilter());
-Server.use(xFrameOptions());
-Server.use(nosniff());
-
-Server.use(hsts({
-  maxAge: 31536000,        // Must be at least 1 year to be approved
-  includeSubDomains: true, // Must be enabled to be approved
-  preload: true
-}));
-
-Server.use(hpkp({
-	maxAge: hpkp_DIS,
-	sha256s: ['AbCdEf123=', 'ZyXwVu456='],
-	
-	// Set the header based on a condition.
-	// This is optional.
-	setIf: function (req, res) {
-		return req.secure
-	}
-}));
-
-Server.use(referrerPolicy({ policy: 'same-origin' }));
-// Referrer-Policy: same-origin
- 
-Server.use(referrerPolicy({ policy: 'unsafe-url' }));
-// Referrer-Policy: unsafe-url
- 
-Server.use(referrerPolicy());
-// Referrer-Policy: no-referrer

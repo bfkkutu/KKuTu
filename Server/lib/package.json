@@ -24,6 +24,7 @@
     "grunt-cli": "^1.2.0",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-uglify": "^2.1.0",
+    "helmet-csp": "^2.9.4",
     "hpkp": "^2.0.0",
     "hsts": "^2.2.0",
     "https-proxy-agent": "^2.2.4",
