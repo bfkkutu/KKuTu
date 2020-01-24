@@ -188,36 +188,6 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 Server.use(DDDoS.express());
 //디도스 감지 및 차단
 
-Server.use(xssFilter());
-Server.use(xFrameOptions());
-Server.use(nosniff());
-
-Server.use(hsts({
-  maxAge: 31536000,        // Must be at least 1 year to be approved
-  includeSubDomains: true, // Must be enabled to be approved
-  preload: true
-}));
-
-Server.use(hpkp({
-	maxAge: hpkp_DIS,
-	sha256s: ['AbCdEf123=', 'ZyXwVu456='],
-	
-	// Set the header based on a condition.
-	// This is optional.
-	setIf: function (req, res) {
-		return req.secure
-	}
-}));
-
-Server.use(referrerPolicy({ policy: 'same-origin' }));
-// Referrer-Policy: same-origin
- 
-Server.use(referrerPolicy({ policy: 'unsafe-url' }));
-// Referrer-Policy: unsafe-url
- 
-Server.use(referrerPolicy());
-// Referrer-Policy: no-referrer
-
 WebInit.init(Server, true);
 DB.ready = function(){
 	setInterval(function(){
@@ -359,8 +329,6 @@ Server.get("/", function(req, res){
 	}
 });
 
-Server.listen(3000); //For XSS
-
 Server.get("/servers", function(req, res){
 	var list = [];
 
@@ -402,3 +370,35 @@ Server.get("/beta/kkutu", function(req, res){
 Server.get("/bfsoft", function(req, res){
 	page(req, res, "bfsoft");
 });
+
+Server.listen(3000); //For XSS
+
+Server.use(xssFilter());
+Server.use(xFrameOptions());
+Server.use(nosniff());
+
+Server.use(hsts({
+  maxAge: 31536000,        // Must be at least 1 year to be approved
+  includeSubDomains: true, // Must be enabled to be approved
+  preload: true
+}));
+
+Server.use(hpkp({
+	maxAge: hpkp_DIS,
+	sha256s: ['AbCdEf123=', 'ZyXwVu456='],
+	
+	// Set the header based on a condition.
+	// This is optional.
+	setIf: function (req, res) {
+		return req.secure
+	}
+}));
+
+Server.use(referrerPolicy({ policy: 'same-origin' }));
+// Referrer-Policy: same-origin
+ 
+Server.use(referrerPolicy({ policy: 'unsafe-url' }));
+// Referrer-Policy: unsafe-url
+ 
+Server.use(referrerPolicy());
+// Referrer-Policy: no-referrer
