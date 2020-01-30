@@ -1510,12 +1510,12 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	if (opts.injeong) rw.score = rw.score * 0.8; // 어인정
 	if (opts.mission) { // 미션
 		if (!opts.randommission){
-			rw.score = rw.score * 0.9;
+			rw.score = rw.score * 0.95;
 		} else {
-			rw.score = rw.score * 0.7;
+			rw.score = rw.score * 0.9;
 		}
 		if (opts.moremission) {
-			rw.score = rw.score * 0.3;
+			rw.score = rw.score * 1.25;
 		} else {
 			rw.score = rw.score * 0.9;
 		}
@@ -1531,6 +1531,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
 	if (opts.ignoreinitial) rw.score = rw.score * 2.5; // 두음 법칙 파괴
 	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
+	if (opts.ogow) rw.score = rw.score * 1.2; // 단어 금지
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15

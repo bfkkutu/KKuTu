@@ -151,7 +151,15 @@ exports.roundReady = function(){
 	}else if(my.opts.ignoreinitial){
 			my.game.subChar = null;
 		}
-		my.game.chain = [];
+		
+		if(my.game.round === 1) my.game.chain = []; // First Round
+		
+		if(my.opts.ogow){
+			my.game.chain = my.game.chain;
+		} else {
+			my.game.chain = []; // RESET
+		}
+		
 		if(my.opts.mission) {
 			if (my.opts.moremission) { // 더 많은 미션이 있으면
 				my.game.mission = getMission(my.rule.lang, 'more');

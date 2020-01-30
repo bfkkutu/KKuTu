@@ -53,7 +53,8 @@ exports.OPTIONS = {
 	'blw': { name: "BlockWord" },
 	'eve': { name: "EventMode" },
 	'mms': { name: "MoreMission" },
-	'rank': { name: "RankGame" }
+	'rank': { name: "RankGame" },
+	'ogow': { name: "Ogow" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front', 'mskin' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "mskin" ];
@@ -97,7 +98,7 @@ exports.RULE = {
 	'ESH': { lang: "en", // 영어 끝말잇기
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "nrt", "rtu",
-		"uwd", "upl", "rank" ],
+		"uwd", "upl", "rank", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -114,7 +115,7 @@ exports.RULE = {
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"k32", "nrt", "rtu", "upl", "rank" ],
+		"k32", "nrt", "rtu", "upl", "rank", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -123,7 +124,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "blw" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "blw", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -164,7 +165,7 @@ exports.RULE = {
 	'KAP': { lang: "ko", // 한국어 앞말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
