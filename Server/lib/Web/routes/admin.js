@@ -424,13 +424,17 @@ function checkAdmin(req, res, type){
 			if(GLOBAL.ADMINS[type].indexOf(req.session.profile.id) == -1){
 				req.session.admin = false;
 				JLog.warn(`권한이 없는 회원이 관리자 페이지에 접근을 시도했습니다.　\n시용자(ID | IP): [${req.session.profile.id}] | [${req.connection.remoteAddress}]`);
-				return res.send(`<title>BF끄투 - 404</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>404 not found</h2><div>당신은 관리자가 아닙니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없을 수 있습니다.</li><li>접속한 페이지가 자신의 부서와 맞는지 확인해 보세요.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>이제 막 권한이 변경됐을 수 있으니, <a target='_blank' href='https://bfk.playts.net/'>다시 시도해 보세요.</a></li></ul>`), false;
+				return res.send(`<title>BF끄투 - 500</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>500 Access Denied</h2><div>이 곳에 접근할 권한이 없습니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없습니다.</li><li>접속한 페이지가 자신의 부서와 맞는지 확인해 보세요.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>권한 부여가 아직 되지 않았을 수 있습니다. 총관리자에게 식별 번호를 알려주세요.</li></ul>`), false;
 			}
 		}else{
 			req.session.admin = false;
 			JLog.warn(`권한이 없는 비회원이 관리자 페이지에 접근을 시도했습니다.　\n사용자(IP): [${req.connection.remoteAddress}]`);
-			return res.send(`<title>BF끄투 - 404</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>404 not found</h2><div>당신은 관리자가 아닙니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없을 수 있습니다.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>관리자 계정으로 로그인 후에 다시 시도해 보세요.</li></ul>`), false;
+			return res.send(`<title>BF끄투 - 500</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>500 Access Denied</h2><div>이 곳에 접근할 권한이 없습니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없습니다.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>관리자 계정으로 로그인 후에 다시 시도해 보세요.</li></ul>`), false;
 		}
+	}else{
+		req.session.admin = false;
+			JLog.warn(`잘못된 요청입니다.　\n사용자(IP): [${req.connection.remoteAddress}]`);
+			return res.send(`<title>BF끄투 - 400</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>400 Bad Request</h2><div>잘못된 요청입니다.</div><br/><ul> <li>서버에 문제가 발생했을 수 있습니다.</li></ul>`), false;
 	}
 	return true;
 }

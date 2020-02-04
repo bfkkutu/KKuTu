@@ -157,8 +157,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.0.8 User",
-	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>4.0.8 User</a>",
+    "version": "4.0.9 User",
+	"version_down": "<a href='https://bfk.playts.net/help/whatisversion.html' target='_blank'>4.0.9 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -517,7 +517,7 @@
     "theme_THP": "동방 프로젝트",
     "theme_UND": "언더테일/델타룬",
     "theme_TLR": "테일즈런너",
-    "theme_LDB": "미라큘러스 : 레이디버그와 블랙 캣",
+    "theme_LDB": "미라큘러스 : 레이디버그와 블랙캣",
 	"theme_HKI": "붕괴3rd",
 	"theme_KWW": "노운워드",
 
