@@ -136,12 +136,10 @@ Server.set('view engine', "pug");
 Server.use(Express.static(__dirname + "/public"));
 Server.use(Parser.urlencoded({ extended: true }));
 Server.use(Exession({
-	/* use only for redis-installed
-
 	store: new Redission({
 		client: Redis.createClient(),
 		ttl: 3600 * 12
-	}),*/
+	}),
 	secret: 'kkutu',
 	resave: false,
 	saveUninitialized: true
@@ -220,6 +218,7 @@ DB.ready = function(){
 		}
 	});
 	Server.listen(80);
+	//Server.listen(443);
 	if(Const.IS_SECURED) {
 		const options = Secure();
 		https.createServer(options, Server).listen(443);
@@ -403,6 +402,15 @@ Server.get("/", function(req, res){
 });
 
 Server.get("/servers", function(req, res){
+	var list = [];
+
+	gameServers.forEach(function(v, i){
+		list[i] = v.seek;
+	});
+	res.send({ list: list, max: Const.KKUTU_MAX });
+});
+
+Server.get("//servers", function(req, res){
 	var list = [];
 
 	gameServers.forEach(function(v, i){

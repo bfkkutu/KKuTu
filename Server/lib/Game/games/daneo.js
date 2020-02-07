@@ -189,15 +189,15 @@ exports.submit = function(client, text, data){
 				my.game.loading = false;
 				client.publish('turnError', { code: code || 404, value: text }, true);
 			}
-			if(my.game.theme != "KWW"){
-				if($doc){
+			if($doc){
+				if(my.game.theme == "ADL"){
+					preApproved();
+				}else{
 					if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
 					else preApproved();
-				}else{
-					denied();
 				}
 			}else{
-				preApproved();
+				denied();
 			}
 		}
 		DB.kkutu[l].findOne([ '_id', text ]).on(onDB);

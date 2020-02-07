@@ -617,7 +617,7 @@
 	}
 
 	function addonNickname(a, b) {
-		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager")
+		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music")
 	}
 
 	function updateRoomList(a) {
