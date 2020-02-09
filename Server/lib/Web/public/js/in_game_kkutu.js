@@ -912,7 +912,9 @@
 		if(!e.robot){
 			var x = getRank(z.data.rankPoint);
 			
-			if(x == "BRONZE"){
+			$("#rankicon").attr("src", "/img/kkutu/rankicon/" + x + ".png");
+			
+			/*if(x == "BRONZE"){
 				//$(".profile-head").bgColor("#CD7F32");
 				$(".profile-head").css({
 					'background-image': "",
@@ -953,7 +955,7 @@
 					'background-image': "",
 					'background-color': ""
 				});
-			}
+			}*/
 		}
 		
 		if (!e) return void notice(L.error_405);

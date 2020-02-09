@@ -349,12 +349,14 @@ block Middle
 			div#ri-players(style='width: 100%;')
 		div.dialog-bar.tail-button
 			button#room-info-join= L('join')
-	+Dialog('ProfileDiag', 300, 395)
+	+Dialog('ProfileDiag', 300, 440)
 		div.dialog-bar.profile-head
 		div.dialog-bar
 			h4(style='width: 83px;')= L('PRANK')
 			h4#rank
 			h4#rankpoint
+		div.dialog-bar.profile-rankicon
+			img#rankicon(src='/img/kkutu/rankicon/unranked.png')
 		div.dialog-bar
 			h4(style='width: 83px;')= L('place')
 			h4.dialog-bar-value#profile-place
