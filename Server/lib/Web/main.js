@@ -393,8 +393,8 @@ Server.get("/", function(req, res){
 			'KO_THEME': Const.KO_THEME,
 			'EN_THEME': Const.EN_THEME,
 			'IJP_EXCEPT': Const.IJP_EXCEPT,
-			'ogImage': "https://bfk.playts.net/img/kkutu/logo.png",
-			'ogURL': "https://bfk.playts.net/",
+			'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
+			'ogURL': "https://bfk.opg.kr/",
 			'ogTitle': "글자로 놀자! BF끄투",
 			'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
 		});

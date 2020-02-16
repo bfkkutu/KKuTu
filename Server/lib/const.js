@@ -124,7 +124,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "blw", "ogow" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,

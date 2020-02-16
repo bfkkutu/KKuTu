@@ -179,8 +179,8 @@
 				d = $data.usersR[a.id], d && (!$data.admin ? delete $data.usersR[a.id] : null, notice((d.profile.title || d.profile.name) + L.hasLeft), updateUserList());
 				break;
 			case "yell":
-				if(a.value == "debug"){
-					loadShop(), updateUI();
+				if(a.value == "reload"){
+					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다."), ws.close();
 				}else{
 					yell(a.value), notice(a.value, L.yell);
 				}
@@ -578,7 +578,7 @@
 			f = EXP[d - 1],
 			g = getRank(b.data.rankPoint);
 		for (a in b.data.record) c += b.data.record[a][1];
-		renderMoremi(".my-image", b.equip), $(".my-stat-level").replaceWith(getLevelImage(b.data.score).addClass("my-stat-level")), $(".my-stat-name").text(b.profile.title || b.profile.name), $(".my-stat-record").html(L.globalWin + " " + c + L.W), $(".my-stat-ping").html(commify(b.money) + L.ping), $(".my-rankPoint").html(b.data.rankPoint + L['LP']), $(".my-rank").html(L[g]), $(".my-okg .graph-bar").width($data._playTime % 6e5 / 6e3 + "%"), $(".my-okg-text").html(prettyTime($data._playTime)), $(".my-level").html(L.LEVEL + " " + d), $(".my-gauge .graph-bar").width((b.data.score - e) / (f - e) * 190), $(".my-gauge-text").html(commify(b.data.score) + " / " + commify(f))
+		renderMoremi(".my-image", b.equip, b.id), $(".my-stat-level").replaceWith(getLevelImage(b.data.score).addClass("my-stat-level")), $(".my-stat-name").text(b.profile.title || b.profile.name), $(".my-stat-record").html(L.globalWin + " " + c + L.W), $(".my-stat-ping").html(commify(b.money) + L.ping), $(".my-rankPoint").html(b.data.rankPoint + L['LP']), $(".my-rank").html(L[g]), $(".my-okg .graph-bar").width($data._playTime % 6e5 / 6e3 + "%"), $(".my-okg-text").html(prettyTime($data._playTime)), $(".my-level").html(L.LEVEL + " " + d), $(".my-gauge .graph-bar").width((b.data.score - e) / (f - e) * 190), $(".my-gauge-text").html(commify(b.data.score) + " / " + commify(f))
 	}
 
 	function prettyTime(a) {
@@ -651,7 +651,7 @@
 
 	function normalGameUserBar(a) {
 		var b, c, d, e = $("<div>").attr("id", "game-user-" + a.id).addClass("game-user").append(b = $("<div>").addClass("moremi game-user-image")).append($("<div>").addClass("game-user-title").append(getLevelImage(a.data.score).addClass("game-user-level")).append(d = $("<div>").addClass("game-user-name ellipse").html(a.profile.title || a.profile.name)).append($("<div>").addClass("expl").html(L.LEVEL + " " + getLevel(a.data.score)))).append(c = $("<div>").addClass("game-user-score"));
-		return renderMoremi(b, a.equip), global.expl(e), addonNickname(d, a), a.game.team && c.addClass("team-" + a.game.team), e
+		return renderMoremi(b, a.equip, a.id), global.expl(e), addonNickname(d, a), a.game.team && c.addClass("team-" + a.game.team), e
 	}
 
 	function miniGameUserBar(a) {
@@ -683,7 +683,7 @@
 						i = "S" == c.game.form && "/" + L.stat_spectate;
 					c.robot && (c.profile = getAIProfile(c.level), $data.robots[c.id] = c), d.append($("<div>").attr("id", "room-user-" + c.id).addClass("room-user").append(g = $("<div>").addClass("moremi room-user-image")).append($("<div>").addClass("room-user-stat").append(e = $("<div>").addClass("room-user-ready")).append(f = $("<div>").addClass("room-user-team team-" + c.game.team).html($("#team-" + c.game.team).html()))).append($("<div>").addClass("room-user-title").append(getLevelImage(c.data.score).addClass("room-user-level")).append(h = $("<div>").addClass("room-user-name").text(c.profile.title || c.profile.name))).on("click", function(a) {
 						requestProfile($(a.currentTarget).attr("id").slice(10))
-					})), renderMoremi(g, c.equip), i && f.hide(), c.id == $data.room.master ? e.addClass("room-user-master").html(L.master + n + (i || "")) : i ? e.addClass("room-user-spectate").html(L.stat_spectate + n) : c.game.ready || c.robot ? (e.addClass("room-user-readied").html(L.stat_ready), c.robot || (l = !0)) : c.game.practice ? (e.addClass("room-user-practice").html(L.stat_practice), m = !1) : (e.html(L.stat_noready), m = !1), addonNickname(h, c)
+					})), renderMoremi(g, c.equip, c.id), i && f.hide(), c.id == $data.room.master ? e.addClass("room-user-master").html(L.master + n + (i || "")) : i ? e.addClass("room-user-spectate").html(L.stat_spectate + n) : c.game.ready || c.robot ? (e.addClass("room-user-readied").html(L.stat_ready), c.robot || (l = !0)) : c.game.practice ? (e.addClass("room-user-practice").html(L.stat_practice), m = !1) : (e.html(L.stat_noready), m = !1), addonNickname(h, c)
 				} l && $data.room.master == $data.id && m ? $data._jamsu || ($data._jamsu = addTimeout(onMasterSubJamsu, 5e3)) : (clearTimeout($data._jamsu), !$data.admin ? delete $data._jamsu : null)
 		}
 		$stage.dialog.profile.is(":visible") && requestProfile($data._profiled)
@@ -717,7 +717,7 @@
 	function drawMyDress(a) {
 		var b = $("#dress-view"),
 			c = $data.users[$data.id];
-		renderMoremi(b, c.equip), $(".dress-type.selected").removeClass("selected"), $("#dress-type-all").addClass("selected"), $("#dress-nickname").val(c.nickname), $("#dress-exordial").val(c.exordial), drawMyGoods(a || !0)
+		renderMoremi(b, c.equip, c.id), $(".dress-type.selected").removeClass("selected"), $("#dress-type-all").addClass("selected"), $("#dress-nickname").val(c.nickname), $("#dress-exordial").val(c.exordial), drawMyGoods(a || !0)
 	}
 
 	function renderGoods(a, b, c, d, e) {
@@ -885,7 +885,7 @@
 				}, a.equip = {
 					robot: !0
 				}) : g.t = g.t || 0,
-				c.append($("<div>").addClass("ri-player").append(f = $("<div>").addClass("moremi rip-moremi")).append(e = $("<div>").addClass("ellipse rip-title").html(a.profile.title || a.profile.name)).append($("<div>").addClass("rip-team team-" + g.t).html($("#team-" + g.t).html())).append($("<div>").addClass("rip-form").html(L["pform_" + g.f]))), a.id == b.master && e.prepend($("<label>").addClass("rip-master").html("[" + L.master + "]&nbsp;")), e.prepend(getLevelImage(a.data.score).addClass("profile-level rip-level")), renderMoremi(f, a.equip)
+				c.append($("<div>").addClass("ri-player").append(f = $("<div>").addClass("moremi rip-moremi")).append(e = $("<div>").addClass("ellipse rip-title").html(a.profile.title || a.profile.name)).append($("<div>").addClass("rip-team team-" + g.t).html($("#team-" + g.t).html())).append($("<div>").addClass("rip-form").html(L["pform_" + g.f]))), a.id == b.master && e.prepend($("<label>").addClass("rip-master").html("[" + L.master + "]&nbsp;")), e.prepend(getLevelImage(a.data.score).addClass("profile-level rip-level")), renderMoremi(f, a.equip, a.id)
 		}), showDialog($stage.dialog.roomInfo), $stage.dialog.roomInfo.show()
 	}
 
@@ -970,7 +970,7 @@
 				var g = e.data.record[d];
 				f.append($("<div>").addClass("profile-record-field").append($("<div>").addClass("profile-field-name").html(L["mode" + d])).append($("<div>").addClass("profile-field-record").html(g[0] + L.P + " " + g[1] + L.W)).append($("<div>").addClass("profile-field-score").html(commify(g[2]) + L.PTS)))
 			}
-			renderMoremi(b, e.equip)
+			renderMoremi(b, e.equip, e.id)
 		}
 		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
@@ -1289,7 +1289,7 @@
 			j = {};
 		$data.box && $data.box[d] && (i = L.alreadyGot + " " + i), showDialog($stage.dialog.purchase, !0), $("#purchase-ping-before").html(commify(g) + L.ping), $("#purchase-ping-cost").html(commify(e.cost) + L.ping), $("#purchase-item-name").html(L[d][0]), b = $("#purchase-ping-after").html(commify(h) + L.ping), $("#purchase-item-desc").html(h < 0 ? L.notEnoughMoney : i);
 		for (c in f.equip) j[c] = f.equip[c];
-		j["Mhand" == e.group ? ["Mlhand", "Mrhand"][Math.floor(2 * Math.random())] : e.group] = d, renderMoremi("#moremi-after", j), $data._sgood = d, $stage.dialog.purchaseOK.attr("disabled", h < 0), h < 0 ? b.addClass("purchase-not-enough") : b.removeClass("purchase-not-enough")
+		j["Mhand" == e.group ? ["Mlhand", "Mrhand"][Math.floor(2 * Math.random())] : e.group] = d, renderMoremi("#moremi-after", j, "shop"), $data._sgood = d, $stage.dialog.purchaseOK.attr("disabled", h < 0), h < 0 ? b.addClass("purchase-not-enough") : b.removeClass("purchase-not-enough")
 	}
 
 	function vibrate(a) {
@@ -1631,7 +1631,7 @@
 		} else if(a >= 5000){
 			return 'MASTER';
 		} else {
-			return "";
+			return "UNRANKED";
 		}
 	}
 
@@ -1748,12 +1748,16 @@
 		playSound("success"), $("#obtain-image").css("background-image", "url(" + iImage(a.key) + ")"), $("#obtain-name").html(iName(a.key))
 	}
 
-	function renderMoremi(a, b) {
+	function renderMoremi(a, b, r) {
 		var c, d, e = $(a).empty(),
 			f = {
 				Mlhand: "Mhand",
 				Mrhand: "Mhand"
 			};
+		if(r !== "shop"){
+			u = $data.users[r];
+			if(u !== undefined) o = getRank(u.data.rankPoint);
+		}
 		b || (b = {});
 		for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", iImage(b[d], f[d] || d)).css({
 			width: "100%",
@@ -1766,6 +1770,14 @@
 			width: "100%",
 			height: "100%"
 		})), e.children(".moremi-rhand").css("transform", "scaleX(-1)")
+		if(r !== "shop" && u !== undefined){
+			if(o !== "UNRANKED"){
+				e.append($("<img>").addClass("moremies moremi-tier").attr("src", "/img/kkutu/rankedge/" + o + ".png").css({
+					width: "100%",
+					height: "100%"
+				}));
+			}
+		}
 	}
 
 	function commify(a) {

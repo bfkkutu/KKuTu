@@ -22,9 +22,9 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		var InGame = new XMLHttpRequest(),
 		Portal = new XMLHttpRequest(),
 		DetectHacker = new XMLHttpRequest();
-		InGame.open('GET', "https://bfk.playts.net/js/in_game_kkutu.obfus.js");
-		Portal.open('GET', "https://bfk.playts.net/js/in_portal.js");
-		DetectHacker.open('GET', "https://bfk.playts.net/js/in_$request.obfus.js");
+		InGame.open('GET', "https://bfk.opg.kr/js/in_game_kkutu.obfus.js");
+		Portal.open('GET', "https://bfk.opg.kr/js/in_portal.js");
+		DetectHacker.open('GET', "https://bfk.opg.kr/js/in_$request.obfus.js");
 		InGame.send();
 		Portal.send();
 		DetectHacker.send();
