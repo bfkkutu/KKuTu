@@ -1755,8 +1755,8 @@
 				Mrhand: "Mhand"
 			};
 		if(r !== "shop"){
-			u = $data.users[r];
-			if(u !== undefined) o = getRank(u.data.rankPoint);
+			var u = $data.users[r];
+			if(u !== undefined) var o = getRank(u.data.rankPoint);
 		}
 		b || (b = {});
 		for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", iImage(b[d], f[d] || d)).css({
