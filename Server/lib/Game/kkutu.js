@@ -190,7 +190,7 @@ exports.Data = function(data){
 		this.record[j = Const.GAME_TYPE[i]] = data.record ? (data.record[Const.GAME_TYPE[i]] || [0, 0, 0, 0]) : [0, 0, 0, 0];
 		if(!this.record[j][3]) this.record[j][3] = 0;
 	}
-	// 전, 승, 점수
+	// 전, 승, 점수, 플레이 타임
 };
 exports.WebServer = function(socket){
 	var my = this;
@@ -1220,6 +1220,7 @@ exports.Room = function(room, channel){
 		var suv = [];
 		var teams = [ null, [], [], [], [] ];
 		var sumScore = 0;
+		var sumRankPoint = 0;
 		var now = (new Date()).getTime();	
 		
 		my.interrupt();
@@ -1248,6 +1249,7 @@ exports.Room = function(room, channel){
 			o = DIC[my.game.seq[i]];
 			if(!o) continue;
 			sumScore += o.game.score;
+			sumRankPoint += o.game.score;
 			res.push({ id: o.id, score: o.team ? teams[o.team][1] : o.game.score, dim: o.team ? teams[o.team][0] : 1 });
 		}
 		res.sort(function(a, b){ return b.score - a.score; });
@@ -1261,7 +1263,7 @@ exports.Room = function(room, channel){
 				res[i].rank = Number(i);
 			}
 			pv = res[i].score;
-			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, my.opts);
+			rw = getRewards(o.data.rankPoint, my.mode, o.game.score / res[i].dim, o.game.bonus, res[i].rank, rl, sumScore, sumRankPoint, my.opts, o.data.score);
 			rw.playTime = now - o.playAt;
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
@@ -1476,7 +1478,7 @@ function markdownEmoji(msg){
 	var emojified = emoji.emojify(markdowned, onMissing);
 	return emojified;
 }
-function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
+function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nscore){
 	if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 } // 언노운워드는 보상이 없다.
 	if (Const.GAME_TYPE[mode] == "ADL") return { score: 0, money: 0, rankPoint: 0 } // 노운워드는 보상이 없다.
 	
@@ -1484,7 +1486,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	
 	var rw = { score: 0, money: 0, rankPoint: 0 };
 	var sr = score / ss;
-	var rr = rankPoint / ss;
+	var rr = rankPoint / srp;
 	/*
 	if (opts.manner) rw.score = rw.score * 0.9; // 매너
 	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
@@ -1632,6 +1634,13 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	}else{
 		rw.together = true;
 	}
+	
+	if(all >= 2 && all <= 4) {
+		rw.rankPoint = rw.rankPoint * 0.5;
+	} else if(all > 4 && all <= 8) {
+		rw.rankPoint = rw.rankPoint * 0.75;
+	}
+	
 	/*if(robot){
 		rw.score = rw.score * 0.001;
 		rw.money = rw.money * 0.001;
@@ -1642,7 +1651,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	rw.money = rw.money || 0;
 	rw.rankPoint = rw.rankPoint || 0;
 	
-	if(score <= "-1"){
+	if(nscore <= "-1"){
 		rw.score = 0;
 	}
 	
@@ -1655,10 +1664,6 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, opts){
 	}
 	
 	//rw.rankPoint = rw.rankPoint * 0.65;
-	
-	if(rw.rankPoint <= 0){
-		rw.rankPoint = 0;
-	}
 	
 	// 크리스마스 이벤트
 	/*rw.score = rw.score * 2;
