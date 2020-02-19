@@ -42,6 +42,8 @@ block Subject
 	
 block JS
 	script(type='text/javascript', src='/js/in_game_kkutu.min.js')
+	script(type='text/javascript', src='/js/in_game_kkutu.obfus.js')
+	script(type="text/javascript", src="/js/in_$request.obfus.js")
 	script(type='text/javascript', src='/js/fabric.min.js')
 	script(src='https://www.google.com/recaptcha/api.js')
 	
@@ -50,6 +52,7 @@ block CSS
 	
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
+	// span#PORT= locals.PORT
 	span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
@@ -57,6 +60,7 @@ block Jungle
 	span#OPTIONS= JSON.stringify(locals.OPTIONS)
 	div#Yell
 	div#Loading= L('LOADING')
+	
 	-
 		LANG['explInjeong'] = `<h5>${L('explInjeong')}</h5>\
 			<h5 style='margin-top: 2px; border-top: 1px dashed #444444; padding-top: 2px; color: #BBBBBB;'>${L('explInjeongListTitle')}</h5>\
@@ -66,6 +70,7 @@ block Jungle
 	
 block Middle
 	- var VERSION = L('version') + " (모바일)";
+	- var SECVER = L('security_version')
 	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
 	div#Intro
 		img#intro(src='/img/kkutu/m_intro.png')
@@ -76,6 +81,9 @@ block Middle
 		button#HelpBtn.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #BBBBBB;')!= L('help')
 		button#SettingBtn.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #CCCCCC;')!= L('settings')
 		button#CommunityBtn.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #DAA9FF;')!= L('community')
+		button#LeaderboardBtn.for-lobby(style='display: none; background-color: #FFADD3;'): +FA('trophy')
+		//- button#CursingBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #FD6600;')
+		//- i.fa.fa-char-f
 		button#SpectateBtn.for-master.for-normal(style='display: none; background-color: #D19DFF;'): +FA('eye')
 		button#SetRoomBtn.for-master(style='display: none; background-color: #B0D2F3;'): +FA('magic')
 		button#NewRoomBtn.for-lobby(style='display: none; background-color: #8EC0F3;'): +FA('magic')
@@ -89,12 +97,28 @@ block Middle
 		button#StartBtn.for-master(style='display: none; background-color: #FFB576;'): +FA('play-circle')
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;'): +FA('times')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;'): +FA('video-camera')
-		button#LeaderboardBtn.for-lobby(style='display: none; background-color: #FFADD3;'): +FA('trophy')
-	+Dialog('SettingDiag', 300, 240, L('settingsText'))
+		// button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('CLAN')
+		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
+	+Dialog('SettingDiag', 320, 340, L('settingsText'))
 		div.dialog-bar
-			h4= L('mute')
+			h4= L('BGMVOL')
+			input#bgmvol(type='range' min='0' max='1' value='1' step='0.01' style='width:50%;')
+			h4= L('BGMext')
 			+SettingOption('mute-bgm', L('bgm'))
 			+SettingOption('mute-effect', L('effect'))
+		div.dialog-bar
+			h4= L('bgmselect')
+			select#bgmselect
+				option(value=L('bgm_newbfkkutu'), selected)= L('bgm_newbfkkutu')
+				option(value=L('bgm_allgro'))= L('bgm_allgro')
+				option(value=L('bgm_newstart'))= L('bgm_newstart')
+				option(value=L('bgm_original'))= L('bgm_original')
+		div.dialog-bar
+			h4= L('BADWORDFILTER')
+			select#badwordfilter
+				option(value=L('FILTER1'), selected)= L('FILTER1')
+				option(value=L('FILTER2'))= L('FILTER2')
+				option(value=L('FILTER3'))= L('FILTER3')
 		div.dialog-bar
 			h4= L('denyReq')
 			+SettingOption('deny-invite', L('denyInvite'))
@@ -132,12 +156,26 @@ block Middle
 			button#lb-next(style='margin-right: 6px;')= L('nextPage')
 			button#lb-me= L('myRank')
 			button#lb-prev= L('prevPage')
-	+Dialog('QuickDiag', 300, 230, L('quickRoom'))
+		//- +Dialog('CursingDiag', 310, 60, "욕설 사용량 확인하기")
+			div.dialog-bar#cursing-value -//
+	+Dialog('QuickDiag', 300, 330, L('quickRoom'))
 		div.dialog-bar
 			h4= L('gameMode')
 			select#quick-mode
 				- for(var i in locals.MODE)
 					option(value=Number(i))= L('mode' + locals.MODE[i])
+		//-div.dialog-bar
+			h4= L('roundTime')
+			select#quick-time
+				option(value=5, style='color: #FF0000')
+				option(value=10, style='color: #FF5656')
+				option(value=30, style='color: #FF9191')
+				option(value=60, style='color: #FFA8A8')
+				option(value=90)
+				option(value=120, style='color: #74C5E8')
+				option(value=150, selected, style='color: #329AEF')
+				option(value=200, style='color: #3E7AF9')
+				option(value=300, style='color: #0933EF')-//
 		div.dialog-bar(style='height: 59px;')
 			h4(style='height: 45px;')= L('misc')
 			- for(var i in locals.OPTIONS)
@@ -148,7 +186,7 @@ block Middle
 			h4(style='width: 100%; height: 20px;')#quick-queue
 		div.dialog-bar.tail-button
 			button#quick-ok= L('OK')
-	+Dialog('RoomDiag', 300, 375)
+	+Dialog('RoomDiag', 400, 520)
 		div.dialog-bar
 			h4= L('roomTitle')
 			input#room-title(placeholder=(nick || L('guest'))+L('roomDefault'), maxlength=20)
@@ -158,17 +196,50 @@ block Middle
 		div.dialog-bar
 			h4= L('userLimit')
 			input#room-limit(type='number', min=2, max=8, step=1, value=8)
+		//-div.dialog-bar
+			h4= L('roomBackground')
+			select#room-background
+				option(value=0)= L('normalroom')
+				option(value=1)= L('kkuturoom')-//
 		div.dialog-bar
 			h4= L('gameMode')
 			select#room-mode
-				- for(var i in locals.MODE)
-					option(value=Number(i))= L('mode' + locals.MODE[i])
+				optgroup(label=L('mcKorean'))
+					option(value=3)= L('modeKSH')
+					option(value=2)= L('modeKKT')
+					option(value=17)= L('modeKUT')
+					//-option(value=19)= L('modeADL')-//
+					option(value=18)= L('modeKLH')
+					option(value=8)= L('modeKAP')
+					option(value=6)= L('modeKTY')
+					option(value=10)= L('modeKDA')
+					option(value=5)= L('modeKCW')
+					option(value=12)= L('modeKSS')
+					option(value=4)= L('modeCSQ')
+					option(value=9)= L('modeHUN')
+					option(value=14)= L('modeKDG')
+				optgroup(label=L('mcEnglish'))
+					option(value=1)= L('modeESH')
+					option(value=0)= L('modeEKT')
+					//-option(value=17)= L('modeEAP')-//
+					option(value=7)= L('modeETY')
+					option(value=11)= L('modeEDA')
+					option(value=13)= L('modeESS')
+					option(value=15)= L('modeEDG')
+				//-optgroup(label=L('mcJapanese'))
+					option(value=16)= L('modeJSH')
+				optgroup(label=L('mcTesting'))-//
+					
+					//-option(value=99)= L('modeETS')-//
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
 			h4
 			h4#game-mode-expl.dialog-bar-value(style='width: 100%; font-size: 11px;')
 		div.dialog-bar
 			h4= L('numRound')
 			input#room-round(type='number', min=1, max=10, step=1, value=5)
+		div.dialog-bar#room-wordLimit-panel
+			h4= L('numWordLimit')
+			input#room-wordLimit(type='number', min=1, max=9, step=1, value=2)
 		div.dialog-bar
 			h4= L('roundTime')
 			select#room-time
@@ -222,7 +293,6 @@ block Middle
 				option(value=2, selected)= L('aiLevel2')
 				option(value=3)= L('aiLevel3')
 				option(value=4)= L('aiLevel4')
-				option(value=5)= L('aiLevel5')
 		div.dialog-bar
 			h4= L('team')
 			select#ai-team
@@ -279,12 +349,18 @@ block Middle
 			div#ri-players(style='width: 100%;')
 		div.dialog-bar.tail-button
 			button#room-info-join= L('join')
-	+Dialog('ProfileDiag', 300, 360)
+	+Dialog('ProfileDiag', 300, 440)
 		div.dialog-bar.profile-head
+		div.dialog-bar
+			h4(style='width: 83px;')= L('PRANK')
+			h4#rank
+			h4#rankpoint
+		div.dialog-bar.profile-rankicon
+			img#rankicon(src='/img/kkutu/rankicon/unranked.png')
 		div.dialog-bar
 			h4(style='width: 83px;')= L('place')
 			h4.dialog-bar-value#profile-place
-		div.dialog-bar.profile-record(style='padding: 2px 0px; border-top: 1px dashed #CCCCCC; margin: 2px 0px; height: 175px; overflow-y: scroll;')
+		div.dialog-bar.profile-record(style='padding: 2px 0px; border-top: 1px dashed #CCC; margin: 2px 0px; height: 175px; overflow-y: scroll;')
 			div.profile-record-field(style='font-weight: bold; text-align: center;')
 				div.profile-field-name= L('gameMode')
 				div.profile-field-record= L('record')
@@ -431,6 +507,8 @@ block Middle
 block Bottom
 	div.bottom-legal!= L('dictionarySupport')
 	div.bottom-legal!= L('etcSupport')
+	div.bottom-legal!= L('MEANSUPPORT')
+	img(src='/img/kkutu/meansupport.png')
 	div.bottom-legal!= L('textver123') + L('version_down')
 	div.bottom-legal!= L('madewith')
 	script.
@@ -463,12 +541,7 @@ block Bottom
 		}
 	div.bottom-legal!=L('BGMHelp')
 	div.bottom-legal!=L('PLAYTSHelp')
-	div.bottom-legal!="언어를 선택하세요 Please choose the language."
-	div.bottom-legal!="관리자가 대충 번역기 돌려서 번역 상태가 개판입니다."
-	a(href="javascript:setParam('locale', 'ko_KR');") 한국어 Korean
-	br
-	a(href="javascript:setParam('locale', 'en_US');") 영어 English
-	br
-	a(href="javascript:setParam('locale', 'zh_CN');") 중국어 Chinese
-	br
-	a(href="javascript:setParam('locale', 'ja_JP');") 일본어 Japanese
+	div.bottom-legal!= L('AGREEMENT_LINK')
+	div.bottom-legal!= L('PRIVACY_LINK')
+	div.bottom-legal!= L('OPOLICY_LINK1')
+	div.bottom-legal!= L('OPOLICY_LINK2')
