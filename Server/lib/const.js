@@ -56,14 +56,13 @@ exports.OPTIONS = {
 	'rank': { name: "RankGame" },
 	'ogow': { name: "Ogow" }
 };
-exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front', 'mskin' ];
-exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "mskin" ];
+exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
+exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
 exports.AVAIL_EQUIP = [
 	"NIK", "BDG1", "BDG2", "BDG3", "BDG4",
-	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "Mmskin"
+	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "MSKIN"
 ];
 exports.GROUPS = {
-	
 	'spec': [ "PIX", "PIY", "PIZ", "CNS" ],
 	'skin': [ "NIK" ],
 	'badge': [ "BDG1", "BDG2", "BDG3", "BDG4" ],
@@ -73,7 +72,7 @@ exports.GROUPS = {
 	'clothes': [ "Mclothes" ],
 	'hs': [ "Mhand", "Mshoes" ],
 	'back': [ "Mback", "Mfront" ],
-	'mskin': [ "Mmskin" ]
+	'MSKIN': [ "MSKIN" ]
 };
 exports.RULE = {
 /*

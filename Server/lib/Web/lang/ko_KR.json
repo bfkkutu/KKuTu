@@ -116,7 +116,7 @@
     "GROUP_Mshoes": "모레미 발",
     "GROUP_Mback": "모레미 배경",
     "GROUP_Mfront": "모레미 전경",
-	"GROUP_Mmskin": "모레미"
+	"GROUP_MSKIN": "모레미"
   },
 	"error": {
 		"title": "오류!",
@@ -154,8 +154,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.1.5 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.1.5 User</a>",
+    "version": "4.1.6 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.1.6 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -688,7 +688,7 @@
     "category_clothes": "옷",
     "category_hs": "손발",
     "category_back": "배경",
-	"category_mskin": "모레미",
+	"category_MSKIN": "모레미",
     "equipped": "<font style='color: #FFB861;'> (착용 중)</font>",
     "sureEquip": "다음 항목을 착용합니다",
     "sureUnequip": "다음 항목을 착용 해제합니다",

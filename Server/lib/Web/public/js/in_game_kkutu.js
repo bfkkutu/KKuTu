@@ -1758,6 +1758,8 @@
 			var u = $data.users[r];
 			if(u !== undefined) var o = getRank(u.data.rankPoint);
 		}
+		if(b.MSKIN == undefined) var s = "def";
+		else var s = b.MSKIN;
 		b || (b = {});
 		for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", iImage(b[d], f[d] || d)).css({
 			width: "100%",
@@ -1766,10 +1768,12 @@
 		(d = b.BDG) && e.append($("<img>").addClass("moremies moremi-badge").attr("src", iImage(d)).css({
 			width: "100%",
 			height: "100%"
-		})), e.children(".moremi-back").after($("<img>").addClass("moremies moremi-body").attr("src", /*b.mskin ? "/img/kkutu/moremi/mskin/"+b.mskin+".png" :*/ b.robot ? "/img/kkutu/moremi/robot.png" : "/img/kkutu/moremi/body.png").css({
+		}));
+		e.children(".moremi-back").after($("<img>").addClass("moremies moremi-body").attr("src", b.robot ? `/img/kkutu/moremi/robot.png` : `/img/kkutu/moremi/skin/${s}.png`).css({
 			width: "100%",
 			height: "100%"
-		})), e.children(".moremi-rhand").css("transform", "scaleX(-1)")
+		}));
+		e.children(".moremi-rhand").css("transform", "scaleX(-1)")
 		if(r !== "shop" && u !== undefined){
 			if(o !== "UNRANKED"){
 				e.append($("<img>").addClass("moremies moremi-tier").attr("src", "/img/kkutu/rankedge/" + o + ".png").css({
