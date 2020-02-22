@@ -300,7 +300,7 @@ function onKKuTuDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
-	noticeAdmin(req, theme, list.length);
+	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;
 		item = item.trim();
@@ -357,21 +357,24 @@ function onKKuTuDDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
-	noticeAdmin(req, theme, list.length);
+	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;
 		item = item.trim();
 		if(!item.length) return;
 		TABLE.findOne([ '_id', item ]).on(function($doc){
-			if(!$doc) return;
+			if(!$doc){
+				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`)
+				return;
+			}
 			
 			if($doc.theme.indexOf(theme) == -1){ // 존재하지 않으면
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
 			}else{ // 존재하면
 				TABLE.remove([ '_id', item ]).on();
+				itemLog(item, req, theme, list.length);
 			}
 		});
-		itemLog(item, req, theme, list.length);
 	});
 	if(!req.body.nof) res.sendStatus(200);
 }
