@@ -343,6 +343,38 @@ Server.post("/gwalli/kkutudb/:word", function(req, res){
 		});
 	}
 });
+Server.post("/gwalli/kkutuDdb", onKKuTuDDB);
+function onKKuTuDDB(req, res){
+	if(!checkAdmin(req, res, 'WORDS')) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	
+	var theme = req.body.theme;
+	var list = req.body.list;
+	var TABLE = MainDB.kkutu[req.body.lang];
+	
+	if(list) list = list.split(/[,\r\n]+/);
+	else return res.sendStatus(400);
+	if(!TABLE) res.sendStatus(400);
+	if(!TABLE.insert) res.sendStatus(400);
+	
+	noticeAdmin(req, theme, list.length);
+	list.forEach(function(item){
+		if(!item) return;
+		item = item.trim();
+		if(!item.length) return;
+		TABLE.findOne([ '_id', item ]).on(function($doc){
+			if(!$doc) return;
+			
+			if($doc.theme.indexOf(theme) == -1){ // 존재하지 않으면
+				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
+			}else{ // 존재하면
+				TABLE.remove([ '_id', item ]).on();
+			}
+		});
+		itemLog(item, req, theme, list.length);
+	});
+	if(!req.body.nof) res.sendStatus(200);
+}
 Server.post("/gwalli/kkutuDdb/:word", function(req, res){
 	if(!checkAdmin(req, res, 'WORDS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
@@ -409,11 +441,13 @@ function noticeAdmin(req, ...args){
 	JLog.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
 }
 function itemLog(item, req, ...args){
-	logger.info(`[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`);
+	if(req.originalUrl == "/gwalli/kkutuDdb") logger.info(`[ADMIN]: ${req.originalUrl} Removed Word ${item} ${req.ip} | ${args.join(' | ')}`);
+	else logger.info(`[ADMIN]: ${req.originalUrl} Added Word ${item} ${req.ip} | ${args.join(' | ')}`);
 	fs.appendFileSync(`../IP-Log/WordInit.txt`,`\n[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`, 'utf8',(err, ip, path) => { //기록하고
 		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
 	})
-	JLog.info(`[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`);
+	if(req.originalUrl == "/gwalli/kkutuDdb") JLog.info(`[ADMIN]: ${req.originalUrl} Removed Word ${item} ${req.ip} | ${args.join(' | ')}`);
+	else JLog.info(`[ADMIN]: ${req.originalUrl} Added Word ${item} ${req.ip} | ${args.join(' | ')}`);
 }
 function checkAdmin(req, res, type){
 	if(global.isPublic){
