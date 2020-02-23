@@ -1683,7 +1683,11 @@
 			j = $data.users[a.id] ? $data.users[a.id].equip : {};
 		var s = "",
 			p, v;
-		if($data.room) p = $(".room-users")[0].children[`room-user-${a.id}`].innerText, v = p.includes("관전"), console.log(p, v);
+		if($data.room){
+			p = $(".room-users")[0].children[`room-user-${a.id}`];
+			if(!p) updateRoom(!1), p = $(".room-users")[0].children[`room-user-${a.id}`], v = p.innerText.includes("관전");
+			else v = p.innerText.includes("관전");
+		}
 		if(v == undefined){
 			var s = "";
 		}else if(v){
