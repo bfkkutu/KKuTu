@@ -1685,8 +1685,8 @@
 			p, v;
 		if($data.room){
 			p = $(".room-users")[0].children[`room-user-${a.id}`];
-			if(!p) updateRoom(!1), p = $(".room-users")[0].children[`room-user-${a.id}`], v = p.innerText.includes("관전");
-			else v = p.innerText.includes("관전");
+			if(!p) updateRoom(!1), p = $(".room-users")[0].children[`room-user-${a.id}`], v = p.innerText.includes(L.stat_spectate);
+			else v = p.innerText.includes(L.stat_spectate);
 		}
 		if(v == undefined){
 			var s = "";
