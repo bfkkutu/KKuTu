@@ -28,10 +28,32 @@ block Middle
 		legend 자격
 		input#db-password(type='password', placeholder='암호')
 		//-input#db-lang(placeholder='테이블')
+		
+	fieldset
+		legend 상점 DB 조회
+		div
+			input#shop-word-view(value='~ALL' readonly)
+			button#shop-go-view 조회
+			div
+				table
+					thead: tr
+						td 식별자
+						td 가격
+						td hit
+						td term
+						td 장착 부위
+						td updatedAt
+						td 능력
+						td 이름(한국어)
+						td 설명(한국어)
+						td 이름(영어)
+						td 설명(영어)
+					tbody#shop-data-view
+		
 	fieldset
 		legend 상점 DB 다루기
 		div
-			input#shop-word(placeholder='품목 (~ALL = 전체 품목 표시)')
+			input#shop-word(placeholder='품목')
 			button#shop-go 조회
 			button#shop-hide 숨기기
 			div

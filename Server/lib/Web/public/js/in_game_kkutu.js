@@ -180,7 +180,7 @@
 				break;
 			case "yell":
 				if(a.value == "reload"){
-					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다."), ws.close();
+					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다. 불편을 끼쳐 죄송합니다."), ws.close();
 				}else{
 					yell(a.value), notice(a.value, L.yell);
 				}
@@ -370,6 +370,23 @@
 		if(n == "잘못된닉네임"){
 			resetNick();
 			ws.close();
+		}
+		
+		if (!$data.admin) {
+			try {
+				var $_console$$ = console;
+				Object.defineProperty(window, "console", {
+					get: function() {
+						if ($_console$$._commandLineAPI)
+							throw "보안 정책상 일반 유저에게는 개발자 도구 사용이 금지됩니다.";
+						return $_console$$
+					},
+					set: function($val$$) {
+						$_console$$ = $val$$
+					}
+				})
+			} catch ($ignore$$) {
+			}
 		}
 		
 		if (!$data.admin) delete window.$Request;
@@ -1664,12 +1681,24 @@
 	function chat(a, b, c, d) {
 		var e, f, g, h, i = d ? new Date(d) : new Date,
 			j = $data.users[a.id] ? $data.users[a.id].equip : {};
+		var s = "",
+			p, v;
+		if($data.room) p = $(".room-users")[0].children[`room-user-${a.id}`].innerText, v = p.includes("관전"), console.log(p, v);
+		if(v == undefined){
+			var s = "";
+		}else if(v){
+			if(v == undefined) var s = "";
+			else if(v) var s = "x-spectator";
+			else var s = "";
+		}else{
+			var s = "";
+		}
 		if (!$data._shut[a.title || a.name]) {
 			if (c) {
 				if ($data.opts.dw) return;
 				if ($data._wblock[c]) return
 			}
-			b = badWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass("chat-head ellipse").text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
+			b = badWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass(`chat-head ellipse ${s}`).text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
 				requestProfile(a.id)
 			}), $stage.chatLog.append(g = g.clone()), g.append($("<div>").addClass("expl").css("font-weight", "normal").html("#" + (a.id || "").substr(0, 5))), (h = b.match(/https?:\/\/[\w\.\?\/&#%=-_\+]+/g)) && (b = f.html(), h.forEach(function(a) {
 				b = b.replace(a, "<a href='#' style='color: #2222FF;' onclick='if(confirm(\"" + L.linkWarning + '")) window.open("' + a + "\");'>" + a + "</a>")
@@ -2755,16 +2784,8 @@
 		spamCount = 0,
 		badCount = 0,
 		badSign = "NONE",
-		_z = console;
 		isHacker = true;
 	const allowCountry = ['KR'];
-	
-	// Disable DevTools Console.
-	Object.defineProperty(_z, '_commandLineAPI', {
-		get : function() {
-			throw '보안 정책 상 개발자 도구는 사용하실 수 없습니다.';
-		}
-	})
 	
 })();
 $(document).ready(function() {
