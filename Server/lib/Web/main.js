@@ -76,7 +76,6 @@ const referrerPolicy = require('referrer-policy');
 const csp = require('helmet-csp');
 
 // CORONA MAP
-//const axios = require("axios");
 const request = require('request'),
 	cheerio = require('cheerio');
 
