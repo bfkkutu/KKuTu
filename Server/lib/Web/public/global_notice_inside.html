@@ -1,1 +1,3 @@
-﻿
+﻿<script>$.get("/corona", function(a) {
+			$("#coronainside").text(`코로나 현황: 확진자 ${a.data}명`);
+		});</script><a id="coronainside"></a>

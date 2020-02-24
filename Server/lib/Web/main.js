@@ -75,6 +75,11 @@ const referrerPolicy = require('referrer-policy');
 //CSP
 const csp = require('helmet-csp');
 
+// CORONA MAP
+//const axios = require("axios");
+const request = require('request'),
+	cheerio = require('cheerio');
+
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
 ];
@@ -395,7 +400,7 @@ Server.get("/", function(req, res){
 			'IJP_EXCEPT': Const.IJP_EXCEPT,
 			'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
 			'ogURL': "https://bfk.opg.kr/",
-			'ogTitle': "글자로 놀자! BF끄투",
+			'ogTitle': "새로운 끄투의 시작, BF끄투!",
 			'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
 		});
 	}
@@ -417,6 +422,30 @@ Server.get("//servers", function(req, res){
 		list[i] = v.seek;
 	});
 	res.send({ list: list, max: Const.KKUTU_MAX });
+});
+
+Server.get("/corona", function(req, res){
+	
+	var url = "https://coronamap.site/";
+	var post;
+ 
+
+	request(url, (error, response, body) => {
+		if (error) throw error;
+
+		let $ = cheerio.load(body);
+
+		try {
+			let er = '';
+
+			$('div.wa').find('div.content').each(function (index, elem) {
+				er = $(this).find('div').text().trim();
+				res.send({ data: er });
+			});
+		} catch (error) {
+			console.error(error);
+		}
+	});
 });
 
 //볕뉘 수정 구문 삭제(274~353)

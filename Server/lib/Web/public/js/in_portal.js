@@ -29,6 +29,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		}
 	});
 	
+	function getCorona(){
+		$.get("/corona", function(a) {
+			$("#corona").text(`확진 ${a.data}명`);
+		});
+	};
+	
 	function detectHacker(type, callback) {
 		if (type == 'devtools') {
 			delete window.WebSocket, delete window.setInterval;
@@ -100,5 +106,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
 			$("#Bottom").remove();
 		})
+		getCorona();
 	})
 })();
