@@ -435,8 +435,8 @@ Server.get("/corona", function(req, res){
 		let $ = cheerio.load(body);
 
 		try {
-			let cf = '', dd = '';
-
+			let cf = '', dd = '', cd = '';
+			//  확진       사망      완치
 			$('div.wa').find('div.content').each(function (index, elem) {
 				cf = $(this).find('div').text().trim();
 			});
@@ -444,7 +444,10 @@ Server.get("/corona", function(req, res){
 			dd = dd.split("완치");
 			dd = dd[1].split("사망");
 			dd = dd[1].trim();
-			res.send({ cf: cf, dd: dd });
+			cd = dd.split("사망");
+			cd = cd[0].split("완치");
+			cd = cd[1].trim();
+			res.send({ cf: cf, dd: dd, cd: cd });
 		} catch (error) {
 			console.error(error);
 		}

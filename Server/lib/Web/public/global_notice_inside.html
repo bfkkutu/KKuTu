@@ -1,3 +1,3 @@
 ﻿<script>$.get("/corona", function(a) {
-			$("#coronainside").text(`[코로나 현황] 확진자 ${a.cf}명 | 사망자 ${a.dd}명`);
+			$("#coronainside").text(`[코로나 현황] 확진 ${a.cf}명 | 완치 ${a.cd}명 | 사망 ${a.dd}명`);
 		});</script><a id="coronainside"></a>
