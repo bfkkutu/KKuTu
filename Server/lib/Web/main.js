@@ -441,12 +441,12 @@ Server.get("/corona", function(req, res){
 				cf = $(this).find('div').text().trim();
 			});
 			dd = $("div.wa").children("div.content1").children("div").text();
-			dd = dd.split("완치");
-			dd = dd[1].split("사망");
-			dd = dd[1].trim();
 			cd = dd.split("사망");
 			cd = cd[0].split("완치");
 			cd = cd[1].trim();
+			dd = dd.split("완치");
+			dd = dd[1].split("사망");
+			dd = dd[1].trim();
 			res.send({ cf: cf, dd: dd, cd: cd });
 		} catch (error) {
 			console.error(error);

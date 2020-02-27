@@ -1,6 +1,6 @@
 (function() {
 	function onSpace(a) {
-		32 == a.keyCode && ($stage.chatBtn.trigger("click"), a.preventDefault())
+		32 == a.keyCode && ($stage.chatBtn.trigger("click"), a.preventDefault());
 	}
 
 	function drawList() {
@@ -1689,13 +1689,13 @@
 			else v = p.innerText.includes(L.stat_spectate);
 		}
 		if(v == undefined){
-			var s = "";
+			s = "";
 		}else if(v){
-			if(v == undefined) var s = "";
-			else if(v) var s = "x-spectator";
-			else var s = "";
+			if(v == undefined) s = "";
+			else if(v) s = "x-spectator";
+			else s = "";
 		}else{
-			var s = "";
+			s = "";
 		}
 		if (!$data._shut[a.title || a.name]) {
 			if (c) {
