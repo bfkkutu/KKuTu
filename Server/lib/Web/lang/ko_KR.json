@@ -154,8 +154,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.1.9 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.1.9 User</a>",
+    "version": "4.2.0 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.2.0 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -197,6 +197,7 @@
 	"madewith": "BFKKuTu는 BFSoft에서 제작하여 BFSoft와 PlayTS에서 공동 서비스하는 웹 게임입니다.",
 	"BGMHelp": "BGM 지원: <a href='https://www.youtube.com/watch?v=H8PX5PInrJY' target='_blank'>라크다르 - 새로운 시작</a>",
     "PLAYTSHelp": "본 서버는 PlayTS 연맹의 도메인, 서비스를 사용하고 있습니다.",
+	"CORONAHelp": "코로나19 관련 정보 제공: <a href='https://coronamap.site/' target='_blank'>코로나 맵</a>",
 	"welcome": "환영합니다.",
     "welcomeTestServer": "테스트 서버에 오신 것을 환영합니다.",
     "loadRemain": "불러오는 중... 앞으로 ",

@@ -435,12 +435,16 @@ Server.get("/corona", function(req, res){
 		let $ = cheerio.load(body);
 
 		try {
-			let er = '';
+			let cf = '', dd = '';
 
 			$('div.wa').find('div.content').each(function (index, elem) {
-				er = $(this).find('div').text().trim();
-				res.send({ data: er });
+				cf = $(this).find('div').text().trim();
 			});
+			dd = $("div.wa").children("div.content1").children("div").text();
+			dd = dd.split("완치");
+			dd = dd[1].split("사망");
+			dd = dd[1].trim();
+			res.send({ cf: cf, dd: dd });
 		} catch (error) {
 			console.error(error);
 		}

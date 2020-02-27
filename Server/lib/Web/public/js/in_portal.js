@@ -31,7 +31,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	
 	function getCorona(){
 		$.get("/corona", function(a) {
-			$("#corona").text(`확진 ${a.data}명`);
+			$("#corona").text(`확진 ${a.cf}명`);
 		});
 	};
 	
