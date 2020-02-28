@@ -73,3 +73,19 @@ block Middle
 					tbody#shop-data
 			button#shop-add 품목 추가
 		button#shop-apply 변경사항 적용
+		
+	fieldset
+		legend 상점 아이템 삭제
+		div [사용 방법] 삭제할 아이템의 ID를 입력하고 조회한 후 삭제 버튼을 누릅니다. 아이템 대량 삭제 기능은 없습니다.
+		div
+			input#shop-word-remove(placeholder='삭제할 아이템 ID')
+			button#shop-go-remove 조회
+			div
+				table
+					thead: tr
+						td 식별자
+						td 장착 부위
+						td 이름(한국어)
+						td 설명(한국어)
+					tbody#shop-data-remove
+		button#shop-remove 삭제

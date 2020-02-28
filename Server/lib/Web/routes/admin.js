@@ -206,6 +206,26 @@ Server.get("/gwalli/kkututheme", function(req, res){
 		res.send({ list: $docs.map(v => v._id) });
 	});
 });
+Server.get("/gwalli/findword", function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	
+	var TABLE = MainDB.kkutu[req.query.lang];
+	var word = new RegExp(req.query.word);
+	
+	if(!TABLE) res.sendStatus(400);
+	if(!TABLE.find) res.sendStatus(400);
+	if(!type) res.sendStatus(400);
+	
+	if(type == "start"){ // 가~ 가%
+		TABLE.findSE([ '_id', word ]).limit([ 'theme', true ]).on(function($docs){
+			res.send({ list: $docs.map(v => v._id) });
+		});
+	}else if(type == "end"){ // ~가 %가
+		TABLE.findSE([ '_id', word ]).limit([ 'theme', true ]).on(function($docs){
+			res.send({ list: $docs.map(v => v._id) });
+		});
+	}
+});
 /*Server.get("/gwalli/kkutuhot", function(req, res){
 	if(!checkAdmin(req, res)) return;
 	
@@ -434,14 +454,39 @@ Server.post("/gwalli/shop", function(req, res){
 	});
 	res.sendStatus(200);
 });
+Server.post("/gwalli/shopditem", onDShop);
+function onDShop(req, res){
+	if(!checkAdmin(req, res, 'DESIGNER')) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	
+	var list = JSON.parse(req.body.list).list;
+	var resItem;
+	
+	list.forEach(function(item){
+		resItem = item;
+		MainDB.kkutu_shop.remove([ '_id', item._id ]).on();
+		MainDB.kkutu_shop_desc.remove([ '_id', item._id ]).on();
+	});
+	noticeAdmin(req, resItem._id);
+	res.send({ _id: resItem._id });
+}
 
 };
+
 function noticeAdmin(req, ...args){
-	logger.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
-	fs.appendFileSync(`../IP-Log/WordInit.txt`,`\n[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`, 'utf8',(err, ip, path) => { //기록하고
+	if(req.originalUrl == "/gwalli/shopditem"){
+		logger.info(`[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`);
+		fs.appendFileSync(`../IP-Log/ItemLog.txt`,`\n[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`, 'utf8',(err, ip, path) => { //기록하고
 		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
-	})
-	JLog.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
+		})
+		JLog.info(`[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`);
+	} else {
+		logger.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
+		fs.appendFileSync(`../IP-Log/WordInit.txt`,`\n[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`, 'utf8',(err, ip, path) => { //기록하고
+			if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
+		})
+		JLog.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(' | ')}`);
+	}
 }
 function itemLog(item, req, ...args){
 	if(req.originalUrl == "/gwalli/kkutuDdb") logger.info(`[ADMIN]: ${req.originalUrl} Removed Word ${item} ${req.ip} | ${args.join(' | ')}`);
