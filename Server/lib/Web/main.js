@@ -78,7 +78,30 @@ const csp = require('helmet-csp');
 // CORONA MAP
 const request = require('request'),
 	cheerio = require('cheerio');
+	
+var maintenance; // boolean
 
+/*const ssri = require('ssri')
+const sri = require('sri');
+ 
+const integrity = sri.getSRIString('./lib/Web/public/js/in_portal.min.js'); // sha384-J5Dqvq3...
+
+// Parsing and serializing
+const parsed = ssri.parse(integrity)
+ssri.stringify(parsed) // === integrity (works on non-Integrity objects)
+parsed.toString() // === integrity
+ 
+// Async stream functions
+ssri.checkStream(fs.createReadStream('./lib/Web/public/js/in_portal.min.js'), integrity)
+ssri.fromStream(fs.createReadStream('./lib/Web/public/js/in_portal.min.js')).then(sri => {
+	sri.toString() === integrity
+})
+//fs.createReadStream('./lib/Web/public/js/in_portal.min.js').pipe(ssri.createCheckerStream(sri))
+
+// Sync data functions
+ssri.fromData(fs.readFileSync('./lib/Web/public/js/in_portal.min.js')) // === parsed
+ssri.checkData(fs.readFileSync('./lib/Web/public/js/in_portal.min.js'), integrity) // => 'sha512'
+*/
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
 ];
@@ -188,7 +211,9 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+"  "+date, 'utf8', function(err, ip, path) { //기록하고
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
 	})
-	process.exit(1); //웹 서버를 조진다
+	//process.exit(1); //웹 서버를 조진다
+	if(!maintenance) maintenance = true; // 첫번째 작동
+	else process.exit(1); // 두번째 작동
 };
 Server.use(DDDoS.express());
 //디도스 감지 및 차단
@@ -378,30 +403,57 @@ Server.get("/", function(req, res){
 		}else{
 			delete req.session.profile;
 		}
-		page(req, res, Const.MAIN_PORTS[server] ? "kkutu" : "portal", {
-			'_page': "kkutu",
-			'_id': id,
-			'PORT': Const.MAIN_PORTS[server],
-			'HOST': req.hostname,
-			'PROTOCOL': Const.IS_SECURED ? 'wss' : 'ws',
-			'TEST': req.query.test,
-			'MOREMI_PART': Const.MOREMI_PART,
-			'AVAIL_EQUIP': Const.AVAIL_EQUIP,
-			'CATEGORIES': Const.CATEGORIES,
-			'GROUPS': Const.GROUPS,
-			'MODE': Const.GAME_TYPE,
-			'RULE': Const.RULE,
-			'OPTIONS': Const.OPTIONS,
-			'KO_INJEONG': Const.KO_INJEONG,
-			'EN_INJEONG': Const.EN_INJEONG,
-			'KO_THEME': Const.KO_THEME,
-			'EN_THEME': Const.EN_THEME,
-			'IJP_EXCEPT': Const.IJP_EXCEPT,
-			'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
-			'ogURL': "https://bfk.opg.kr/",
-			'ogTitle': "새로운 끄투의 시작, BF끄투!",
-			'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
-		});
+		if(!maintenance){
+			page(req, res, Const.MAIN_PORTS[server] ? "kkutu" : "portal", {
+				'_page': "kkutu",
+				'_id': id,
+				'PORT': Const.MAIN_PORTS[server],
+				'HOST': req.hostname,
+				'PROTOCOL': Const.IS_SECURED ? 'wss' : 'ws',
+				'TEST': req.query.test,
+				'MOREMI_PART': Const.MOREMI_PART,
+				'AVAIL_EQUIP': Const.AVAIL_EQUIP,
+				'CATEGORIES': Const.CATEGORIES,
+				'GROUPS': Const.GROUPS,
+				'MODE': Const.GAME_TYPE,
+				'RULE': Const.RULE,
+				'OPTIONS': Const.OPTIONS,
+				'KO_INJEONG': Const.KO_INJEONG,
+				'EN_INJEONG': Const.EN_INJEONG,
+				'KO_THEME': Const.KO_THEME,
+				'EN_THEME': Const.EN_THEME,
+				'IJP_EXCEPT': Const.IJP_EXCEPT,
+				'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
+				'ogURL': "https://bfk.opg.kr/",
+				'ogTitle': "새로운 끄투의 시작, BF끄투!",
+				'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
+			});
+		}else{
+			page(req, res, Const.MAIN_PORTS[server] ? "dddos" : "dddos", {
+				'_page': "kkutu",
+				'_id': id,
+				'PORT': Const.MAIN_PORTS[server],
+				'HOST': req.hostname,
+				'PROTOCOL': Const.IS_SECURED ? 'wss' : 'ws',
+				'TEST': req.query.test,
+				'MOREMI_PART': Const.MOREMI_PART,
+				'AVAIL_EQUIP': Const.AVAIL_EQUIP,
+				'CATEGORIES': Const.CATEGORIES,
+				'GROUPS': Const.GROUPS,
+				'MODE': Const.GAME_TYPE,
+				'RULE': Const.RULE,
+				'OPTIONS': Const.OPTIONS,
+				'KO_INJEONG': Const.KO_INJEONG,
+				'EN_INJEONG': Const.EN_INJEONG,
+				'KO_THEME': Const.KO_THEME,
+				'EN_THEME': Const.EN_THEME,
+				'IJP_EXCEPT': Const.IJP_EXCEPT,
+				'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
+				'ogURL': "https://bfk.opg.kr/",
+				'ogTitle': "새로운 끄투의 시작, BF끄투!",
+				'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
+			});
+		}
 	}
 });
 
@@ -423,6 +475,10 @@ Server.get("//servers", function(req, res){
 	res.send({ list: list, max: Const.KKUTU_MAX });
 });
 
+Server.get("/adminList", function(req, res){
+	res.send({ admin: GLOBAL.ADMIN });
+});
+
 Server.get("/corona", function(req, res){
 	
 	var url = "https://coronamap.site/";
@@ -430,7 +486,7 @@ Server.get("/corona", function(req, res){
  
 
 	request(url, (error, response, body) => {
-		if (error) throw error;
+		//if (error) throw error;
 
 		let $ = cheerio.load(body);
 

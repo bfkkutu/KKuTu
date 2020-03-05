@@ -1,70 +1,37 @@
 //-
 	Rule the words! KKuTu Online
 	Copyright (C) 2017 JJoriping(op@jjo.kr)
-
+	
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
 	the Free Software Foundation, either version 3 of the License, or
 	(at your option) any later version.
-
+	
 	This program is distributed in the hope that it will be useful,
 	but WITHOUT ANY WARRANTY; without even the implied warranty of
 	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 	GNU General Public License for more details.
-
+	
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 extends layout
 
-block Subject
-	title= L('title')
-
-block CSS
-	link(rel='stylesheet', href='/css/in_game_kkutu.css')
-
 block Middle
-	script(type='text/javascript', src='/js/jquery.browser.min.js')
-	+separator(5)
-	div(style='float: left; width: 100%;')
-	label= L('textver123') + L('version')
-		div(style='float: left; padding-left: 70px;')
-			h3#holder= L('title_none').replace(/\[.+?\]/g, "")
-			img#logo(src='/img/kkutu/short_logo.png')
-		div#menu-bar(style='float: right; margin-top: 25px;')
-			a(target='_blank', href='http://cafe.bfkkutu.ze.am/', style='background-color: #189E47;')= 'Naver Cafe'
-			a(target='_blank', href='//discord.gg/scPVHcE', style='background-color: #233599;')= 'Discord'
-			a(target='_blank', href='//sdbx.dev/', style='background-color: #ff9900;')= 'Sandbox'
-			a(target='_blank', href='https://coronamap.site/', style='background-color: #ff0000;', id='corona')= 'corona'
-		div.jjoriping(style='margin-top: 40px;')
-			img.jjoObj.jjoEyeL(src='/img/jjoeyeL.png', style='left: -270px;')
-			img.jjoObj.jjoNose(src='/img/jjonose.png', style='left: -170px;')
-			img.jjoObj.jjoEyeR(src='/img/jjoeyeR.png', style='left: -70px;')
-			div.jjoDisplayBar(style='width: 325px; height: 85px;')
-				button#game-start.jjo-display= L('gameStart')
-	div(style='float: right; margin-top: -120px; width: 50%;')
-		div.server-list-box
-			h3.server-list-title
-				a#server-refresh
-					+FA('refresh')
-					+Expl(L('serverRefresh'))
-				label= L('serverList')
-				label#server-total(style='color: #AAA; font-size: 13px;')
-			div#server-list
-	div(style='float: left; width: calc(100% - 4px); border: 1px solid #CCC; margin-top: 10px; background-color: #EEE;')
-		iframe#error(width='100%', height='40px', scrolling='no', src='/server_status.html')
-	div(style='float: left; width: calc(100% - 4px); border: 1px solid #CCC; margin-top: 10px; background-color: #EEE;')
-		iframe#kkutu-bulletin(width='100%', height='400px', src='/kkutu_bulletin.html')
-	div(style='float: left; width: calc(37.5% - 4px); border: 0px solid #CCC; margin-top: 10px; background-color: #7289da;')
-		iframe#discord-widget(width='100%', height='80px', src='/discord_widget.html')
-	+separator(10)
-
+	head
+		title BF끄투 - 동시 접속 과다!
+		script(type='text/javascript', src='/js/jquery.js')
+		script(type='text/javascript', src='/js/server_status.obfus.js')
+		h2 동시 접속 요청이 너무 많아 연결이 차단되었습니다! 이용에 불편을 드려 죄송합니다.
+		h3 (DDoS Protection)
 block Bottom
+	//-div(style='float: left; width: calc(37.5% - 4px); border: 0px solid #CCC; margin-top: 10px;')
+		iframe#ad1(width='100%', height='80px', src='/ad.html')-//
 	div.bottom-legal!= L('dictionarySupport')
 	div.bottom-legal!= L('etcSupport')
 	div.bottom-legal!= L('MEANSUPPORT')
 	img(src='/img/kkutu/meansupport.png')
-	div.bottom-legal!= L('CORONAHelp')
 	div.bottom-legal!= L('textver123') + L('version_down')
+	div.bottom-legal!= L('textversec') + L('security_version')
 	div.bottom-legal!= L('madewith')
 	script.
 		function setParam(name, value) {

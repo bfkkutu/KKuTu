@@ -454,6 +454,13 @@ block Middle
 			button#cf-compose= L('cfCompose')
 	+Dialog('ChatLogDiag', 350, 500, L('chatLog'))
 		div#chat-log-board(style='height: 475px; font-size: 11px; overflow-y: scroll;')
+	+Dialog('AlertDiag', 350, 130, L('Alert'))
+		div#alert
+			label#alertText
+		div
+			label= '　'
+		div#alertbtn
+			button#alert-ok= L('OK')
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar
 			h4(style='width: 100%;')= L('obtained') + '!'
@@ -567,7 +574,7 @@ block Middle
 		div#Chat
 		input#Talk(style="display: none;")
 		button#ChatBtn(style="display: none;")
-		input(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
+		input#chatinput(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	+Product('AD')
 		img(src='/img/ad1.png')
@@ -577,6 +584,7 @@ block Bottom
 	div.bottom-legal!= L('etcSupport')
 	div.bottom-legal!= L('MEANSUPPORT')
 	img(src='/img/kkutu/meansupport.png')
+	div.bottom-legal!= L('CORONAHelp')
 	div.bottom-legal!= L('textver123') + L('version_down')
 	div.bottom-legal!= L('madewith')
 	script.

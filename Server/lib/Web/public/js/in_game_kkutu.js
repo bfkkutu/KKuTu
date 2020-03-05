@@ -164,7 +164,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close()
-				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._gaming = !1, $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+				} else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다."), $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._gaming = !1, $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -181,6 +181,18 @@
 			case "yell":
 				if(a.value == "reload"){
 					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다. 불편을 끼쳐 죄송합니다."), ws.close();
+				}else if(a.value == "freeze"){
+					yell("관리자가 채팅을 얼렸습니다.")
+					if($data._gaming){
+						if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+						else $("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+					}
+				}else if(a.value == "unfreeze"){
+					yell("관리자가 채팅을 녹였습니다.")
+					if($data._gaming){
+						if($data.admin) $("#chatinput").attr('placeholder', '');
+						else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
+					}
 				}else{
 					yell(a.value), notice(a.value, L.yell);
 				}
@@ -492,6 +504,13 @@
 			default:
 				for (b in d) notice(d[b], b)
 		}
+	}
+	
+	function alertKKuTu(a){
+		showDialog($stage.dialog.alertKKuTu);
+		$("#alert").css("text-align", "center");
+		$("#alertbtn").attr('style', "display: flex; align-items: center; justify-content: center;");
+		$("#alertText").html(a);
 	}
 
 	function sendWhisper(a, b) {
@@ -1441,21 +1460,17 @@
 
 	function getLevelImage(score, profile, sid) {
 		var my = this;
-		//var a = $data.users[$data.id];
-		//var isAdmin = getAdmin(a);
-		
-		/*if(isAdmin=="admin"){
-			var lv = isAdmin;
-		}else{
-			var lv = getLevel(score) - 1;
-		}*/
+		//var isAdmin = getAdmin();
+		//var lv = getLevel(score) - 1;
 		if (score <= "-1") {
 			var lv = "admin";
+			var lX = 100;
+			var lY = 100;
 		} else {
 			var lv = getLevel(score) - 1;
+			var lX = (lv % 25) * -100;
+			var lY = Math.floor(lv * 0.04) * -100;
 		}
-		var lX = (lv % 25) * -100;
-		var lY = Math.floor(lv * 0.04) * -100;
 		if(lv=="admin"){
 			return $("<div>").css({
 				'float': "left",
@@ -1464,6 +1479,14 @@
 				'background-size': "100%"
 			});
 		}
+		/*if(isAdmin != -1){
+			return $("<div>").css({
+				'float': "left",
+				'background-image': "url('/img/kkutu/lv/lvGM.png')",
+				'background-position': lX + "% " + lY + "%",
+				'background-size': "100%"
+			});
+		}*/
 		return $("<div>").css({
 			'float': "left",
 			'background-image': "url('/img/kkutu/lv/newlv.png')",
@@ -1472,17 +1495,10 @@
 		});
 	}
 	
-	function getAdmin(a){
-		var isAdmin = "user";
-		switch(a.equip.BDG){
-			case 'b9_bf':
-				isAdmin = "admin";
-				break;
-			case 'b6_word':
-				isAdmin = "admin";
-				break;
-		}
-		return isAdmin;
+	function getAdmin(){
+		$.get("/adminList", function(a) {
+			return a.admin.indexOf($data.id);
+		});
 	}
 
 	function getImage(a) {
@@ -1600,8 +1616,10 @@
 	
 	function badWords(a) {
 		//a = a.replace("<", "&lt");
-		if (XSS.test(a)){
-			return "[보안] 금지된 문자열을 포함하고 있는 글을 전송하려고 시도하여 차단되었습니다";
+		if (OSV.test(a)){
+			return "[홍보 방지] 타서버 언급은 금지입니다.";
+		} else if (XSS.test(a)){
+			return "[보안] 금지된 문자열을 포함하고 있는 글을 전송하려고 시도하여 차단되었습니다.";
 		} else {
 			if (BAD.test(a)) {
 				var filterType = $("#badwordfilter").val().substr(0, 2);
@@ -1853,8 +1871,9 @@
 		MOREMI_PART, AVAIL_EQUIP, RULE, OPTIONS, MAX_LEVEL = 366,
 		TICK = 30,
 		EXP = [],
-		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,})[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|유|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|징|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
+		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,})[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|징|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
 		XSS = new RegExp(["&lt;img", "&lt;script", "&lt;h1", "&lt;h2", "&lt;h3", "&lt;h4", "&lt;h5", "&lt;h6", "<img", "<script", "<h1", "<h2", "<h3", "<h4", "<h5", "<h6", "&lt;button", "<button", "&lt;a", "<a"].join("|")),
+		OSV = new RegExp(["끄투코리아","끄코","끄투닷컴","끄닷","끄투리오","끄투한국","끄리","리오","끄한","태풍끄튬","태풍끄툼","태풍끄투","분홍끄투","투데이끄투","이름없는끄투","이름 없는 끄투","이름없는 끄투","이름 없는끄투","김대운"].join("|")),
 		ws, rws, $stage, $sound = {},
 		$_sound = {},
 		$data = {},
@@ -2034,6 +2053,8 @@
 					injPickNo: $("#injpick-no"),
 					injPickOK: $("#injpick-ok"),
 					chatLog: $("#ChatLogDiag"),
+					alertKKuTu: $("#AlertDiag"),
+					alertKKuTuOK: $("#alert-ok"),
 					obtain: $("#ObtainDiag"),
 					obtainOK: $("#obtain-ok"),
 					help: $("#HelpDiag")
@@ -2497,6 +2518,8 @@
 			}), $stage.dialog.obtainOK.on("click", function(a) {
 				var b = $data._obtain.shift();
 				b ? drawObtain(b) : $stage.dialog.obtain.hide()
+			}), $stage.dialog.alertKKuTuOK.on("click", function(a) {
+				$stage.dialog.alertKKuTu.hide()
 			}), i = 0; i < 5; i++) $("#team-" + i).on("click", f),
 			$("#room-unknownword.game-option").click(() => $("#room-unknownword.game-option").is(':checked') ? $(".game-option").not("#room-unknownword.game-option").not("#room-mission.game-option").not("#room-abcmission.game-option").not("#room-moremission.game-option").not("#room-returns.game-option").not("#room-randomturn.game-option").not("#room-ignoreinitial.game-option").prop('checked', false).prop('disabled', true) : $(".game-option").prop('disabled', false));
 		$("#replay-file").on("change", function(a) {

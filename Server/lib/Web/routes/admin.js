@@ -189,19 +189,19 @@ Server.get("/gwalli/kkutudb/:word", function(req, res){
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
-	if(!TABLE) res.sendStatus(400);
-	if(!TABLE.findOne) res.sendStatus(400);
+	if(!TABLE) return res.sendStatus(400);
+	if(!TABLE.findOne) return res.sendStatus(400);
 	TABLE.findOne([ '_id', req.params.word ]).on(function($doc){
 		res.send($doc);
 	});
 });
 Server.get("/gwalli/kkututheme", function(req, res){
-	if(!checkAdmin(req, res, 'USERS')) return;
+	if(!checkAdmin(req, res, 'WORDS')) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
-	if(!TABLE) res.sendStatus(400);
-	if(!TABLE.find) res.sendStatus(400);
+	if(!TABLE) return res.sendStatus(400);
+	if(!TABLE.find) return res.sendStatus(400);
 	TABLE.find([ 'theme', new RegExp(req.query.theme) ]).limit([ '_id', true ]).on(function($docs){
 		res.send({ list: $docs.map(v => v._id) });
 	});
