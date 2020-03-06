@@ -163,7 +163,7 @@
 				break;
 			case "welcome":
 				if (a.guest) {
-					return ws.close()
+					return ws.close();
 				} else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다."), $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._gaming = !1, $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
@@ -354,7 +354,9 @@
 						break
 					}
 				}
-				alert("[#" + a.code + "] " + L["error_" + a.code] + c)
+				if(a.code == 402){
+					alertKKuTu("[게스트 접속 제한] " + L["error_" + a.code] + c), $("#intro-text").html("이 서버는 게스트 접속을 허용하지 않습니다."), $("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty();
+				} else alert("[#" + a.code + "] " + L["error_" + a.code] + c);
 		}
 		$data._record && recordEvent(a)
 	}
@@ -412,15 +414,18 @@
 		
 		// Block the Devtools
 		Blocker('devtools', () => {
-			alert("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
+			//alert("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
+			alertKKuTu("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
 			return ws.close();
 		}, $data, $stage)
 		Blocker('macro', () => {
-			alert("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
+			//alert("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
+			alertKKuTu("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
 			return ws.close();
 		}, $data, $stage)
 		checkIp((data) => {
-			alert("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
+			//alert("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
+			alertKKuTu("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
 			return ws.close();
 		})
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
@@ -431,8 +436,8 @@
 		
 		if(a == null) return resetNick();
 		if(a == undefined) return resetNick();
-		if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), resetNick();
-		if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(/[(ㄱ-ㅎ)]/gi.test(a)) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다."), resetNick();
+		if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
 		if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
 		if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
 		if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
@@ -2442,15 +2447,15 @@
 					$stage.dialog.dress.hide()
 				})
 			}), $stage.dialog.dressOK.on("click", function(a) {
-				if(!$("#dress-nickname").val()) return alert("닉네임을 입력해 주세요.");
-				if(/[(ㄱ-ㅎ)]/gi.test($("#dress-nickname").val())) return alert("닉네임을 자음만으로 지정하실 수 없습니다.");
-				if(!/[(가-힣a-zA-Z)]/gi.test($("#dress-nickname").val())) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다.");
-				if($("#dress-nickname").val().match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+				if(!$("#dress-nickname").val()) return alertKKuTu("닉네임을 입력해 주세요.");
+				if(/[(ㄱ-ㅎ)]/gi.test($("#dress-nickname").val())) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다.");
+				if(!/[(가-힣a-zA-Z)]/gi.test($("#dress-nickname").val())) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match("　")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+				if($("#dress-nickname").val().match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+				if($("#dress-nickname").val().match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 				
 				$(a.currentTarget).attr("disabled", !0), $.post("/nickname", {
 					data: $("#dress-nickname").val()
