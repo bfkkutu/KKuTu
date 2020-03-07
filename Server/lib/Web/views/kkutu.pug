@@ -461,6 +461,13 @@ block Middle
 			label= '　'
 		div#alertbtn
 			button#alert-ok= L('OK')
+	+Dialog('PromptDiag', 350, 130, L('Prompt'))
+		div#prompt
+			label#promptText
+		div#promptInput
+			input#prompt-input
+		div#promptbtn
+			button#prompt-ok= L('OK')
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar
 			h4(style='width: 100%;')= L('obtained') + '!'

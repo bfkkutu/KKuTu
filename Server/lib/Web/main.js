@@ -479,6 +479,28 @@ Server.get("/adminList", function(req, res){
 	res.send({ admin: GLOBAL.ADMIN });
 });
 
+Server.get("/newUser", function(req, res){
+	var MainDB = DB,
+		id = req.query.id;
+		
+	if(!req.query.cp){
+		MainDB.users.findOne([ '_id', id ]).on(function($u){
+			if(!$u) return res.sendStatus(404);
+			else {
+				return res.send({ newUser: $u.newuser }); // SEND ONLY
+			}
+		});
+	}else if(req.query.cp == `${id}cp`){
+		MainDB.users.findOne([ '_id', id ]).on(function($u){
+			if(!$u) return res.sendStatus(404);
+			else {
+				if($u.newuser) MainDB.users.update([ '_id', id ]).set([ 'newuser', false ]).on(); // UPDATE DB
+				else return res.sendStatus(404);
+			}
+		});
+	}else return res.sendStatus(404);
+});
+
 Server.get("/corona", function(req, res){
 	
 	var url = "https://coronamap.site/";
@@ -529,15 +551,11 @@ Server.get("/server_status", function(req, res){
 });
 
 Server.get("/beta/portal", function(req, res){
-	page(req, res, "betaportal");
-});
-
-Server.get("/beta/server_status", function(req, res){
-	page(req, res, "betaserver_status");
+	page(req, res, "beta_portal");
 });
 
 Server.get("/beta/kkutu", function(req, res){
-	page(req, res, "betakkutu");
+	page(req, res, "beta_kkutu");
 });
 Server.get("/bfsoft", function(req, res){
 	page(req, res, "bfsoft");
