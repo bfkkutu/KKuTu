@@ -88,9 +88,13 @@
 .chat-item>.x-music::before{ content: "[음악부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
 .room-user-title>.x.music::before{ content: "[음악부]"; color: #2F77D9; text-shadow: 0px 0px 0px; }
 
-.x-master .users-name::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
-.chat-item>.x-master::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
-.room-user-title>.x.master::before{ content: "[MASTER]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.x-master .users-name::before{ content: "[M]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.chat-item>.x-master::before{ content: "[M]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.master::before{ content: "[M]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+
+.x-champion .users-name::before{ content: "[C]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.chat-item>.x-champion::before{ content: "[C]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.champion::before{ content: "[C]"; color: #cc0606; text-shadow: 0px 0px 0px; }
 
 .x-spectator .users-name::before{ content: "[관전]"; color: #A9A9A9; text-shadow: 0px 0px 0px; }
 .chat-item>.x-spectator::before{ content: "[관전]"; color: #A9A9A9; text-shadow: 0px 0px 0px; }

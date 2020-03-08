@@ -429,7 +429,7 @@
 			return ws.close();
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
-			if(a.newUser == true) return setNick(), ws.close();
+			if(a.newUser == true) return setNick()
 			else return;
 		})
 		
@@ -439,20 +439,18 @@
 	function resetNick(){
 		var a = prompt("불건전하거나 잘못된 닉네임을 사용하였으므로 닉네임이 강제로 변경되었습니다. 새로운 닉네임을 입력해 주세요.");
 
-		inputNick(function(a) {
-			if(a == null) return resetNick();
-			if(a == undefined) return resetNick();
-			if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), resetNick();
-			if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-			if(a.length > 10) return alert("닉네임 길이 제한은 최대 10글자까지입니다."), resetNick();
-			if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-			if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-			if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-			if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-			if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
-			if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
-		});
-		
+		if(a == null) return resetNick();
+		if(a == undefined) return resetNick();
+		if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), resetNick();
+		if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.length > 10) return alert("닉네임 길이 제한은 최대 10글자까지입니다."), resetNick();
+		if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
+		if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
+		if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
+			
 		$.post("/nickname", {
 			data: a
 		})
@@ -460,25 +458,19 @@
 	}
 	
 	function setNick(){
-		var a = prompt("BF끄투에서 사용할 닉네임을 입력해주세요.");
-
-		if(a == null) return setNick();
-		if(a == undefined) return setNick();
-		if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), setNick();
-		if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-		if(a.length > 10) return alert("닉네임 길이 제한은 최대 10글자까지입니다."), setNick();
-		if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-		if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-		if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-		if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-		if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
-		if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
+		$("#Intro").empty();
+		$(".UserListBox").empty();
+		$(".RoomListBox").empty();
+		$(".MeBox").empty();
+		$(".ChatBox").empty();
+		$(".ADBox").empty();
+		$(".kkutu-menu").empty();
+		$("#Bottom").empty();
+		$("#prompt").css("text-align", "center");
+		$("#promptbtn").attr('style', "display: flex; align-items: center; justify-content: center;");
+		$("#promptText").html("BF끄투에서 사용할 닉네임을 입력하세요.");
+		showDialog($stage.dialog.promptKKuTu);
 		
-		// TODO: 좀 더 정교한 콜백.
-		$.post("/nickname", {
-			data: a
-		}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
-		return alert(`닉네임이 ${a}(으)로 설정되었습니다. 재접속 해주세요.`);
 	}
 
 	function getKickText(a, b) {
@@ -699,7 +691,7 @@
 	}
 
 	function addonNickname(a, b) {
-		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music")
+		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music"), "b1_champion" == b.equip.BDG && a.addClass("x-champion")
 	}
 
 	function updateRoomList(a) {
@@ -1709,8 +1701,10 @@
 			return 'PLATINUM';
 		} else if(a >= 4000 && a < 5000){
 			return 'DIAMOND';
-		} else if(a >= 5000){
+		} else if(a >= 5000 && a < 10000){
 			return 'MASTER';
+		} else if(a >= 10000){
+			return 'CHAMPION';
 		} else {
 			return "UNRANKED";
 		}
@@ -2101,8 +2095,8 @@
 					chatLog: $("#ChatLogDiag"),
 					alertKKuTu: $("#AlertDiag"),
 					alertKKuTuOK: $("#alert-ok"),
-					promptKKuTu: $("#AlertDiag"),
-					promptKKuTuOK: $("#alert-ok"),
+					promptKKuTu: $("#PromptDiag"),
+					promptKKuTuOK: $("#prompt-ok"),
 					obtain: $("#ObtainDiag"),
 					obtainOK: $("#obtain-ok"),
 					help: $("#HelpDiag")
@@ -2568,6 +2562,26 @@
 				b ? drawObtain(b) : $stage.dialog.obtain.hide()
 			}), $stage.dialog.alertKKuTuOK.on("click", function(a) {
 				$stage.dialog.alertKKuTu.hide()
+			}), $stage.dialog.promptKKuTuOK.on("click", function(b) {
+				var a = $("#prompt-input").val();
+				$stage.dialog.promptKKuTu.hide();
+				
+				if(a == null) return setNick();
+				if(a == undefined) return setNick();
+				if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), setNick();
+				if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+				if(a.length > 10) return alert("닉네임 길이 제한은 최대 10글자까지입니다."), setNick();
+				if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+				if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+				if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+				if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+				if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
+				if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
+				alert("닉네임 설정이 완료되었습니다. 새로고침 해주세요.");
+				// TODO: 좀 더 정교한 콜백.
+				$.post("/nickname", {
+					data: a
+				}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
 			}), i = 0; i < 5; i++) $("#team-" + i).on("click", f),
 			$("#room-unknownword.game-option").click(() => $("#room-unknownword.game-option").is(':checked') ? $(".game-option").not("#room-unknownword.game-option").not("#room-mission.game-option").not("#room-abcmission.game-option").not("#room-moremission.game-option").not("#room-returns.game-option").not("#room-randomturn.game-option").not("#room-ignoreinitial.game-option").prop('checked', false).prop('disabled', true) : $(".game-option").prop('disabled', false));
 		$("#replay-file").on("change", function(a) {

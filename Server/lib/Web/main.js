@@ -116,24 +116,7 @@ fs.watchFile("./lib/sub/global.json", () => {
 	GLOBAL	 = require("../sub/global.json");
 	JLog.info("global.json is Auto-Updated at {lib/Web/main.js}");
 })
-fs.watchFile("./lib/Web/lang/ko_KR.json", () => {
-	Language = {
-		'ko_KR': require("./lang/ko_KR.json"),
-		'en_US': require("./lang/en_US.json")
-	};
-	JLog.info("ko_KR.json is Auto-Updated at {lib/Web/main.js}");
-})
-fs.watchFile("./lib/Web/lang/en_US.json", () => {
-	Language = {
-		'ko_KR': require("./lang/ko_KR.json"),
-		'en_US': require("./lang/en_US.json")
-	};
-	JLog.info("en_US.json is Auto-Updated at {lib/Web/main.js}");
-})
-fs.watchFile("./lib/const.js", () => {
-	GLOBAL	 = require("../const");
-	JLog.info("const.js is Auto-Updated at {lib/Web/main.js}");
-})
+
 function getClientIp(req, res){
 	var clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
 	if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
@@ -196,7 +179,7 @@ Server.use((req, res, next) => {
 //디도스 감지 및 차단
 DDDoS = new DDDoS({
 	maxWeight: 40,
-	checkInterval: 750,
+	checkInterval: 800,
 	rules: [{
 		regexp: "^/(cf|dict|gwalli)",
 		maxWeight: 40
