@@ -46,10 +46,7 @@ File.watchFile("./lib/sub/global.json", () => {
 	GLOBAL = require("../../sub/global.json");
 	JLog.info("global.json is Auto-Updated at {lib/Web/routes/admin.js}");
 })
-File.watchFile("./lib/Web/db", () => {
-	MainDB = require("../db");
-	JLog.info("db.js is Auto-Updated at {lib/Web/routes/admin.js}");
-})
+
 exports.run = function(Server, page){
 
 /*Server.get("/gwalli", function(req, res) {

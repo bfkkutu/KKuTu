@@ -650,7 +650,7 @@
 			d = getLevel(b.data.score),
 			e = EXP[d - 2] || 0,
 			f = EXP[d - 1],
-			g = getRank(b.data.rankPoint);
+			g = getRank(b);
 		for (a in b.data.record) c += b.data.record[a][1];
 		renderMoremi(".my-image", b.equip, b.id), $(".my-stat-level").replaceWith(getLevelImage(b.data.score).addClass("my-stat-level")), $(".my-stat-name").text(b.profile.title || b.profile.name), $(".my-stat-record").html(L.globalWin + " " + c + L.W), $(".my-stat-ping").html(commify(b.money) + L.ping), $(".my-rankPoint").html(b.data.rankPoint + L['LP']), $(".my-rank").html(L[g]), $(".my-okg .graph-bar").width($data._playTime % 6e5 / 6e3 + "%"), $(".my-okg-text").html(prettyTime($data._playTime)), $(".my-level").html(L.LEVEL + " " + d), $(".my-gauge .graph-bar").width((b.data.score - e) / (f - e) * 190), $(".my-gauge-text").html(commify(b.data.score) + " / " + commify(f))
 	}
@@ -691,7 +691,7 @@
 	}
 
 	function addonNickname(a, b) {
-		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music"), "b1_champion" == b.equip.BDG && a.addClass("x-champion")
+		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music"), "b1_challenger2" == b.equip.BDG && a.addClass("x-challenger"), "b1_champion2" == b.equip.BDG && a.addClass("x-champion")
 	}
 
 	function updateRoomList(a) {
@@ -984,7 +984,7 @@
 			f = $("#profile-record").empty(),
 			z = $data.users[a];
 		if(!e.robot){
-			var x = getRank(z.data.rankPoint);
+			var x = getRank(z);
 			
 			$("#rankicon").attr("src", "/img/kkutu/rankicon/" + x + ".png");
 			
@@ -1682,32 +1682,37 @@
 		}
 	}
 	
-	function getFirstRank(){
-		$.get("/ranking", function(a) {
-			return getRanker(a);
-		})
-	}
-	
 	function getRank(a){
-		if(a < 50){
-			return 'UNRANKED';
-		} else if(a >= 50 && a < 1000){
-			return 'BRONZE';
-		} else if(a >= 1000 && a < 2000){
-			return 'SILVER';
-		} else if(a >= 2000 && a < 3000){
-			return 'GOLD';
-		} else if(a >= 3000 && a < 4000){
-			return 'PLATINUM';
-		} else if(a >= 4000 && a < 5000){
-			return 'DIAMOND';
-		} else if(a >= 5000 && a < 10000){
-			return 'MASTER';
-		} else if(a >= 10000){
-			return 'CHAMPION';
+		var rank;
+		var jqXHR = $.ajax({
+				url: '/rpRanking',
+				method: 'GET',
+				async: false
+			});
+		var rpRanking = JSON.parse(jqXHR.responseText);
+		
+		if(a.data.rankPoint < 50){
+			rank = 'UNRANKED';
+		} else if(a.data.rankPoint >= 50 && a.data.rankPoint < 1000){
+			rank = 'BRONZE';
+		} else if(a.data.rankPoint >= 1000 && a.data.rankPoint < 2000){
+			rank = 'SILVER';
+		} else if(a.data.rankPoint >= 2000 && a.data.rankPoint < 3000){
+			rank = 'GOLD';
+		} else if(a.data.rankPoint >= 3000 && a.data.rankPoint < 4000){
+			rank = 'PLATINUM';
+		} else if(a.data.rankPoint >= 4000 && a.data.rankPoint < 5000){
+			rank = 'DIAMOND';
+		} else if(a.data.rankPoint >= 5000){
+			rank = 'MASTER';
 		} else {
-			return "UNRANKED";
+			rank = "UNRANKED";
 		}
+		
+		if(rpRanking.data[0].id == a.id) rank = "CHAMPION";
+		if(rpRanking.data[1].id == a.id) rank = "CHALLENGER";
+			
+		return rank;
 	}
 
 	function chatBalloon(a, b, c) {
@@ -1847,7 +1852,7 @@
 			};
 		if(r !== "shop"){
 			var u = $data.users[r];
-			if(u !== undefined) var o = getRank(u.data.rankPoint);
+			if(u !== undefined) var o = getRank(u);
 		}
 		if(b.MSKIN == undefined) var s = "def";
 		else var s = b.MSKIN;

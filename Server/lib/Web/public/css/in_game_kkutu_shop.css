@@ -92,9 +92,13 @@
 .chat-item>.x-master::before{ content: "[M]"; color: #cc0606; text-shadow: 0px 0px 0px; }
 .room-user-title>.x.master::before{ content: "[M]"; color: #cc0606; text-shadow: 0px 0px 0px; }
 
-.x-champion .users-name::before{ content: "[C]"; color: #cc0606; text-shadow: 0px 0px 0px; }
-.chat-item>.x-champion::before{ content: "[C]"; color: #cc0606; text-shadow: 0px 0px 0px; }
-.room-user-title>.x.champion::before{ content: "[C]"; color: #cc0606; text-shadow: 0px 0px 0px; }
+.x-challenger .users-name::before{ content: "[C]"; color: #ffc3a2; text-shadow: 0px 0px 0px; }
+.chat-item>.x-challenger::before{ content: "[C]"; color: #ffc3a2; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.challenger::before{ content: "[C]"; color: #ffc3a2; text-shadow: 0px 0px 0px; }
+
+.x-champion .users-name::before{ content: "[C]"; color: #fa27ff; text-shadow: 0px 0px 0px; }
+.chat-item>.x-champion::before{ content: "[C]"; color: #fa27ff; text-shadow: 0px 0px 0px; }
+.room-user-title>.x.champion::before{ content: "[C]"; color: #fa27ff; text-shadow: 0px 0px 0px; }
 
 .x-spectator .users-name::before{ content: "[관전]"; color: #A9A9A9; text-shadow: 0px 0px 0px; }
 .chat-item>.x-spectator::before{ content: "[관전]"; color: #A9A9A9; text-shadow: 0px 0px 0px; }

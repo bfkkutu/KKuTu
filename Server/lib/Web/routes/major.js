@@ -22,15 +22,6 @@ var JLog	 = require("../../sub/jjlog");
 var Const	 = require("../../const");
 var File	 = require("fs");
 
-File.watchFile("./lib/Web/db", () => {
-	MainDB = require("../db");
-	JLog.info("db.js is Auto-Updated at {lib/Web/routes/major.js}");
-})
-File.watchFile("./lib/const.js", () => {
-	Const	 = require("../../const");
-	JLog.info("const.js is Auto-Updated at {lib/Web/routes/major.js}");
-})
-
 function obtain($user, key, value, term, addValue){
 	var now = (new Date()).getTime();
 	
@@ -90,6 +81,21 @@ Server.get("/ranking", function(req, res){
 	}else{
 		if(isNaN(pg)) pg = 0;
 		MainDB.redis.getPage(pg, 15).then(function($body){
+			res.send($body);
+		});
+	}
+});
+Server.get("/rpRanking", function(req, res){
+	var pg = Number(req.query.p);
+	var id = req.query.id;
+	
+	if(id){
+		MainDB.rRedis.getSurround(id, 15).then(function($body){
+			res.send($body);
+		});
+	}else{
+		if(isNaN(pg)) pg = 0;
+		MainDB.rRedis.getPage(pg, 15).then(function($body){
 			res.send($body);
 		});
 	}
