@@ -1691,27 +1691,25 @@
 			});
 		var rpRanking = JSON.parse(jqXHR.responseText);
 		
-		if(a.data.rankPoint < 50){
-			rank = 'UNRANKED';
-		} else if(a.data.rankPoint >= 50 && a.data.rankPoint < 1000){
-			rank = 'BRONZE';
-		} else if(a.data.rankPoint >= 1000 && a.data.rankPoint < 2000){
-			rank = 'SILVER';
-		} else if(a.data.rankPoint >= 2000 && a.data.rankPoint < 3000){
-			rank = 'GOLD';
-		} else if(a.data.rankPoint >= 3000 && a.data.rankPoint < 4000){
-			rank = 'PLATINUM';
-		} else if(a.data.rankPoint >= 4000 && a.data.rankPoint < 5000){
-			rank = 'DIAMOND';
-		} else if(a.data.rankPoint >= 5000){
+		if(a.data.rankPoint >= 5000){ // 5000점 이상
 			rank = 'MASTER';
-		} else {
-			rank = "UNRANKED";
+			if(rpRanking.data[0].id == a.id) rank = "CHAMPION";
+			if(rpRanking.data[1].id == a.id) rank = "CHALLENGER";
+		}else{
+			if(a.data.rankPoint < 50){
+				rank = 'UNRANKED';
+			} else if(a.data.rankPoint >= 50 && a.data.rankPoint < 1000){
+				rank = 'BRONZE';
+			} else if(a.data.rankPoint >= 1000 && a.data.rankPoint < 2000){
+				rank = 'SILVER';
+			} else if(a.data.rankPoint >= 2000 && a.data.rankPoint < 3000){
+				rank = 'GOLD';
+			} else if(a.data.rankPoint >= 3000 && a.data.rankPoint < 4000){
+				rank = 'PLATINUM';
+			} else if(a.data.rankPoint >= 4000 && a.data.rankPoint < 5000){
+				rank = 'DIAMOND';
+			}
 		}
-		
-		if(rpRanking.data[0].id == a.id) rank = "CHAMPION";
-		if(rpRanking.data[1].id == a.id) rank = "CHALLENGER";
-			
 		return rank;
 	}
 
