@@ -164,7 +164,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-				} else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다."), $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._gaming = !1, $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -415,22 +415,22 @@
 		// Block the Devtools
 		Blocker('devtools', () => {
 			//alert("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
-			alertKKuTu("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
+			alert("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
 			return ws.close();
 		}, $data, $stage)
 		Blocker('macro', () => {
 			//alert("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
-			alertKKuTu("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
+			alert("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
 			return ws.close();
 		}, $data, $stage)
 		checkIp((data) => {
 			//alert("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
-			alertKKuTu("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
+			alert("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
 			return ws.close();
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
-			if(a.newUser == true) return setNick()
-			else return;
+			if(a.newUser == true) return setNick(), console.log(`NEWUSER: ${a.newuser}`);
+			else return console.log(`NEWUSER: ${a.newuser}`);
 		})
 		
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
@@ -691,7 +691,7 @@
 	}
 
 	function addonNickname(a, b) {
-		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music"), "b1_challenger2" == b.equip.BDG && a.addClass("x-challenger"), "b1_champion2" == b.equip.BDG && a.addClass("x-champion")
+		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), "b1_master" == b.equip.BDG && a.addClass("x-master"), "b1_master2" == b.equip.BDG && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music"), "b1_challenger2" == b.equip.BDG && a.addClass("x-challenger"), "b1_champion2" == b.equip.BDG && a.addClass("x-champion"), "b9_honor" == b.equip.BDG && a.addClass("x-honor")
 	}
 
 	function updateRoomList(a) {
@@ -918,6 +918,16 @@
 			var d = $data.users[a.id];
 			d = d ? d.profile.title || d.profile.name : L.hidden, a.score = Number(a.score), b.append($("<tr>").attr("id", "ranking-" + a.id).addClass("ranking-" + (a.rank + 1)).append($("<td>").html(a.rank + 1)).append($("<td>").append(getLevelImage(a.score).addClass("ranking-image")).append($("<label>").css("padding-top", 2).html(getLevel(a.score)))).append($("<td>").html(d)).append($("<td>").html(commify(a.score))))
 		}), $("#ranking-" + $data.id).addClass("ranking-me"), $stage.dialog.lbPage.html(L.page + " " + d), $stage.dialog.lbPrev.attr("disabled", d <= 1), $stage.dialog.lbNext.attr("disabled", a.data.length < 15), $stage.dialog.lbMe.attr("disabled", !!$data.guest), $data._lbpage = d - 1
+	}
+	
+	function drawRPLeaderboard(a) {
+		var b = $stage.dialog.rplbTable.empty(),
+			c = a.data[0] ? a.data[0].rank : 0,
+			d = (a.page || Math.floor(c / 20)) + 1;
+		a.data.forEach(function(a, c) {
+			var d = $data.users[a.id];
+			d = d ? d.profile.title || d.profile.name : L.hidden, b.append($("<tr>").attr("id", "rpranking-" + a.id).addClass("rpranking-" + (a.rank + 1)).append($("<td>").html(a.rank + 1)).append($("<td>").append(getRankImage(a.score, a.id).addClass("rpranking-image")).append($("<label>").css("padding-top", 2).html(L[`${calculateRank(a.score, a.id)}`]))).append($("<td>").html(d)).append($("<td>").html(commify(a.score))))
+		}), $("#rpranking-" + $data.id).addClass("rpranking-me"), $stage.dialog.rplbPage.html(L.page + " " + d), $stage.dialog.rplbPrev.attr("disabled", d <= 1), $stage.dialog.rplbNext.attr("disabled", a.data.length < 15), $stage.dialog.rplbMe.attr("disabled", !!$data.guest), $data._rplbpage = d - 1
 	}
 	
 	function getRanker(a) {
@@ -1683,6 +1693,20 @@
 	}
 	
 	function getRank(a){
+		return calculateRank(a.data.rankPoint, a.id);
+	}
+	
+	function getRankImage(a, b){
+		var rank = calculateRank(a, b);
+		return $("<div>").css({
+			'float': "left",
+			'background-image': `url('/img/kkutu/rankicon/${rank}.png')`,
+			'background-position': "100% 100%",
+			'background-size': "100%"
+		});
+	}
+	
+	function calculateRank(a, b){
 		var rank;
 		var jqXHR = $.ajax({
 				url: '/rpRanking',
@@ -1691,22 +1715,22 @@
 			});
 		var rpRanking = JSON.parse(jqXHR.responseText);
 		
-		if(a.data.rankPoint >= 5000){ // 5000점 이상
+		if(a >= 5000){ // 5000점 이상
 			rank = 'MASTER';
-			if(rpRanking.data[0].id == a.id) rank = "CHAMPION";
-			if(rpRanking.data[1].id == a.id) rank = "CHALLENGER";
+			if(rpRanking.data[0].id == b) rank = "CHAMPION";
+			if(rpRanking.data[1].id == b || rpRanking.data[2].id == b) rank = "CHALLENGER";
 		}else{
-			if(a.data.rankPoint < 50){
+			if(a < 50){
 				rank = 'UNRANKED';
-			} else if(a.data.rankPoint >= 50 && a.data.rankPoint < 1000){
+			} else if(a >= 50 && a < 1000){
 				rank = 'BRONZE';
-			} else if(a.data.rankPoint >= 1000 && a.data.rankPoint < 2000){
+			} else if(a >= 1000 && a < 2000){
 				rank = 'SILVER';
-			} else if(a.data.rankPoint >= 2000 && a.data.rankPoint < 3000){
+			} else if(a >= 2000 && a < 3000){
 				rank = 'GOLD';
-			} else if(a.data.rankPoint >= 3000 && a.data.rankPoint < 4000){
+			} else if(a >= 3000 && a < 4000){
 				rank = 'PLATINUM';
-			} else if(a.data.rankPoint >= 4000 && a.data.rankPoint < 5000){
+			} else if(a >= 4000 && a < 5000){
 				rank = 'DIAMOND';
 			}
 		}
@@ -2025,6 +2049,7 @@
 					shop: $("#ShopBtn"),
 					dict: $("#DictionaryBtn"),
 					wordPlus: $("#WordPlusBtn"),
+					reloadRoom: $("#ReloadRoom"),
 					//Clan:$("#ClanBtn"),
 					invite: $("#InviteBtn"),
 					practice: $("#PracticeBtn"),
@@ -2033,7 +2058,8 @@
 					exit: $("#ExitBtn"),
 					notice: $("#NoticeBtn"),
 					replay: $("#ReplayBtn"),
-					leaderboard: $("#LeaderboardBtn")
+					leaderboard: $("#LeaderboardBtn"),
+					rankpointlb: $("#RPLeaderboardBtn")
 				},
 				dialog: {
 					setting: $("#SettingDiag"),
@@ -2082,11 +2108,17 @@
 					replay: $("#ReplayDiag"),
 					replayView: $("#replay-view"),
 					leaderboard: $("#LeaderboardDiag"),
+					rankpointlb: $("#RPLeaderboardDiag"),
 					lbTable: $("#ranking tbody"),
 					lbPage: $("#lb-page"),
 					lbNext: $("#lb-next"),
 					lbMe: $("#lb-me"),
 					lbPrev: $("#lb-prev"),
+					rplbTable: $("#rpranking tbody"),
+					rplbPage: $("#rplb-page"),
+					rplbNext: $("#rplb-next"),
+					rplbMe: $("#rplb-me"),
+					rplbPrev: $("#rplb-prev"),
 					dress: $("#DressDiag"),
 					dressOK: $("#dress-ok"),
 					charFactory: $("#CharFactoryDiag"),
@@ -2339,6 +2371,8 @@
 				showDialog($stage.dialog.dict)
 			}), $stage.menu.wordPlus.on("click", function(a) {
 				showDialog($stage.dialog.wordPlus)
+			}), $stage.menu.reloadRoom.on("click", function(a) {
+				updateRoomList(true), updateUserList(true);
 			}), /*$stage.menu.clan.on("click",function(a){showDialog($stage.dialog.clandiag)}),*/ $stage.menu.invite.on("click", function(a) {
 				showDialog($stage.dialog.invite), updateUserList(!0)
 			}), $stage.menu.practice.on("click", function(a) {
@@ -2372,6 +2406,22 @@
 			}), $stage.dialog.lbNext.on("click", function(a) {
 				$(a.currentTarget).attr("disabled", !0), $.get("/ranking?p=" + ($data._lbpage + 1), function(a) {
 					drawLeaderboard(a)
+				})
+			}), $stage.menu.rankpointlb.on("click", function(a) {
+				$data._rplbpage = 0, $stage.dialog.rankpointlb.is(":visible") ? $stage.dialog.rankpointlb.hide() : $.get("/rpRanking", function(a) {
+					drawRPLeaderboard(a), showDialog($stage.dialog.rankpointlb)
+				})
+			}), $stage.dialog.rplbPrev.on("click", function(a) {
+				$(a.currentTarget).attr("disabled", !0), $.get("/rpRanking?p=" + ($data._rplbpage - 1), function(a) {
+					drawRPLeaderboard(a)
+				})
+			}), $stage.dialog.rplbMe.on("click", function(a) {
+				$(a.currentTarget).attr("disabled", !0), $.get("/rpRanking?id=" + $data.id, function(a) {
+					drawRPLeaderboard(a)
+				})
+			}), $stage.dialog.rplbNext.on("click", function(a) {
+				$(a.currentTarget).attr("disabled", !0), $.get("/rpRanking?p=" + ($data._rplbpage + 1), function(a) {
+					drawRPLeaderboard(a)
 				})
 			}), $stage.dialog.settingServer.on("click", function(a) {
 				location.href = "/"

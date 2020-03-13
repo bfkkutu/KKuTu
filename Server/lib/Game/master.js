@@ -96,17 +96,9 @@ log4js.configure({
 });
 const logger = log4js.getLogger('System');
 
-File.watchFile("./lib/kkutu.js", () => {
-	KKuTu = require('./kkutu');
-	JLog.info("kkutu.js is Auto-Updated at {lib/Game/master.js}");
-})
 File.watchFile("./lib/sub/global.json", () => {
 	GLOBAL = require("../sub/global.json");
 	JLog.info("global.json is Auto-Updated at {lib/Game/master.js}");
-})
-File.watchFile("./lib/const.js", () => {
-	Const = require("../const");
-	JLog.info("const.js is Auto-Updated at {lib/Game/master.js}");
 })
 
 process.on('uncaughtException', function(err){
@@ -172,6 +164,7 @@ function processAdmin(id, value, requestId){
 			return null;
 		case "unban":
 			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
+			KKuTu.publish('yell', { value: value + "님이 차단 해제되었습니다." });
 			return null;
 		case "chatban":
 			MainDB.users.update([ '_id', value ]).set([ 'black', "chat" ]).on();
@@ -281,6 +274,12 @@ function processAdmin(id, value, requestId){
 				temp.send('test');
 				if(DIC[id]) DIC[id].send('tail', { a: i ? "tuX" : "tu", rid: temp.id, id: id, msg: temp.getData() });
 			}
+			return null;
+		case "freeze":
+			KKuTu.publish('yell', { value: "관리자가 채팅을 얼렸습니다." });
+			return null;
+		case "unfreeze":
+			KKuTu.publish('yell', { value: "관리자가 채팅을 녹였습니다." });
 			return null;
 		case "dump":
 			if(DIC[id]) DIC[id].send('yell', { value: "This feature is not supported..." });

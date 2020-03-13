@@ -43,11 +43,6 @@ const { toHTML } = require('discord-markdown');
 const emoji = require('node-emoji');
 // Discord Markdown and Emojify
 
-File.watchFile("./lib/const.js", () => {
-	Const = require('../const');
-	JLog.info("const.js is Auto-Updated at {lib/Game/kkutu.js}");
-})
-
 exports.NIGHT = false;
 exports.init = function(_DB, _DIC, _ROOM, _GUEST_PERMISSION, _CHAN){
 	var i, k;
@@ -518,6 +513,7 @@ exports.Client = function(socket, profile, sid){
 			friends ? [ 'friends', my.friends ] : undefined
 		).on(function(__res){
 			DB.redis.getGlobal(my.id).then(function(_res){
+				DB.rRedis.putGlobal(my.id, my.data.rankPoint);
 				DB.redis.putGlobal(my.id, my.data.score).then(function(res){
 					JLog.log(`FLUSHED [${my.id}] PTS=${my.data.score} MNY=${my.money} RP=${my.data.rankPoint}`);
 					R.go({ id: my.id, prev: _res });
@@ -1674,9 +1670,12 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	
 	//rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
 	
-	if (rankPoint >= 5000){
+	//rw.score = rw.score * 1.5; //2시즌 시작 기념 이벤트
+	//rw.rankPoint = rw.rankPoint * 1.5; //2시즌 시작 기념 이벤트
+	
+	/*if (rankPoint >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
-	}
+	}*/
 
 	return rw;
 }

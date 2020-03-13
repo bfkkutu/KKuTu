@@ -181,8 +181,8 @@ DDDoS = new DDDoS({
 	maxWeight: 40,
 	checkInterval: 800,
 	rules: [{
-		regexp: "^/(cf|dict|gwalli)",
-		maxWeight: 40
+		regexp: "^/(cf|dict|gwalli|rpRanking|corona)",
+		maxWeight: 999 //40
 	}, {
 		regexp: ".*"
 	}]
