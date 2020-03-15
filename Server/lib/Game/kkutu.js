@@ -559,7 +559,7 @@ exports.Client = function(socket, profile, sid){
 				}
 			}
 			if($room.players.length >= $room.limit + (spec ? Const.MAX_OBSERVER : 0)){
-				return my.sendError(429);
+				if(!my.admin) return my.sendError(429);
 			}
 			if($room.players.indexOf(my.id) != -1){
 				return my.sendError(409);
@@ -983,7 +983,7 @@ exports.Room = function(room, channel){
 		if(x == -1){
 			client.place = 0;
 			if(my.players.length < 1) delete ROOM[my.id];
-			return client.sendError(409);
+			return client.sendError(430);// client.sendError(409);
 		}
 		my.players.splice(x, 1);
 		client.game = {};
@@ -1226,8 +1226,10 @@ exports.Room = function(room, channel){
 			if(o.cameWhenGaming){
 				o.cameWhenGaming = false;
 				if(o.form == "O"){
-					o.sendError(428);
-					o.leave();
+					if(!my.admin){
+						o.sendError(428);
+						o.leave();
+					}
 					continue;
 				}
 				o.setForm("J");
@@ -1264,7 +1266,7 @@ exports.Room = function(room, channel){
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
 				if(o.game.wpc){
-					o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					if(!my.opts.returns) o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					/*var list = [
 						"할", "로", "윈", "좀", "비", "사", "탕", "유", "령"
 						, "잭", "오", "랜", "턴", "호", "박", "프", "랑", "켄"
@@ -1546,7 +1548,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 		case "KSH":
 			rw.score += score * 0.55;
 			break;
-		case "CSQ":
+		case "CSQ": // 한국어 자음퀴즈
 			rw.score += score * 0.4;
 			break;
 		case 'KCW':
@@ -1676,6 +1678,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	/*if (rankPoint >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}*/
+	if (opts.randomturn && all <= 3) rw.rankPoint = rw.rankPoint - (rw.rankPoint * 0.7); // 랜덤 턴
+	if (opts.returns) rw.rankPoint = 0 // 리턴
 
 	return rw;
 }

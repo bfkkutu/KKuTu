@@ -42,7 +42,7 @@ block Subject
 
 block JS
 	script(type='text/javascript', src='/js/in_game_kkutu.min.js')
-	script(type='text/javascript', src='/js/in_game_kkutu.obfus.js')
+	//-script(type='text/javascript', src='/js/in_game_kkutu.obfus.js')
 	script(type="text/javascript", src="/js/in_$request.obfus.js")
 	script(type='text/javascript', src='/js/fabric.min.js')
 	script(src='https://www.google.com/recaptcha/api.js')
@@ -81,7 +81,8 @@ block Middle
 		button#HelpBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #BBBBBB;')!= L('help')
 		button#SettingBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #CCCCCC;')!= L('settings')
 		button#CommunityBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #DAA9FF;')!= L('community')
-		button#LeaderboardBtn.tiny-menu.for-lobby(style='display: none; background-color: #FFADD3;')!= L('leaderboard')
+		button#LeaderboardBtn.tiny-menu.for-lobby(style='display: none; background-color: #46E85B;')!= L('leaderboard')
+		button#RPLeaderboardBtn.tiny-menu.for-lobby(style='display: none; background-color: #FFADD3;')!= L('leaderboard')
 		//- button#CursingBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #FD6600;')
 			i.fa.fa-char-f
 		button#SpectateBtn.for-master.for-normal(style='display: none; background-color: #D19DFF;')= L('spectate')
@@ -97,6 +98,7 @@ block Middle
 		button#StartBtn.for-master(style='display: none; background-color: #FFB576;')= L('start')
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;')= L('exit')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;')= L('replay')
+		button#ReloadRoom.tiny-menu.for-lobby(style='display: none; background-color: #7DB7FF;')!= L('reload')
 		// button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('CLAN')
 		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
 	+Dialog('SettingDiag', 320, 340, L('settingsText'))
@@ -143,7 +145,7 @@ block Middle
 			div#comm-friends
 		div.dialog-bar.tail-button
 			button#comm-friend-add= L('friendAdd')
-	+Dialog('LeaderboardDiag', 300, 450, L('leaderboard'))
+	+Dialog('LeaderboardDiag', 300, 450, L('inleaderboard'))
 		div.dialog-bar(style='height: 350px;'): table#ranking(style='text-align: center;')
 			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
 				td(width=30) #
@@ -156,6 +158,19 @@ block Middle
 			button#lb-next(style='margin-right: 6px;')= L('nextPage')
 			button#lb-me= L('myRank')
 			button#lb-prev= L('prevPage')
+	+Dialog('RPLeaderboardDiag', 300, 450, L('inrpleaderboard'))
+		div.dialog-bar(style='height: 350px;'): table#rpranking(style='text-align: center;')
+			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
+				td(width=30) #
+				td(width=110)= L('RANK')
+				td(width=115)= L('nickname')
+				td(width=110)= L('recordRankPoint')
+			tbody
+		div.dialog-bar: h4(style='width: 100%;')#rplb-page
+		div.dialog-bar.tail-button
+			button#rplb-next(style='margin-right: 6px;')= L('nextPage')
+			button#rplb-me= L('myRank')
+			button#rplb-prev= L('prevPage')
 	//- +Dialog('CursingDiag', 310, 60, "욕설 사용량 확인하기")
 		div.dialog-bar#cursing-value -//
 	+Dialog('QuickDiag', 300, 330, L('quickRoom'))

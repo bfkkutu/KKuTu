@@ -131,7 +131,7 @@ exports.RULE = {
 	},
 	'CSQ': { lang: "ko", // 한국어 자음퀴즈
 		rule: "Jaqwi",
-		opts: [ "ijp" ],
+		opts: [ "ijp", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -182,7 +182,7 @@ exports.RULE = {
 	},
 	'KDA': { lang: "ko", // 한국어 단어 대결
 		rule: "Daneo",
-		opts: [ "ijp", "mis", "rms", "rtu", "upl", "rank" ],
+		opts: [ "ijp", "mis", "mms", "rms", "rtu", "upl", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -190,7 +190,7 @@ exports.RULE = {
 	},
 	'EDA': { lang: "en", // 영어 단어 대결
 		rule: "Daneo",
-		opts: [ "ijp", "mis", "rms", "rtu", "upl", "rank" ],
+		opts: [ "ijp", "mis", "mms", "rms", "rtu", "upl", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
