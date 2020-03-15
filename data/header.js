@@ -15,21 +15,3 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-
-/**
- * HTTP 상태 코드 열거형.
- */
-export enum StatusCode{
-  MOVED = 302,
-  NOT_FOUND = 404
-}
-
-/**
- * 웹소켓 종료 코드 열거형.
- */
-export enum WebSocketCloseCode{
-  /**
-   * 도배로 인한 강제 접속 종료.
-   */
-  SPAM = 4029
-}

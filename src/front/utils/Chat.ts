@@ -1,4 +1,4 @@
-/*!
+/*
  * Rule the words! KKuTu Online
  * Copyright (C) 2020  JJoriping(op@jjo.kr)
  *
@@ -16,13 +16,13 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { playSound, Sound } from "./Audio";
+import { Sound, playSound } from "./Audio";
 import { ChatBalloonFlag } from "./enums/ChatBallonFlag";
 import { send } from "./GameClient";
 import { G, L } from "./Global";
 import { $data, $stage } from "./PlayUtility";
 
-const REGEXP_LINK = /https?:\/\/[\w\.\?\/&#%=-_\+]+/g;
+const REGEXP_LINK = /https?:\/\/[\w.?/&#%=-_+]+/g;
 const REGEXP_INSULTS = new RegExp(
   [
     "느으*[^가-힣]*금마?",
@@ -64,21 +64,22 @@ export function chat(profile:KKuTu.Game.Profile, message:string, from?:string, t
 
   const date = timestamp ? new Date(timestamp) : new Date();
   const equip = $data.users[profile.id]?.equip || {};
-  let $baby:JQuery;
+  let $baby:JQuery = null;
   let $bar:JQuery;
   let $message:JQuery;
+  let processedMessage:string;
   let link:RegExpExecArray;
 
   if(from){
     if($data.settings.dw) return;
     if($data.blacklist[from]) return;
   }
-  message = replaceInsults(message);
+  processedMessage = replaceInsults(message);
   playSound(Sound.CHAT);
   pruneChat();
   if(!G.mobile && $data.room){
     showChatBalloon(
-      message,
+      processedMessage,
       profile.id,
       ($data.room.gaming ? ChatBalloonFlag.GAMING : 0)
       | ($(".jjoriping").hasClass("big") ? ChatBalloonFlag.BIG : 0)
@@ -86,7 +87,7 @@ export function chat(profile:KKuTu.Game.Profile, message:string, from?:string, t
   }
   $baby = $("<div>").addClass("chat-item")
     .append($bar = $("<div>").addClass("chat-head ellipse").text(profile.title || profile.name))
-    .append($message = $("<div>").addClass("chat-body").text(message))
+    .append($message = $("<div>").addClass("chat-body").text(processedMessage))
     .append($("<div>").addClass("chat-stamp").text(date.toLocaleTimeString()))
   ;
   if(timestamp){
@@ -98,28 +99,47 @@ export function chat(profile:KKuTu.Game.Profile, message:string, from?:string, t
   $stage.chatLog.append($baby.clone()
     .append($("<div>").addClass("tooltip")
       .css('font-weight', "normal")
-      .html(`#${(profile.id || "").slice(0, PROFILE_ID_LENGTH)}`)
-    )
-  );
-  if(link = REGEXP_LINK.exec(message)){
-    message = $message.html();
+      .html(`#${(profile.id || "").slice(0, PROFILE_ID_LENGTH)}`)));
+  if(link = REGEXP_LINK.exec(processedMessage)){
+    processedMessage = $message.html();
     link.forEach(v => {
-      message = message.replace(v, `<a
+      processedMessage = processedMessage.replace(v, `<a
         href="#"
         style="color: #2222FF;"
         onclick="if(confirm('${L('link-warning')}')) window.open('${v}');"
       >${v}</a>`);
     });
-    $message.html(message);
+    $message.html(processedMessage);
   }
   if(from){
     if(from !== $data.id) $data.recentFrom = from;
-    $message.html(`<label
-      style="color: #7777FF; font-weight: bold;"
-    >&lt;${L('whisper')}&gt;</label>${$message.html()}`);
+    $message.html(`<label style="color: #7777FF; font-weight: bold;">
+      &lt;${L('whisper')}&gt;
+    </label>${$message.html()}`);
   }
   addonNickname($bar, equip);
   $stage.chat.append($baby).scrollTop(Number.MAX_SAFE_INTEGER);
+}
+/**
+ * 주어진 내용을 공지 형태로 채팅 창에 출력한다.
+ *
+ * @param message HTML 내용.
+ * @param head 글쓴이.
+ */
+export function notice(message:string, head = L('notice')):void{
+  const now = new Date();
+  let $baby:JQuery = null;
+
+  playSound(Sound.CHAT);
+  pruneChat();
+
+  $baby = $("<div>").addClass("chat-item chat-notice")
+    .append($("<div>").addClass("chat-head").text(head))
+    .append($("<div>").addClass("chat-body").html(message))
+    .append($("<div>").addClass("chat-stamp").text(now.toLocaleTimeString()))
+  ;
+  $stage.chat.append($baby).scrollTop(Number.MAX_SAFE_INTEGER);
+  $stage.chatLog.append($baby);
 }
 /**
  * 주어진 문자열에 포함된 나쁜 말을 대체 문구로 바꿔 반환한다.
@@ -142,8 +162,8 @@ export function sendWhisper(target:string, message:string):void{
   $data.whisper = target;
   send('talk', {
     whisper: target,
-    value: message
-  },   true);
+    value  : message
+  }, true);
   chat({ id: null, title: `→${target}`, name: null }, message, $data.id);
 }
 /**

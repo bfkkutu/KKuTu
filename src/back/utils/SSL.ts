@@ -1,4 +1,4 @@
-/*!
+/*
  * Rule the words! KKuTu Online
  * Copyright (C) 2020  JJoriping(op@jjo.kr)
  *
@@ -16,7 +16,7 @@
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
 
-import { getProjectData, SETTINGS } from "./System";
+import { SETTINGS, getProjectData } from "./System";
 
 export const SSL_OPTIONS = SETTINGS.https && ('pfx' in SETTINGS.https
   ? {
@@ -24,7 +24,7 @@ export const SSL_OPTIONS = SETTINGS.https && ('pfx' in SETTINGS.https
   }
   : {
     cert: getProjectData(SETTINGS.https.cert),
-    key: getProjectData(SETTINGS.https.key),
-    ca: getProjectData(SETTINGS.https.ca)
+    key : getProjectData(SETTINGS.https.key),
+    ca  : getProjectData(SETTINGS.https.ca)
   }
 );
