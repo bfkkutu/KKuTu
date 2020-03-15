@@ -1,4 +1,4 @@
-/*!
+/*
  * Rule the words! KKuTu Online
  * Copyright (C) 2020  JJoriping(op@jjo.kr)
  *
@@ -44,11 +44,15 @@ export const PACKAGE:Schema.Package = JSON.parse(getProjectData("../package.json
  * @param path 프로젝트 데이터 폴더에서의 하위 경로. 절대 경로인 경우 절대 경로를 따른다.
  */
 export function getProjectData(path:string):Buffer{
-  if(!Path.isAbsolute(path)){
-    path = Path.resolve(__dirname, `../data/${path}`);
+  let absolutePath:string;
+
+  if(Path.isAbsolute(path)){
+    absolutePath = path;
+  }else{
+    absolutePath = Path.resolve(__dirname, `../data/${path}`);
   }
   try{
-    return FS.readFileSync(path);
+    return FS.readFileSync(absolutePath);
   }catch(e){
     Logger.error().put(e).out();
 
@@ -62,12 +66,16 @@ export function getProjectData(path:string):Buffer{
  * @param data 파일에 쓸 내용.
  */
 export function setProjectData(path:string, data:string):Promise<void>{
-  if(!Path.isAbsolute(path)){
-    path = Path.resolve(__dirname, `../data/${path}`);
+  let absolutePath:string;
+
+  if(Path.isAbsolute(path)){
+    absolutePath = path;
+  }else{
+    absolutePath = Path.resolve(__dirname, `../data/${path}`);
   }
 
   return new Promise((res, rej) => {
-    FS.writeFile(path, data, err => {
+    FS.writeFile(absolutePath, data, err => {
       if(err){
         rej(err);
 
@@ -85,12 +93,13 @@ export function setProjectData(path:string, data:string):Promise<void>{
  * @param options 설정 객체.
  */
 export function schedule(
-  callback:(...args:any[]) => void,
+  callback:(...args:any[])=>void,
   interval:number,
   options?:Partial<ScheduleOptions>
 ):void{
   if(options?.callAtStart){
     callback();
+    options.callAtStart = false;
   }
   if(options?.punctual){
     const now = Date.now() + TIMEZONE_OFFSET;
@@ -99,7 +108,7 @@ export function schedule(
     global.setTimeout(
       () => {
         callback();
-        global.setInterval(callback, interval);
+        schedule(callback, interval, options);
       },
       gap
     );

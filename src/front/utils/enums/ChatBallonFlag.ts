@@ -1,4 +1,4 @@
-/*!
+/*
  * Rule the words! KKuTu Online
  * Copyright (C) 2020  JJoriping(op@jjo.kr)
  *
@@ -17,7 +17,7 @@
  */
 
 /**
- * 채팅 말풍선의 표시 형식 열거형.
+ * 말풍선 상태 열거형.
  */
 export enum ChatBalloonFlag{
   /**

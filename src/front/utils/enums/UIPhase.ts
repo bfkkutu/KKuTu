@@ -1,4 +1,4 @@
-/*!
+/*
  * Rule the words! KKuTu Online
  * Copyright (C) 2020  JJoriping(op@jjo.kr)
  *
@@ -17,7 +17,7 @@
  */
 
 /**
- * 현재 보일 UI 화면 열거형.
+ * 표시할 UI 상태 열거형.
  */
 export enum UIPhase{
   /**

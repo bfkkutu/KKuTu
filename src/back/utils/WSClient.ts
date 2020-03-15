@@ -1,4 +1,4 @@
-/*!
+/*
  * Rule the words! KKuTu Online
  * Copyright (C) 2020  JJoriping(op@jjo.kr)
  *
@@ -19,12 +19,33 @@
 import WS = require("ws");
 
 import { Logger } from "./Logger";
+import { WebSocketCloseCode } from "./enums/StatusCode";
 
 /**
  * 웹소켓 클라이언트 추상 클래스.
  *
  * 끄투 내 모든 웹소켓 통신은 JSON을 주고받으며
  * 요청의 추가 정보에는 반드시 `type` 속성이 들어가야 한다.
+ *
+ * 백엔드의 웹소켓 통신 구현은 이 클래스를 상속하는 것으로 이루어지며,
+ * 끄투의 웹소켓 통신 구조와 담당 파일은 아래와 같다.
+ *
+ * ```plain
+ *· ┌──────┐
+ *· │클라이│
+ *· │ 언트 │
+ *· └─┬─(4)┘
+ *·   │  │
+ *· ┌(3)─┴─┐     ┌──────┐
+ *· │ 게임(1)────┤  웹  │
+ *· │ 서버 ├────(2)서버 │
+ *· └──────┘     └──────┘
+ * ```
+ * `back/utils/WSClient` \
+ * ├ (1) `back/game/clients/WebServer` \
+ * ├ (2) `back/web/GameClient` \
+ * └ (3) `back/game/clients/Client` \
+ * (4) `front/utils/GameClient`
  */
 export abstract class WSClient{
   protected abstract requestHandlerTable:KKuTu.Packet.RequestHandlerTable;
@@ -47,7 +68,17 @@ export abstract class WSClient{
     this.socket.on('message', chunk => {
       const { type, ...data } = JSON.parse(chunk.toString());
       const handler = (this.requestHandlerTable as any)?.[type] || (this.responseHandlerTable as any)?.[type];
+      const logger = Logger.log("WSClient").put(type);
 
+      for(const k in data as Table<any>){
+        logger.next(k);
+        if(typeof data[k] === "object"){
+          logger.put(JSON.stringify(data[k]));
+        }else{
+          logger.put(data[k]);
+        }
+      }
+      logger.out();
       if(!handler){
         Logger.error("WSClient").put(`Unhandled type: ${type}`).out();
 
@@ -63,9 +94,11 @@ export abstract class WSClient{
   }
   /**
    * 웹소켓 통신을 종료한다.
+   *
+   * @param code 종료 코드.
    */
-  public close():void{
-    this.socket.close();
+  public close(code?:WebSocketCloseCode):void{
+    this.socket.close(code);
   }
   /**
    * 게임 서버로 정보를 보낸다.
@@ -73,10 +106,7 @@ export abstract class WSClient{
    * @param type 요청 유형.
    * @param data 추가 정보 객체.
    */
-  public request<T extends KKuTu.Packet.Type>(type:T, data?:KKuTu.Packet.RequestData<T>):void{
-    if(!data){
-      data = {} as any;
-    }
+  public request<T extends KKuTu.Packet.RequestType>(type:T, data:KKuTu.Packet.RequestData<T> = {} as any):void{
     data.type = type;
     if(this.socket.readyState === 1){
       this.socket.send(JSON.stringify(data));
@@ -88,10 +118,7 @@ export abstract class WSClient{
    * @param type 응답 유형.
    * @param data 추가 정보 객체.
    */
-  public response<T extends KKuTu.Packet.Type>(type:T, data?:KKuTu.Packet.ResponseData<T>):void{
-    if(!data){
-      data = {} as any;
-    }
+  public response<T extends KKuTu.Packet.ResponseType>(type:T, data:KKuTu.Packet.ResponseData<T> = {} as any):void{
     data.type = type;
     if(this.socket.readyState === 1){
       this.socket.send(JSON.stringify(data));
