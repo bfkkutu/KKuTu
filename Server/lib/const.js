@@ -246,14 +246,14 @@ exports.RULE = {
 		_back: true,
 		ewq: true
 	}*/
-	'KTS': { lang: "ko", // 한국어 주제 끝말잇기
+	/*'KTS': { lang: "ko", // 한국어 주제 끝말잇기
 		rule: "DaneoClassic",
 		opts: [ "man", "ext", "ijp", "rank" ],
 		time: 1,
 		ai: false,
 		big: false,
 		ewq: true
-	},
+	},*/
 	'KUT': { lang: "ko", // 한국어 끄투
 		rule: "Classic",
 		opts: [ "man", "ext" ],
