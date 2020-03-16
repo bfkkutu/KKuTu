@@ -973,18 +973,21 @@
 	
 	function requestAdminRoom(){
 		var a = 0;
-		var b, c;
+		var b;
+		var c = $.ajax({
+			url: '/adminList',
+			method: 'GET',
+			async: false
+		}).responseText;
+		var d;
 		for(a in $data.rooms){
 			for(b in $data.rooms[a].players){
-				c = $.ajax({
-					url: '/adminList',
-					method: 'GET',
-					async: false
-				});
-				c = c.responseText.indexOf($data.users[$data.rooms[a].players[b]].id);
-				return c !== -1;
+				delete $data.users[$data.rooms[a].players[b]][undefined];
+				d = c.indexOf($data.users[$data.rooms[a].players[b]].id);
+				if(d > -1) break;
 			}
 		}
+		return d !== -1;
 	}
 
 	function requestProfile(a) {
