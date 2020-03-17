@@ -376,6 +376,8 @@
 		var Blocker = window.$Request;
 		var n = $data.users[$data.id];
 		
+		$("#Chatting").hide();
+		
 		if(n.nickname == "불건전닉네임"){
 			resetNick();
 			ws.close();
@@ -436,6 +438,15 @@
 		})
 		
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
+		
+		$("#chatinput").on("propertychange change keyup paste input", function() {
+			//$("#Chatting").show();
+			$(".product-title")[6].innerHTML = `<i class="fa fa-comment"></i>${L["nfChat"]} ${L["Chatting"]}`;
+			setTimeout(function(){
+				//$("#Chatting").hide()
+				$(".product-title")[6].innerHTML = `<i class="fa fa-comment"></i>${L["nfChat"]}`;
+			}, 500);
+		});
 	}
 	
 	function resetNick(){
@@ -2035,7 +2046,6 @@
 					createBanner: $("<div>").addClass("rooms-item rooms-create").append($("<div>").html(L.newRoom))
 				},
 				chat: $("#Chat"),
-				onchating: $("#Chating"),
 				chatLog: $("#chat-log-board"),
 				talk: $(".ChatBox input").last(),
 				chatBtn: $(".ChatBox button").last(),

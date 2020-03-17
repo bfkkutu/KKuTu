@@ -178,11 +178,14 @@ Server.use((req, res, next) => {
 //볕뉘 수정 끝
 //디도스 감지 및 차단
 DDDoS = new DDDoS({
-	maxWeight: 40,
-	checkInterval: 800,
+	maxWeight: 45,
+	checkInterval: 900,
 	rules: [{
 		regexp: "^/(cf|dict|gwalli|rpRanking|corona|null)",
 		maxWeight: 999 //40
+	}, {
+		regexp: "^/(dddos|in_dddos.css)",
+		maxWeight: 60 //40
 	}, {
 		regexp: ".*"
 	}]

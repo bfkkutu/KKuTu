@@ -157,8 +157,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.3.1 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.3.1 User</a>",
+    "version": "4.3.2 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.3.2 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -286,6 +286,7 @@
     "RoomList": "FA{bars}방 목록",
     "Shop": "FA{shopping-bag}상점",
     "Chat": "FA{comment}채팅",
+	"nfChat": "채팅",
     "Room": "방",
     "Game": "게임",
     "Me": "FA{user}내 정보",
@@ -721,8 +722,7 @@
     "cmd_id": "(/id <i>대상</i>) 대상의 식별 번호를 얻습니다.",
 
     "myId": "내 식별 번호: ",
-	"NOCHATING": "　",
-	"CHATING": " 님이 입력 중 입니다.",
+	"Chatting": "입력 중입니다...",
     "send": "전송",
     "help": "FA{question-circle}",
     "helpText": "도움말",
