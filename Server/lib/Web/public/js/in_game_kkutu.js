@@ -164,7 +164,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -181,20 +181,22 @@
 			case "yell":
 				if(a.value == "reload"){
 					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다. 불편을 끼쳐 죄송합니다."), ws.close();
-				}else if(a.value == "freeze"){
-					yell("관리자가 채팅을 얼렸습니다.")
-					if($data._gaming){
-						if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
-						else $("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
-					}
-				}else if(a.value == "unfreeze"){
-					yell("관리자가 채팅을 녹였습니다.")
-					if($data._gaming){
-						if($data.admin) $("#chatinput").attr('placeholder', '');
-						else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
-					}
 				}else{
 					yell(a.value), notice(a.value, L.yell);
+				}
+				break;
+			case "freeze":
+				$data._cF = true;
+				if(!$data._gaming){
+					if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+					else $("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+				}
+				break;
+			case "unfreeze":
+				$data._cF = false;
+				if(!$data._gaming){
+					if($data.admin) $("#chatinput").attr('placeholder', '');
+					else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
 				}
 				break;
 			case "info":
@@ -207,9 +209,20 @@
 				notice(a.a + "|" + a.rid + "@" + a.id + ": " + (a.msg instanceof String ? a.msg : JSON.stringify(a.msg)).replace(/</g, "&lt;").replace(/>/g, "&gt;"), "tail");
 				break;
 			case "chat":
-				a.notice ? notice(L["error_" + a.code]) : chat(a.profile || {
-					title: L.robot
-				}, a.value, a.from, a.timestamp);
+				if(!$data.admin){
+					if(!$data._cF){
+						chat(a.profile || {
+							title: L.robot
+						}, a.value, a.from, a.timestamp);
+					}else{
+						$("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+						alert("채팅이 얼었습니다. 관리자만 채팅할 수 있습니다.");
+					}
+				}else{
+					a.notice ? notice(L["error_" + a.code]) : chat(a.profile || {
+						title: L.robot
+					}, a.value, a.from, a.timestamp);
+				}
 				break;
 			case "drawCanvas":
 				$stage.game.canvas && drawCanvas(a);
@@ -377,6 +390,14 @@
 		var n = $data.users[$data.id];
 		
 		$("#Chatting").hide();
+		
+		if($data._cF){
+			if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+			else $("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+		}else{
+			if($data.admin) $("#chatinput").attr('placeholder', '');
+			else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
+		}
 		
 		if(n.nickname == "불건전닉네임"){
 			resetNick();
@@ -724,12 +745,13 @@
 
 	function roomListBar(a) {
 		var b, c, d = getOptions(a.mode, a.opts);
-		var f = requestAdminRoom();
+		// 의미없는 짓거리였다
+		//var f = requestAdminRoom();
 		return b = $("<div>").attr("id", "room-" + a.id).addClass("rooms-item").append(c = $("<div>").addClass("rooms-channel channel-" + a.channel).on("click", function(b) {
 			requestRoomInfo(a.id)
 		})).append($("<div>").addClass("rooms-number").html(a.id)).append($("<div>").addClass("rooms-title ellipse").text(badWords(a.title))).append($("<div>").addClass("rooms-limit").html(a.players.length + " / " + a.limit)).append($("<div>").width(270).append($("<div>").addClass("rooms-mode").html(d.join(" / ").toString())).append($("<div>").addClass("rooms-round").html(L.rounds + " " + a.round)).append($("<div>").addClass("rooms-time").html(a.time + L.SECOND))).append($("<div>").addClass("rooms-lock").html(a.password ? "<i class='fa fa-lock'></i>" : "<i class='fa fa-unlock'></i>")).on("click", function(a) {
 			a.target != c.get(0) && tryJoin($(a.currentTarget).attr("id").slice(5))
-		}), a.gaming && b.addClass("rooms-gaming"), f && b.addClass("rooms-admin" + (a.gaming ? "-gaming" : "-waiting")), a.password && b.addClass("rooms-locked"), b
+		}), a.gaming && b.addClass("rooms-gaming"), a.admin && b.addClass("rooms-admin" + (a.gaming ? "-gaming" : "-waiting")), a.password && b.addClass("rooms-locked"), b
 	}
 
 	function normalGameUserBar(a) {
@@ -982,7 +1004,8 @@
 		}), showDialog($stage.dialog.roomInfo), $stage.dialog.roomInfo.show()
 	}
 	
-	function requestAdminRoom(){
+	// 의미없는 짓거리였다
+	/*function requestAdminRoom(){
 		var a = 0;
 		var b;
 		var c = $.ajax({
@@ -991,15 +1014,18 @@
 			async: false
 		}).responseText;
 		var d;
-		for(a in $data.rooms){
-			for(b in $data.rooms[a].players){
-				delete $data.users[$data.rooms[a].players[b]][undefined];
-				d = c.indexOf($data.users[$data.rooms[a].players[b]].id);
-				if(d > -1) break;
+		rooms : for(a in $data.rooms){
+			players : for(b in $data.rooms[a].players){
+				if(typeof $data.users[$data.rooms[a].players[b]] !== 'undefined'){
+					d = c.indexOf($data.users[$data.rooms[a].players[b]].id);
+					if(d !== -1) break players;
+				}else{
+					continue players;
+				}
 			}
 		}
 		return d !== -1;
-	}
+	}*/
 
 	function requestProfile(a) {
 		var b, c, d, e = $data.users[a] || $data.robots[a],

@@ -857,6 +857,8 @@ exports.Room = function(room, channel){
 	my.gaming = false;
 	my.game = {};
 	
+	my.adminRoom = false;
+	
 	my.getData = function(){
 		var i, readies = {};
 		var pls = [];
@@ -873,6 +875,15 @@ exports.Room = function(room, channel){
 			}
 			pls.push(filterRobot(my.players[i]));
 		}
+		for(i in my.players){
+			if(o = DIC[my.players[i]]){
+				if(o.admin){
+					my.adminRoom = true;
+					break;
+				}
+				else continue;
+			}
+		}
 		return {
 			id: my.id,
 			channel: my.channel,
@@ -887,6 +898,7 @@ exports.Room = function(room, channel){
 			players: pls,
 			readies: readies,
 			gaming: my.gaming,
+			admin: my.adminRoom,
 			game: {
 				round: my.game.round,
 				wordLimit: my.game.wordLimit,

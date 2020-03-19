@@ -63,6 +63,8 @@ var T_USER = {};
 var SID;
 var WDIC = {};
 
+var chatFreeze = false;
+
 // Discord Markdown and Emojify
 const { toHTML } = require('discord-markdown');
 const emoji = require('node-emoji');
@@ -277,9 +279,13 @@ function processAdmin(id, value, requestId){
 			return null;
 		case "freeze":
 			KKuTu.publish('yell', { value: "관리자가 채팅을 얼렸습니다." });
+			chatFreeze = true;
+			DIC[id].send('freeze');
 			return null;
 		case "unfreeze":
 			KKuTu.publish('yell', { value: "관리자가 채팅을 녹였습니다." });
+			chatFreeze = false;
+			DIC[id].send('unfreeze');
 			return null;
 		case "dump":
 			if(DIC[id]) DIC[id].send('yell', { value: "This feature is not supported..." });
@@ -570,6 +576,7 @@ function joinNewUser($c, ip, path) {
 		playTime: $c.data.playTime,
 		rankPoint: $c.data.rankPoint,
 		okg: $c.okgCount,
+		chatFreeze: chatFreeze,
 		users: KKuTu.getUserList(),
 		rooms: KKuTu.getRoomList(),
 		friends: $c.friends,
