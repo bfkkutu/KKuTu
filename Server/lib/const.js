@@ -307,7 +307,7 @@ exports.KO_INJEONG = [
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "BUS",
 	"DONG", "MFA", "ZHS", "KTR", "BBF", "ILN", "TRR",
-	"THP", "UND", "TLR", "LDB", "HKI"
+	"THP", "UND", "TLR", "LDB", "HKI", "MINBE"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"

@@ -1690,6 +1690,21 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	/*if (rankPoint >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
 	}*/
+	
+	if(rankPoint >= 5000){ // 마스터 이상 구간에서 하위 티어가 상위 티어를 따라잡기 더 쉽게 하기 위함.
+		if(rankPoint <= 5999){
+			rw.rankPoint = rw.rankPoint * 0.9;
+		}else if(rankPoint >= 6000 && rankPoint <= 6999){
+			rw.rankPoint = rw.rankPoint * 0.8;
+		}else if(rankPoint >= 7000 && rankPoint <= 7999){
+			rw.rankPoint = rw.rankPoint * 0.7;
+		}else if(rankPoint >= 8000 && rankPoint <= 8999){
+			rw.rankPoint = rw.rankPoint * 0.6;
+		}else if(rankPoint >= 9000 && rankPoint <= 9999){
+			rw.rankPoint = rw.rankPoint * 0.5;
+		}
+	}
+	
 	if (opts.randomturn && all <= 3) rw.rankPoint = rw.rankPoint - (rw.rankPoint * 0.7); // 랜덤 턴
 	if (opts.returns) rw.rankPoint = 0 // 리턴
 
