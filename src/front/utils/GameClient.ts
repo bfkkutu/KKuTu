@@ -20,7 +20,8 @@ import { Logger } from "back/utils/Logger";
 import { Sound, playSound, stopAllSounds } from "./Audio";
 import { chat, notice } from "./Chat";
 import { L } from "./Global";
-import { $stage, updateLoading, updateUI } from "./PlayUtility";
+import { $data, $stage, updateLoading, updateUI } from "./PlayUtility";
+import { reduceToTable } from "back/utils/Utility";
 
 const INTERVAL_INTRO_ANIMATION = 1000;
 
@@ -37,6 +38,9 @@ const handlerTable:KKuTu.Packet.ResponseHandlerTable = {
       })
     ;
     $stage.introText.text(L('welcome'));
+    $data.server = data.server;
+    $data.users = reduceToTable(data.users, v => v, v => v.id);
+    updateUI();
     Logger.success("Lobby").next("Administrator").put(data.administrator).out();
   },
   blocked: () => {
@@ -57,7 +61,6 @@ export function connectLobby(url:string):Promise<void>{
     lobbyClient = new WebSocket(url);
     lobbyClient.onopen = () => {
       updateLoading();
-      updateUI();
       res();
     };
     lobbyClient.onmessage = e => {
@@ -84,6 +87,19 @@ export function connectLobby(url:string):Promise<void>{
     lobbyClient.onerror = (e:ErrorEvent) => {
       Logger.error("Lobby").put(e.error).out();
     };
+  });
+}
+/**
+ * 데이터베이스로부터 모든 상점 품목을 불러와 메모리에 저장한다.
+ */
+export function loadShop():Promise<void>{
+  return new Promise(res => {
+    $.get("/shop", (chunk:{ 'goods':KKuTu.Game.Item[] }) => {
+      for(const v of chunk.goods){
+        $data.shop[v._id] = v;
+      }
+      res();
+    });
   });
 }
 /**
