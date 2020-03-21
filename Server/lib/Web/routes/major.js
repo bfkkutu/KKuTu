@@ -100,6 +100,106 @@ Server.get("/rpRanking", function(req, res){
 		});
 	}
 });
+Server.get("/clan", function(req, res){
+	var query = req.query;
+	
+	if(query.type == "create"){
+		var getClanID = {};
+		getClanID.random = function(n1, n2) {
+			return parseInt(Math.random() * (n2 -n1 +1)) + n1;
+		};
+		getClanID.authNo= function(n) {
+			var value = "";
+			for(var i=0; i<n; i++){
+				value += getClanID.random(0,9);
+			}
+			return value;
+		};
+		var newClanID = getClanID.authNo(9);
+		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			else{
+				var postM = $ec.money - 10000;
+				
+				if(postM < 0) return res.send({ message: "MONEYFAIL" });
+				else {
+					MainDB.users.update([ '_id', query.id ]).set(
+						[ 'money', postM ]
+					).on(function($fin){
+						JLog.log(`[CLAN PURCHASED] ${query.clanname} by ${query.id}`);
+						MainDB.users.update([ '_id', query.id ]).set([ 'clan', newClanID ]).on();
+						MainDB.clans.insert([ 'clanid', newClanID ], [ 'users', JSON.parse(`{"${query.id}":0}`) ], [ 'clanname', query.clanname ]).on();
+						return res.send({ message: "OK" });
+					});
+				}
+			}
+		});
+	}else if(query.type == "delete"){
+		MainDB.clans.findOne([ 'clanid', query.id ]).on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			if(!$ec.clanid) return res.send({ message: "FAIL" });
+			else{
+				MainDB.users.find([ 'clan', query.id ]).on(function($res){
+					var i;
+					for(i in $res){
+						MainDB.users.update([ '_id', $res[i]._id ]).set([ 'clan', null ]).on();
+					}
+					MainDB.clans.remove([ 'clanid', query.id ]).on();
+				});
+				return res.send({ message: "OK" });
+			}
+		});
+	}else if(query.type == "adduser"){
+		MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			if(!$ec.clanid) return res.send({ message: "FAIL" });
+			else{
+				MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($data){
+					$data.users[`${query.userid}`] = parseInt(query.userp); // userp: user permission
+					MainDB.users.update([ '_id', query.userid ]).set([ 'clan', query.clanid ]).on();
+					MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'users', $data.users ]).on();
+				});
+				return res.send({ message: "OK" });
+			}
+		});
+	}else if(query.type == "removeuser"){
+		MainDB.users.findOne([ '_id', query.userid ]).on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			if($ec.clan !== query.clanid) return res.send({ message: "FAIL" });
+			else{
+				MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($data){
+					delete $data.users[`${query.userid}`]
+					MainDB.users.update([ '_id', query.userid ]).set([ 'clan', null ]).on();
+					MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'users', $data.users ]).on();
+				});
+				return res.send({ message: "OK" });
+			}
+		});
+	}else if(query.type == "getclan"){
+		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
+			if($ec.clan == undefined || $ec.clan == null) return res.send({ name: undefined });
+			else{
+				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($des){
+					if(!$des) return res.send({ name: undefined });
+					return res.send({ name: $des.clanname, id: $des.clanid, users: $des.users });
+				});
+			}
+		});
+	}else if(query.type == "promote"){
+		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			else if(Number(query.perm) > 2) return res.send({ message: "FAIL" });
+			else if(typeof Number(query.perm) !== "number") return res.send({ message: "FAIL" });
+			else{
+				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($data){
+					$data.users[`${query.id}`] = Number(query.perm);
+					MainDB.clans.update([ 'clanid', $ec.clan ]).set([ 'users', $data.users ]).on();
+				});
+				return res.send({ message: "OK" });
+			}
+		});
+	}
+});
 Server.get("/injeong/:word", function(req, res){
 	if(!req.session.profile) return res.send({ error: 402 });
 	var word = req.params.word;

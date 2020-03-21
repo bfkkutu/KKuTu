@@ -73,6 +73,7 @@
 		$("#sort-user").attr("checked", $data.opts.su), 
 		$("#only-waiting").attr("checked", $data.opts.ow), 
 		$("#only-unlock").attr("checked", $data.opts.ou), 
+		updateUserList(true), updateRoomList(true),
 		$data.bgm && ($data.muteBGM ? ($data.bgm.volume = 0, $data.bgm.stop()) : ($data.bgm.volume = $("#bgmvol").val(), $data.bgm = playBGM("lobby", !0)))
 	}
 
@@ -736,6 +737,7 @@
 		if (a) {
 			$stage.lobby.roomList.empty();
 			for (c in $data.rooms) $stage.lobby.roomList.append(roomListBar($data.rooms[c])), d++
+			$("#roomlist-loading").hide();
 		} else {
 			$(".rooms-create").remove();
 			for (c in $data.rooms) d++
@@ -1087,6 +1089,11 @@
 				"font-size": "11px"
 			}).text(e.exordial))), e.robot) $stage.dialog.profileLevel.show(), $stage.dialog.profileLevel.prop("disabled", $data.id != $data.room.master), $("#rank").html(L['UNRANKED']), $("#rankpoint").html(L['0LP']), $("#profile-place").html($data.room.id + L.roomNumber);
 		else {
+			$.get(`/clan?type=getclan&id=${e.id}`, function(a){
+				var b = $(".profile-title.ellipse").html();
+				if(!a.name) $(".profile-title.ellipse").html(`${b}`);
+				else $(".profile-title.ellipse").html(`[${a.name}] ${b}`);
+			})
 			$stage.dialog.profileLevel.hide(), $("#rank").html(L[x]), $("#rankpoint").html(z.data.rankPoint + L['LP']), $("#profile-place").html(e.place ? e.place + L.roomNumber : L.lobby);
 			for (d in e.data.record) {
 				var g = e.data.record[d];
@@ -2089,7 +2096,7 @@
 					dict: $("#DictionaryBtn"),
 					wordPlus: $("#WordPlusBtn"),
 					reloadRoom: $("#ReloadRoom"),
-					//Clan:$("#ClanBtn"),
+					Clan: $("#ClanBtn"),
 					invite: $("#InviteBtn"),
 					practice: $("#PracticeBtn"),
 					ready: $("#ReadyBtn"),
@@ -2123,7 +2130,16 @@
 					dictSearch: $("#dict-search"),
 					wordPlus: $("#WordPlusDiag"),
 					wordPlusOK: $("#wp-ok"),
-					//clandiag:$("#ClanDiag"),NewClan:$("#NewClan"),
+					clanDiag: $("#ClanDiag"),
+					newClanDiag: $("#NewClanDiag"),
+					viewClanDiag: $("#ViewClanDiag"),
+					newClan: $("#newClan"),
+					makeClan: $("#makeClan"),
+					kickUser: $("#kickUser"),
+					viewClan: $("#viewClan"),
+					leaveClan: $("#leaveClan"),
+					joinClan: $("#joinClan"),
+					deleteClan: $("#deleteClan"),
 					invite: $("#InviteDiag"),
 					inviteList: $(".invite-board"),
 					inviteRobot: $("#invite-robot"),
@@ -2411,8 +2427,11 @@
 			}), $stage.menu.wordPlus.on("click", function(a) {
 				showDialog($stage.dialog.wordPlus)
 			}), $stage.menu.reloadRoom.on("click", function(a) {
+				$("#roomlist-loading").show(),
 				updateRoomList(true), updateUserList(true);
-			}), /*$stage.menu.clan.on("click",function(a){showDialog($stage.dialog.clandiag)}),*/ $stage.menu.invite.on("click", function(a) {
+			}), $stage.menu.Clan.on("click",function(a){
+				showDialog($stage.dialog.clanDiag)
+			}), $stage.menu.invite.on("click", function(a) {
 				showDialog($stage.dialog.invite), updateUserList(!0)
 			}), $stage.menu.practice.on("click", function(a) {
 				RULE[MODE[$data.room.mode]].ai ? ($("#PracticeDiag .dialog-title").html(L.practice), $("#ai-team").val(0).prop("disabled", !0), showDialog($stage.dialog.practice)) : send("practice", {
@@ -2434,7 +2453,7 @@
 				$data._lbpage = 0, $stage.dialog.leaderboard.is(":visible") ? $stage.dialog.leaderboard.hide() : $.get("/ranking", function(a) {
 					drawLeaderboard(a), showDialog($stage.dialog.leaderboard)
 				})
-			}), /*$stage.menu.clan.on("click",function(a){showDialog($stage.dialog.clandiag)}),*/ $stage.dialog.lbPrev.on("click", function(a) {
+			}), $stage.dialog.lbPrev.on("click", function(a) {
 				$(a.currentTarget).attr("disabled", !0), $.get("/ranking?p=" + ($data._lbpage - 1), function(a) {
 					drawLeaderboard(a)
 				})
@@ -2463,7 +2482,9 @@
 					drawRPLeaderboard(a)
 				})
 			}), $stage.dialog.settingServer.on("click", function(a) {
-				location.href = "/"
+				$("#setting-server").prop("disabled", true);
+				alert("이동할 서버가 없습니다.");
+				//location.href = "/"
 			}), $stage.dialog.settingOK.on("click", function(a) {
 				applyOptions({
 					/*vb: $("#bgmvol").val($data.bgmuvol),*/
@@ -2655,6 +2676,95 @@
 				b ? drawObtain(b) : $stage.dialog.obtain.hide()
 			}), $stage.dialog.alertKKuTuOK.on("click", function(a) {
 				$stage.dialog.alertKKuTu.hide()
+			}), $stage.dialog.newClan.on("click", function(a) {
+				showDialog($stage.dialog.newClanDiag)
+			}), $stage.dialog.viewClan.on("click", function(a) {
+				showDialog($stage.dialog.viewClanDiag),
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					if(!b.name) alert("클랜에 가입하지 않았습니다."), $stage.dialog.viewClanDiag.hide();
+					else{
+						var f;
+						$("#myClanName").html(`클랜 이름: ${b.name}`),
+						$("#myClanID").html(`클랜 ID: ${b.id}`),
+						$("#clanUserList tbody").empty();
+						for(f in Object.keys(b.users)){
+							$("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys(b.users)[f]))
+						}
+					}
+				})
+			}), $stage.dialog.deleteClan.on("click", function(a) {
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					var c = confirm(`정말 ${b.name} 클랜을 삭제하시겠습니까?`);
+					if(c){
+						if(b.users[$data.id] == 0){
+							$.get(`/clan?type=delete&id=${b.id}`),
+							alert(`${b.name} 클랜이 삭제되었습니다.`);
+							$stage.dialog.viewClanDiag.hide();
+						}else{
+							alert("클랜 마스터만 클랜을 삭제할 수 있습니다.");
+						}
+					}
+				})
+			}), $stage.dialog.makeClan.on("click", function(b) {
+				var a = $("#clanName").val();
+				
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					if(!b.name){
+						if(a == null) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
+						else if(a == undefined) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
+						else if(/[(ㄱ-ㅎ)]/gi.test(a)) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
+						else if(!/[(가-힣a-zA-Z)]/gi.test(a)) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+						else if(a.length > 8) alert("클랜 이름 길이 제한은 최대 8글자까지입니다.")
+						else if(a.match("<")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+						else if(a.match(">")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+						else if(a.match("&lt")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+						else if(a.match("　")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+						else {
+							$.get(`/clan?type=create&id=${$data.id}&clanname=${a}`, function(r){
+								if(r.message == "MONEYFAIL") alert("핑이 부족합니다! (10000핑 필요)"), $stage.dialog.newClanDiag.hide();
+								else alert(`10000핑을 소비하여 ${a} 클랜을 만들었습니다!`), $stage.dialog.newClanDiag.hide();
+							})
+						}
+					}else if(b.name == undefined) alert("이미 클랜에 가입되어 있습니다!"), $stage.dialog.newClanDiag.hide();
+					else alert("이미 클랜에 가입되어 있습니다!")
+				})
+			}), $stage.dialog.kickUser.on("click", function(c) {
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					var a = $("#kickTarget").val(),
+						cf = confirm(`정말 ${a}님을 추방하시겠습니까?`);
+					if(cf && a === $data.id) alert("자기 자신은 추방할 수 없습니다!");
+					else if(cf && b.users[$data.id] == 2) alert("클랜 마스터와 클랜 관리자만 추방할 수 있습니다.");
+					else if(cf){
+						$.get(`/clan?type=removeuser&userid=${a}&clanid=${b.id}`, function(d){
+							if(d.message == "FAIL") alert("추방 실패! 추방 대상 유저 ID가 잘못되었을 수 있습니다.");
+							else alert(`${a}님을 추방했습니다!`);
+						})
+					}
+				})
+			}), $stage.dialog.joinClan.on("click", function(a) {
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					if(!b.name){
+						var f = $("#joinTarget").val();
+						$.get(`/clan?type=adduser&userid=${$data.id}&clanid=${f}&userp=2`, function(d){
+							if(d.message == "FAIL") alert("가입 실패! 가입 대상 클랜 ID가 잘못되었을 수 있습니다.");
+							else alert(`${f} 클랜에 가입했습니다!`);
+						})
+					}
+				})
+			}), $stage.dialog.leaveClan.on("click", function(a) {
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					if(!b.name){
+						alert("클랜에 가입되어 있지 않습니다!");
+					}else{
+						var cf = confirm(`정말 ${b.name} 클랜을 떠나시겠습니까?`);
+						if(cf){
+							$.get(`/clan?type=removeuser&userid=${$data.id}&clanid=${b.id}`, function(d){
+								if(d.message == "FAIL") alert("알 수 없는 오류로 인해 클랜 탈퇴에 실패했습니다."), $stage.dialog.viewClanDiag.hide();
+								else alert(`${b.name} 클랜을 떠났습니다!`), $stage.dialog.viewClanDiag.hide();
+							})
+						}
+					}
+				})
 			}), $stage.dialog.promptKKuTuOK.on("click", function(b) {
 				var a = $("#prompt-input").val();
 				$stage.dialog.promptKKuTu.hide();

@@ -98,8 +98,8 @@ block Middle
 		button#StartBtn.for-master(style='display: none; background-color: #FFB576;')= L('start')
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;')= L('exit')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;')= L('replay')
+		button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('Clan')
 		button#ReloadRoom.tiny-menu.for-lobby(style='display: none; background-color: #7DB7FF;')!= L('reload')
-		// button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('CLAN')
 		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
 	+Dialog('SettingDiag', 320, 340, L('settingsText'))
 		div.dialog-bar
@@ -426,12 +426,33 @@ block Middle
 			h4.dialog-bar-value#replay-players -
 		div.dialog-bar.tail-button
 			button#replay-view= L('replayView')
-	//- +Dialog('ClanDiag', 300, 280, L('CLAN'))
+	+Dialog('ClanDiag', 300, 280, L('Clan'))
 		div.dialog-bar
-			h4(style='width: 150px;')= L('CLANLIST')
+			h4= L('clanList')
 		div.dialog-bar
-			button#NewClan= L('NEWCLAN')
-			button#CVC= L('CLANVSCLAN') -//
+			button#newClan= L('newClan')
+			button#viewClan= L('viewClan')
+			input#joinTarget(type='number', placeholder=L('joinTarget'), style='width: 100px;')
+			button#joinClan= L('joinClan')
+	+Dialog('NewClanDiag', 300, 280, L('newClan'))
+		div.dialog-bar
+			h4(style='width: 300px;')= L('makeClanH')
+		div.dialog-bar
+			input#clanName(type='textfield', placeholder=L('clanName'), style='width: 100px;', maxlength=8)
+			button#makeClan= L('newClan')
+	+Dialog('ViewClanDiag', 300, 280, L('viewClan'))
+		div.dialog-bar
+			h4#myClanName
+			h4#myClanID
+		div.dialog-bar(style='height: 175px;'): table#clanUserList(style='text-align: center;')
+			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
+				td(width=115)= L('clanUserID')
+			tbody
+		div.dialog-bar
+			button#deleteClan= L('deleteClan')
+			button#leaveClan= L('leaveClan')
+			input#kickTarget(type='textfield', placeholder=L('kickTarget'), style='width: 100px;')
+			button#kickUser= L('kickUser')
 	+Dialog('DressDiag', 650, 320, L('dress'))
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myNickname')
@@ -493,7 +514,7 @@ block Middle
 	+Product('UserList')
 		div 불러오는 중
 	+Product('RoomList')
-		div 불러오는 중
+		div#roomlist-loading 불러오는 중
 	+Product('Shop')
 		div.shop-categories
 			- for(var i in locals.CATEGORIES)

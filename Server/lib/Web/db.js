@@ -90,6 +90,7 @@ Pub.ready = function(isPub){
 			
 			DB.session = new mainAgent.Table("session");
 			DB.users = new mainAgent.Table("users");
+			DB.clans = new mainAgent.Table("clans");
 			
 			if(exports.ready) exports.ready(Redis, Pg);
 			else JLog.warn("DB.onReady was not defined yet.");
