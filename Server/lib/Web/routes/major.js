@@ -154,12 +154,13 @@ Server.get("/clan", function(req, res){
 			if(!$ec) return res.send({ message: "FAIL" });
 			if(!$ec.clanid) return res.send({ message: "FAIL" });
 			else{
-				MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($data){
-					$data.users[`${query.userid}`] = parseInt(query.userp); // userp: user permission
+				if(Object.keys($ec.users).length >= 10) return res.send({ message: "USERLIMITFAIL" });
+				else{
+					$ec.users[`${query.userid}`] = parseInt(query.userp); // userp: user permission
 					MainDB.users.update([ '_id', query.userid ]).set([ 'clan', query.clanid ]).on();
-					MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'users', $data.users ]).on();
-				});
-				return res.send({ message: "OK" });
+					MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'users', $ec.users ]).on();
+					return res.send({ message: "OK" });
+				}
 			}
 		});
 	}else if(query.type == "removeuser"){
@@ -181,7 +182,7 @@ Server.get("/clan", function(req, res){
 			else{
 				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($des){
 					if(!$des) return res.send({ name: undefined });
-					return res.send({ name: $des.clanname, id: $des.clanid, users: $des.users });
+					return res.send({ name: $des.clanname, id: $des.clanid, users: $des.users, score: $des.clanscore });
 				});
 			}
 		});

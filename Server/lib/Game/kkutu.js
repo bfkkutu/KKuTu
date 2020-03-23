@@ -512,6 +512,17 @@ exports.Client = function(socket, profile, sid){
 			equip ? [ 'equip', my.equip ] : undefined,
 			friends ? [ 'friends', my.friends ] : undefined
 		).on(function(__res){
+			DB.users.findOne([ '_id', my.id ]).on(function($ec){
+				if(!$ec) return;
+				else if(!$ec.clan) return;
+				else{
+					DB.clans.findOne([ 'clanid', $ec.clan ]).on(function($data){
+						$data.clanscore = Number($data.clanscore) + 1;
+						DB.clans.update([ 'clanid', $ec.clan ]).set([ 'clanscore', $data.clanscore ]).on();
+					});
+					return;
+				}
+			});
 			DB.redis.getGlobal(my.id).then(function(_res){
 				DB.rRedis.putGlobal(my.id, my.data.rankPoint);
 				DB.redis.putGlobal(my.id, my.data.score).then(function(res){
@@ -1238,7 +1249,7 @@ exports.Room = function(room, channel){
 			if(o.cameWhenGaming){
 				o.cameWhenGaming = false;
 				if(o.form == "O"){
-					if(!my.admin){
+					if(!o.admin){
 						o.sendError(428);
 						o.leave();
 					}
