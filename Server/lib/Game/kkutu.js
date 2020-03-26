@@ -1704,15 +1704,35 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	
 	if(rankPoint >= 5000){ // 마스터 이상 구간에서 하위 티어가 상위 티어를 따라잡기 더 쉽게 하기 위함.
 		if(rankPoint <= 5999){
-			rw.rankPoint = rw.rankPoint * 0.9;
+			rw.rankPoint = rw.rankPoint * 0.95;
 		}else if(rankPoint >= 6000 && rankPoint <= 6999){
-			rw.rankPoint = rw.rankPoint * 0.8;
+			rw.rankPoint = rw.rankPoint * 0.9;
 		}else if(rankPoint >= 7000 && rankPoint <= 7999){
-			rw.rankPoint = rw.rankPoint * 0.7;
+			rw.rankPoint = rw.rankPoint * 0.85;
 		}else if(rankPoint >= 8000 && rankPoint <= 8999){
-			rw.rankPoint = rw.rankPoint * 0.6;
+			rw.rankPoint = rw.rankPoint * 0.8;
 		}else if(rankPoint >= 9000 && rankPoint <= 9999){
+			rw.rankPoint = rw.rankPoint * 0.75;
+		}else if(rankPoint >= 10000 && rankPoint <= 10999){
+			rw.rankPoint = rw.rankPoint * 0.7;
+		}else if(rankPoint >= 11000 && rankPoint <= 11999){
+			rw.rankPoint = rw.rankPoint * 0.65;
+		}else if(rankPoint >= 12000 && rankPoint <= 12999){
+			rw.rankPoint = rw.rankPoint * 0.6;
+		}else if(rankPoint >= 13000 && rankPoint <= 13999){
+			rw.rankPoint = rw.rankPoint * 0.55;
+		}else if(rankPoint >= 14000 && rankPoint <= 14999){
 			rw.rankPoint = rw.rankPoint * 0.5;
+		}else if(rankPoint >= 15000 && rankPoint <= 15999){
+			rw.rankPoint = rw.rankPoint * 0.45;
+		}else if(rankPoint >= 16000 && rankPoint <= 16999){
+			rw.rankPoint = rw.rankPoint * 0.4;
+		}else if(rankPoint >= 17000 && rankPoint <= 17999){
+			rw.rankPoint = rw.rankPoint * 0.35;
+		}else if(rankPoint >= 18000 && rankPoint <= 18999){
+			rw.rankPoint = rw.rankPoint * 0.3;
+		}else if(rankPoint >= 19000 && rankPoint <= 19999){
+			rw.rankPoint = rw.rankPoint * 0.25;
 		}
 	}
 	
