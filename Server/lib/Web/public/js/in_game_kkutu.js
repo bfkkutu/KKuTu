@@ -427,7 +427,14 @@
 			}
 		}
 		
-		if (!$data.admin) delete window.$Request;
+		if (!$data.admin){
+			delete window.$Request;
+			$(document).ready(function() {
+				$(document).on("contextmenu dragstart selectstart", function(e) {
+					return false;
+				});
+			});
+		}
 		if ($data.honor) console.log("1ST Gen"), alertKKuTu("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
 		else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.");
 		playBGM("lobby"), $("#Intro").animate({
@@ -3088,12 +3095,6 @@
 	const allowCountry = ['KR'];
 	
 })();
-$(document).ready(function() {
-	$(document).on("contextmenu selectstart", function(e) {
-		return false;
-	});
-});
-
 
 document.onload = function() { //호환성 조정
 	if (navigator.appName == "Microsoft Internet Explorer") {
