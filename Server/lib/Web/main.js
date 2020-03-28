@@ -496,9 +496,8 @@ Server.get("/corona", function(req, res){
 	request(url, (error, response, body) => {
 		//if (error) throw error;
 
-		let $ = cheerio.load(body);
-
 		try {
+			let $ = cheerio.load(body);
 			let cf = '', dd = '', cd = '';
 			//  확진       사망      완치
 			$('div.wa').find('div.content').each(function (index, elem) {
