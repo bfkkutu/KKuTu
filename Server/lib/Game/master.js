@@ -164,6 +164,20 @@ function processAdmin(id, value, requestId){
 			}
 			KKuTu.publish('yell', { value: value + "님이 차단되었습니다." });
 			return null;
+		case "nickforce":
+			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'nickname', value.split(",")[1] ]).on();
+			if(temp = DIC[value.split(",")[0]]){
+				temp.socket.send('{"type":"error","code":457}');
+				temp.socket.close();
+			}
+			return null;
+		case "exorforce":
+			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'exordial', value.split(",")[1] ]).on();
+			if(temp = DIC[value.split(",")[0]]){
+				temp.socket.send('{"type":"error","code":458}');
+				temp.socket.close();
+			}
+			return null;
 		case "unban":
 			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
 			KKuTu.publish('yell', { value: value + "님이 차단 해제되었습니다." });
