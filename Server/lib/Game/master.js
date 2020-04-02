@@ -272,6 +272,15 @@ function processAdmin(id, value, requestId){
 					})
 			}
 			return null;
+		case "breakroom":
+			for(var i in ROOM[value].players){
+				var $c = ROOM[value].players[i];
+				DIC[$c].send('forceleave', { id : $c });
+			}
+			KKuTu.publish('breakroom', value);
+			delete ROOM[value];
+			KKuTu.publish('yell', { value: `방 ${value}이 삭제되었습니다.` });
+			return null;
 		case "tailroom":
 			if(temp = ROOM[value]){
 				if(T_ROOM[value] == id){

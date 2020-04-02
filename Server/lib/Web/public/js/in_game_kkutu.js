@@ -179,6 +179,9 @@
 			case "disconnRoom":
 				d = $data.usersR[a.id], d && (!$data.admin ? delete $data.usersR[a.id] : null, notice((d.profile.title || d.profile.name) + L.hasLeft), updateUserList());
 				break;
+			case "forceleave":
+				if($data.id == a.id) send("leave"), alert("방이 관리자에 의해 삭제되었습니다.");
+				break;
 			case "yell":
 				if(a.value == "reload"){
 					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다. 불편을 끼쳐 죄송합니다."), ws.close();
@@ -1841,6 +1844,10 @@
 				equip: j
 			}), $stage.chat.scrollTop(999999999)
 		}
+	}
+	
+	function reverse(a){
+		return a.split('').reverse().join('')
 	}
 
 	function drawCanvas(a) {

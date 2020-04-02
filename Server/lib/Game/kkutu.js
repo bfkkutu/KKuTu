@@ -115,6 +115,7 @@ exports.publish = function(type, data, _room){
 		}
 	}else if(Cluster.isWorker){
 		if(type == "room") process.send({ type: "room-publish", data: data, password: _room });
+		if(type == "breakroom") delete ROOM[data];
 		else for(i in DIC){
 			DIC[i].send(type, data);
 		}
