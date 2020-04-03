@@ -54,7 +54,8 @@ exports.OPTIONS = {
 	'eve': { name: "EventMode" },
 	'mms': { name: "MoreMission" },
 	'rank': { name: "RankGame" },
-	'ogow': { name: "Ogow" }
+	'ogow': { name: "Ogow" },
+	'selth': { name: "SelectTheme" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -122,8 +123,8 @@ exports.RULE = {
 	},
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow" ],
+		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth" ],
 		time: 1,
 		ai: true,
 		big: false,

@@ -120,9 +120,9 @@ exports.getTitle = function(){
 		}else{
 			len = title.length;
 			if(!my.opts.ignoreinitial){
-				for(i=0; i<len; i++) list.push(getAuto.call(my, title[i], getSubChar.call(my, title[i]), 1));
+				for(i=0; i<len; i++) list.push(getAuto.call(my, my.game.theme, title[i], getSubChar.call(my, title[i]), 1));
 			}else if(my.opts.ignoreinitial){
-				for(i=0; i<len; i++) list.push(getAuto.call(my, title[i], 1));
+				for(i=0; i<len; i++) list.push(getAuto.call(my, my.game.theme, title[i], 1));
 			}
 			Lizard.all(list).then(function(res){
 				for(i in res) if(!res[i]) return R.go(EXAMPLE);
@@ -145,6 +145,10 @@ exports.roundReady = function(){
 	my.game.roundTime = my.time * 1000;
 	my.opts.randomMission = my.opts.abcmission;
 	if(my.game.round <= my.round){
+		if(my.opts.injpick.length > 0){ // injpick은 무조건 존재하므로 존재 여부 말고 길이로 유효성을 판단함
+			var ijl = my.opts.injpick.length;
+			my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
+		}else my.game.theme = false;
 		my.game.char = my.game.title[my.game.round - 1];
 	if(!my.opts.ignoreinitial){
 		my.game.subChar = getSubChar.call(my, my.game.char);
@@ -182,6 +186,7 @@ exports.roundReady = function(){
 			wordLimit: my.game.wordLimit,
 			char: my.game.char,
 			subChar: my.game.subChar,
+			theme: my.game.theme,
 			mission: my.game.mission,
 			blockWord: my.game.blockWord
 		}, true);
@@ -261,7 +266,7 @@ exports.turnEnd = function(){
 		score = Const.getPenalty(my.game.chain, target.game.score);
 		target.game.score += score;
 	}
-	getAuto.call(my, my.game.char, my.game.subChar, 0).then(function(w){
+	getAuto.call(my, my.game.theme, my.game.char, my.game.subChar, 0).then(function(w){
 		my.byMaster('turnEnd', {
 			ok: false,
 			target: target ? target.id : null,
@@ -350,7 +355,7 @@ exports.submit = function(client, text){
 					catch(a){}
 				}
 			}
-			if(!my.opts.unknownword && (firstMove || my.opts.manner)) getAuto.call(my, preChar, preSubChar, 1).then(function(w){
+			if(!my.opts.unknownword && (firstMove || my.opts.manner)) getAuto.call(my, my.game.theme, preChar, preSubChar, 1).then(function(w){
 				if(w) approved();
 				else {
 					my.game.loading = false;
@@ -381,7 +386,10 @@ exports.submit = function(client, text){
 					denied(415);
 				}
 			}
-			if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
+			if(my.game.theme){
+				if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
+				else preApproved();
+			}else if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
 			else if(my.opts.strict && (!$doc.type.match(Const.KOR_STRICT) || $doc.flag >= 4)) denied(406);
 			else if(my.opts.loanword && ($doc.flag & Const.KOR_FLAG.LOANWORD)) denied(405);
 			else if(my.opts.leng && (text.length > my.leng.max)) denied(410);
@@ -454,7 +462,7 @@ exports.readyRobot = function(robot){
 	var lmax;
 	var isRev = (Const.GAME_TYPE[my.mode] == "KAP" || Const.GAME_TYPE[my.mode] == "EAP" || Const.GAME_TYPE[my.mode] == "JAP");
 	
-	getAuto.call(my, my.game.char, my.game.subChar, 2).then(function(list){
+	getAuto.call(my, my.game.theme, my.game.char, my.game.subChar, 2).then(function(list){
 		if(list.length){
 			list.sort(function(a, b){ return b.hit - a.hit; });
 			if(ROBOT_HIT_LIMIT[level] > list[0].hit) denied();
@@ -471,12 +479,12 @@ exports.readyRobot = function(robot){
 							var v = ended[key];
 							
 							if(!v) denied();
-							else pickList(v);
+							else pickList(v, my.game.theme);
 						});
 					}else{
-						pickList(list);
+						pickList(list, my.game.theme);
 					}
-				}else pickList(list);
+				}else pickList(list, my.game.theme);
 			}
 		}else denied();
 	});
@@ -488,7 +496,7 @@ exports.readyRobot = function(robot){
 		}
 		after();
 	}
-	function pickList(list){
+	function pickList(list, theme){
 		if(list) do{
 			if(!(w = list.shift())) break;
 		}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id));
@@ -543,6 +551,9 @@ function getMission_abc(l){
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];
 };*/
+function toRegex(theme){
+	return new RegExp(`(^|,)${theme}($|,)`);
+}
 function getMission(l, mode) {
 	var my = this;
 	if (l == 'ko') {
@@ -582,7 +593,7 @@ function getBlockWord(l){
 	if(!arr) return "-";
 	return arr[Math.floor(Math.random() * arr.length)];
 };
-function getAuto(char, subc, type){
+function getAuto(theme, char, subc, type){
 	/* type
 		0 무작위 단어 하나
 		1 존재 여부

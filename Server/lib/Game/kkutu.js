@@ -1113,9 +1113,9 @@ exports.Room = function(room, channel){
 		}
 		// 인정픽 검사
 		if(!my.rule) return 400;
-		if(my.rule.opts.includes("ijp")){
-			if(!my.opts.injpick) return 400;
-			if(!my.opts.injpick.length) return 413;
+		if(my.rule.opts.includes("ijp")){ // KSH는 injpick이 선택 항목임.
+			if(my.mode !== 3 && !my.opts.injpick) return 400;
+			if(my.mode !== 3 && !my.opts.injpick.length) return 413;
 			if(!my.opts.injpick.every(function(item){
 				return !Const.IJP_EXCEPT.includes(item);
 			})) return 414;
@@ -1358,6 +1358,8 @@ exports.Room = function(room, channel){
 		if(spec && my.gaming){
 			if(my.rule.rule == "Classic"){
 				if(my.game.chain) obj.chain = my.game.chain.length;
+				if(my.game.theme) obj.theme = my.game.theme;
+				else my.game.theme = false;
 			}else if(my.rule.rule == "Jaqwi"){
 				obj.theme = my.game.theme;
 				obj.conso = my.game.conso;
@@ -1555,7 +1557,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
 	if (opts.ignoreinitial) rw.score = rw.score * 2.5; // 두음 법칙 파괴
 	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
-	if (opts.ogow) rw.score = rw.score * 1.2; // 단어 금지
+	if (opts.ogow) rw.score = rw.score * 1.2;
+	if (opts.selth) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15

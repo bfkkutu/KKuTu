@@ -394,6 +394,7 @@
 		var n = $data.users[$data.id];
 		
 		$("#Chatting").hide();
+		$("#room-injeong-pick").hide();
 		
 		if($data._cF){
 			if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
@@ -2413,17 +2414,44 @@
 					if ($stage.dialog.quickOK.hasClass("searching")) return $stage.dialog.quick.hide(), b(), void $stage.menu.quickRoom.trigger("click");
 					$("#QuickDiag>.dialog-body").find("*").prop("disabled", !0), $stage.dialog.quickOK.addClass("searching").html("<i class='fa fa-spinner fa-spin'></i> " + L.NO).prop("disabled", !1), $data._quickn = 0, $data._quickT = addInterval(b, 1e3)
 				}
+			}), $stage.dialog.injPickOK.on("click", function(a) {
+				var b = $($data._ijkey + "list"),
+					c = [],
+					f = $(".dialog-opt#ko-pick-list").find("input").is(":checked"),
+					h = $("#room-mode").val();
+				if(!f && h == 3){
+					$("#room-selecttheme")[0].checked = false;
+					$("#room-selecttheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}
+				$data._injpick = b.find("input").each(function(a, b) {
+					var d = $(b),
+						e = d.attr("id").slice(8);
+					d.is(":checked") && c.push(e)
+				}), $data._injpick = c, $stage.dialog.injPick.hide()
 			}), $("#room-mode").on("change", function(a) {
 				var b = $("#room-mode").val(),
+					h = $("#room-selecttheme-panel").is(":visible"),
 					d = RULE[MODE[b]];
-					if(b==18){
+					$("#room-selecttheme").change(function() {
+						if($("#room-selecttheme")[0].checked){
+							$("#room-selecttheme-panel").hide();
+							$("#room-injeong-pick").show();
+						}else{
+							$("#room-selecttheme-panel").show();
+							$("#room-injeong-pick").hide();
+						}
+					})
+					if(b==17){
 						$("#room-wordLimit-panel").show();
 					}else{
 						$("#room-wordLimit-panel").hide();
 					}
-				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [], -1 != d.opts.indexOf("ijp") ? $("#room-injpick-panel").show() : $("#room-injpick-panel").hide(), "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
+				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [],/* -1 != d.opts.indexOf("ijp") ? $("#room-injpick-panel").show() : $("#room-injpick-panel").hide(),*/ "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
 					$(b).html(Number($(b).val()) * d.time + L.SECOND)
 				})
+				if(d.opts.indexOf("ijp") != -1) $("#room-injeong-pick").show()
+				if(b == 3) $("#room-injeong-pick").hide()
 			}).trigger("change"), $stage.menu.spectate.on("click", function(a) {
 				$stage.menu.spectate.hasClass("toggled") ? (send("form", {
 					mode: "J"
@@ -2655,14 +2683,6 @@
 				$("#injpick-list input").prop("checked", !0)
 			}), $stage.dialog.injPickNo.on("click", function(a) {
 				$("#injpick-list input").prop("checked", !1)
-			}), $stage.dialog.injPickOK.on("click", function(a) {
-				var b = $($data._ijkey + "list"),
-					c = [];
-				$data._injpick = b.find("input").each(function(a, b) {
-					var d = $(b),
-						e = d.attr("id").slice(8);
-					d.is(":checked") && c.push(e)
-				}), $data._injpick = c, $stage.dialog.injPick.hide()
 			}), $stage.dialog.kickVoteY.on("click", function(a) {
 				send("kickVote", {
 					agree: !0
