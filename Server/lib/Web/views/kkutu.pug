@@ -173,24 +173,25 @@ block Middle
 			button#rplb-prev= L('prevPage')
 	//- +Dialog('CursingDiag', 310, 60, "욕설 사용량 확인하기")
 		div.dialog-bar#cursing-value -//
-	+Dialog('QuickDiag', 300, 330, L('quickRoom'))
+	+Dialog('QuickDiag', 300, 360, L('quickRoom'))
 		div.dialog-bar
 			h4= L('gameMode')
 			select#quick-mode
 				- for(var i in locals.MODE)
 					option(value=Number(i))= L('mode' + locals.MODE[i])
-		//-div.dialog-bar
+		div.dialog-bar
 			h4= L('roundTime')
 			select#quick-time
+				option(value=-1, selected)
 				option(value=5, style='color: #FF0000')
 				option(value=10, style='color: #FF5656')
 				option(value=30, style='color: #FF9191')
 				option(value=60, style='color: #FFA8A8')
 				option(value=90)
 				option(value=120, style='color: #74C5E8')
-				option(value=150, selected, style='color: #329AEF')
+				option(value=150, style='color: #329AEF')
 				option(value=200, style='color: #3E7AF9')
-				option(value=300, style='color: #0933EF')-//
+				option(value=300, style='color: #0933EF')
 		div.dialog-bar(style='height: 159px;')
 			h4(style='height: 145px;')= L('misc')
 			- for(var i in locals.OPTIONS)

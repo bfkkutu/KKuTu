@@ -48,6 +48,21 @@
 	function loading(a) {
 		a ? $("#Intro").is(":visible") ? ($stage.loading.hide(), $("#intro-text").html(a)) : $stage.loading.show().html(a) : $stage.loading.hide()
 	}
+	
+	function updating() {
+		$stage.loading.show().html("새 클라이언트로 업데이트 중입니다...0%")
+		setTimeout(function(){
+			$stage.loading.html("새 클라이언트로 업데이트 중입니다...50%")
+			setTimeout(function(){
+				$stage.loading.html("새 클라이언트로 업데이트 중입니다...100%")
+				setTimeout(function(){
+					$stage.loading.html("적용을 위해 새로고침합니다...")
+					location.reload();
+				}, 1000);
+			}, 1000);
+		}, 1000);
+		return;
+	}
 
 	function showDialog(a, b) {
 		var c = [$(window).width(), $(window).height()];
@@ -165,7 +180,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.nickname = a.nickname, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -182,12 +197,26 @@
 			case "forceleave":
 				if($data.id == a.id) send("leave"), alert("방이 관리자에 의해 삭제되었습니다.");
 				break;
+			case "forceready":
+				if($data.id == a.id) $data.room && ($data.room.master == $data.id ? $stage.menu.start.trigger("click") : $stage.menu.ready.trigger("click")), alert("관리자에 의해 준비 상태로 변경되었습니다.");
+				break;
+			case "forcespectate":
+				if($data.id == a.id) $stage.menu.spectate.trigger("click"), alert("관리자에 의해 관전 상태로 변경되었습니다.");
+				break;
+			case "alert":
+				if($data.id == a.id) alert(a.value);
+				break;
+			case "yellto":
+				if($data.id == a.id) yell(a.value), notice(a.value, L.yell);
+				break;
 			case "yell":
-				if(a.value == "reload"){
-					yell("클라이언트를 최신 버전으로 업데이트하기 위해 연결을 종료합니다. 불편을 끼쳐 죄송합니다."), ws.close();
-				}else{
-					yell(a.value), notice(a.value, L.yell);
-				}
+				yell(a.value), notice(a.value, L.yell);
+				break;
+			case "update":
+				var uws = new _WebSocket($data.URL);
+				uws.close();
+				stopAllSounds();
+				updating();
 				break;
 			case "freeze":
 				$data._cF = true;
@@ -391,10 +420,10 @@
 	
 	function welcome(){
 		var Blocker = window.$Request;
-		var n = $data.users[$data.id];
 		
 		$("#Chatting").hide();
 		$("#room-injeong-pick").hide();
+		$("#quick-selecttheme-panel").remove();
 		
 		if($data._cF){
 			if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
@@ -404,12 +433,12 @@
 			else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
 		}
 		
-		if(n.nickname == "불건전닉네임"){
+		if($data.nickname == "불건전닉네임"){
 			resetNick();
 			ws.close();
 		}
 		
-		if(n.nickname == "잘못된닉네임"){
+		if($data.nickname == "잘못된닉네임"){
 			resetNick();
 			ws.close();
 		}
@@ -498,7 +527,7 @@
 		if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
 			
 		$.post("/nickname", {
-			data: a
+			data: delBadWords(a)
 		})
 		return alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요.");
 	}
@@ -1742,6 +1771,16 @@
 		}
 	}
 	
+	function delBadWords(a) {
+		if (OSV.test(a)){
+			return a.replace(OSV, "");
+		} else if (XSS.test(a)){
+			return a.replace(XSS, "");
+		} else if (BAD.test(a)) {
+			return a.replace(BAD, "");
+		} else return a;
+	}
+	
 	function getRank(a){
 		return calculateRank(a.data.rankPoint, a.id);
 	}
@@ -2046,7 +2085,7 @@
 			return d
 		}
 
-		function e(a, b, c, d) {
+		function e(a, b, c, f, d) {
 			var e;
 			if (!d) {
 				if (a.gaming) return !1;
@@ -2054,6 +2093,9 @@
 				if (a.players.length >= a.limit) return !1
 			}
 			if (a.mode != b) return !1;
+			if (f == -1){
+				if (a.time != f) return !1;
+			}
 			for (e in c)
 				if (!a.opts[e]) return !1;
 			return !0
@@ -2391,14 +2433,13 @@
 				$data._injpick = $data.room.opts.injpick, showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.setRoom)
 			}), $("#quick-mode, #QuickDiag .game-option").on("change", function(a) {
 				var b, f, g = $("#quick-mode").val(),
-					//t = $("#quick-time").val(),
+					t = $("#quick-time").val(),
 					h = 0;
-				"quick-mode" == a.currentTarget.id && $("#QuickDiag .game-option").prop("checked", !1), f = d("quick"), c(RULE[MODE[g]].opts, "quick");
-				//"quick-time" == a.currentTarget.id, t = d("quick"), c(RULE[MODE[t]].roundTime, "quick");
+				"quick-mode" == a.currentTarget.id && $("#QuickDiag .game-option").prop("checked", !1), f = d("quick"), c(RULE[MODE[g]].opts, "quick"), c(RULE[MODE[g]].time, "quick");
 				for (b in $data.rooms) e($data.rooms[b], g, f, t, !0) && h++;
 				$("#quick-status").html(L.quickStatus + " " + h)
 			}), $stage.menu.quickRoom.on("click", function(a) {
-				$stage.dialog.room.hide(), showDialog($stage.dialog.quick), $stage.dialog.quick.is(":visible") && ($("#QuickDiag>.dialog-body").find("*").prop("disabled", !1), $("#quick-mode").trigger("change"), /*$("#quick-time").trigger("change"),*/ $("#quick-queue").html(""), $stage.dialog.quickOK.removeClass("searching").html(L.OK))
+				$stage.dialog.room.hide(), showDialog($stage.dialog.quick), $stage.dialog.quick.is(":visible") && ($("#QuickDiag>.dialog-body").find("*").prop("disabled", !1), $("#quick-mode").trigger("change"), $("#quick-time").trigger("change"), $("#quick-queue").html(""), $stage.dialog.quickOK.removeClass("searching").html(L.OK))
 			}), $stage.dialog.quickOK.on("click", function(a) {
 				function b() {
 					var a, b = [];
@@ -2408,10 +2449,10 @@
 					b.length && (a = b[Math.floor(Math.random() * b.length)], $data._preQuick = !0, $("#room-" + a).trigger("click"))
 				}
 				var c = $("#quick-mode").val(),
-					//t = $("#quick-time").val(),
+					t = $("#quick-time").val(),
 					f = d("quick");
 				if ("for-lobby" == getOnly()) {
-					if ($stage.dialog.quickOK.hasClass("searching")) return $stage.dialog.quick.hide(), b(), void $stage.menu.quickRoom.trigger("click");
+					if ($stage.dialog.quickOK.hasClass("searching")) return b(), clearTimeout($data._quickT), $("#QuickDiag>.dialog-body").find("*").prop("disabled", !1), $("#quick-queue").html(""), $stage.dialog.quickOK.removeClass("searching").html(L.OK) //$stage.dialog.quick.hide(), b(), void $stage.menu.quickRoom.trigger("click");
 					$("#QuickDiag>.dialog-body").find("*").prop("disabled", !0), $stage.dialog.quickOK.addClass("searching").html("<i class='fa fa-spinner fa-spin'></i> " + L.NO).prop("disabled", !1), $data._quickn = 0, $data._quickT = addInterval(b, 1e3)
 				}
 			}), $stage.dialog.injPickOK.on("click", function(a) {
@@ -2449,8 +2490,11 @@
 					}
 				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [],/* -1 != d.opts.indexOf("ijp") ? $("#room-injpick-panel").show() : $("#room-injpick-panel").hide(),*/ "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
 					$(b).html(Number($(b).val()) * d.time + L.SECOND)
+				}), $("#quick-time").children("option").each(function(a, b) {
+					if($(b).val() == -1) $(b).html("상관 없음")
+					else $(b).html(Number($(b).val()) * d.time + L.SECOND)
 				})
-				if(d.opts.indexOf("ijp") != -1) $("#room-injeong-pick").show()
+				if(!$stage.dialog.quick.is(":visible") && d.opts.indexOf("ijp") != -1) $("#room-injeong-pick").show()
 				if(b == 3) $("#room-injeong-pick").hide()
 			}).trigger("change"), $stage.menu.spectate.on("click", function(a) {
 				$stage.menu.spectate.hasClass("toggled") ? (send("form", {
@@ -2640,6 +2684,7 @@
 					$stage.dialog.dress.hide()
 				})
 			}), $stage.dialog.dressOK.on("click", function(a) {
+				if($("#dress-nickname").val() == $data.nickname) return;
 				if(!$("#dress-nickname").val()) return alertKKuTu("닉네임을 입력해 주세요.");
 				if(/[(ㄱ-ㅎ)]/gi.test($("#dress-nickname").val())) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다.");
 				if(!/[(가-힣a-zA-Z)]/gi.test($("#dress-nickname").val())) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
@@ -2650,8 +2695,8 @@
 				if($("#dress-nickname").val().match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 				if($("#dress-nickname").val().match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 				
-				$(a.currentTarget).attr("disabled", !0), $.post("/nickname", {
-					data: $("#dress-nickname").val()
+				$(a.currentTarget).attr("disabled", !0), alert(`닉네임이 ${delBadWords($("#dress-nickname").val())}(으)로 변경되었습니다.`), $.post("/nickname", {
+					data: delBadWords($("#dress-nickname").val())
 				}, function(a) {
 					if ($stage.dialog.dressOK.attr("disabled", !1), a.error) return fail(a.error);
 					$stage.dialog.dress.hide()
@@ -2755,6 +2800,7 @@
 						else if(a.match("&lt")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
 						else if(a.match("　")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
 						else {
+							a = delBadWords(a);
 							$.get(`/clan?type=create&id=${$data.id}&clanname=${a}`, function(r){
 								if(r.message == "MONEYFAIL") alert("핑이 부족합니다! (10000핑 필요)"), $stage.dialog.newClanDiag.hide();
 								else alert(`10000핑을 소비하여 ${a} 클랜을 만들었습니다!`), $stage.dialog.newClanDiag.hide();
@@ -2819,7 +2865,7 @@
 				alert("닉네임 설정이 완료되었습니다. 새로고침 해주세요.");
 				// TODO: 좀 더 정교한 콜백.
 				$.post("/nickname", {
-					data: a
+					data: delBadWords(a)
 				}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
 			}), i = 0; i < 5; i++) $("#team-" + i).on("click", f),
 			$("#room-unknownword.game-option").click(() => $("#room-unknownword.game-option").is(':checked') ? $(".game-option").not("#room-unknownword.game-option").not("#room-mission.game-option").not("#room-abcmission.game-option").not("#room-moremission.game-option").not("#room-returns.game-option").not("#room-randomturn.game-option").not("#room-ignoreinitial.game-option").prop('checked', false).prop('disabled', true) : $(".game-option").prop('disabled', false));

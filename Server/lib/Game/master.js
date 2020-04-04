@@ -164,19 +164,29 @@ function processAdmin(id, value, requestId){
 			}
 			KKuTu.publish('yell', { value: value + "님이 차단되었습니다." });
 			return null;
-		case "nickforce":
+		case "forcenick":
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'nickname', value.split(",")[1] ]).on();
 			if(temp = DIC[value.split(",")[0]]){
 				temp.socket.send('{"type":"error","code":457}');
 				temp.socket.close();
 			}
 			return null;
-		case "exorforce":
+		case "forceexor":
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'exordial', value.split(",")[1] ]).on();
 			if(temp = DIC[value.split(",")[0]]){
 				temp.socket.send('{"type":"error","code":458}');
 				temp.socket.close();
 			}
+			return null;
+		case "alert":
+			var target = value.split(",")[0];
+			value = value.split(",")[1];
+			DIC[target].send('alert', { id : target, value: value });
+			return null;
+		case "yellto":
+			var target = value.split(",")[0];
+			value = value.split(",")[1];
+			DIC[target].send('yellto', { id : target, value: value });
 			return null;
 		case "unban":
 			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
@@ -280,6 +290,19 @@ function processAdmin(id, value, requestId){
 			KKuTu.publish('breakroom', value);
 			delete ROOM[value];
 			KKuTu.publish('yell', { value: `방 ${value}이 삭제되었습니다.` });
+			return null;
+		case "update":
+			for(var i in DIC){
+				DIC[i].send('update');
+			}
+			return null;
+		case "forceready":
+			KKuTu.publish('forceready', value);
+			DIC[value].send('forceready', { id : value });
+			return null;
+		case "forcespectate":
+			KKuTu.publish('forcespectate', value);
+			DIC[value].send('forcespectate', { id : value });
 			return null;
 		case "tailroom":
 			if(temp = ROOM[value]){
@@ -596,6 +619,7 @@ function joinNewUser($c, ip, path) {
 		id: $c.id,
 		guest: $c.guest,
 		box: $c.box,
+		nickname: $c.nickname,
 		playTime: $c.data.playTime,
 		rankPoint: $c.data.rankPoint,
 		okg: $c.okgCount,

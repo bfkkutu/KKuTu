@@ -115,7 +115,9 @@ exports.publish = function(type, data, _room){
 		}
 	}else if(Cluster.isWorker){
 		if(type == "room") process.send({ type: "room-publish", data: data, password: _room });
-		if(type == "breakroom") delete ROOM[data];
+		else if(type == "breakroom") delete ROOM[data];
+		else if(type == "forceready") DIC[data].ready = true;
+		else if(type == "forcespectate") DIC[data].spectate = true;
 		else for(i in DIC){
 			DIC[i].send(type, data);
 		}
@@ -518,6 +520,8 @@ exports.Client = function(socket, profile, sid){
 				else if(!$ec.clan) return;
 				else{
 					DB.clans.findOne([ 'clanid', $ec.clan ]).on(function($data){
+						if(!$data) return;
+						else if(!$data.clanscore) $data.clanscore = 0;
 						$data.clanscore = Number($data.clanscore) + 1;
 						DB.clans.update([ 'clanid', $ec.clan ]).set([ 'clanscore', $data.clanscore ]).on();
 					});
