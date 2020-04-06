@@ -285,6 +285,8 @@ function processAdmin(id, value, requestId){
 		case "breakroom":
 			for(var i in ROOM[value].players){
 				var $c = ROOM[value].players[i];
+				if(!DIC) return null;
+				if(!$c) return null;
 				DIC[$c].send('forceleave', { id : $c });
 			}
 			KKuTu.publish('breakroom', value);
@@ -513,6 +515,7 @@ exports.init = function(_SID, CHAN){
 				perMessageDeflate: false
 			});
 		}
+		
 		Server.on('connection', function(socket, info){
 			var key = info.url.slice(1);
 			var $c;

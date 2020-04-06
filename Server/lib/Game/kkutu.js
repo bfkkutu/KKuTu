@@ -587,7 +587,11 @@ exports.Client = function(socket, profile, sid){
 				$room = undefined;
 			}else{
 				if(!pass && $room){
-					if($room.kicked.indexOf(my.id) != -1){
+					/*var i, o;
+					for(i in my.players){
+						o = DIC[my.players[i]];
+					}*/
+					if(/*!o.admin && */$room.kicked.indexOf(my.id) != -1){
 						return my.sendError(406);
 					}
 					if($room.password != room.password && $room.password){
