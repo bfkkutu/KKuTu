@@ -386,9 +386,12 @@ exports.submit = function(client, text){
 					denied(415);
 				}
 			}
-			if(my.game.theme){
+			if(my.opts.selecttheme){
 				if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
 				else preApproved();
+			}else if(my.opts.bantheme){
+				if($doc.theme.match(toRegex(my.game.theme)) == null) preApproved();
+				else denied(407);
 			}else if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
 			else if(my.opts.strict && (!$doc.type.match(Const.KOR_STRICT) || $doc.flag >= 4)) denied(406);
 			else if(my.opts.loanword && ($doc.flag & Const.KOR_FLAG.LOANWORD)) denied(405);
@@ -497,9 +500,19 @@ exports.readyRobot = function(robot){
 		after();
 	}
 	function pickList(list, theme){
-		if(list) do{
-			if(!(w = list.shift())) break;
-		}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id));
+		if(my.opts.selecttheme){
+			if(list) do{
+				if(!(w = list.shift())) break;
+			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id) || !w.theme.includes(theme));
+		}else if(my.opts.bantheme){
+			if(list) do{
+				if(!(w = list.shift())) break;
+			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id) || w.theme.includes(theme));
+		}else{
+			if(list) do{
+				if(!(w = list.shift())) break;
+			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id));
+		}
 		if(w){
 			text = w._id;
 			delay += 500 * ROBOT_THINK_COEF[level] * Math.random() / Math.log(1.1 + w.hit);

@@ -115,10 +115,21 @@ exports.publish = function(type, data, _room){
 		}
 	}else if(Cluster.isWorker){
 		if(type == "room") process.send({ type: "room-publish", data: data, password: _room });
-		else if(type == "breakroom") delete ROOM[data];
-		else if(type == "forceready") DIC[data].ready = true;
+		else if(type == "breakroom"){
+			for(var i in ROOM[data].players){
+				var $c = ROOM[data].players[i];
+				if(!DIC) return null;
+				if(!$c) return null;
+				DIC[$c].place = null;
+			}
+			delete ROOM[data];
+		}else if(type == "forceready") DIC[data].ready = true;
 		else if(type == "forcespectate") DIC[data].spectate = true;
-		else for(i in DIC){
+		else if(type == "roomtitle"){
+			var target = data.split(",")[0];
+			var newtitle = data.split(",")[0];
+			ROOM[target].title = newtitle;
+		}else for(i in DIC){
 			DIC[i].send(type, data);
 		}
 	}
@@ -1566,7 +1577,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.ignoreinitial) rw.score = rw.score * 2.5; // 두음 법칙 파괴
 	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
 	if (opts.ogow) rw.score = rw.score * 1.2;
-	if (opts.selth) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
+	if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
+	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 선택 (한국어 끝말잇기)
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15

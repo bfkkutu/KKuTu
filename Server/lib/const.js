@@ -55,7 +55,8 @@ exports.OPTIONS = {
 	'mms': { name: "MoreMission" },
 	'rank': { name: "RankGame" },
 	'ogow': { name: "Ogow" },
-	'selth': { name: "SelectTheme" }
+	'selth': { name: "SelectTheme" },
+	'btm': { name: "BanTheme" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -114,8 +115,8 @@ exports.RULE = {
 	},*/
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"k32", "nrt", "rtu", "upl", "rank", "ogow" ],
+		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
+		"k32", "nrt", "rtu", "upl", "rank", "ogow", "selth", "btm" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -124,7 +125,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -308,7 +309,7 @@ exports.KO_INJEONG = [
 	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "BUS",
 	"DONG", "MFA", "ZHS", "KTR", "BBF", "ILN", "TRR",
-	"THP", "UND", "TLR", "LDB", "HKI", "MINBE"
+	"THP", "UND", "TLR", "HKI", "MINBE"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"

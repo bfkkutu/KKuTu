@@ -84,7 +84,7 @@ const GUEST_PERMISSION = exports.GUEST_PERMISSION = {
 	'kickVote': true,
 	'wp': true
 };
-const ENABLE_ROUND_TIME = exports.ENABLE_ROUND_TIME = [ 5, 10, 30, 60, 90, 120, 150, 200, 300 ];
+const ENABLE_ROUND_TIME = exports.ENABLE_ROUND_TIME = [ 5, 10, 30, 60, 90, 120, 150, 200, 300, 9999999 ];
 const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
 const MODE_LENGTH = exports.MODE_LENGTH = Const.GAME_TYPE.length;
 const PORT = process.env['KKUTU_PORT'];
@@ -237,7 +237,7 @@ function processAdmin(id, value, requestId){
 						if(err) return JLog.error(`IP 차단 목록을 작성하는 중에 문제가 발생했습니다. (${err})`)
 						
 						JLog.info(`[${clientIp}](IP) was banned At [${requestId}]`);
-						temp.socket.send(`{"type":'error',"code":410}`);
+						temp.socket.send(`{"type":'error',"code":456}`);
 						temp.socket.close();
 					})
 				}
@@ -288,10 +288,17 @@ function processAdmin(id, value, requestId){
 				if(!DIC) return null;
 				if(!$c) return null;
 				DIC[$c].send('forceleave', { id : $c });
+				DIC[$c].place = null;
 			}
 			KKuTu.publish('breakroom', value);
 			delete ROOM[value];
 			KKuTu.publish('yell', { value: `방 ${value}이 삭제되었습니다.` });
+			return null;
+		case "roomtitle":
+			var target = value.split(",")[0];
+			var newtitle = value.split(",")[0];
+			ROOM[target].title = newtitle;
+			KKuTu.publish('roomtitle', value);
 			return null;
 		case "update":
 			for(var i in DIC){
@@ -579,7 +586,9 @@ exports.init = function(_SID, CHAN){
 				$c.refresh().then(function(ref){
 					if(ref.result == 200){
 						DIC[$c.id] = $c;
-						DNAME[($c.profile.title || $c.profile.name).replace(/\s/g, "")] = $c.id;
+						try{
+							DNAME[($c.profile.title || $c.profile.name).replace(/\s/g, "")] = $c.id;
+						}catch(e){ console.log(e.stringify()) }
 						MainDB.users.update([ '_id', $c.id ]).set([ 'server', SID ]).on();
 
 						if (($c.guest && GLOBAL.GOOGLE_RECAPTCHA_TO_GUEST) || GLOBAL.GOOGLE_RECAPTCHA_TO_USER) {
@@ -792,6 +801,7 @@ function processClientRequest($c, msg) {
 					stable = false;
 				}
 				if (ENABLE_ROUND_TIME.indexOf(msg.time) == -1) stable = false;
+				if (msg.time == 9999999 && !msg.password) stable = false;
 			}
 			if (msg.type == 'enter') {
 				if (msg.id || stable) $c.enter(msg, msg.spectate);
