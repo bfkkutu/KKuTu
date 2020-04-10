@@ -223,6 +223,16 @@
 			case "yellto":
 				if($data.id == a.id) yell(a.value), notice(a.value, L.yell);
 				break;
+			case "banned":
+				if($data.id == a.id){
+					alert(`차단되었습니다. 관리자에게 문의하세요.\n\n사유: ${a.reason}\n종료일: ${a.enddate}`);
+					ws.onclose = function(b){
+						$("#Middle").empty();
+						$("#Bottom").html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.enddate}`);
+					}
+					ws.close();
+				}
+				break;
 			case "yell":
 				yell(a.value), notice(a.value, L.yell);
 				break;
@@ -405,19 +415,22 @@
 							break
 						}
 					} else if (431 == a.code || 432 == a.code || 433 == a.code) $stage.dialog.room.show();
-					else if (444 == a.code) {
+					/*else if (444 == a.code) {
 						if (c = a.message, -1 != c.indexOf("생년월일")) {
 							alert("생년월일이 올바르게 입력되지 않아 게임 이용이 제한되었습니다. 잠시 후 다시 시도해 주세요.");
 							break
 						}
-					} else if (447 === a.code) {
+					}*/ else if (447 === a.code) {
 						alert("자동화 봇 방지를 위한 캡챠 인증에 실패했습니다. 메인 화면에서 다시 시도해 주세요.");
 						break
 					}
 				}
 				if(a.code == 402){
 					alertKKuTu("[게스트 접속 제한] " + L["error_" + a.code] + c), $("#intro-text").html("이 서버는 게스트 접속을 허용하지 않습니다."), $("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty();
-				} else alert("[#" + a.code + "] " + L["error_" + a.code] + c);
+				} else if(a.code == 444){
+					if(a.reason) alert(`차단되었습니다. 관리자에게 문의하세요.\n\n사유: ${a.reason}\n종료일: ${a.enddate}`), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.enddate}`)}, ws.close();
+					else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
+				}else alert("[#" + a.code + "] " + L["error_" + a.code] + c);
 		}
 		$data._record && recordEvent(a)
 	}
@@ -1158,7 +1171,7 @@
 			}
 			renderMoremi(b, e.equip, e.id)
 		}
-		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
+		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), e.robot ? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
 
 	function requestInvite(a) {
@@ -1166,6 +1179,17 @@
 		("AI" == a || (b = $data.users[a].profile.title || $data.users[a].profile.name, confirm(b + L.sureInvite))) && send("invite", {
 			target: a
 		})
+	}
+	
+	function getWarn(a){
+		var jqXHR = $.ajax({
+				url: `/getWarn?target=${a}`,
+				method: 'GET',
+				async: false
+			});
+		var warn = JSON.parse(jqXHR.responseText);
+		if(!warn.message) return alert("경고 누적 횟수를 조회하지 못했습니다."+warn.error)
+		else return warn.message
 	}
 
 	function checkFailCombo(a) {
@@ -2228,6 +2252,9 @@
 					profileLevel: $("#profile-level"),
 					profileDress: $("#profile-dress"),
 					profileWhisper: $("#profile-whisper"),
+					profileReport: $("#profile-report"),
+					reportDiag: $("#ReportDiag"),
+					reportSubmit: $("#report-submit"),
 					kickVote: $("#KickVoteDiag"),
 					kickVoteY: $("#kick-vote-yes"),
 					kickVoteN: $("#kick-vote-no"),
@@ -2732,6 +2759,11 @@
 			}), $stage.dialog.profileWhisper.on("click", function(a) {
 				var b = $data.users[$data._profiled];
 				$stage.talk.val("/e " + (b.profile.title || b.profile.name).replace(/\s/g, "") + " ").focus()
+			}), $stage.dialog.profileReport.on("click", function(a) {
+				var b = $data.users[$data._profiled];
+				showDialog($stage.dialog.reportDiag);
+				$("#report-target").text(b.id);
+				$("#submitter").text($data.id);
 			}), $stage.dialog.profileDress.on("click", function(a) {
 				return $data.guest ? fail(421) : $data._gaming ? fail(438) : void(showDialog($stage.dialog.dress) && $.get("/box", function(a) {
 					if (a.error) return fail(a.error);
@@ -2797,6 +2829,13 @@
 				send("kickVote", {
 					agree: !1
 				}), clearTimeout($data._kickTimer), $stage.dialog.kickVote.hide()
+			}), $stage.dialog.reportSubmit.on("click", function(a) {
+				$.post("/report", {
+					target: $("#report-target").text(),
+					submitter: $data.id,
+					reason: $("#report-reason").val()
+				});
+				alert(`신고가 완료되었습니다.\n\n대상: ${$("#report-target").text()}\n신고자: ${$data.id}\n사유: ${$("#report-reason").val()}`)
 			}), $stage.dialog.purchaseOK.on("click", function(a) {
 				$.post("/buy/" + $data._sgood, function(a) {
 					var b = $data.users[$data.id];

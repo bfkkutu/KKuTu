@@ -89,7 +89,7 @@ const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
 const MODE_LENGTH = exports.MODE_LENGTH = Const.GAME_TYPE.length;
 const PORT = process.env['KKUTU_PORT'];
 
-let moment = require('moment'); //moment.js를 사용 (IP Logs 기록)
+let moment = require('moment'); //moment.js
 
 const log4js = require('log4js');
 log4js.configure({
@@ -155,14 +155,23 @@ function processAdmin(id, value, requestId){
 			}
 			return null;
 		case "ban":
-			MainDB.users.update([ '_id', value ]).set([ 'black', "차단되었습니다. 관리자에게 문의하세요." ]).on();
-			if(temp = DIC[value]){
-				var clientId = temp.id;
-				var clientIp = getClientIp(temp);
+			var date = moment().format("YYYYMMDDHHmmss");
+			var target = value.split(",")[0];
+			var reason = value.split(",")[1];
+			var enddate = value.split(",")[2]; // Must be "YYYYMMDDHHmmss"
+			if(enddate == "영구") enddate = 99999999999999;
+			else if(enddate <= date) return null;
+			else if(!target) return null;
+			else if(!reason) return null;
+			else if(!enddate) return null;
+			MainDB.users.update([ '_id', target ]).set([ 'black', reason ]).on();
+			MainDB.users.update([ '_id', target ]).set([ 'bandate', enddate ]).on();
+			if(temp = DIC[target]){
+				temp.send('banned', { id : target, reason: reason, enddate: enddate });
 				temp.socket.send('{"type":"error","code":456}');
 				temp.socket.close();
 			}
-			KKuTu.publish('yell', { value: value + "님이 차단되었습니다." });
+			KKuTu.publish('yell', { value: target + "님이 차단되었습니다." });
 			return null;
 		case "forcenick":
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'nickname', value.split(",")[1] ]).on();
@@ -190,6 +199,7 @@ function processAdmin(id, value, requestId){
 			return null;
 		case "unban":
 			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
+			MainDB.users.update([ '_id', value ]).set([ 'bandate', Number(null) ]).on();
 			KKuTu.publish('yell', { value: value + "님이 차단 해제되었습니다." });
 			return null;
 		case "chatban":
@@ -265,22 +275,48 @@ function processAdmin(id, value, requestId){
 				}
 			}*/
 			return null;
-		case "warn": // 유저 경고
-			if(temp = DIC[value]){
-				var thisDate = moment().format("MM월-DD일|HH시-mm분");
-				var clientId = temp.id;
-				var clientIp = getClientIp(temp);
-				//var warnList = JSON.parse(File.readFileSync("../../../"));
-				
-				if (value.startsWith("guest__"))
-					File.appendFileSync(`../../../Warn/log.txt`,`\n[${clientIp}] is Warned.     (${thisDate})`, 'utf8',(err) => {
-						if(err) return JLog.error(`경고 목록을 작성하는 중에 문제가 발생했습니다.   (${err})`)
-					})
-				else
-					File.appendFileSync(`../../../Warn/log.txt`,`\n[${clientId}] is Warned.     (${thisDate})`, 'utf8',(err) => {
-						if(err) return JLog.error(`경고 목록을 작성하는 중에 문제가 발생했습니다.   (${err})`)
-					})
-			}
+		case "warn":
+			var target = value.split(",")[0];
+			var warn = Number(value.split(",")[1]);
+			var date = moment().format("YYYYMMDDHHmmss");
+			KKuTu.publish('yell', { value: `${target}님에게 경고 ${warn}회가 부여되었습니다.` });
+			MainDB.users.findOne([ '_id', target ]).on(function($user){
+				var newwarn = $user.warn + warn;
+				if(!$user) return null;
+				else if(!$user.warn) return null;
+				else if(newwarn >= 4){
+					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ]).on();
+					MainDB.users.update([ '_id', target ]).set([ 'black', "경고 누적" ]).on();
+					MainDB.users.update([ '_id', target ]).set([ 'bandate', 99999999999999 ]).on();
+					if(DIC[target]){
+						DIC[target].send('alert', { id : target, value: "경고가 4회 이상 누적되어 계정이 영구 정지되었습니다. 관리자에게 문의하세요." });
+						DIC[target].socket.close();
+					}
+				}else{
+					MainDB.users.update([ '_id', target ]).set([ 'warn', newwarn ]).on();
+				}
+			});
+			return null;
+		case "setwarn":
+			var target = value.split(",")[0];
+			var warn = Number(value.split(",")[1]);
+			var date = moment().format("YYYYMMDDHHmmss");
+			KKuTu.publish('yell', { value: `${target}님에게 경고 ${warn}회가 설정되었습니다.` });
+			MainDB.users.findOne([ '_id', target ]).on(function($user){
+				if(!$user) return null;
+				else if(!$user.warn) return null;
+				else if(warn >= 4){
+					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ]).on();
+					MainDB.users.update([ '_id', target ]).set([ 'black', "경고 누적" ]).on();
+					MainDB.users.update([ '_id', target ]).set([ 'bandate', 99999999999999 ]).on();
+					if(DIC[target]){
+						DIC[target].send('alert', { id : target, value: "경고가 4회 이상 누적되어 계정이 영구 정지되었습니다. 관리자에게 문의하세요." });
+						DIC[target].socket.close();
+					}
+				}else{
+					MainDB.users.update([ '_id', target ]).set([ 'warn', warn ]).on();
+				}
+			});
 			return null;
 		case "breakroom":
 			for(var i in ROOM[value].players){
@@ -600,6 +636,20 @@ exports.init = function(_SID, CHAN){
 							$c.passRecaptcha = true;
 
 							joinNewUser($c);
+						}
+					} else if(ref.result == 444) {
+						if(ref.black){
+							$c.send('error', {
+								code: ref.result, reason: ref.black, enddate: ref.bandate
+							});
+							$c._error = ref.result;
+							$c.socket.close();
+						}else{
+							$c.send('error', {
+								code: ref.result, reason: false
+							});
+							$c._error = ref.result;
+							$c.socket.close();
 						}
 					} else {
 						$c.send('error', {

@@ -38,6 +38,8 @@ const GUEST_IMAGE = "/img/kkutu/guest.png";
 const MAX_OKG = 18;
 const PER_OKG = 600000;
 
+let moment = require('moment'); //moment.js
+
 // Discord Markdown and Emojify
 const { toHTML } = require('discord-markdown');
 const emoji = require('node-emoji');
@@ -467,6 +469,7 @@ exports.Client = function(socket, profile, sid){
 		}else DB.users.findOne([ '_id', my.id ]).on(function($user){
 			var first = !$user;
 			var black = first ? "" : $user.black;
+			var bandate = first ? 0 : $user.bandate;
 			
 			if(first) $user = { money: 0 };
 			if(black == "null") black = false;
@@ -504,7 +507,16 @@ exports.Client = function(socket, profile, sid){
 				my.checkExpire();
 				my.okgCount = Math.floor((my.data.playTime || 0) / PER_OKG);
 			}
-			if(black) R.go({ result: 444, black: black });
+			if(black){
+				var now = moment().format("YYYYMMDDHHmmss");
+				if(now >= bandate){
+					DB.users.update([ '_id', my.id ]).set([ 'black', null ]).on();
+					DB.users.update([ '_id', my.id ]).set([ 'bandate', Number(null) ]).on();
+					R.go({ result: 444, black: false });
+				}else{
+					R.go({ result: 444, black: black, enddate: bandate });
+				}
+			}
 			else if(Cluster.isMaster && $user.server) R.go({ result: 409, black: $user.server });
 			else if(exports.NIGHT && my.isAjae === false) R.go({ result: 440 });
 			else R.go({ result: 200 });
