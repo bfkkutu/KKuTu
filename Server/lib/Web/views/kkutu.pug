@@ -99,6 +99,7 @@ block Middle
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;')= L('exit')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;')= L('replay')
 		button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('Clan')
+		button#FindUserBtn.for-lobby.for-normal(style='display: none; background-color: #00d9ff;')= L('FindUser')
 		button#ReloadRoom.tiny-menu.for-lobby(style='display: none; background-color: #7DB7FF;')!= L('reload')
 		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
 	+Dialog('SettingDiag', 320, 340, L('settingsText'))
@@ -392,6 +393,16 @@ block Middle
 			button#profile-level= L('aiSetting')
 			button#profile-dress= L('dress')
 			button#profile-handover= L('handover')
+			button#profile-friendadd= L('friendAdd')
+	+Dialog('FindUserDiag', 300, 185, L('FindUser'))
+		div.dialog-bar
+			h4= L('findTargetNick')
+			input#find-nick-target(type='textfield', style='width: 288px;')
+			button#find-nick-ok= L('OK')
+		div.dialog-bar
+			h4= L('findTargetID')
+			input#find-id-target(type='textfield', style='width: 288px;')
+			button#find-id-ok= L('OK')
 	+Dialog('ReportDiag', 300, 175, L('report'))
 		div.dialog-bar
 			h4(style='width: 290px;')= L('reportwarn')
@@ -461,6 +472,7 @@ block Middle
 		div.dialog-bar
 			h4#myClanName
 			h4#myClanID
+			h4#myClanMax
 			h4#myClanActivate
 		div.dialog-bar(style='height: 175px;'): table#clanUserList(style='text-align: center;')
 			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
@@ -471,6 +483,7 @@ block Middle
 			button#leaveClan= L('leaveClan')
 			input#kickTarget(type='textfield', placeholder=L('kickTarget'), style='width: 100px;')
 			button#kickUser= L('kickUser')
+			button#extendMax= L('extendMax')
 	+Dialog('DressDiag', 650, 320, L('dress'))
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myNickname')

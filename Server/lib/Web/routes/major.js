@@ -184,7 +184,7 @@ Server.get("/clan", function(req, res){
 			else{
 				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($des){
 					if(!$des) return res.send({ name: undefined });
-					return res.send({ name: $des.clanname, id: $des.clanid, users: $des.users, score: $des.clanscore });
+					return res.send({ name: $des.clanname, id: $des.clanid, users: $des.users, score: $des.clanscore, max: $des.max, perm: $des.users[`${query.id}`] });
 				});
 			}
 		});
@@ -192,7 +192,7 @@ Server.get("/clan", function(req, res){
 		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
 			if(!$ec) return res.send({ message: "FAIL" });
 			else if(Number(query.perm) > 2) return res.send({ message: "FAIL" });
-			else if(typeof Number(query.perm) !== "number") return res.send({ message: "FAIL" });
+			else if(typeof Number(query.perm) != "number") return res.send({ message: "FAIL" });
 			else{
 				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($data){
 					$data.users[`${query.id}`] = Number(query.perm);
@@ -200,6 +200,29 @@ Server.get("/clan", function(req, res){
 				});
 				return res.send({ message: "OK" });
 			}
+		});
+	}else if(query.type == "extend"){
+		MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			if($ec.max >= 50) return res.send({ message: "MAX" });
+			MainDB.users.findOne([ '_id', query.masterid ]).on(function($user){
+				if(!$user) return res.send({ message: "FAIL" });
+				else if(Number($ec.users[`${query.masterid}`]) != 0) return res.send({ message: "LOWPERM" });
+				else {
+					var postM = $user.money - 10000;
+				
+					if(postM < 0) return res.send({ message: "MONEYFAIL" });
+					else {
+						MainDB.users.update([ '_id', query.masterid ]).set(
+							[ 'money', postM ]
+						).on(function($fin){
+							JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.clanname}`);
+							MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'max', Number($ec.max) + 10 ]).on();
+							return res.send({ message: "OK" });
+						});
+					}
+				}
+			});
 		});
 	}
 });
@@ -341,6 +364,15 @@ Server.get("/getWarn", function(req, res){
 		if(!$user) return res.send({ error: 404 });
 		else if(!$user.warn) return res.send({ error: 404 });
 		else return res.send({ message: $user.warn });
+	});
+});
+Server.get("/getid", function(req, res){
+	if(!req.query.target) return res.send({ error: 404 });
+	var target = req.query.target;
+	MainDB.users.findOne([ 'nickname', target ]).on(function($user){
+		if(!$user) return res.send({ error: 404 });
+		else if(!$user._id) return res.send({ error: 404 });
+		else return res.send({ id: $user._id });
 	});
 });
 Server.get("/injeong/:word", function(req, res){

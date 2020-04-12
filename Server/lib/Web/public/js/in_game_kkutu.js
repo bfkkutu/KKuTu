@@ -1103,6 +1103,7 @@
 		var b, c, d, e = $data.users[a] || $data.robots[a],
 			f = $("#profile-record").empty(),
 			z = $data.users[a];
+		if (!e) return void notice(L.error_405);
 		if(!e.robot){
 			var x = getRank(z);
 			
@@ -1152,7 +1153,6 @@
 			}*/
 		}
 		
-		if (!e) return void notice(L.error_405);
 		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
 				width: 300,
@@ -1171,6 +1171,7 @@
 			}
 			renderMoremi(b, e.equip, e.id)
 		}
+		$("#profile-friendadd").hide(),
 		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), e.robot ? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
 
@@ -2202,6 +2203,7 @@
 					exit: $("#ExitBtn"),
 					notice: $("#NoticeBtn"),
 					replay: $("#ReplayBtn"),
+					findUser: $("#FindUserBtn"),
 					leaderboard: $("#LeaderboardBtn"),
 					rankpointlb: $("#RPLeaderboardBtn")
 				},
@@ -2234,6 +2236,7 @@
 					newClan: $("#newClan"),
 					makeClan: $("#makeClan"),
 					kickUser: $("#kickUser"),
+					extendMax: $("#extendMax"),
 					viewClan: $("#viewClan"),
 					leaveClan: $("#leaveClan"),
 					joinClan: $("#joinClan"),
@@ -2244,6 +2247,7 @@
 					roomInfo: $("#RoomInfoDiag"),
 					roomInfoJoin: $("#room-info-join"),
 					profile: $("#ProfileDiag"),
+					findUser: $("#FindUserDiag"),
 					rank: $("#rank"),
 					lp: $("#rankpoint"),
 					profileShut: $("#profile-shut"),
@@ -2253,6 +2257,9 @@
 					profileDress: $("#profile-dress"),
 					profileWhisper: $("#profile-whisper"),
 					profileReport: $("#profile-report"),
+					profileFriendAdd: $("#profile-friendadd"),
+					findIDOK: $("#find-id-ok"),
+					findNickOK: $("#find-nick-ok"),
 					reportDiag: $("#ReportDiag"),
 					reportSubmit: $("#report-submit"),
 					kickVote: $("#KickVoteDiag"),
@@ -2623,6 +2630,21 @@
 				send("leave")
 			}), $stage.menu.replay.on("click", function(a) {
 				$data._replay && replayStop(), showDialog($stage.dialog.replay), g(), $stage.dialog.replay.is(":visible") && $("#replay-file").trigger("change")
+			}), $stage.menu.findUser.on("click", function(a) {
+				showDialog($stage.dialog.findUser)
+			}), $stage.dialog.findIDOK.on("click", function(a) {
+				requestProfile($("#find-id-target").val());
+				if($("#find-target").val() != $data.id) $("#profile-friendadd").show();
+			}), $stage.dialog.findNickOK.on("click", function(a) {
+				var b = $("#find-nick-target").val(),
+					c = $.ajax({
+						url: `/getid?target=${b}`,
+						method: 'GET',
+						async: false
+					}),
+					d = JSON.parse(c.responseText);
+				requestProfile(d.id);
+				if(d.id != $data.id) $("#profile-friendadd").show();
 			}), $stage.menu.leaderboard.on("click", function(a) {
 				$data._lbpage = 0, $stage.dialog.leaderboard.is(":visible") ? $stage.dialog.leaderboard.hide() : $.get("/ranking", function(a) {
 					drawLeaderboard(a), showDialog($stage.dialog.leaderboard)
@@ -2748,6 +2770,10 @@
 				confirm(L.sureHandover) && send("handover", {
 					target: $data._profiled
 				})
+			}), $stage.dialog.profileFriendAdd.on("click", function(a) {
+				$data.users[$("#find-target").val()] ? send("friendAdd", {
+					target: $("#find-target").val()
+				}, !0) : fail(450)
 			}), $stage.dialog.profileKick.on("click", function(a) {
 				send("kick", {
 					robot: $data.robots.hasOwnProperty($data._profiled),
@@ -2863,8 +2889,25 @@
 					if(!b.name) alert("클랜에 가입하지 않았습니다."), $stage.dialog.viewClanDiag.hide();
 					else{
 						var f;
+						$("#deleteClan").hide()
+						$("#kickTarget").hide()
+						$("#kickUser").hide()
+						$("#leaveClan").show()
+						$("#extendMax").hide()
+						if(b.perm == 0){
+							$("#deleteClan").show()
+							$("#kickTarget").show()
+							$("#kickUser").show()
+							$("#leaveClan").hide()
+							$("#extendMax").show()
+						}else if(b.perm == 1){
+							$("#kickTarget").show()
+							$("#kickUser").show()
+							$("#extendMax").show()
+						}
 						$("#myClanName").html(`클랜 이름: ${b.name}`),
 						$("#myClanID").html(`클랜 ID: ${b.id}`),
+						$("#myClanMax").html(`클랜원 수: ${Object.keys(b.users).length}/${b.max}명`),
 						$("#myClanActivate").html(`클랜 활동량: ${b.score}`),
 						$("#clanUserList tbody").empty();
 						for(f in Object.keys(b.users)){
@@ -2919,6 +2962,19 @@
 						$.get(`/clan?type=removeuser&userid=${a}&clanid=${b.id}`, function(d){
 							if(d.message == "FAIL") alert("추방 실패! 추방 대상 유저 ID가 잘못되었을 수 있습니다.");
 							else alert(`${a}님을 추방했습니다!`);
+						})
+					}
+				})
+			}), $stage.dialog.extendMax.on("click", function(c) {
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					var cf = confirm(`5000핑을 소비하여 클랜원 제한을 ${Number(b.max)+10}명으로 늘리시겠습니까?`);
+					if(cf && b.users[$data.id] != 0) alert("클랜 마스터만 확장할 수 있습니다.");
+					else if(cf){
+						$.get(`/clan?type=extend&clanid=${b.id}&masterid=${$data.id}`, function(d){
+							if(d.message == "FAIL") alert("알 수 없는 문제로 인해 실패했습니다.");
+							else if(d.message == "LOWPERM") alert("권한이 부족합니다.");
+							else if(d.message == "MAX") alert("클랜 확장 한도에 도달했습니다. (50명)");
+							else alert(`클랜원 제한을 ${Number(b.max)+10}명으로 늘렸습니다.`), $stage.dialog.viewClanDiag.hide(), $stage.dialog.viewClan.trigger("click");
 						})
 					}
 				})
