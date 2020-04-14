@@ -157,8 +157,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.5.5 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.5.5 User</a>",
+    "version": "4.5.6 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.5.6 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -810,6 +810,7 @@
 	"joinClan": "클랜 가입",
 	"joinTarget": "가입할 클랜 ID",
 	"clanName": "클랜 이름",
+	"clanID": "클랜 ID",
 	"deleteClan": "클랜 삭제",
 	"leaveClan": "클랜 탈퇴",
 	"clanActive": "클랜 활동량",

@@ -2611,7 +2611,14 @@
 				$("#roomlist-loading").show(),
 				updateRoomList(true), updateUserList(true);
 			}), $stage.menu.Clan.on("click",function(a){
-				showDialog($stage.dialog.clanDiag)
+				showDialog($stage.dialog.clanDiag);
+				$.get("/clan?type=clanlist", function(b){
+					var c, d, e = JSON.parse(b.list);
+					$("#clanList tbody").empty();
+					for(c in e){
+						$("#clanList").append($("<tr>").attr("id", "clan-" + e[c].clanname).addClass("clan-" + e[c].clanname).append($("<td>").html(e[c].clanname)).append($("<td>").html(e[c].clanid)))
+					}
+				})
 			}), $stage.menu.invite.on("click", function(a) {
 				showDialog($stage.dialog.invite), updateUserList(!0)
 			}), $stage.menu.practice.on("click", function(a) {
@@ -2888,7 +2895,7 @@
 				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
 					if(!b.name) alert("클랜에 가입하지 않았습니다."), $stage.dialog.viewClanDiag.hide();
 					else{
-						var f;
+						var f, g = getLevel(b.score);
 						$("#deleteClan").hide()
 						$("#kickTarget").hide()
 						$("#kickUser").hide()
@@ -2909,7 +2916,8 @@
 						$("#myClanID").html(`클랜 ID: ${b.id}`),
 						$("#myClanMax").html(`클랜원 수: ${Object.keys(b.users).length}/${b.max}명`),
 						$("#myClanActivate").html(`클랜 활동량: ${b.score}`),
-						$("#clanUserList tbody").empty();
+						$("#clanUserList tbody").empty(),
+						$("#myClanLevel").attr("src",`/img/kkutu/clanlv/lv${g}.png`)
 						for(f in Object.keys(b.users)){
 							$("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys(b.users)[f]))
 						}
@@ -2984,9 +2992,11 @@
 						var f = $("#joinTarget").val();
 						$.get(`/clan?type=adduser&userid=${$data.id}&clanid=${f}&userp=2`, function(d){
 							if(d.message == "FAIL") alert("가입 실패! 가입 대상 클랜 ID가 잘못되었을 수 있습니다.");
-							else if(d.message == "USERLIMITFAIL") alert("가입 실패! 클랜원 한도에 도달한 클랜입니다. 한 클랜당 최대 10명의 클랜원이 가입할 수 있습니다.");
+							else if(d.message == "USERLIMITFAIL") alert("가입 실패! 클랜원 한도에 도달한 클랜입니다.");
 							else alert(`${f} 클랜에 가입했습니다!`);
 						})
+					}else{
+						alert("이미 클랜에 가입되어 있습니다.");
 					}
 				})
 			}), $stage.dialog.leaveClan.on("click", function(a) {

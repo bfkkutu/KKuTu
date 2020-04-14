@@ -166,12 +166,12 @@ function processAdmin(id, value, requestId){
 			else if(!enddate) return null;
 			MainDB.users.update([ '_id', target ]).set([ 'black', reason ]).on();
 			MainDB.users.update([ '_id', target ]).set([ 'bandate', enddate ]).on();
+			KKuTu.publish('yell', { value: DIC[target].nickname + "님이 차단되었습니다." });
 			if(temp = DIC[target]){
 				temp.send('banned', { id : target, reason: reason, enddate: enddate });
 				temp.socket.send('{"type":"error","code":456}');
 				temp.socket.close();
 			}
-			KKuTu.publish('yell', { value: target + "님이 차단되었습니다." });
 			return null;
 		case "forcenick":
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'nickname', value.split(",")[1] ]).on();
@@ -279,7 +279,7 @@ function processAdmin(id, value, requestId){
 			var target = value.split(",")[0];
 			var warn = Number(value.split(",")[1]);
 			var date = moment().format("YYYYMMDDHHmmss");
-			KKuTu.publish('yell', { value: `${target}님에게 경고 ${warn}회가 부여되었습니다.` });
+			DIC[target].send('yellto', { id : target, value: `경고 ${warn}회가 부여되었습니다.` });
 			MainDB.users.findOne([ '_id', target ]).on(function($user){
 				var newwarn = $user.warn + warn;
 				if(!$user) return null;
@@ -289,6 +289,7 @@ function processAdmin(id, value, requestId){
 					MainDB.users.update([ '_id', target ]).set([ 'black', "경고 누적" ]).on();
 					MainDB.users.update([ '_id', target ]).set([ 'bandate', 99999999999999 ]).on();
 					if(DIC[target]){
+						KKuTu.publish('yell', { value: `${target}님의 경고가 4회 이상 누적되어 계정이 영구 정지되었습니다.` });
 						DIC[target].send('alert', { id : target, value: "경고가 4회 이상 누적되어 계정이 영구 정지되었습니다. 관리자에게 문의하세요." });
 						DIC[target].socket.close();
 					}
@@ -624,7 +625,7 @@ exports.init = function(_SID, CHAN){
 						DIC[$c.id] = $c;
 						try{
 							DNAME[($c.profile.title || $c.profile.name).replace(/\s/g, "")] = $c.id;
-						}catch(e){ console.log(e.stringify()) }
+						}catch(e){ console.log(e) }
 						MainDB.users.update([ '_id', $c.id ]).set([ 'server', SID ]).on();
 
 						if (($c.guest && GLOBAL.GOOGLE_RECAPTCHA_TO_GUEST) || GLOBAL.GOOGLE_RECAPTCHA_TO_USER) {
@@ -755,6 +756,7 @@ function processClientRequest($c, msg) {
 				if (!processAdmin($c.id, msg.value)) break;
 			}
 			checkTailUser($c.id, $c.place, msg);
+			var date = moment().format("MM월-DD일|HH시-mm분");
 			if (msg.whisper) {
 				msg.whisper.split(',').forEach(v => {
 					if (temp = DIC[DNAME[v]]) {
@@ -763,12 +765,14 @@ function processClientRequest($c, msg) {
 							profile: $c.profile,
 							value: msg.value
 						});
+						fs.appendFileSync(`./lib/Web/whisperlog/${$c.id}_${v}.log`, `[${date}] ${$c.id} to ${v}: ${msg.value}\n`, 'utf8');
 					} else {
 						$c.sendError(424, v);
 					}
 				});
 			} else {
 				var mmsg = markdownEmoji(msg.value);
+				fs.appendFileSync(`./lib/Web/chatlog/lobby/${$c.id}.log`, `[${date}] ${$c.id}: ${msg.value}\n`, 'utf8');
 				$c.chat(mmsg);
 			}
 			break;

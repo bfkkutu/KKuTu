@@ -454,9 +454,14 @@ block Middle
 			h4.dialog-bar-value#replay-players -
 		div.dialog-bar.tail-button
 			button#replay-view= L('replayView')
-	+Dialog('ClanDiag', 300, 280, L('Clan'))
+	+Dialog('ClanDiag', 300, 350, L('Clan'))
 		div.dialog-bar
 			h4= L('clanList')
+		div.dialog-bar(style='height: 260px;'): table#clanList(style='text-align: center;')
+			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
+				td#clanListName(width=115)= L('clanName')
+				td#clanListID(width=115)= L('clanID')
+			tbody
 		div.dialog-bar
 			button#newClan= L('newClan')
 			button#viewClan= L('viewClan')
@@ -468,13 +473,14 @@ block Middle
 		div.dialog-bar
 			input#clanName(type='textfield', placeholder=L('clanName'), style='width: 100px;', maxlength=8)
 			button#makeClan= L('newClan')
-	+Dialog('ViewClanDiag', 300, 280, L('viewClan'))
+	+Dialog('ViewClanDiag', 450, 280, L('viewClan'))
 		div.dialog-bar
+			img#myClanLevel
 			h4#myClanName
 			h4#myClanID
 			h4#myClanMax
 			h4#myClanActivate
-		div.dialog-bar(style='height: 175px;'): table#clanUserList(style='text-align: center;')
+		div.dialog-bar(style='height: 175px; width: 250px;'): table#clanUserList(style='text-align: center;')
 			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
 				td(width=115)= L('clanUserID')
 			tbody

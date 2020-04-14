@@ -156,7 +156,7 @@ Server.get("/clan", function(req, res){
 			if(!$ec) return res.send({ message: "FAIL" });
 			if(!$ec.clanid) return res.send({ message: "FAIL" });
 			else{
-				if(Object.keys($ec.users).length >= 10) return res.send({ message: "USERLIMITFAIL" });
+				if(Object.keys($ec.users).length >= $ec.max) return res.send({ message: "USERLIMITFAIL" });
 				else{
 					$ec.users[`${query.userid}`] = parseInt(query.userp); // userp: user permission
 					MainDB.users.update([ '_id', query.userid ]).set([ 'clan', query.clanid ]).on();
@@ -223,6 +223,13 @@ Server.get("/clan", function(req, res){
 					}
 				}
 			});
+		});
+	}else if(query.type == "clanlist"){
+		MainDB.clans.find().on(function($ec){
+			if(!$ec) return res.send({ message: "FAIL" });
+			else{
+				return res.send({ list: JSON.stringify($ec) });
+			}
 		});
 	}
 });
