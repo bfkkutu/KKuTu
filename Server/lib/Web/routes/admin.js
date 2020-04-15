@@ -251,6 +251,47 @@ Server.post("/gwalli/users/ipban", function(req, res) {
 		}
 	});
 });
+Server.get("/gwalli/reports", function(req, res) {
+	if(!checkAdmin(req, res, 'USERS')) return;
+	var data = {};
+	
+	function readFiles(dirname, onFileContent, onError) {
+		File.readdir(dirname, function(err, filenames) {
+			if (err) {
+				onError(err);
+				return;
+			}
+			filenames.forEach(function(filename) {
+				File.readFile(dirname + filename, 'utf-8', function(err, content) {
+					if (err) {
+						onError(err);
+						return;
+					}
+					onFileContent(filename, content);
+				});
+			});
+		});
+	}
+	readFiles('./lib/Web/report/', function(filename, content) {
+		data[filename] = content;
+	}, function(err) {
+		return res.send({ error: err });
+	});
+	setTimeout(function(){
+		return res.send({ list: data })
+	}, 1000);
+});
+Server.get("/gwalli/chatlog", function(req, res) {
+	if(!checkAdmin(req, res, 'USERS')) return;
+	
+	var data = File.readFileSync(`./lib/Web/chatlog/all/${req.query.id}.log`, "utf8", function(err) {
+		return res.send({ error: 404 })
+	});
+	
+	setTimeout(function(){
+		return res.send({ data: data })
+	}, 100);
+});
 Server.post("/gwalli/editor/getfile", function(req, res){
 	if(!checkAdmin(req, res, 'DEVELOPER')) return;
 	

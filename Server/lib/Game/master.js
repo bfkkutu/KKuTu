@@ -279,7 +279,6 @@ function processAdmin(id, value, requestId){
 			var target = value.split(",")[0];
 			var warn = Number(value.split(",")[1]);
 			var date = moment().format("YYYYMMDDHHmmss");
-			DIC[target].send('yellto', { id : target, value: `경고 ${warn}회가 부여되었습니다.` });
 			MainDB.users.findOne([ '_id', target ]).on(function($user){
 				var newwarn = $user.warn + warn;
 				if(!$user) return null;
@@ -295,6 +294,9 @@ function processAdmin(id, value, requestId){
 					}
 				}else{
 					MainDB.users.update([ '_id', target ]).set([ 'warn', newwarn ]).on();
+					if(DIC[target]){
+						DIC[target].send('yellto', { id : target, value: `경고 ${warn}회가 부여되었습니다.` });
+					}
 				}
 			});
 			return null;

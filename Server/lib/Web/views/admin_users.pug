@@ -76,3 +76,20 @@ block Middle
 				button#get-iplog 조회
 				button#clear-iplog 모두 지우기
 				button#auto-iplog 자동조회 시작
+		fieldset
+			legend 신고 목록 조회
+			div
+				table
+					thead: tr
+						td 신고자 ID
+						td 피신고자 ID
+						td 사유
+						td 신고 일시
+					tbody#report-data
+			button#report-load 불러오기
+		fieldset
+			legend 채팅 로그 조회
+			div
+				input#chatlog-id(placeholder='식별 번호')
+				textarea#chatlog-list(rows=40, cols=70, readonly)
+				button#chatlog-load 불러오기
