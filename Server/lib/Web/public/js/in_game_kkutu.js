@@ -102,7 +102,52 @@
 		$("#sort-user").attr("checked", $data.opts.su), 
 		$("#only-waiting").attr("checked", $data.opts.ow), 
 		$("#only-unlock").attr("checked", $data.opts.ou), 
-		updateUserList(true), updateRoomList(true),
+		updateUserList(true), updateRoomList(true);
+		if($("#darkTheme").is(":checked")){
+			$stage.loading.show().html("다크 테마를 적용하고 있습니다...")
+			setTimeout(function(){
+				$("#Background").attr("src","/img/bg/dark.png");
+				$(".UserListBox").css("background-color","#363434");
+				$(".RoomListBox").css("background-color","#363434");
+				$(".ShopBox").css("background-color","#363434");
+				$(".RoomBox").css("background-color","#363434");
+				$(".GameBox").css("background-color","#363434");
+				$(".MeBox").css("background-color","#363434");
+				$(".ChatBox").css("background-color","#363434");
+				$(".Product").css("color","#ffffff");
+				$(".product-title").css("background-color","#363434");
+				$("h5").css("color","#ffffff");
+				$("h4").css("color","#ffffff");
+				$("select").css("color","#ffffff");
+				$("select").css("background-color","#363434");
+				$("button").css("color","#ffffff");
+				$("button").css("background-color","#363434");
+				$("label").css("color","#ffffff");
+				$("#Top").css("background-color","#363434");
+				$("#Top").css("color","#ffffff");
+				$(".for-master").css("background-color","#363434");
+				$(".for-lobby").css("background-color","#363434");
+				$(".for-normal").css("background-color","#363434");
+				$(".for-master").css("color","#ffffff");
+				$(".for-lobby").css("color","#ffffff");
+				$(".for-normal").css("color","#ffffff");
+				$("input").css("background-color","#363434");
+				$("input").css("color","#ffffff");
+				$(".rooms-create").css({"background-image":"url()","background-color":"#363434"});
+				$(".rooms-item").css({"background-image":"url()","background-color":"#363434"});
+				$(".rooms-admin-waiting").css({"background":"url()","background-color":"#363434"});
+				$(".rooms-testing-waiting").css({"background":"url()","background-color":"#363434"});
+				$(".rooms-admin-gaming").css({"background":"url()","background-color":"#363434"});
+				$(".rooms-testing-gaming").css({"background":"url()","background-color":"#363434"});
+				$(".rooms-gaming").css({"background-image":"url()","background-color":"#363434"});
+				$(".dialog").css("background-color","#363434");
+				$(".dialog-head").css("background-color","#363434");
+				$(".dialog-title").css("color","#ffffff");
+				$(".menu-btn").css("color","#ffffff");
+				$(".menu-btn").css("background-color","#363434");
+				$stage.loading.hide()
+			}, 2500)
+		}
 		$data.bgm && ($data.muteBGM ? ($data.bgm.volume = 0, $data.bgm.stop()) : ($data.bgm.volume = $("#bgmvol").val(), $data.bgm = playBGM("lobby", !0)))
 	}
 

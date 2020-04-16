@@ -178,10 +178,10 @@ Server.use((req, res, next) => {
 //볕뉘 수정 끝
 //디도스 감지 및 차단
 DDDoS = new DDDoS({
-	maxWeight: 45,
+	maxWeight: 40,
 	checkInterval: 900,
 	rules: [{
-		regexp: "^/(cf|dict|gwalli|rpRanking|corona|null)",
+		regexp: "^/(cf|dict|gwalli|rpRanking|corona)",
 		maxWeight: 999 //40
 	}, {
 		regexp: "^/(dddos|in_dddos.css)",
@@ -415,7 +415,7 @@ Server.get("/", function(req, res){
 				'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
 			});
 		}else{
-			page(req, res, Const.MAIN_PORTS[server] ? "dddos" : "dddos", {
+			page(req, res, "dddos", {
 				'_page': "kkutu",
 				'_id': id,
 				'PORT': Const.MAIN_PORTS[server],
@@ -544,4 +544,8 @@ Server.get("/beta/kkutu", function(req, res){
 });
 Server.get("/bfsoft", function(req, res){
 	page(req, res, "bfsoft");
+});
+
+Server.get("*", function(req, res){
+	if(req.params["0"] != "/0bf407746de1c333c6a379b42ba203f7") page(req, res, "notfound");
 });

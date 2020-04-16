@@ -1,6 +1,6 @@
 {
   "GLOBAL": {
-    "GPL": "<div style='color: #666;'>글자로 놀자! BF끄투 Copyright (C) 2018 OPG 이승훈(<a target='_blank' href='mailto:admin@bfsoft.kro.kr'>admin@bfsoft.kro.kr</a>)<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a></div>",
+    "GPL": "<div style='color: #666;'>글자로 놀자! BF끄투 Copyright (C) 2018 OPG 이승훈(<a target='_blank' href='mailto:bfk@sdbx.dev'>bfk@sdbx.dev</a>)<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a></div>",
 
     "CREATOR": "개발자 블로그",
     "HOME": "FA{home}",
@@ -791,6 +791,7 @@
     "friendAdd": "친구 추가",
     "friendSureRemove": "이 친구를 정말 삭제합니까? 삭제하는 경우 상대방의 친구 목록에서도 회원님이 빠지게 됩니다.",
     "reload": "↻",
+	"darkTheme": "다크 테마",
 	"FindUser": "유저 찾기",
 	"newRoom": "방 만들기",
     "setRoom": "방 설정",
