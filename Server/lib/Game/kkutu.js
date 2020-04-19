@@ -599,6 +599,7 @@ exports.Client = function(socket, profile, sid){
 					return my.sendError(401);
 				}
 			}
+			if($room.time == 9999999 && !my.admin) return my.sendError(460);
 			if($room.players.length >= $room.limit + (spec ? Const.MAX_OBSERVER : 0)){
 				if(!my.admin) return my.sendError(429);
 			}

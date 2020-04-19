@@ -157,8 +157,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.5.7 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.5.7 User</a>",
+    "version": "4.5.8 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.5.8 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -262,6 +262,7 @@
 	"error_457": "닉네임이 관리자에 의해 변경되었습니다. 다시 접속 해주세요.",
 	"error_458": "자기 소개가 관리자에 의해 변경되었습니다. 다시 접속 해주세요.",
 	"error_459": "관리자에 의해 방이 삭제되었습니다.",
+	"error_460": "접근 권한이 부족합니다.",
     "error_500": "서버 점검 혹은 업데이트가 진행 중입니다.",
     "error_555": "공사 중입니다! ㅠㅠ",
 	"error_600": "중복되는 닉네임이 있습니다.",
@@ -466,7 +467,7 @@
     "kpm": "<label style='font-size: 11px;'>타/분</label>",
 
     "theme_IMS": "THE iDOLM@STER",
-    "theme_VOC": "VOCALOID",
+    "theme_VOC": "보컬로이드/우타이테",
     "theme_KRR": "개구리 중사 케로로",
     "theme_KTV": "국내 방송 프로그램",
     "theme_NSK": "니세코이",
