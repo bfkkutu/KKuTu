@@ -82,8 +82,7 @@ function page(req, res, file, data){
 	}else{
 		data.page = file;
 	}
-	
-	JLog.log(`${addr.slice(7)}@${sid.slice(0, 10)} ${data.page}, ${JSON.stringify(req.params)}`);
+	if(data.page != "notfound") JLog.log(`${addr.slice(7)}@${sid.slice(0, 10)} ${data.page}, ${JSON.stringify(req.params)}`);
 	res.render(data.page, data, function(err, html){
 		if(err) res.send(err.toString());
 		else res.send(html);

@@ -270,10 +270,22 @@
 				break;
 			case "banned":
 				if($data.id == a.id){
-					alert(`차단되었습니다. 관리자에게 문의하세요.\n\n사유: ${a.reason}\n종료일: ${a.enddate}`);
+					if(a.enddate != "영구"){
+						var sa = a.enddate.toString(),
+							y = sa.slice(0,4), // year
+							m = sa.slice(4,6), // month
+							d = sa.slice(6,8), // day
+							h = sa.slice(8,10), // hour
+							mi = sa.slice(10,12), // minute
+							s = sa.slice(12,14), // second
+							f = `${y}년 ${m}월 ${d}일 ${h}시 ${mi}분 ${s}초`;
+					}else{
+						var f = a.enddate;
+					}
 					ws.onclose = function(b){
-						$("#Middle").empty();
-						$("#Bottom").html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.enddate}`);
+						$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
+						alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
+						$("#AlertDiag").css("z-index",5)
 					}
 					ws.close();
 				}
@@ -473,8 +485,27 @@
 				if(a.code == 402){
 					alertKKuTu("[게스트 접속 제한] " + L["error_" + a.code] + c), $("#intro-text").html("이 서버는 게스트 접속을 허용하지 않습니다."), $("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty();
 				} else if(a.code == 444){
-					if(a.reason) alert(`차단되었습니다. 관리자에게 문의하세요.\n\n사유: ${a.reason}\n종료일: ${a.enddate}`), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.enddate}`)}, ws.close();
-					else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
+					if(a.reason){
+						if(a.enddate != "영구"){
+							var sa = a.enddate.toString(),
+								y = sa.slice(0,4), // year
+								m = sa.slice(4,6), // month
+								d = sa.slice(6,8), // day
+								h = sa.slice(8,10), // hour
+								mi = sa.slice(10,12), // minute
+								s = sa.slice(12,14), // second
+								f = `${y}년 ${m}월 ${d}일 ${h}시 ${mi}분 ${s}초`;
+						}else{
+							var f = a.enddate;
+						}
+						ws.onclose = function(b){
+							$("#Intro").hide();
+							$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
+							alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
+							$("#AlertDiag").css("z-index",5)
+						}
+					ws.close();
+					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
 				}else alert("[#" + a.code + "] " + L["error_" + a.code] + c);
 		}
 		$data._record && recordEvent(a)
@@ -688,6 +719,7 @@
 	}
 	
 	function alertKKuTu(a){
+		$stage.dialog.alertKKuTu.hide();
 		showDialog($stage.dialog.alertKKuTu);
 		$("#alert").css("text-align", "center");
 		$("#alertbtn").attr('style', "display: flex; align-items: center; justify-content: center;");

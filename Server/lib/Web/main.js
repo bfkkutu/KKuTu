@@ -547,5 +547,5 @@ Server.get("/bfsoft", function(req, res){
 });
 
 Server.get("*", function(req, res){
-	if(req.params["0"] != "/0bf407746de1c333c6a379b42ba203f7") page(req, res, "notfound");
+	page(req, res, "notfound");
 });

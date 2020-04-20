@@ -165,10 +165,12 @@ function processAdmin(id, value, requestId){
 			else if(!reason) return null;
 			else if(!enddate) return null;
 			MainDB.users.update([ '_id', target ]).set([ 'black', reason ]).on();
-			MainDB.users.update([ '_id', target ]).set([ 'bandate', enddate ]).on();
+			MainDB.users.findOne([ '_id', target ]).on(function($user){
+				MainDB.users.update([ '_id', target ]).set([ 'bandate', enddate ]).on();
+			});
 			KKuTu.publish('yell', { value: DIC[target].nickname + "님이 차단되었습니다." });
 			if(temp = DIC[target]){
-				temp.send('banned', { id : target, reason: reason, enddate: enddate });
+				temp.send('banned', { id : target, reason: reason, enddate: (enddate == 99999999999999 ? "영구" : enddate) });
 				temp.socket.send('{"type":"error","code":456}');
 				temp.socket.close();
 			}
@@ -199,7 +201,9 @@ function processAdmin(id, value, requestId){
 			return null;
 		case "unban":
 			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
-			MainDB.users.update([ '_id', value ]).set([ 'bandate', Number(null) ]).on();
+			MainDB.users.findOne([ '_id', value ]).on(function($user){
+				MainDB.users.update([ '_id', value ]).set([ 'bandate', Number(null) ]).on();
+			});
 			KKuTu.publish('yell', { value: value + "님이 차단 해제되었습니다." });
 			return null;
 		case "chatban":
@@ -643,7 +647,7 @@ exports.init = function(_SID, CHAN){
 					} else if(ref.result == 444) {
 						if(ref.black){
 							$c.send('error', {
-								code: ref.result, reason: ref.black, enddate: ref.bandate
+								code: ref.result, reason: ref.black, enddate: (ref.enddate == 99999999999999 ? "영구" : ref.enddate)
 							});
 							$c._error = ref.result;
 							$c.socket.close();

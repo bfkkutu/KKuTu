@@ -354,6 +354,7 @@ Server.post("/warn", function(req, res){
 	var date = moment().format("YYYYMMDDHHmmss");
 	MainDB.users.findOne([ '_id', target ]).on(function($user){
 		if(!$user) return res.send({ error: 404 });
+		else if(!$user.bandate) return res.send({ error: 404 });
 		else if(!$user.warn) return res.send({ error: 404 });
 		else if($user.warn + warn >= 4){
 			MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ]).on();

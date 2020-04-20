@@ -183,9 +183,9 @@ iframe{
 }
 	.rpranking-me{ font-weight: bold; background-color: #DDDDDD; }
 	.rpranking-image{ margin-right: 2px; width: 18px; height: 18px; }
-	.rpranking-1 td:first-child{ font-weight: bold; background-color: gold; }
-	.rpranking-2 td:first-child{ font-weight: bold; background-color: silver; }
-	.rpranking-3 td:first-child{ font-weight: bold; background-color: chocolate; }
+	.rpranking-1 td:first-child{ font-weight: bold; background-color: #fa27ff; }
+	.rpranking-2 td:first-child{ font-weight: bold; background-color: #ffc3a2; }
+	.rpranking-3 td:first-child{ font-weight: bold; background-color: #ffc3a2; }
 .moremi{
 	position: relative;
 }
