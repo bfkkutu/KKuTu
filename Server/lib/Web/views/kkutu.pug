@@ -526,19 +526,24 @@ block Middle
 			button#cf-compose= L('cfCompose')
 	+Dialog('ChatLogDiag', 350, 500, L('chatLog'))
 		div#chat-log-board(style='height: 475px; font-size: 11px; overflow-y: scroll;')
-	+Dialog('AlertDiag', 350, 130, L('Alert'))
+	+Dialog('AlertDiag', 370, 140, L('Alert'))
 		div#alert
-			label#alertText
-		div
-			label= '　'
-		div#alertbtn
+			h3#alertText
+		div.dialog-bar.tail-button#alertbtn
 			button#alert-ok= L('OK')
-	+Dialog('PromptDiag', 350, 130, L('Prompt'))
+	+Dialog('ConfirmDiag', 370, 140, L('Confirm'))
+		div#confirm
+			h3#confirmText
+		div.dialog-bar.tail-button#confirmbtn
+			button#confirm-yes= L('OK')
+			button#confirm-no= L('NO')
+	+Dialog('PromptDiag', 370, 140, L('Prompt'))
+		div#promptHead
 		div#prompt
-			label#promptText
+			h3#promptText
 		div#promptInput
 			input#prompt-input
-		div#promptbtn
+		div.dialog-bar.tail-button#promptbtn
 			button#prompt-ok= L('OK')
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar

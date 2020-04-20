@@ -286,6 +286,7 @@
 						$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
 						alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
 						$("#AlertDiag").css("z-index",5)
+						$("#alertbtn").hide()
 					}
 					ws.close();
 				}
@@ -503,6 +504,7 @@
 							$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
 							alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
 							$("#AlertDiag").css("z-index",5)
+							$("#alertbtn").hide()
 						}
 					ws.close();
 					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
@@ -605,7 +607,7 @@
 			return ws.close();
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
-			if(a.newUser == true) return setNick(), console.log(`NEWUSER: ${a.newuser}`);
+			if(a.newUser == true) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
 			else return console.log(`NEWUSER: ${a.newuser}`);
 		})
 		
@@ -619,6 +621,15 @@
 				$(".product-title")[6].innerHTML = `<i class="fa fa-comment"></i>${L["nfChat"]}`;
 			}, 500);
 		});*/
+	}
+	
+	function getRes(a){
+		var jqXHR = $.ajax({
+			url: a,
+			method: 'GET',
+			async: false
+		});
+		return jqXHR.responseText;
 	}
 	
 	function resetNick(){
@@ -643,19 +654,28 @@
 	}
 	
 	function setNick(){
-		$("#Intro").empty();
-		$(".UserListBox").empty();
-		$(".RoomListBox").empty();
-		$(".MeBox").empty();
-		$(".ChatBox").empty();
-		$(".ADBox").empty();
-		$(".kkutu-menu").empty();
-		$("#Bottom").empty();
-		$("#prompt").css("text-align", "center");
-		$("#promptbtn").attr('style', "display: flex; align-items: center; justify-content: center;");
-		$("#promptText").html("BF끄투에서 사용할 닉네임을 입력하세요.");
-		showDialog($stage.dialog.promptKKuTu);
-		
+		promptKKuTu("BF끄투에서 사용할 닉네임을 입력하세요.<br>닉네임을 설정하면 상기 이용 약관, <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> 및 <a href='http://bfk.kro.kr' target='_blank'>운영 정책</a>에<br>동의하는 것으로 간주합니다.")
+		function checkNick(a){
+			if(a == null) return setNick();
+			if(a == undefined) return setNick();
+			if(/[(ㄱ-ㅎ)]/gi.test(a)) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다."), setNick();
+			if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+			if(a.length > 10) return alertKKuTu("닉네임 길이 제한은 최대 10글자까지입니다."), setNick();
+			if(a.match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+			if(a.match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+			if(a.match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+			if(a.match("　")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
+			if(a.match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
+			if(a.match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
+			alertKKuTu("닉네임 설정이 완료되었습니다."), location.reload();
+			// TODO: 좀 더 정교한 콜백.
+			$.post("/nickname", {
+				data: delBadWords(a)
+			}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
+		}
+		$stage.dialog.promptKKuTuOK.on("click", function(c) {
+			return checkNick($("#prompt-input").val())
+		})
 	}
 
 	function getKickText(a, b) {
@@ -722,19 +742,17 @@
 		$stage.dialog.alertKKuTu.hide();
 		showDialog($stage.dialog.alertKKuTu);
 		$("#alert").css("text-align", "center");
-		$("#alertbtn").attr('style', "display: flex; align-items: center; justify-content: center;");
+		$("#alertbtn").attr('style', "float: right;");
 		$("#alertText").html(a);
 	}
 	
 	function promptKKuTu(a){
-		showDialog($stage.dialog.promptKKuTu);
+		$stage.dialog.promptKKuTu.hide();
 		$("#prompt").css("text-align", "center");
-		$("#promptbtn").attr('style', "display: flex; align-items: center; justify-content: center;");
+		$("#promptbtn").attr('style', "float: right;");
 		$("#promptText").html(a);
-		$stage.dialog.promptKKuTuOK.on("click", function(a) {
-			$stage.dialog.promptKKuTu.hide();
-			return $("#prompt-input").val();
-		})
+		$("#prompt-input").attr('style', "width: 97%;");
+		showDialog($stage.dialog.promptKKuTu);
 	}
 
 	function sendWhisper(a, b) {
@@ -3094,26 +3112,6 @@
 						}
 					}
 				})
-			}), $stage.dialog.promptKKuTuOK.on("click", function(b) {
-				var a = $("#prompt-input").val();
-				$stage.dialog.promptKKuTu.hide();
-				
-				if(a == null) return setNick();
-				if(a == undefined) return setNick();
-				if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), setNick();
-				if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-				if(a.length > 10) return alert("닉네임 길이 제한은 최대 10글자까지입니다."), setNick();
-				if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-				if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-				if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-				if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-				if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
-				if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
-				alert("닉네임 설정이 완료되었습니다. 새로고침 해주세요.");
-				// TODO: 좀 더 정교한 콜백.
-				$.post("/nickname", {
-					data: delBadWords(a)
-				}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
 			}), i = 0; i < 5; i++) $("#team-" + i).on("click", f),
 			$("#room-unknownword.game-option").click(() => $("#room-unknownword.game-option").is(':checked') ? $(".game-option").not("#room-unknownword.game-option").not("#room-mission.game-option").not("#room-abcmission.game-option").not("#room-moremission.game-option").not("#room-returns.game-option").not("#room-randomturn.game-option").not("#room-ignoreinitial.game-option").prop('checked', false).prop('disabled', true) : $(".game-option").prop('disabled', false));
 		$("#replay-file").on("change", function(a) {
