@@ -19,6 +19,7 @@
 var GUEST_PERMISSION;
 var Cluster = require("cluster");
 var Const = require('../const');
+var GLOBAL = require("../sub/global.json");
 var Lizard = require('../sub/lizard');
 var JLog = require('../sub/jjlog');
 var File = require('fs');
@@ -923,11 +924,10 @@ exports.Room = function(room, channel){
 		}
 		for(i in my.players){
 			if(o = DIC[my.players[i]]){
-				if(o.admin){
+				if(GLOBAL.ADMINS.indexOf(o.id) != -1){
 					my.adminRoom = true;
 					break;
-				}
-				else continue;
+				}else continue;
 			}
 		}
 		return {
@@ -1594,6 +1594,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.ogow) rw.score = rw.score * 1.2;
 	if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
 	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 선택 (한국어 끝말잇기)
+	if (opts.randomword) rw.score = rw.score * 0.5; // 랜덤 글자
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15

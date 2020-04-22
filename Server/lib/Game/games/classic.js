@@ -156,6 +156,8 @@ exports.roundReady = function(){
 			my.game.subChar = null;
 		}
 		
+		if(my.opts.randomword) my.game.char = Const.MISSION_ko_more[Math.floor(Math.random() * Const.MISSION_ko_more.length)];
+		
 		if(my.game.round === 1) my.game.chain = []; // First Round
 		
 		if(my.opts.ogow){
@@ -210,6 +212,8 @@ exports.turnStart = function(force){
 	my.game.turnTime = 15000 - 1400 * speed;
 	my.game.turnAt = (new Date()).getTime();
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
+	
+	if(my.opts.randomword) my.game.char = Const.MISSION_ko_more[Math.floor(Math.random() * Const.MISSION_ko_more.length)];
 	
 	if(my.opts.mission) {
 		/*if(!my.opts.abcmission){
