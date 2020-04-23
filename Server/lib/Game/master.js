@@ -40,7 +40,6 @@ var Server	 = Express();
 //볕뉘 수정 구문삭제 (28)
 var JLog	 = require("../sub/jjlog");
 var WebInit	 = require("../sub/webinit");
-var GLOBAL	 = require("../sub/global.json");
 var Secure = require('../sub/secure');
 //볕뉘 수정
 var passport = require('passport');
@@ -101,6 +100,12 @@ const logger = log4js.getLogger('System');
 File.watchFile("./lib/sub/global.json", () => {
 	GLOBAL = require("../sub/global.json");
 	JLog.info("global.json is Auto-Updated at {lib/Game/master.js}");
+})
+File.watchFile("./lib/Web/public/js/in_game_kkutu.min.js", () => {
+	var i;
+	for(var i in DIC){
+		DIC[i].send('updateSel', { filename: "in_game_kkutu.min.js" });
+	}
 })
 
 process.on('uncaughtException', function(err){

@@ -46,6 +46,11 @@ const { toHTML } = require('discord-markdown');
 const emoji = require('node-emoji');
 // Discord Markdown and Emojify
 
+File.watchFile("./lib/sub/global.json", () => {
+	GLOBAL = require("../sub/global.json");
+	JLog.info("global.json is Auto-Updated at {lib/Game/kkutu.js}");
+})
+
 exports.NIGHT = false;
 exports.init = function(_DB, _DIC, _ROOM, _GUEST_PERMISSION, _CHAN){
 	var i, k;
@@ -924,7 +929,7 @@ exports.Room = function(room, channel){
 		}
 		for(i in my.players){
 			if(o = DIC[my.players[i]]){
-				if(GLOBAL.ADMINS.indexOf(o.id) != -1){
+				if(JSON.stringify(GLOBAL.ADMINS).indexOf(o.id) != -1){
 					my.adminRoom = true;
 					break;
 				}else continue;

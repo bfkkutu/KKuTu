@@ -1,3 +1,6 @@
 ﻿<script>$.get("/corona", function(a) {
-			$("#coronainside").text(`[코로나 현황] 확진 ${a.cf}명 | 완치 ${a.cd}명 | 사망 ${a.dd}명`);
+			var replacedcf = a.cf.replace(/[,]/gi,""),
+				replacedcd = a.cd.replace(/[,]/gi,""),
+				pcd = Math.round((replacedcd / replacedcf) * 100);
+			$("#coronainside").text(`[코로나 현황] 확진 ${a.cf}명 | 완치 ${a.cd}명 | 완치율 ${pcd}% | 사망 ${a.dd}명`);
 		});</script><a id="coronainside"></a>

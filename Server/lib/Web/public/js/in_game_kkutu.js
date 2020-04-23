@@ -301,6 +301,16 @@
 				}
 				ws.close();
 				break;
+			case "updateSel":
+				var cf = confirm(`새 클라이언트가 발견되었습니다: ${a.filename}\n\n업데이트 하시겠습니까?\n\n※주의※ 게임 중일 경우 진행 중인 게임에서 나가게 됩니다.`);
+				if(cf){
+					ws.onclose = function(a) {
+						stopAllSounds();
+						updating(a.value);
+					}
+					ws.close();
+				}
+				break;
 			case "freeze":
 				$data._cF = true;
 				if(!$data._gaming){
