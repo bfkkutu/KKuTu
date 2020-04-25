@@ -25,6 +25,7 @@ var HTTPS_Server;
 var KKuTu = require('./kkutu');
 var GLOBAL = require("../sub/global.json");
 var Const = require("../const");
+var autoUpdate = require("../sub/autoUpdate.json");
 var JLog = require('../sub/jjlog');
 var Secure = require('../sub/secure');
 var Recaptcha = require('../sub/recaptcha');
@@ -103,8 +104,10 @@ File.watchFile("./lib/sub/global.json", () => {
 })
 File.watchFile("./lib/Web/public/js/in_game_kkutu.min.js", () => {
 	var i;
-	for(var i in DIC){
-		DIC[i].send('updateSel', { filename: "in_game_kkutu.min.js" });
+	if(autoUpdate.auto){ // 업데이트 권고 창을 띄울지 여부
+		for(var i in DIC){
+			DIC[i].send('updateSel', { filename: "in_game_kkutu.min.js", major: autoUpdate.major });
+		}
 	}
 })
 

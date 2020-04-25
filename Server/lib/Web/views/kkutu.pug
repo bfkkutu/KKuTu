@@ -96,10 +96,10 @@ block Middle
 		button#PracticeBtn.for-master.for-normal(style='display: none; background-color: #FCF5A9;')= L('practice')
 		button#ReadyBtn.for-normal(style='display: none; background-color: #FFC67F;')= L('ready')
 		button#StartBtn.for-master(style='display: none; background-color: #FFB576;')= L('start')
+		button#FindUserBtn.for-lobby.for-normal(style='display: none; background-color: #00d9ff;')= L('FindUser')
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;')= L('exit')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;')= L('replay')
 		button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('Clan')
-		button#FindUserBtn.for-lobby.for-normal(style='display: none; background-color: #00d9ff;')= L('FindUser')
 		button#ReloadRoom.tiny-menu.for-lobby(style='display: none; background-color: #7DB7FF;')!= L('reload')
 		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
 	+Dialog('SettingDiag', 320, 340, L('settingsText'))
@@ -226,6 +226,7 @@ block Middle
 					option(value=3)= L('modeKSH')
 					option(value=2)= L('modeKKT')
 					option(value=16)= L('modeKUT')
+					option(value=18)= L('modeKRH')
 					//-option(value=19)= L('modeADL')-//
 					option(value=17)= L('modeKLH')
 					option(value=8)= L('modeKAP')
@@ -239,13 +240,13 @@ block Middle
 				optgroup(label=L('mcEnglish'))
 					option(value=1)= L('modeESH')
 					option(value=0)= L('modeEKT')
+					option(value=19)= L('modeERH')
 					//-option(value=17)= L('modeEAP')-//
 					option(value=7)= L('modeETY')
 					option(value=11)= L('modeEDA')
 					option(value=13)= L('modeESS')
 					option(value=15)= L('modeEDG')
 				optgroup(label=L('mcTesting'))
-					
 					//-option(value=99)= L('modeETS')-//
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
 			h4

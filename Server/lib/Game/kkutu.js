@@ -1152,9 +1152,10 @@ exports.Room = function(room, channel){
 		}
 		// 인정픽 검사
 		if(!my.rule) return 400;
-		if(my.rule.opts.includes("ijp")){ // KSH는 injpick이 선택 항목임.
-			if(my.mode !== 3 && !my.opts.injpick) return 400;
-			if(my.mode !== 3 && !my.opts.injpick.length) return 413;
+		if(my.rule.opts.includes("ijp")){ // KSH / KKT는 injpick이 선택 항목임.
+			if(my.mode == 2 || my.mode == 3) return false;
+			if(!my.opts.injpick) return 400;
+			if(!my.opts.injpick.length) return 413;
 			if(!my.opts.injpick.every(function(item){
 				return !Const.IJP_EXCEPT.includes(item);
 			})) return 414;
@@ -1599,7 +1600,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.ogow) rw.score = rw.score * 1.2;
 	if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
 	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 선택 (한국어 끝말잇기)
-	if (opts.randomword) rw.score = rw.score * 0.5; // 랜덤 글자
+	if (opts.middletoss) rw.score = rw.score * 1.2; // 미들 토스
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15
@@ -1669,6 +1670,12 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 			break;
 		case 'KLH': //한국어 길이제한 끝말잇기
 			rw.score += score * 1.0;
+			break;
+		case 'KRH': //한국어 랜덤잇기
+			rw.score += score * 0.5;
+			break;
+		case 'ERH': //영어 랜덤잇기
+			rw.score += score * 0.5;
 			break;
 		default:
 			break;

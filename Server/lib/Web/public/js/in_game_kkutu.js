@@ -302,7 +302,8 @@
 				ws.close();
 				break;
 			case "updateSel":
-				var cf = confirm(`새 클라이언트가 발견되었습니다: ${a.filename}\n\n업데이트 하시겠습니까?\n\n※주의※ 게임 중일 경우 진행 중인 게임에서 나가게 됩니다.`);
+				var p = a.major ? "중요" : "중요하지 않음"
+					cf = confirm(`새 클라이언트가 발견되었습니다: ${a.filename}\n\n업데이트 하시겠습니까? (중요도: ${p})\n\n※주의※ 게임 중일 경우 진행 중인 게임에서 나가게 됩니다.`);
 				if(cf){
 					ws.onclose = function(a) {
 						stopAllSounds();
@@ -2586,15 +2587,24 @@
 			}), $stage.menu.newRoom.on("click", function(a) {
 				var b,
 					h = $("#room-selecttheme").is(":checked"),
-					j = $("#room-bantheme").is(":checked");
-				if(h || j){
+					j = $("#room-bantheme").is(":checked"),
+					k = $("#room-mode").val();
+				if((h || j) && (k == 2 || k == 3)){
 					$("#room-selecttheme-panel").hide();
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else{
+				}else if(k == 2 || k == 3){
 					$("#room-selecttheme-panel").show();
 					$("#room-bantheme-panel").show();
 					$("#room-injeong-pick").hide();
+				}else{
+					$("#room-selecttheme-panel").hide();
+					$("#room-bantheme-panel").hide();
+				}
+				if(k == 10 || k == 11){
+					$("#room-selecttheme-panel").hide();
+					$("#room-bantheme-panel").hide();
+					$("#room-injeong-pick").show();
 				}
 				$stage.dialog.quick.hide(), $data.typeRoom = "enter", showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.newRoom)
 			}), $stage.menu.setRoom.on("click", function(a) {
@@ -2605,14 +2615,17 @@
 				$data.typeRoom = "setRoom", $("#room-title").val($data.room.title), $("#room-limit").val($data.room.limit), $("#room-mode").val($data.room.mode).trigger("change"), $("#room-round").val($data.room.round), $("#room-wordLimit").val($data.room.wordLimit), $("#room-time").val($data.room.time / e.time);
 				for (c in OPTIONS) d = OPTIONS[c].name.toLowerCase(), $("#room-" + d).attr("checked", $data.room.opts[d]);
 				$data._injpick = $data.room.opts.injpick;
-				if(h || j){
+				if((h || j) && (k == 2 || k == 3)){
 					$("#room-selecttheme-panel").hide();
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else{
+				}else if(k == 2 || k == 3){
 					$("#room-selecttheme-panel").show();
 					$("#room-bantheme-panel").show();
 					$("#room-injeong-pick").hide();
+				}else{
+					$("#room-selecttheme-panel").hide();
+					$("#room-bantheme-panel").hide();
 				}
 				if(k == 10 || k == 11){
 					$("#room-selecttheme-panel").hide();

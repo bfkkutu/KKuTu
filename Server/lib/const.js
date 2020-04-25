@@ -57,7 +57,7 @@ exports.OPTIONS = {
 	'ogow': { name: "Ogow" },
 	'selth': { name: "SelectTheme" },
 	'btm': { name: "BanTheme" },
-	'rdw': { name: "RandomWord" }
+	'mdt': { name: "MiddleToss" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -116,8 +116,8 @@ exports.RULE = {
 	},*/
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
-		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"k32", "nrt", "rtu", "upl", "rank", "ogow", "selth", "btm", "rdw" ],
+		opts: [ "ijp", "man", "ext", "mis", "mdt", "rms", "loa", "str",
+		"k32", "nrt", "rtu", "upl", "rank", "ogow", "selth", "btm" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -126,7 +126,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm", "rdw" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -272,10 +272,26 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
-	},
+	}/*,
 	'ADL': { lang: "ko", // 한국어 노운워드
 		rule: "Daneo",
 		opts: [ "mis" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
+	}*/,
+	'KRH': { lang: "ko", // 한국어 랜덤잇기
+		rule: "Classic",
+		opts: [ "mis", "ext" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
+	},
+	'ERH': { lang: "en", // 영어 랜덤잇기
+		rule: "Classic",
+		opts: [ "mis", "ext" ],
 		time: 1,
 		ai: true,
 		big: false,

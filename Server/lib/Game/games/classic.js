@@ -56,6 +56,7 @@ exports.getTitle = function(){
 	
 	switch(gamemode){
 		case 'EKT':
+		case 'ERH':
 		case 'ESH':
 			eng = "^" + String.fromCharCode(97 + Math.floor(Math.random() * 26));
 			break;
@@ -70,6 +71,7 @@ exports.getTitle = function(){
 		case 'KKT':
 			my.game.wordLength = 3;
 		case 'KUT':
+		case 'KRH':
 		case 'KSH':
 			ja = 44032 + 588 * Math.floor(Math.random() * 18);
 			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
@@ -149,14 +151,13 @@ exports.roundReady = function(){
 			var ijl = my.opts.injpick.length;
 			my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
 		}else my.game.theme = false;
-		my.game.char = my.game.title[my.game.round - 1];
+		if(Const.GAME_TYPE[my.mode] === "KRH" || Const.GAME_TYPE[my.mode] === "ERH") my.game.char = my.game.title[Math.floor(Math.random() * my.round)];
+		else my.game.char = my.game.title[my.game.round - 1];
 	if(!my.opts.ignoreinitial){
 		my.game.subChar = getSubChar.call(my, my.game.char);
 	}else if(my.opts.ignoreinitial){
 			my.game.subChar = null;
 		}
-		
-		if(my.opts.randomword) my.game.char = Const.RANDOMWORD_ko[Math.floor(Math.random() * Const.RANDOMWORD_ko.length)];
 		
 		if(my.game.round === 1) my.game.chain = []; // First Round
 		
@@ -203,6 +204,7 @@ exports.turnStart = function(force){
 	var si;
 	
 	if(!my.game.chain) return;
+	
 	my.opts.randomMission = my.opts.abcmission;
 	my.game.roundTime = Math.min(my.game.roundTime, Math.max(10000, 600000 - my.game.chain.length * 1500));
 	speed = my.getTurnSpeed(my.game.roundTime);
@@ -213,7 +215,12 @@ exports.turnStart = function(force){
 	my.game.turnAt = (new Date()).getTime();
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
 	
-	if(my.opts.randomword) my.game.char = Const.RANDOMWORD_ko[Math.floor(Math.random() * Const.RANDOMWORD_ko.length)];
+	//if(my.game.chain.length && Const.GAME_TYPE[my.mode] === "KRH") my.game.char = my.game.chain[my.game.chain.length - 1][(Math.floor(Math.random() * my.game.chain[my.game.chain.length - 1].length))];
+	if(my.game.chain.length && (Const.GAME_TYPE[my.mode] === "KRH" || Const.GAME_TYPE[my.mode] === "ERH")) my.game.char = my.game.chain[my.game.chain.length - 1][my.game.randomChar];
+	
+	if(my.game.chain.length && my.opts.middletoss){
+		if(my.game.mtp) my.game.char = my.game.chain[my.game.chain.length - 1][1];
+	}
 	
 	if(my.opts.mission) {
 		/*if(!my.opts.abcmission){
@@ -737,10 +744,16 @@ function getChar(text, lim){
 		case 'ESH':
 		case 'KLH':
 		case 'KKT':
+			my.game.mtp = Math.random()<0.25;
+			if(my.game.mtp) return text.charAt(1)
 		case 'KSH': return text.slice(-1);
 		case 'EAP':
 		case 'JAP':
 		case 'KAP': return text.charAt(0);
+		case 'KRH':
+		case 'ERH':
+			my.game.randomChar = Math.floor(Math.random() * text.length)
+			return text.charAt(my.game.randomChar)
 	}
 };
 function getSubChar(char){
@@ -754,7 +767,7 @@ function getSubChar(char){
 		case "EKT": case "KUT":
 			if(char.length > 2) r = char.slice(1);
 			break;
-		case "KKT": case "KSH": case "KAP": case "KLH":
+		case "KKT": case "KSH": case "KAP": case "KLH": case "KRH":
 			k = c - 0xAC00;
 			if(k < 0 || k > 11171) break;
 			ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];
@@ -776,7 +789,7 @@ function getSubChar(char){
 				r = String.fromCharCode(((cb[0] * 21) + cb[1]) * 28 + cb[2] + 0xAC00);
 			}
 			break;
-		case "ESH": case "EAP": default:
+		case "ESH": case "EAP": case "ERH": default:
 			break;
 	}
 	return r;
