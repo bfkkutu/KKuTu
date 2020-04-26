@@ -265,6 +265,9 @@
 			case "alert":
 				if($data.id == a.id) alert(a.value);
 				break;
+			case "sweetalert":
+				if($data.id == a.id) Swal.fire('BF끄투', a.value, 'success')
+				break;
 			case "yellto":
 				if($data.id == a.id) yell(a.value), notice(a.value, L.yell);
 				break;
@@ -589,6 +592,7 @@
 		}
 		if ($data.honor) console.log("1ST Gen"), alertKKuTu("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
 		else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.");
+		//else Swal.fire("안내","BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.","info");
 		
 		if (jQuery.browser.name == "msedge"){
 			$("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
@@ -623,6 +627,23 @@
 		})
 		
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
+		
+		const Toast = Swal.mixin({
+			toast: true,
+			position: 'top-end',
+			showConfirmButton: false,
+			timer: 3000,
+			timerProgressBar: true,
+			onOpen: (toast) => {
+				toast.addEventListener('mouseenter', Swal.stopTimer)
+				toast.addEventListener('mouseleave', Swal.resumeTimer)
+			}
+		})
+
+		/*Toast.fire({
+			icon: 'success',
+			title: '서버에 연결되었습니다.'
+		})*/
 		
 		/*$("#chatinput").on("propertychange change keyup paste input", function() {
 			//$("#Chatting").show();
@@ -1263,6 +1284,16 @@
 			}*/
 		}
 		
+		$stage.dialog.profileCopyID.on("click", function(a) {
+			var tempElem = document.createElement('textarea');
+			tempElem.value = e.id;
+			document.body.appendChild(tempElem);
+			tempElem.select();
+			document.execCommand("copy");
+			document.body.removeChild(tempElem);
+			Swal.fire('BF끄투', "이 유저의 식별번호 "+tempElem.value+"가 복사되었습니다.<br>(일부 브라우저의 경우 수동으로 복사해야 할 수 있습니다)", 'success')
+		})
+		
 		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
 				width: 300,
@@ -1852,11 +1883,24 @@
 		for (a in $_sound) $_sound[a].stop()
 	}
 
-	function tryJoin(a) {
+	async function tryJoin(a) {
 		var b;
-		$data.rooms[a] && ($data.rooms[a].password && !(b = prompt(L.putPassword)) || ($data._pw = b, send("enter", {
+		function pwCheck(){
+			return new Promise(resolve => {
+				resolve(Swal.fire({
+					title: L.putPassword,
+					input: 'password',
+					inputPlaceholder: L.putPassword,
+					inputAttributes: {
+						autocapitalize: 'off',
+						autocorrect: 'off'
+					}
+				}))
+			});
+		}
+		$data.rooms[a] && ($data.rooms[a].password && !(b = await pwCheck()/*prompt(L.putPassword)*/) || ($data._pw = $data.rooms[a].password ? b.value : b, send("enter", {
 			id: a,
-			password: b
+			password: $data.rooms[a].password ? b.value : b
 		})))
 	}
 
@@ -2368,6 +2412,7 @@
 					profileWhisper: $("#profile-whisper"),
 					profileReport: $("#profile-report"),
 					profileFriendAdd: $("#profile-friendadd"),
+					profileCopyID: $("#profile-copyid"),
 					findIDOK: $("#find-id-ok"),
 					findNickOK: $("#find-nick-ok"),
 					reportDiag: $("#ReportDiag"),

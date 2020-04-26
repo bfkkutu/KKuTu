@@ -202,6 +202,11 @@ function processAdmin(id, value, requestId){
 			value = value.split(",")[1];
 			DIC[target].send('alert', { id : target, value: value });
 			return null;
+		case "sweetalert":
+			var target = value.split(",")[0];
+			value = value.split(",")[1];
+			DIC[target].send('sweetalert', { id : target, value: value });
+			return null;
 		case "yellto":
 			var target = value.split(",")[0];
 			value = value.split(",")[1];

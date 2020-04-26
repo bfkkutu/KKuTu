@@ -283,7 +283,7 @@ exports.RULE = {
 	}*/,
 	'KRH': { lang: "ko", // 한국어 랜덤잇기
 		rule: "Classic",
-		opts: [ "mis", "ext" ],
+		opts: [ "mis", "ext", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -291,7 +291,7 @@ exports.RULE = {
 	},
 	'ERH': { lang: "en", // 영어 랜덤잇기
 		rule: "Classic",
-		opts: [ "mis", "ext" ],
+		opts: [ "mis", "ext", "rank" ],
 		time: 1,
 		ai: true,
 		big: false,

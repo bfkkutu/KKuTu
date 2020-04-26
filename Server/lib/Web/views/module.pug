@@ -33,7 +33,6 @@
 		]},
 		{ key: 'FEAT', sub: [
 			{ key: 'PLAYTS', href: "https://opg.kr/" },
-			{ key: 'OURKKT', href: "https://ourkkutu.net/" },
 			{ key: 'APKKT', href: "https://kkutu.xyz/" },
 			{ key: 'IWANT', href: "/alliance.html" },
 		]},
@@ -113,6 +112,8 @@ mixin PageHead(min)
 	script(type='text/javascript', src='/js/jquery.js')
 	script(type='text/javascript', src='/js/jquery.browser.min.js')
 	script(type='text/javascript', src='/language/'+locals.page.replace("/", "_")+'/'+locals.lang)
+	script(type='text/javascript', src='/js/swal.js')
+	link(rel='stylesheet', href='/css/swal.css')
 	
 	if PUBLIC && !SESSION.admin
 		//script(type='text/javascript', src='/js/google.js')

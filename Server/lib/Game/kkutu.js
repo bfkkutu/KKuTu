@@ -1595,7 +1595,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
 	if (opts.randomturn) rw.score = rw.score * 1.8; // 랜덤 턴
 	if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
-	if (opts.ignoreinitial) rw.score = rw.score * 2.5; // 두음 법칙 파괴
+	if (opts.ignoreinitial) rw.score = rw.score * 2.2; // 두음 법칙 파괴
 	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
 	if (opts.ogow) rw.score = rw.score * 1.2;
 	if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
@@ -1615,7 +1615,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 			rw.score += score * 1.25;
 			break;
 		case "KSH":
-			rw.score += score * 0.55;
+			rw.score += score * 0.57;
 			break;
 		case "CSQ": // 한국어 자음퀴즈
 			rw.score += score * 0.4;
@@ -1672,10 +1672,10 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 			rw.score += score * 1.0;
 			break;
 		case 'KRH': //한국어 랜덤잇기
-			rw.score += score * 0.5;
+			rw.score += score * 0.6;
 			break;
 		case 'ERH': //영어 랜덤잇기
-			rw.score += score * 0.5;
+			rw.score += score * 0.6;
 			break;
 		default:
 			break;
@@ -1756,35 +1756,35 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	
 	if(rankPoint >= 5000){ // 마스터 이상 구간에서 하위 티어가 상위 티어를 따라잡기 더 쉽게 하기 위함.
 		if(rankPoint <= 5999){
-			rw.rankPoint = rw.rankPoint * 0.975;
+			rw.rankPoint = rw.rankPoint * 0.99;
 		}else if(rankPoint >= 6000 && rankPoint <= 6999){
-			rw.rankPoint = rw.rankPoint * 0.95;
+			rw.rankPoint = rw.rankPoint * 0.98;
 		}else if(rankPoint >= 7000 && rankPoint <= 7999){
-			rw.rankPoint = rw.rankPoint * 0.925;
+			rw.rankPoint = rw.rankPoint * 0.97;
 		}else if(rankPoint >= 8000 && rankPoint <= 8999){
-			rw.rankPoint = rw.rankPoint * 0.9;
+			rw.rankPoint = rw.rankPoint * 0.96;
 		}else if(rankPoint >= 9000 && rankPoint <= 9999){
-			rw.rankPoint = rw.rankPoint * 0.875;
+			rw.rankPoint = rw.rankPoint * 0.95;
 		}else if(rankPoint >= 10000 && rankPoint <= 10999){
-			rw.rankPoint = rw.rankPoint * 0.85;
+			rw.rankPoint = rw.rankPoint * 0.94;
 		}else if(rankPoint >= 11000 && rankPoint <= 11999){
-			rw.rankPoint = rw.rankPoint * 0.825;
+			rw.rankPoint = rw.rankPoint * 0.93;
 		}else if(rankPoint >= 12000 && rankPoint <= 12999){
-			rw.rankPoint = rw.rankPoint * 0.8;
+			rw.rankPoint = rw.rankPoint * 0.92;
 		}else if(rankPoint >= 13000 && rankPoint <= 13999){
-			rw.rankPoint = rw.rankPoint * 0.775;
+			rw.rankPoint = rw.rankPoint * 0.91;
 		}else if(rankPoint >= 14000 && rankPoint <= 14999){
-			rw.rankPoint = rw.rankPoint * 0.75;
+			rw.rankPoint = rw.rankPoint * 0.9;
 		}else if(rankPoint >= 15000 && rankPoint <= 15999){
-			rw.rankPoint = rw.rankPoint * 0.725;
+			rw.rankPoint = rw.rankPoint * 0.89;
 		}else if(rankPoint >= 16000 && rankPoint <= 16999){
-			rw.rankPoint = rw.rankPoint * 0.7;
+			rw.rankPoint = rw.rankPoint * 0.88;
 		}else if(rankPoint >= 17000 && rankPoint <= 17999){
-			rw.rankPoint = rw.rankPoint * 0.675;
+			rw.rankPoint = rw.rankPoint * 0.87;
 		}else if(rankPoint >= 18000 && rankPoint <= 18999){
-			rw.rankPoint = rw.rankPoint * 0.65;
+			rw.rankPoint = rw.rankPoint * 0.86;
 		}else if(rankPoint >= 19000 && rankPoint <= 19999){
-			rw.rankPoint = rw.rankPoint * 0.625;
+			rw.rankPoint = rw.rankPoint * 0.85;
 		}
 	}
 	

@@ -157,8 +157,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.6.3 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.3 User</a>",
+    "version": "4.6.4 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.4 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -797,6 +797,7 @@
     "friendAdd": "친구 추가",
     "friendSureRemove": "이 친구를 정말 삭제합니까? 삭제하는 경우 상대방의 친구 목록에서도 회원님이 빠지게 됩니다.",
     "reload": "↻",
+	"copyID": "식별번호 복사",
 	"darkTheme": "다크 테마",
 	"FindUser": "유저 찾기",
 	"newRoom": "방 만들기",

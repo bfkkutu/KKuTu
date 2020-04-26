@@ -216,7 +216,7 @@ exports.turnStart = function(force){
 	if(my.opts.sami) my.game.wordLength = (my.game.wordLength == 3) ? 2 : 3;
 	
 	//if(my.game.chain.length && Const.GAME_TYPE[my.mode] === "KRH") my.game.char = my.game.chain[my.game.chain.length - 1][(Math.floor(Math.random() * my.game.chain[my.game.chain.length - 1].length))];
-	if(my.game.chain.length && (Const.GAME_TYPE[my.mode] === "KRH" || Const.GAME_TYPE[my.mode] === "ERH")) my.game.char = my.game.chain[my.game.chain.length - 1][my.game.randomChar];
+	if(my.game.chain.length && my.game.chain[my.game.chain.length - 1].length > 2 && (Const.GAME_TYPE[my.mode] === "KRH" || Const.GAME_TYPE[my.mode] === "ERH")) my.game.char = my.game.chain[my.game.chain.length - 1][my.game.randomChar];
 	
 	if(my.game.chain.length && my.opts.middletoss){
 		if(my.game.mtp) my.game.char = my.game.chain[my.game.chain.length - 1][1];
@@ -752,8 +752,12 @@ function getChar(text, lim){
 		case 'KAP': return text.charAt(0);
 		case 'KRH':
 		case 'ERH':
-			my.game.randomChar = Math.floor(Math.random() * text.length)
-			return text.charAt(my.game.randomChar)
+			if(text.length > 2){
+				my.game.randomChar = Math.floor(Math.random() * text.length)
+				return text.charAt(my.game.randomChar)
+			}else{
+				return text.charAt(1)
+			}
 	}
 };
 function getSubChar(char){
