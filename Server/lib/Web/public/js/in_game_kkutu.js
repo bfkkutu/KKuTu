@@ -681,6 +681,8 @@
 			
 		$.post("/nickname", {
 			data: delBadWords(a)
+		}, function(e){
+			if(e.error) return fail(e.error);
 		})
 		return alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요.");
 	}
@@ -703,6 +705,8 @@
 			// TODO: 좀 더 정교한 콜백.
 			$.post("/nickname", {
 				data: delBadWords(a)
+			}, function(e){
+				if(e.error) return fail(e.error);
 			}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
 		}
 		$stage.dialog.promptKKuTuOK.on("click", function(c) {
@@ -884,7 +888,7 @@
 		var a, b = $data.users[$data.id],
 			c = 0,
 			d = getLevel(b.data.score),
-			e = EXP[d - 2] || 0,
+			e = EXP[d - 2] || 0, 
 			f = EXP[d - 1],
 			g = getRank(b);
 		for (a in b.data.record) c += b.data.record[a][1];
@@ -1233,12 +1237,17 @@
 	function requestProfile(a) {
 		var b, c, d, e = $data.users[a] || $data.robots[a],
 			f = $("#profile-record").empty(),
-			z = $data.users[a];
+			z = $data.users[a],
+			adminLv = e.data.score <= -1;
 		if (!e) return void notice(L.error_405);
 		if(!e.robot){
 			var x = getRank(z);
 			
 			$("#rankicon").attr("src", "/img/kkutu/rankicon/" + x + ".png");
+			
+			$("#ProfileDiag").css("height","495px"); // default size
+			$(".profile-level-progress").show();
+			$(".profile-score-text").show();
 			
 			/*if(x == "BRONZE"){
 				//$(".profile-head").bgColor("#CD7F32");
@@ -1293,8 +1302,7 @@
 			document.body.removeChild(tempElem);
 			Swal.fire('BF끄투', "이 유저의 식별번호 "+tempElem.value+"가 복사되었습니다.<br>(일부 브라우저의 경우 수동으로 복사해야 할 수 있습니다)", 'success')
 		})
-		
-		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
+		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append($("<div>").append($("<progress>").addClass("profile-level-progress").attr("max",100).attr("value",Math.floor((e.data.score - (EXP[d - 2] || 0)) / ((EXP[d - 1]) - (EXP[d - 2] || 0)) * 100)))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
 				width: 300,
 				"font-size": "11px"
@@ -1311,7 +1319,15 @@
 				f.append($("<div>").addClass("profile-record-field").append($("<div>").addClass("profile-field-name").html(L["mode" + d])).append($("<div>").addClass("profile-field-record").html(g[0] + L.P + " " + g[1] + L.W)).append($("<div>").addClass("profile-field-score").html(commify(g[2]) + L.PTS)))
 			}
 			renderMoremi(b, e.equip, e.id)
+			if(e.equip.NTG) $(".profile-title").css("background-image", "url("+iNTGImage(e.equip.NTG)+")")
 		}
+		if(adminLv){
+			$(".profile-level-progress").hide();
+			$(".profile-level-text").text("운영자");
+			$(".profile-score-text").hide();
+		}
+		if($data.id == e.id) $("#ProfileDiag").css("height","465px");
+		else if(e.exordial) $("#ProfileDiag").css("height","510px");
 		$("#profile-friendadd").hide(),
 		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), e.robot ? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
@@ -2145,6 +2161,11 @@
 				c = ["WPC", "WPB", "WPA"].indexOf(a), e.beginPath(), e.arc(25, 25, 25, 0, 2 * Math.PI), e.fillStyle = ["#DDDDDD", "#A6C5FF", "#FFEF31"][c], e.fill(), e.fillStyle = ["#000000", "#4465C3", "#E69D12"][c], e.fillText(b, 25, 25)
 		}
 		return d.toDataURL()
+	}
+	
+	function iNTGImage(a){
+		var b, c;
+		return c = $data.shop[a], b = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "/img/kkutu/moremi/nametag/" + c._id + b
 	}
 
 	function queueObtain(a) {
@@ -2988,10 +3009,13 @@
 				if($("#dress-nickname").val().match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 				if($("#dress-nickname").val().match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 				
-				$(a.currentTarget).attr("disabled", !0), alert(`닉네임이 ${delBadWords($("#dress-nickname").val())}(으)로 변경되었습니다.`), $.post("/nickname", {
+				$(a.currentTarget).attr("disabled", !0), $.post("/nickname", {
 					data: delBadWords($("#dress-nickname").val())
-				}, function(a) {
-					if ($stage.dialog.dressOK.attr("disabled", !1), a.error) return fail(a.error);
+				}, function(e) {
+					if(e.error) return fail(e.error);
+					else{
+						alert(`닉네임이 ${e.text}(으)로 변경되었습니다.`)
+					}
 					$stage.dialog.dress.hide()
 				})
 			}), $("#DressDiag .dress-type").on("click", function(a) {

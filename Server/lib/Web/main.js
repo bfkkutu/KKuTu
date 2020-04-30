@@ -57,51 +57,23 @@ var gameServers = [];
 let moment = require('moment'); //moment.js를 사용 (DDDoS 기록)
 const alert = require("alert-node"); //alert-node를 사용 (DDDoS alert)
 
-//XSS Filter
-const xssFilter = require('x-xss-protection');
-const xFrameOptions = require('x-frame-options');
-const nosniff = require('dont-sniff-mimetype');
-
-//HSTS
-const hsts = require('hsts');
-
 //HPKP
 const hpkp = require('hpkp');
-const hpkp_DIS = 7776000;
+const hpkp_DIS = 15768000;
 
 //Referrer Policy
 const referrerPolicy = require('referrer-policy');
 
-//CSP
+//helmet
+const helmet = require('helmet');
 const csp = require('helmet-csp');
 
 // CORONA MAP
 const request = require('request'),
-	cheerio = require('cheerio');
+	  cheerio = require('cheerio');
 	
 var maintenance; // boolean
 
-/*const ssri = require('ssri')
-const sri = require('sri');
- 
-const integrity = sri.getSRIString('./lib/Web/public/js/in_portal.min.js'); // sha384-J5Dqvq3...
-
-// Parsing and serializing
-const parsed = ssri.parse(integrity)
-ssri.stringify(parsed) // === integrity (works on non-Integrity objects)
-parsed.toString() // === integrity
- 
-// Async stream functions
-ssri.checkStream(fs.createReadStream('./lib/Web/public/js/in_portal.min.js'), integrity)
-ssri.fromStream(fs.createReadStream('./lib/Web/public/js/in_portal.min.js')).then(sri => {
-	sri.toString() === integrity
-})
-//fs.createReadStream('./lib/Web/public/js/in_portal.min.js').pipe(ssri.createCheckerStream(sri))
-
-// Sync data functions
-ssri.fromData(fs.readFileSync('./lib/Web/public/js/in_portal.min.js')) // === parsed
-ssri.checkData(fs.readFileSync('./lib/Web/public/js/in_portal.min.js'), integrity) // => 'sha512'
-*/
 WebInit.MOBILE_AVAILABLE = [
 	"portal", "main", "kkutu"
 ];
@@ -199,7 +171,7 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	})
 	//process.exit(1); //웹 서버를 조진다
 	if(!maintenance) maintenance = true; // 첫번째 작동
-	else process.exit(1); // 두번째 작동
+	//else process.exit(1); // 두번째 작동
 };
 Server.use(DDDoS.express());
 //디도스 감지 및 차단
@@ -297,19 +269,21 @@ ROUTES.forEach(function(v){
 
 Server.listen(3000); //For XSS
 
-Server.use(xssFilter());
+/*Server.use(xssFilter());
 Server.use(xFrameOptions());
-Server.use(nosniff());
+Server.use(nosniff());*/
+Server.use(helmet());
+Server.use(helmet.xssFilter());
 
-Server.use(hsts({
+/*Server.use(hsts({
   maxAge: 31536000,        // Must be at least 1 year to be approved
   includeSubDomains: true, // Must be enabled to be approved
   preload: true
-}));
+}));*/
 
 Server.use(hpkp({
 	maxAge: hpkp_DIS,
-	sha256s: ['AbCdEf123=', 'ZyXwVu456='],
+	sha256s: ['',''],
 	
 	// Set the header based on a condition.
 	// This is optional.
@@ -330,13 +304,13 @@ Server.use(referrerPolicy());
 /*Server.use(csp({
 	// Specify directives as normal.
 	directives: {
-		defaultSrc: ["'self'", 'https://bfk.playts.net/'],
-		scriptSrc: ["'self'", 'https://bfk.playts.net/js/', "'unsafe-inline'"],
-		styleSrc: ["'self'", 'https://bfk.playts.net/css/'],
-		fontSrc: ['https://bfk.playts.net/media/'],
-		mediaSrc: ['https://bfk.playts.net/media/'],
-		imgSrc: ["'self'", 'https://bfk.playts.net/img/', 'data:'],
+		defaultSrc: ["'self'", 'https://bfk.opg.kr'],
+		scriptSrc: ["'self'", "https://bfk.opg.kr/js", "'unsafe-inline'"],
+		styleSrc: ["'self'", 'https://bfk.opg.kr/css', "'unsafe-inline'"],
+		fontSrc: ["'self'", 'https://bfk.opg.kr/media'],
+		imgSrc: ["'self'", 'https://bfk.opg.kr/img', 'data:'],
 		sandbox: ['allow-forms', 'allow-scripts'],
+		reportUri: '/report-violation',
 		objectSrc: ["'none'"],
 		upgradeInsecureRequests: true,
 		workerSrc: false  // This is not set.

@@ -437,11 +437,13 @@ Server.post("/nickname", function (req, res) {
 		text = text.slice(0, 10);
 		MainDB.users.findOne([ 'nickname', text ]).on(function($user){
 			if($user) return res.send({ error: 600 });
-			MainDB.users.update(['_id', req.session.profile.id]).set(['nickname', text]).on(function ($res) {
-				res.send({ text: text });
-			});
+			else{ 
+				MainDB.users.update(['_id', req.session.profile.id]).set(['nickname', text]).on(function ($res) {
+					return res.send({ text: text });
+				});
+			}
 		});
-    } else res.send({ error: 400 });
+    } else return res.send({ error: 400 });
 });
 Server.post("/buy/:id", function(req, res){
 	if(req.session.profile){

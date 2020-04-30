@@ -63,7 +63,7 @@ exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lha
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
 exports.AVAIL_EQUIP = [
 	"NIK", "BDG1", "BDG2", "BDG3", "BDG4",
-	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "MSKIN"
+	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "MSKIN", "NTG"
 ];
 exports.GROUPS = {
 	'spec': [ "PIX", "PIY", "PIZ", "CNS" ],
@@ -75,7 +75,8 @@ exports.GROUPS = {
 	'clothes': [ "Mclothes" ],
 	'hs': [ "Mhand", "Mshoes" ],
 	'back': [ "Mback", "Mfront" ],
-	'MSKIN': [ "MSKIN" ]
+	'MSKIN': [ "MSKIN" ],
+	'nametag': [ "NTG" ]
 };
 exports.RULE = {
 /*

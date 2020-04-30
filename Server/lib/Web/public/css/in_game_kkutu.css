@@ -210,7 +210,7 @@ iframe{
 	.profile-head-item{ margin: 3px 2px; width: 213px; }
 		.profile-image{ margin-right: 3px; width: 20px; height: 20px; }
 		.profile-level{ margin-right: 3px; width: 20px; height: 20px; }
-		.profile-title{ padding-top: 1px; font-size: 15px; font-weight: bold; width: 190px; }
+		.profile-title{ padding-top: 1px; font-size: 15px; font-weight: bold; width: 190px; height: 25px; text-align: center; }
 		.profile-tag{ font-size: 11px; color: #777; }
 		.profile-level-text{ padding-top: 2px; font-size: 13px; }
 		.profile-score-text{ float: right !important; padding-top: 3px; font-size: 11px; color: #444444; }
