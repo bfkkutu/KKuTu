@@ -547,6 +547,11 @@ block Middle
 			input#prompt-input
 		div.dialog-bar.tail-button#promptbtn
 			button#prompt-ok= L('OK')
+	+Dialog('PopupDiag', 205, 370, L('Popup'))
+		div#popup
+			img#popup-img
+		div.dialog-bar.tail-button#confirmbtn
+			button#popup-ok= L('OK')
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar
 			h4(style='width: 100%;')= L('obtained') + '!'

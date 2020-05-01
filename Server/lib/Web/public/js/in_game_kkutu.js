@@ -597,6 +597,9 @@
 		if (jQuery.browser.name == "msedge"){
 			$("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
 		}
+		
+		popupKKuTu("/img/popup.png");
+		
 		playBGM("lobby"), $("#Intro").animate({
 			opacity: 1
 		}, 1e3).animate({
@@ -789,6 +792,12 @@
 		$("#promptText").html(a);
 		$("#prompt-input").attr('style', "width: 97%;");
 		showDialog($stage.dialog.promptKKuTu);
+	}
+	
+	function popupKKuTu(a){
+		$("#PopupDiag").hide();
+		showDialog($("#PopupDiag"));
+		$("#popup-img").attr("src", a)
 	}
 
 	function sendWhisper(a, b) {
@@ -3079,6 +3088,8 @@
 				b ? drawObtain(b) : $stage.dialog.obtain.hide()
 			}), $stage.dialog.alertKKuTuOK.on("click", function(a) {
 				$stage.dialog.alertKKuTu.hide()
+			}), $("#popup-ok").on("click", function(a) {
+				$("#PopupDiag").hide();
 			}), $stage.dialog.newClan.on("click", function(a) {
 				showDialog($stage.dialog.newClanDiag)
 			}), $stage.dialog.viewClan.on("click", function(a) {

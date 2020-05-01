@@ -90,6 +90,7 @@
     "NO": "취소",
 	"Alert": "BF끄투 알림",
 	"Prompt": "BF끄투",
+	"Popup": "BF끄투 팝업",
     "ITEM_FROM": "재료 아이템",
     "PRE_SEASON": "전 시즌",
 
@@ -157,8 +158,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.6.5 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.5 User</a>",
+    "version": "4.6.6 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.6 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
