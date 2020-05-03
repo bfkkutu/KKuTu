@@ -158,8 +158,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.6.6 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.6 User</a>",
+    "version": "4.6.7 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.7 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -544,6 +544,7 @@
 	"theme_HKI": "붕괴3rd",
 	"theme_BAN": "뱅드림! 걸즈 밴드 파티!",
 	"theme_KWW": "노운워드",
+	"theme_PCN": "프린세스 커넥트! Re:Dive",
 
     "class_1": "명",
     "class_2": "대명",

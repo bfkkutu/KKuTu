@@ -509,6 +509,35 @@ function onDShop(req, res){
 	res.send({ _id: resItem._id });
 }
 
+Server.post("/gwalli/shopGIIL", function(req, res){ // shop give item id list
+	if(!checkAdmin(req, res, 'DESIGNER')) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	
+	var list = req.body.list;
+	var item = req.body.item;
+	var TABLE = MainDB.users;
+	var parsedBox;
+	
+	if(list) list = list.split(/[,\r\n]+/);
+	else return res.sendStatus(400);
+	if(!TABLE) res.sendStatus(400);
+	
+	list.forEach(function(l){
+		if(!l) return;
+		l = l.trim();
+		if(!l.length) return;
+		TABLE.findOne([ '_id', l ]).on(function($u){
+			if(!$u) return res.send({ result: "fail" });
+			else{
+				$u.box[item] = 1;
+				TABLE.update([ '_id', l ]).set([ 'box', $u.box ]).on();
+			}
+		})
+	});
+	noticeAdmin(req, item);
+	res.send({ result: "success" });
+});
+
 };
 
 function noticeAdmin(req, ...args){

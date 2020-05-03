@@ -89,3 +89,10 @@ block Middle
 						td 설명(한국어)
 					tbody#shop-data-remove
 		button#shop-remove 삭제
+	fieldset
+		legend 대규모 아이템 지급
+		div [사용 방법] 빈칸에 지급할 아이템 ID를 (1개만), 리스트에 유저 ID를 모두 적고 (엔터로 구분) 지급 버튼을 누릅니다.
+		div
+			input#shop-item-give(placeholder='지급할 아이템 ID')
+			textarea#shop-users(rows=40, cols=70)
+		button#shop-give 지급
