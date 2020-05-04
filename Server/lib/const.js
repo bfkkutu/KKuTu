@@ -329,7 +329,7 @@ exports.KO_INJEONG = [
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "BUS",
 	"DONG", "MFA", "ZHS", "KTR", "BBF", "ILN", "TRR",
 	"THP", "UND", "TLR", "HKI", "MINBE", "BST", "BAN",
-	"PCN"
+	"PCN", "FGO"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"
