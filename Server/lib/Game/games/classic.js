@@ -744,16 +744,19 @@ function getChar(text, lim){
 		case 'ESH':
 		case 'KLH':
 		case 'KKT':
-			my.game.mtp = Math.random()<0.25;
-			if(my.game.mtp) return text.charAt(1)
+			if(my.opts.middletoss){
+				my.game.mtp = Math.random()<0.25;
+				if(my.game.mtp) return text.charAt(1)
+			}
 		case 'KSH': return text.slice(-1);
 		case 'EAP':
 		case 'JAP':
 		case 'KAP': return text.charAt(0);
 		case 'KRH':
 		case 'ERH':
-			if(text.length > 2){
-				my.game.randomChar = Math.floor(Math.random() * text.length)
+			if(Const.GAME_TYPE[my.mode] == "KRH" || Const.GAME_TYPE[my.mode] == "ERH"){
+				if(text.length > 2) my.game.randomChar = Math.floor(Math.random() * text.length)
+				else my.game.randomChar = 1;
 				return text.charAt(my.game.randomChar)
 			}else{
 				return text.charAt(1)

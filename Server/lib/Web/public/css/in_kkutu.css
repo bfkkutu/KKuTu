@@ -565,7 +565,8 @@ iframe{
 				font-size: 20px;
 				text-align: center;
 				color: #EEEEEE;
-				background-color: rgba(0, 0, 0, 0.7);
+				background-image: url('/img/kkutu/gamestart.png');
+				/*background-color: rgba(0, 0, 0, 0.7);*/
 			}
 			.jjo-display-word-length{ color: orange; font-size: 14px; }
 			.cw .jjo-display{ position: relative; padding: 5px; width: 298px; height: 298px; }

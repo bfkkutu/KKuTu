@@ -106,6 +106,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
 			$("#Bottom").remove();
 		})
+		if(!location.href.includes("bfkkutu.kr") && !location.href.includes("localhost")){
+			$("#Bottom").empty();
+			$("#Middle").empty();
+			alert("BF끄투의 도메인이 bfkkutu.kr로 변경되었습니다.")
+			location.href = "https://bfkkutu.kr"
+		}
 		getCorona();
 	})
 })();

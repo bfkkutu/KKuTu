@@ -1601,6 +1601,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
 	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 선택 (한국어 끝말잇기)
 	if (opts.middletoss) rw.score = rw.score * 1.2; // 미들 토스
+	if (opts.tournament) rw.score = rw.score * 3.0; // 토너먼트
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15

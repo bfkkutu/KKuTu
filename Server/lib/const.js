@@ -57,7 +57,8 @@ exports.OPTIONS = {
 	'ogow': { name: "Ogow" },
 	'selth': { name: "SelectTheme" },
 	'btm': { name: "BanTheme" },
-	'mdt': { name: "MiddleToss" }
+	'mdt': { name: "MiddleToss" },
+	'tmnt': { name: "Tournament" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -127,7 +128,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm" ],
+		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm", "tmnt" ],
 		time: 1,
 		ai: true,
 		big: false,

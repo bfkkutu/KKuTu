@@ -50,24 +50,24 @@
 	}
 	
 	function updating(a) {
-		if(!a && !$data._gaming){
-			$stage.loading.show().html("새 클라이언트로 업데이트 중입니다...0%")
+		if(a && !$data._gaming){
+			$stage.loading.show().html("새 클라이언트로 업데이트 중입니다...0%<p><p>패치 내용은 다음과 같습니다: "+a)
 			setTimeout(function(){
-				$stage.loading.html("새 클라이언트로 업데이트 중입니다...50%")
+				$stage.loading.html("새 클라이언트로 업데이트 중입니다...50%<p><p>패치 내용은 다음과 같습니다: "+a)
 				setTimeout(function(){
-					$stage.loading.html("새 클라이언트로 업데이트 중입니다...100%")
+					$stage.loading.html("새 클라이언트로 업데이트 중입니다...100%<p><p>패치 내용은 다음과 같습니다: "+a)
 					setTimeout(function(){
 						$stage.loading.html("적용을 위해 새로고침합니다...")
 						location.reload();
 					}, 1000);
 				}, 1000);
 			}, 1000);
-		}else if(!$data._gaming){
-			$stage.loading.show().html("새 클라이언트로 업데이트 중입니다...0%<p><p>패치 내용은 다음과 같습니다: "+a)
+		}else if(!a && !$data._gaming){
+			$stage.loading.show().html("새 클라이언트로 업데이트 중입니다...0%")
 			setTimeout(function(){
-				$stage.loading.html("새 클라이언트로 업데이트 중입니다...50%<p><p>패치 내용은 다음과 같습니다: "+a)
+				$stage.loading.html("새 클라이언트로 업데이트 중입니다...50%")
 				setTimeout(function(){
-					$stage.loading.html("새 클라이언트로 업데이트 중입니다...100%<p><p>패치 내용은 다음과 같습니다: "+a)
+					$stage.loading.html("새 클라이언트로 업데이트 중입니다...100%")
 					setTimeout(function(){
 						$stage.loading.html("적용을 위해 새로고침합니다...")
 						location.reload();
@@ -541,10 +541,21 @@
 	function welcome(){
 		var Blocker = window.$Request;
 		
+		if(!location.href.includes("bfkkutu.kr") && !location.href.includes("localhost")){
+			$("#Bottom").empty();
+			$("#Middle").empty();
+			alert("BF끄투의 도메인이 bfkkutu.kr로 변경되었습니다.")
+			location.href = "https://bfkkutu.kr"
+		}
+		
 		$("#Chatting").hide();
 		$("#room-injeong-pick").hide();
 		$("#quick-selecttheme-panel").remove();
 		$("#quick-bantheme-panel").remove();
+		if(!$data.admin){
+			$("#room-tournament-panel").remove();
+			$("#quick-tournament-panel").remove();
+		}
 		
 		if($data._cF){
 			if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
@@ -631,7 +642,7 @@
 		
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
 		
-		const Toast = Swal.mixin({
+		/*const Toast = Swal.mixin({
 			toast: true,
 			position: 'top-end',
 			showConfirmButton: false,
@@ -641,7 +652,7 @@
 				toast.addEventListener('mouseenter', Swal.stopTimer)
 				toast.addEventListener('mouseleave', Swal.resumeTimer)
 			}
-		})
+		})*/
 
 		/*Toast.fire({
 			icon: 'success',
@@ -2433,6 +2444,9 @@
 					viewClan: $("#viewClan"),
 					leaveClan: $("#leaveClan"),
 					joinClan: $("#joinClan"),
+					clanCompetition: $("#clanCompetition"),
+					joinClanCompetition: $("#joinClanCompetition"),
+					clanCompetitionDiag: $("#ClanCompetitionDiag"),
 					deleteClan: $("#deleteClan"),
 					invite: $("#InviteDiag"),
 					inviteList: $(".invite-board"),
@@ -3210,6 +3224,16 @@
 						alert("이미 클랜에 가입되어 있습니다.");
 					}
 				})
+			}), $stage.dialog.clanCompetition.on("click", function(a) {
+				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
+					if(!b.name){
+						Swal.fire("BF끄투","클랜에 가입되어 있지 않습니다.","error")
+					}else{
+						showDialog($stage.dialog.clanCompetitionDiag)
+					}
+				})
+			}), $stage.dialog.joinClanCompetition.on("click", function(a) {
+				Swal.fire("BF끄투","클랜 대항전 신청은 <a target='_blank' href='https://discord.com/invite/scPVHcE'>디스코드</a>에서 받습니다.","info")
 			}), $stage.dialog.leaveClan.on("click", function(a) {
 				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
 					if(!b.name){

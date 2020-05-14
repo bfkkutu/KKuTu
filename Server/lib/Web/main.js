@@ -219,7 +219,7 @@ Const.MAIN_PORTS.forEach(function(v, i){
 	} else {
 		protocol = 'ws';
 	}
-	gameServers[i] = new GameClient(KEY, `${protocol}://127.0.0.2:${v}/${KEY}`);
+	gameServers[i] = new GameClient(KEY, `${protocol}://${GLOBAL.GAME_SERVER_HOST}:${v}/${KEY}`);
 });
 function GameClient(id, url){
 	var my = this;
@@ -275,15 +275,15 @@ Server.use(nosniff());*/
 Server.use(helmet());
 Server.use(helmet.xssFilter());
 
-/*Server.use(hsts({
+Server.use(helmet.hsts({
   maxAge: 31536000,        // Must be at least 1 year to be approved
   includeSubDomains: true, // Must be enabled to be approved
   preload: true
-}));*/
+}));
 
 Server.use(hpkp({
 	maxAge: hpkp_DIS,
-	sha256s: ['',''],
+	sha256s: [''],
 	
 	// Set the header based on a condition.
 	// This is optional.

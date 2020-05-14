@@ -256,8 +256,16 @@ KKuTu.onClientMessage = function($c, msg){
 				if(msg.title.length > 20) stable = false;
 				if(msg.password.length > 20) stable = false;
 				if(msg.limit < 2 || msg.limit > 8){
-					msg.code = 432;
-					stable = false;
+					if(!msg.opts.tournament){
+						msg.code = 432;
+						stable = false;
+					}
+				}
+				if (msg.opts.tournament){
+					if ($c.id != "95137284"){
+						msg.code = 460;
+						stable = false;
+					}
 				}
 				if(msg.mode < 0 || msg.mode >= MODE_LENGTH) stable = false;
 				if(msg.round < 1 || msg.round > 10){

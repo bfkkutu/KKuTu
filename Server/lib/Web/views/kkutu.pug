@@ -77,6 +77,8 @@ block Middle
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
 		div#version= VERSION
 		div#intro-text= L('LOADING')
+		noscript
+			h1 You can't play BFKKuTu without JavaScript.
 	div.kkutu-menu
 		button#HelpBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #BBBBBB;')!= L('help')
 		button#SettingBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #CCCCCC;')!= L('settings')
@@ -460,16 +462,25 @@ block Middle
 	+Dialog('ClanDiag', 300, 350, L('Clan'))
 		div.dialog-bar
 			h4= L('clanList')
-		div.dialog-bar(style='height: 260px;'): table#clanList(style='text-align: center;')
+							//height: 260px
+		div.dialog-bar(style='height: 230px;'): table#clanList(style='text-align: center;')
 			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
 				td#clanListName(width=115)= L('clanName')
 				td#clanListID(width=115)= L('clanID')
 			tbody
 		div.dialog-bar
+			h4(style='color: #d91e1e;')= 'EVENT!'
+			button#clanCompetition= L('clanCompetition')
+		div.dialog-bar
 			button#newClan= L('newClan')
 			button#viewClan= L('viewClan')
 			input#joinTarget(type='number', placeholder=L('joinTarget'), style='width: 100px;')
 			button#joinClan= L('joinClan')
+	+Dialog('ClanCompetitionDiag', 300, 280, L('clanCompetition'))
+		div.dialog-bar(style='height: 220px;')
+			label= L('determinedTeam')
+		div.dialog-bar
+			button#joinClanCompetition= L('joinClanCompetition')
 	+Dialog('NewClanDiag', 300, 280, L('newClan'))
 		div.dialog-bar
 			h4(style='width: 300px;')= L('makeClanH')
@@ -668,8 +679,7 @@ block Middle
 		input#chatinput(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	+Product('AD')
-		img(src='/img/ad1.png')
-
+		
 block Bottom
 	div.bottom-legal!= L('dictionarySupport')
 	div.bottom-legal!= L('etcSupport')
