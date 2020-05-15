@@ -558,9 +558,11 @@ block Middle
 			input#prompt-input
 		div.dialog-bar.tail-button#promptbtn
 			button#prompt-ok= L('OK')
-	+Dialog('PopupDiag', 205, 370, L('Popup'))
-		div#popup
+	+Dialog('PopupDiag', 430, 120, L('Popup'))
+		div#popup1
 			img#popup-img
+		div#popup2
+			h3#popup-text
 		div.dialog-bar.tail-button#confirmbtn
 			button#popup-ok= L('OK')
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
@@ -681,54 +683,4 @@ block Middle
 	+Product('AD')
 		
 block Bottom
-	div.bottom-legal!= L('dictionarySupport')
-	div.bottom-legal!= L('etcSupport')
-	div.bottom-legal!= L('MEANSUPPORT')
-	img(src='/img/kkutu/meansupport.png')
-	div.bottom-legal!= L('CORONAHelp')
-	div.bottom-legal!= L('textver123') + L('version_down')
-	div.bottom-legal!= L('madewith')
-	script.
-		function setParam(name, value) {
-		var l = window.location;
-		/* build params */
-		var params = {};
-		var x = /(?:\\??)([^=&?]+)=?([^&?]*)/g;
-		var s = l.search;
-		for(var r = x.exec(s); r; r = x.exec(s))
-		{
-		r[1] = decodeURIComponent(r[1]);
-		if (!r[2]) r[2] = '%%';
-		params[r[1]] = r[2];
-		}
-		/* set param */
-		params[name] = encodeURIComponent(value);
-		/* build search */
-		var search = [];
-		for(var i in params)
-		{
-		var p = encodeURIComponent(i);
-		var v = params[i];
-		if (v != '%%') p += '=' + v;
-		search.push(p);
-		}
-		search = search.join('&');
-		/* execute search */
-		l.search = search;
-		}
-	div.bottom-legal!=L('BGMHelp')
-	div.bottom-legal!=L('PLAYTSHelp')
-	//-div.bottom-legal!="언어를 선택하세요 Please choose the language."
-	//-div.bottom-legal!="관리자가 대충 번역기 돌려서 번역 상태가 개판입니다."
-	//-a(href="javascript:setParam('locale', 'ko_KR');") 한국어 Korean
-	//-br
-	//-a(href="javascript:setParam('locale', 'en_US');") 영어 English
-	//-br
-	//-a(href="javascript:setParam('locale', 'zh_CN');") 중국어 Chinese
-	//-br
-	//-a(href="javascript:setParam('locale', 'ja_JP');") 일본어 Japanese
-	
-	div.bottom-legal!= L('AGREEMENT_LINK')
-	div.bottom-legal!= L('PRIVACY_LINK')
-	div.bottom-legal!= L('OPOLICY_LINK1')
-	div.bottom-legal!= L('OPOLICY_LINK2')
+	div

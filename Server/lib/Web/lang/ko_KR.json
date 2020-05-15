@@ -1,6 +1,6 @@
 {
   "GLOBAL": {
-    "GPL": "<div style='color: #666;'>글자로 놀자! BF끄투 Copyright (C) 2018 OPG 이승훈(<a target='_blank' href='mailto:bfk@sdbx.dev'>bfk@sdbx.dev</a>)<br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a></div>",
+    "GPL": "<div style='color: #666;'><br>&nbsp&nbsp&nbsp&nbsp&nbsp이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>&nbsp&nbsp&nbsp&nbsp&nbsp이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>&nbsp&nbsp&nbsp&nbsp&nbsp이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a><p></p></div>",
 
     "CREATOR": "개발자 블로그",
     "HOME": "FA{home}",
@@ -82,10 +82,7 @@
     "AGREEMENT": "서비스 이용 약관",
     "PRIVACY": "개인정보 취급 방침",
 	"OPOLICY": "운영 정책",
-	"AGREEMENT_LINK": "<a href='/public_info_use.html' target='_blank'>서비스 이용 약관</a>",
-    "PRIVACY_LINK": "<a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a>",
-	"OPOLICY_LINK1": "<a href='http://ingame.bfk.kro.kr' target='_blank'>인게임 운영 정책</a>",
-	"OPOLICY_LINK2": "<a href='http://discord.bfk.kro.kr' target='_blank'>디스코드 운영 정책</a>",
+	"allDocument": "<a href='/public_info_use.html' target='_blank'>서비스 이용 약관</a> · <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> · <a href='http://ingame.bfk.kro.kr' target='_blank'>인게임 운영 정책</a> · <a href='http://discord.bfk.kro.kr' target='_blank'>디스코드 운영 정책</a>&nbsp&nbsp&nbsp&nbsp&nbsp",
     "OK": "확인",
     "NO": "취소",
 	"Alert": "BF끄투 알림",
@@ -158,8 +155,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.6.9 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.6.9 User</a>",
+    "version": "4.7.1 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.7.1 User</a>",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
 	"security_version": "-",
@@ -194,7 +191,7 @@
     "serverEnter": "접속",
 
     "websocketUnsupport": "본 게임은 Internet Explorer(10), 크롬(16), 파이어폭스(11), 오페라(12.1), 사파리(6) 이상의 버전에서 지원합니다!<br>브라우저를 업데이트해 주세요.",
-    "dictionarySupport": "사전 정보 제공:<a href='http://wordnet.princeton.edu' target='_blank'>WordNet</a>, <a href='https://opendict.korean.go.kr' target='_blank'>우리말샘</a><br><label style='color: #777777;'>WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved.</label><br><label style='color: #777777;'>우리말샘 Copyright 2016 by 국립국어원. All rights reserved.</label>",
+    "dictionarySupport": "<br><label style='color: #777777;'>WordNet 3.0 Copyright 2006 by Princeton University. All rights reserved.&nbsp&nbsp&nbsp&nbsp&nbsp</label><br><label style='color: #777777;'>우리말샘 Copyright 2016 by 국립국어원. All rights reserved.&nbsp&nbsp&nbsp&nbsp&nbsp</label>",
 	"sandbox": "<a href='https://sdbx.dev/' target='_blank'>샌드박스 :: SDBX</a>",
     "etcSupport": "도움:<a href='https://sdbx.dev/' target='_blank'>샌드박스 :: SDBX</a>",
 	"MEANSUPPORT": "단어 뜻 제공: <a href='https://creativecommons.org/licenses/by-nc-sa/2.0/kr/' target='_blank'>위키백과 (위키피디아), 나무위키</a>, 네이버 사전, 윅셔너리",
@@ -202,6 +199,7 @@
 	"BGMHelp": "BGM 지원: <a href='https://www.youtube.com/watch?v=H8PX5PInrJY' target='_blank'>라크다르 - 새로운 시작</a>",
     "PLAYTSHelp": "본 서버는 PlayTS 연맹의 도메인, 서비스를 사용하고 있습니다.",
 	"CORONAHelp": "코로나19 관련 정보 제공: <a href='https://coronamap.site/' target='_blank'>코로나 맵</a>",
+	"copyright": "&nbsp&nbsp&nbsp&nbsp&nbsp새로운 끄투의 시작, BF끄투 Copyright (C) 2018 이승훈(<a target='_blank' href='mailto:bfk@sdbx.dev'>bfk@sdbx.dev</a>)",
 	"welcome": "환영합니다.",
     "welcomeTestServer": "테스트 서버에 오신 것을 환영합니다.",
     "loadRemain": "불러오는 중... 앞으로 ",

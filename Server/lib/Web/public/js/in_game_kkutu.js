@@ -609,7 +609,8 @@
 			$("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
 		}
 		
-		popupKKuTu("/img/popup.png");
+		//popupKKuTu("/img/popup.png", false, 430, 120);
+		popupKKuTu(false, "5월 23일부터 5월 25일까지 2주년 기념 이벤트가 진행될 예정입니다.\n자세한 내용은 디스코드 공지를 참고하세요.", 430, 120);
 		
 		playBGM("lobby"), $("#Intro").animate({
 			opacity: 1
@@ -805,10 +806,14 @@
 		showDialog($stage.dialog.promptKKuTu);
 	}
 	
-	function popupKKuTu(a){
-		$("#PopupDiag").hide();
-		showDialog($("#PopupDiag"));
-		$("#popup-img").attr("src", a)
+	function popupKKuTu(a, b, c, d){ //c: width d: height
+		$stage.dialog.popupKKuTu.hide();
+		$("#popup-img").attr("src", "")
+		$("#popup-text").text("");
+		if(a) $("#popup-img").attr("src", a)
+		if(b) $("#popup-text").text(b);
+		$stage.dialog.popupKKuTu.attr('style', `width: ${c}px; height: ${d}px;`);
+		showDialog($stage.dialog.popupKKuTu);
 	}
 
 	function sendWhisper(a, b) {
@@ -2503,6 +2508,7 @@
 					alertKKuTuOK: $("#alert-ok"),
 					promptKKuTu: $("#PromptDiag"),
 					promptKKuTuOK: $("#prompt-ok"),
+					popupKKuTu: $("#PopupDiag"),
 					obtain: $("#ObtainDiag"),
 					obtainOK: $("#obtain-ok"),
 					help: $("#HelpDiag")
@@ -3112,7 +3118,7 @@
 			}), $stage.dialog.alertKKuTuOK.on("click", function(a) {
 				$stage.dialog.alertKKuTu.hide()
 			}), $("#popup-ok").on("click", function(a) {
-				$("#PopupDiag").hide();
+				$stage.dialog.popupKKuTu.hide();
 			}), $stage.dialog.newClan.on("click", function(a) {
 				showDialog($stage.dialog.newClanDiag)
 			}), $stage.dialog.viewClan.on("click", function(a) {

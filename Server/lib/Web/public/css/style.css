@@ -352,3 +352,20 @@ code{
 .tier-D{ color: #96C7F9; text-shadow: 0px 0px 3px #88BBEE; }
 .tier-M{ color: #2AC9AF; text-shadow: 0px 0px 5px #11AA88; }
 .tier-C{ color: #2EFFDF; text-shadow: 0px 0px 5px #1072AA; }
+
+.bottom-div{
+	margin-top: 10px;
+	color: #CCCCCC;
+	background-color: #304a58;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+.bottom-left{
+	float: left;
+	width: 50%;
+}
+.bottom-right{
+	float: left;
+	width: 50%;
+}
