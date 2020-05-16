@@ -17,6 +17,7 @@
  */
 
 ﻿var Const = require('../../const');
+var Outer = require('../../sub/outer');
 var Lizard = require('../../sub/lizard');
 var DB;
 var DIC;
@@ -104,7 +105,7 @@ exports.turnEnd = function(){
 	
 	my.game.late = true;
 	if(target) if(target.game){
-		score = Const.getPenalty(my.game.chain, target.game.score);
+		score = Outer.getPenalty(my.game.chain, target.game.score);
 		target.game.score += score;
 	}
 	getAuto.call(my, my.game.theme, 0).then(function(w){
@@ -184,7 +185,7 @@ exports.submit = function(client, text, data){
 exports.getScore = function(text, delay, ignoreMission){
 	var my = this;
 	var tr = 1 - delay / my.game.turnTime;
-	var score = Const.getPreScore(text, my.game.chain, tr);
+	var score = Outer.getPreScore(text, my.game.chain, tr);
 	var arr;
 	
 	if(!ignoreMission) if(arr = text.match(new RegExp(my.game.mission, "g"))){

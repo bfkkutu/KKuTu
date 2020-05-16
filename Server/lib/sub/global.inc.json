@@ -1,4 +1,5 @@
 {
+	"MAINADMIN": "Input main admin id here",
 	"ADMIN": [ "Input admin id here" ],
 	"ADMINS": {
 		"MANAGER": [ "Input admin id here" ],

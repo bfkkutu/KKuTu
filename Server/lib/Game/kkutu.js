@@ -21,6 +21,7 @@ var Cluster = require("cluster");
 var Const = require('../const');
 var GLOBAL = require("../sub/global.json");
 var Lizard = require('../sub/lizard');
+var Outer = require('../sub/outer');
 var JLog = require('../sub/jjlog');
 var File = require('fs');
 // 망할 셧다운제 var Ajae = require("../sub/ajae");
@@ -890,7 +891,7 @@ exports.Room = function(room, channel){
 	my.password = room.password;
 	my.limit = Math.round(room.limit);
 	my.mode = room.mode;
-	my.rule = Const.getRule(room.mode);
+	my.rule = Outer.getRule(room.mode);
 	my.round = Math.round(room.round);
 	my.time = room.time * my.rule.time;
 	my.opts = {
@@ -1107,7 +1108,7 @@ exports.Room = function(room, channel){
 		my.password = room.password;
 		my.limit = Math.max(Math.min(8, my.players.length), Math.round(room.limit));
 		my.mode = room.mode;
-		my.rule = Const.getRule(room.mode);
+		my.rule = Outer.getRule(room.mode);
 		my.round = Math.round(room.round);
 		my.wordLimit = room.wordLimit;
 		my.time = room.time * my.rule.time;
@@ -1336,7 +1337,7 @@ exports.Room = function(room, channel){
 						, "잭", "오", "랜", "턴", "호", "박", "프", "랑", "켄"
 						, "파", "티"
 					];
-					var luck = getRandomInt(130); //할로윈 이벤트
+					var luck = Outer.randomInt(130); //할로윈 이벤트
 					if(luck >= 21){
 						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					}else{
@@ -1514,9 +1515,6 @@ function getFreeChannel(){
 	}else{
 		return channel || 0;
 	}
-}
-function getRandomInt(i){
-	return Math.floor(Math.random() * i) + 1;
 }
 function getGuestName(sid){
 	var i, len = sid.length, res = 0;

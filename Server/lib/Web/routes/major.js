@@ -21,6 +21,7 @@ var MainDB	 = require("../db");
 var JLog	 = require("../../sub/jjlog");
 var Const	 = require("../../const");
 var File	 = require("fs");
+var Outer    = require("../../sub/outer");
 
 let moment = require('moment'); //moment.js
 
@@ -107,13 +108,10 @@ Server.get("/clan", function(req, res){
 	
 	if(query.type == "create"){
 		var getClanID = {};
-		getClanID.random = function(n1, n2) {
-			return parseInt(Math.random() * (n2 -n1 +1)) + n1;
-		};
 		getClanID.authNo= function(n) {
 			var value = "";
 			for(var i=0; i<n; i++){
-				value += getClanID.random(0,9);
+				value += Outer.random(0,9);
 			}
 			return value;
 		};

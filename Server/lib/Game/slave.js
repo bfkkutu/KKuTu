@@ -262,7 +262,7 @@ KKuTu.onClientMessage = function($c, msg){
 					}
 				}
 				if (msg.opts.tournament){
-					if ($c.id != "95137284"){
+					if ($c.id != GLOBAL.MAINADMIN){
 						msg.code = 460;
 						stable = false;
 					}

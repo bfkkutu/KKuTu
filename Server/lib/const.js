@@ -300,12 +300,6 @@ exports.RULE = {
 		ewq: true
 	}
 };
-exports.getPreScore = function(text, chain, tr){
-	return 2 * (Math.pow(5 + 7 * (text || "").length, 0.74) + 0.88 * (chain || []).length) * ( 0.5 + 0.5 * tr );
-};
-exports.getPenalty = function(chain, score){
-	return -1 * Math.round(Math.min(10 + (chain || []).length * 2.1 + score * 0.15, score));
-};
 exports.GAME_TYPE = Object.keys(exports.RULE);
 exports.EXAMPLE_TITLE = {
 	'ko': "가나다라마바사아자차",
@@ -374,6 +368,4 @@ exports.KOR_FLAG = {
 exports.WP_REWARD = function(){
 	return 10 + Math.floor(Math.random() * 91);
 };
-exports.getRule = function(mode){
-	return exports.RULE[exports.GAME_TYPE[mode]];
-};
+
