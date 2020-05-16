@@ -271,6 +271,9 @@
 			case "yellto":
 				if($data.id == a.id) yell(a.value), notice(a.value, L.yell);
 				break;
+			case "notice":
+				notice(a.value, L.yell);
+				break;
 			case "banned":
 				if($data.id == a.id){
 					if(a.enddate != "영구"){
@@ -418,6 +421,7 @@
 			case "roundEnd":
 				for (c in a.users) $data.setUser(c, a.users[c]);
 				$data._resultRank = a.ranks, roundEnd(a.result, a.data);
+				if(!$stage.dialog.result.is(":visible")) $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 				break;
 			case "kickVote":
 				$data._kickTarget = $data.users[a.target], $data.id != a.target && $data.id != $data.room.master && kickVoting(a.target), notice(($data._kickTarget.profile.title || $data._kickTarget.profile.name) + L.kickVoting);
@@ -498,7 +502,7 @@
 					}
 				}
 				if(a.code == 402){
-					alertKKuTu("[게스트 접속 제한] " + L["error_" + a.code] + c), $("#intro-text").html("이 서버는 게스트 접속을 허용하지 않습니다."), $("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty();
+					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", '/img/kkutu/def.png'), location.href = '/login';
 				} else if(a.code == 444){
 					if(a.reason){
 						if(a.enddate != "영구"){
@@ -1619,6 +1623,7 @@
 				$data._coef = .05
 			}, 500)
 		}, 2e3), stopRecord()
+		if(!$stage.dialog.result.is(":visible")) $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 	}
 
 	function drawRanking(a) {

@@ -153,14 +153,8 @@ function processAdmin(id, value, requestId){
 		case "yell":
 			KKuTu.publish('yell', { value: value });
 			return null;
-		case "reload":
-			if(value == "kkutu"){
-				KKuTu = require('./kkutu');
-			}else if(value == "shop"){
-				MainDB = require('../Web/db');
-			}else{
-				return null;
-			}
+		case "notice":
+			KKuTu.publish('notice', { value: value });
 			return null;
 		case "ban":
 			var date = moment().format("YYYYMMDDHHmmss");
