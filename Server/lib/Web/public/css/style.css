@@ -27,6 +27,8 @@ body{
 	margin: 0px;
 	min-width: 480px;
 	font-family: NBGothic, 돋움;
+	min-height: 100%;
+	margin-bottom: 10px;
 }
 a{
 	color: inherit;
@@ -288,6 +290,13 @@ span{
 	font-size: 11px;
 	text-align: center;
 }
+#Footer{
+	float: left;
+	width: 1000px;
+	color: #444444;
+	font-size: 11px;
+	text-align: center;
+}
 .bottom-legal{
 	margin-top: 10px;
 	color: #CCCCCC;
@@ -353,23 +362,25 @@ code{
 .tier-M{ color: #2AC9AF; text-shadow: 0px 0px 5px #11AA88; }
 .tier-C{ color: #2EFFDF; text-shadow: 0px 0px 5px #1072AA; }
 
-.bottom-div{
+.footer-div{
 	margin-top: 10px;
 	color: #CCCCCC;
 	background-color: #304a58;
 	position: absolute;
 	bottom: 0;
+	height: 7%;
 	width: 100%;
+	z-index: -1;
 }
-.bottom-left{
+.footer-left{
 	float: left;
 	width: 35%;
 }
-.bottom-right{
+.footer-right{
 	float: left;
 	width: 35%;
 }
-.bottom-empty{
+.footer-blank{
 	float: left;
 	width: 15%;
 }
