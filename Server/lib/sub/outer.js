@@ -1,6 +1,8 @@
 /*
 	outer.js
 */
+const Const = require("../const")
+
 exports.randomInt = function(i){
 	if(typeof i != "number") return 0;
 	else return Math.floor(Math.random() * i) + 1;
@@ -16,5 +18,5 @@ exports.getPenalty = function(chain, score){
 	return -1 * Math.round(Math.min(10 + (chain || []).length * 2.1 + score * 0.15, score));
 };
 exports.getRule = function(mode){
-	return exports.RULE[exports.GAME_TYPE[mode]];
+	return Const.RULE[Const.GAME_TYPE[mode]];
 };
