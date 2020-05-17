@@ -138,6 +138,12 @@ mixin Product(id)
 				block
 			else
 				h4= id
+				
+mixin Advertisement(id)
+	div(class=id+'Box Product', style='display: block;')
+		h5.product-title!= L('AD')
+		div.product-body
+			// paste your advertisement code here
 
 mixin GraphBar(c, min, val, max, bgc)
 	div(class='graph '+c)

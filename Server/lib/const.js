@@ -313,18 +313,17 @@ exports.RANDOMWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아"
 exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 
 exports.KO_INJEONG = [
-	"IMS", "VOC", "KRR", "KTV",
-	"NSK", "KOT", "DOT", "DRR", "DGM", "RAG", "LVL",
-	"LOL", "MRN", "MMM", "MAP", "MKK", "MNG",
-	"MOB", "HYK", "CYP", "HRH", "STA", "OIJ",
-	"KGR", "ESB", "ELW", "OIM", "OVW", "NEX", /*"WOW",*/
-	"YRY", "KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
+	"IMS", "VOC", "KTV", "KOT", "DOT", "DGM",
+	"RAG", "LVL", "LOL", "MMM", "MAP", "MKK",
+	"MNG", "MOB", "CYP", "STA", "OIJ", "BUS",
+	"ESB", "ELW", "OVW", "NEX", "BAN", "EMD",
+	"KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUDO",
-	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC", "EMD",
-	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK", "BUS",
-	"DONG", "MFA", "ZHS", "KTR", "BBF", "ILN", "TRR",
-	"THP", "UND", "TLR", "HKI", "MINBE", "BST", "BAN",
-	"PCN", "FGO"
+	"BOK", "MUN", "KPOP", "SOK", "PKT", "PIC",
+	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK",
+	"DONG", "MFA", "ZHS", "KTR", "ILN", "TRR",
+	"THP", "UND", "TLR", "HKI", "MINBE", "BST",
+	"PCN", "FGO", "YGO"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"

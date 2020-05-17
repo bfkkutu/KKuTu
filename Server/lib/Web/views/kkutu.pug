@@ -83,6 +83,7 @@ block Middle
 		button#HelpBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #BBBBBB;')!= L('help')
 		button#SettingBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #CCCCCC;')!= L('settings')
 		button#CommunityBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #DAA9FF;')!= L('community')
+		//button#InquireBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #ff8e7f;')!= L('inquire')
 		button#LeaderboardBtn.tiny-menu.for-lobby(style='display: none; background-color: #46E85B;')!= L('leaderboard')
 		button#RPLeaderboardBtn.tiny-menu.for-lobby(style='display: none; background-color: #FFADD3;')!= L('leaderboard')
 		//- button#CursingBtn.tiny-menu.for-lobby.for-master.for-normal.for-gaming(style='display: none; background-color: #FD6600;')
@@ -98,7 +99,7 @@ block Middle
 		button#PracticeBtn.for-master.for-normal(style='display: none; background-color: #FCF5A9;')= L('practice')
 		button#ReadyBtn.for-normal(style='display: none; background-color: #FFC67F;')= L('ready')
 		button#StartBtn.for-master(style='display: none; background-color: #FFB576;')= L('start')
-		button#FindUserBtn.for-lobby.for-normal(style='display: none; background-color: #00d9ff;')= L('FindUser')
+		//button#FindUserBtn.for-lobby.for-normal(style='display: none; background-color: #00d9ff;')= L('FindUser')
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;')= L('exit')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;')= L('replay')
 		button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('Clan')
@@ -408,7 +409,7 @@ block Middle
 			h4= L('findTargetID')
 			input#find-id-target(type='textfield', style='width: 288px;')
 			button#find-id-ok= L('OK')
-	+Dialog('ReportDiag', 300, 175, L('report'))
+	+Dialog('ReportDiag', 300, 265, L('report'))
 		div.dialog-bar
 			h4(style='width: 290px;')= L('reportwarn')
 		div.dialog-bar
@@ -417,8 +418,26 @@ block Middle
 		div.dialog-bar
 			h4= L('target')
 			h4#report-target
-			input#report-reason(type='textfield', style='width: 288px;')
+			p
+		div.dialog-bar
+			h4= L('reportreason')
+			textarea#report-reason(type='textfield', style='width: 288px;')
+		div.dialog-bar
+			label= L('reportaccept')
+				input#report-accept(type='checkbox', style='width: 13px; height: 13px; vertical-align: text-top;')
+		div.dialog-bar.tail-button
 			button#report-submit= L('submit')
+	+Dialog('InquireDiag', 300, 175, L('inquire_title'))
+		div.dialog-bar
+			h4(style='width: 290px;')= L('inquire_warn')
+		div.dialog-bar
+			h4= L('inquirer')
+			h4#inquirer
+		div.dialog-bar
+			h4= L('inquire_text')
+			textarea#inquire-text(type='textfield', style='width: 288px;')
+		div.dialog-bar.tail-button
+			button#inquire-submit= L('submit')
 	+Dialog('KickVoteDiag', 300, 160, L('kickVote'))
 		div.dialog-bar#kick-vote-text(style='text-align: center;')
 		div.dialog-bar(style='text-align: center;')= L('kickVoteNotice')
@@ -680,7 +699,7 @@ block Middle
 		button#ChatBtn(style="display: none;")
 		input#chatinput(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
-	+Product('AD')
+	+Advertisement('AD')
 		
 block Bottom
 	div

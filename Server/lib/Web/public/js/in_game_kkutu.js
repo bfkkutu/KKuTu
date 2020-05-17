@@ -2398,6 +2398,7 @@
 				chatBtn: $(".ChatBox button").last(),
 				menu: {
 					help: $("#HelpBtn"),
+					inquire: $("#InquireBtn"),
 					setting: $("#SettingBtn"),
 					community: $("#CommunityBtn"),
 					cursing: $("#CursingBtn"),
@@ -2425,6 +2426,7 @@
 					setting: $("#SettingDiag"),
 					settingServer: $("#setting-server"),
 					settingOK: $("#setting-ok"),
+					inquire: $("#InquireDiag"),
 					community: $("#CommunityDiag"),
 					cursing: $("#CursingDiag"),
 					cursingValue: $("#CursingDiag #cursing-value").first(),
@@ -2480,6 +2482,7 @@
 					findNickOK: $("#find-nick-ok"),
 					reportDiag: $("#ReportDiag"),
 					reportSubmit: $("#report-submit"),
+					inquireSubmit: $("#inquire-submit"),
 					kickVote: $("#KickVoteDiag"),
 					kickVoteY: $("#kick-vote-yes"),
 					kickVoteN: $("#kick-vote-no"),
@@ -2830,6 +2833,11 @@
 				}), $stage.menu.spectate.addClass("toggled"))
 			}), $stage.menu.shop.on("click", function(a) {
 				($data._shop = !$data._shop) ? (loadShop(), $stage.menu.shop.addClass("toggled")) : $stage.menu.shop.removeClass("toggled"), updateUI()
+			}), $stage.menu.inquire.on("click", function(a) {
+				var b = $data.users[$data._profiled];
+				$("#inquire-text").val("");
+				showDialog($stage.dialog.inquire);
+				$("#inquirer").text($data.id);
 			}), $(".shop-type").on("click", function(a) {
 				var b = $(a.currentTarget),
 					c = b.attr("id").slice(10);
@@ -3025,6 +3033,8 @@
 				$stage.talk.val("/e " + (b.profile.title || b.profile.name).replace(/\s/g, "") + " ").focus()
 			}), $stage.dialog.profileReport.on("click", function(a) {
 				var b = $data.users[$data._profiled];
+				$("#report-reason").val("");
+				$("#report-accept").attr("checked", false)
 				showDialog($stage.dialog.reportDiag);
 				$("#report-target").text(b.id);
 				$("#submitter").text($data.id);
@@ -3097,12 +3107,22 @@
 					agree: !1
 				}), clearTimeout($data._kickTimer), $stage.dialog.kickVote.hide()
 			}), $stage.dialog.reportSubmit.on("click", function(a) {
-				$.post("/report", {
-					target: $("#report-target").text(),
-					submitter: $data.id,
-					reason: $("#report-reason").val()
+				if($("#report-accept").is(":checked")){
+					$.post("/report", {
+						target: $("#report-target").text(),
+						submitter: $data.id,
+						reason: $("#report-reason").val()
+					});
+					alert(`신고가 완료되었습니다.\n\n대상: ${$("#report-target").text()}\n신고자: ${$data.id}\n사유: ${$("#report-reason").val()}`), $stage.dialog.reportDiag.hide();
+				}else{
+					alert("본인 또한 처벌 받을 수 있음에 동의해주세요.")
+				}
+			}), $stage.dialog.inquireSubmit.on("click", function(a) {
+				$.post("/inquire", {
+					inquiredText: $("#inquire-text").val(),
+					submitter: $data.id
 				});
-				alert(`신고가 완료되었습니다.\n\n대상: ${$("#report-target").text()}\n신고자: ${$data.id}\n사유: ${$("#report-reason").val()}`)
+				alert(`문의 접수가 완료되었습니다.\n\n문의자: ${$data.id}\n문의 내용: ${$("#report-reason").val()}`), $stage.dialog.reportDiag.hide();
 			}), $stage.dialog.purchaseOK.on("click", function(a) {
 				$.post("/buy/" + $data._sgood, function(a) {
 					var b = $data.users[$data.id];

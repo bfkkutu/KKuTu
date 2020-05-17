@@ -71,6 +71,9 @@ const csp = require('helmet-csp');
 // CORONA MAP
 const request = require('request'),
 	  cheerio = require('cheerio');
+	  
+const cors = require('cors');
+const Router = Express.Router();
 	
 var maintenance; // boolean
 
@@ -338,7 +341,7 @@ Server.use(referrerPolicy());
 	browserSniff: true
 }));*/
 
-Server.get("/", function(req, res){
+Server.get("/", cors(), function(req, res){
 	var server = req.query.server;
 	
 	res.get('X-Frame-Options') // === 'Deny'
@@ -519,7 +522,6 @@ Server.get("/beta/kkutu", function(req, res){
 Server.get("/bfsoft", function(req, res){
 	page(req, res, "bfsoft");
 });
-
 Server.get("*", function(req, res){
 	page(req, res, "notfound");
 });
