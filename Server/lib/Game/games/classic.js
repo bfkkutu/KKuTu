@@ -73,6 +73,7 @@ exports.getTitle = function(){
 			my.game.wordLength = 3;
 		case 'KUT':
 		case 'KRH':
+		case 'KMH':
 		case 'KSH':
 			ja = 44032 + 588 * Math.floor(Math.random() * 18);
 			eng = "^[\\u" + ja.toString(16) + "-\\u" + (ja + 587).toString(16) + "]";
@@ -218,6 +219,8 @@ exports.turnStart = function(force){
 	
 	//if(my.game.chain.length && Const.GAME_TYPE[my.mode] === "KRH") my.game.char = my.game.chain[my.game.chain.length - 1][(Math.floor(Math.random() * my.game.chain[my.game.chain.length - 1].length))];
 	if(my.game.chain.length && my.game.chain[my.game.chain.length - 1].length > 2 && (Const.GAME_TYPE[my.mode] === "KRH" || Const.GAME_TYPE[my.mode] === "ERH")) my.game.char = my.game.chain[my.game.chain.length - 1][my.game.randomChar];
+	
+	if(my.game.chain.length && my.game.chain[my.game.chain.length - 1].length > 2 && Const.GAME_TYPE[my.mode] === "KMH") my.game.char = my.game.chain[my.game.chain.length - 1][my.game.middleChar]
 	
 	if(my.game.chain.length && my.opts.middletoss){
 		if(my.game.mtp) my.game.char = my.game.chain[my.game.chain.length - 1][1];
@@ -638,6 +641,8 @@ function getAuto(theme, char, subc, type){
 		case 'EKT':
 			adv = `^(${adc})..`;
 			break;
+		case 'KMH':
+		case 'KRH':
 		case 'KSH':
 			adv = `^(${adc}).`;
 			break;
@@ -762,8 +767,27 @@ function getChar(text, lim){
 			}else{
 				return text.charAt(1)
 			}
+		case 'KMH':
+			if(Const.GAME_TYPE[my.mode] == "KMH"){
+				if(text.length == 2) my.game.middleChar = 1;
+				else my.game.middleChar = text.indexOf(getMiddleChar(text))
+				if(my.game.middleChar != -1) return text.charAt(my.game.middleChar)
+				else return text.charAt(text.length -1)
+			}
 	}
 };
+function getMiddleChar(text){
+	var value = '';
+	if(text.length % 2 == 0){ // 짝
+		value = value.concat(text[text.length/2 -1]);
+        value = value.concat(text[text.length/2]);
+		if(Outer.random(0,1)==0) value = value.substr(0,1);
+		else value = value.substr(1)
+	}else{ // 홀
+		value = value.concat(text[Math.floor(text.length/2)]);
+	}
+	return value;
+}
 function getSubChar(char){
 	var my = this;
 	var r;
@@ -775,7 +799,7 @@ function getSubChar(char){
 		case "EKT": case "KUT":
 			if(char.length > 2) r = char.slice(1);
 			break;
-		case "KKT": case "KSH": case "KAP": case "KLH": case "KRH":
+		case "KKT": case "KSH": case "KAP": case "KLH": case "KRH": case "KMH":
 			k = c - 0xAC00;
 			if(k < 0 || k > 11171) break;
 			ca = [ Math.floor(k/28/21), Math.floor(k/28)%21, k%28 ];

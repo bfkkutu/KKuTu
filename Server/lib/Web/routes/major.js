@@ -359,7 +359,7 @@ Server.post("/warn", function(req, res){
 			MainDB.users.update([ '_id', target ]).set([ 'black', "경고 누적" ]).on();
 			MainDB.users.update([ '_id', target ]).set([ 'bandate', 99999999999999 ]).on();
 		}else{
-			MainDB.users.update([ '_id', target ]).set([ 'warn', $user.warn + warn ]).on();
+			MainDB.users.update([ '_id', target ]).set([ 'warn', Number($user.warn) + warn ]).on();
 		}
 	});
 });

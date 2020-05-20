@@ -13,6 +13,7 @@
     "cheerio": "^1.0.0-rc.3",
     "colors": "^1.1.2",
     "connect-redis": "^3.2.0",
+    "cors": "^2.8.5",
     "dddos": "^0.1.1",
     "discord-emoji": "^1.1.1",
     "discord-markdown": "^2.2.0",

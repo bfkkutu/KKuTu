@@ -279,9 +279,9 @@ Server.use(helmet());
 Server.use(helmet.xssFilter());
 
 Server.use(helmet.hsts({
-  maxAge: 31536000,        // Must be at least 1 year to be approved
-  includeSubDomains: true, // Must be enabled to be approved
-  preload: true
+	maxAge: 31536000,        // Must be at least 1 year to be approved
+	includeSubDomains: true, // Must be enabled to be approved
+	preload: true
 }));
 
 Server.use(hpkp({

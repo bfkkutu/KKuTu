@@ -1676,6 +1676,9 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 		case 'ERH': //영어 랜덤잇기
 			rw.score += score * 0.6;
 			break;
+		case 'KMH': //한국어 가운데잇기
+			rw.score += score * 0.58;
+			break;
 		default:
 			break;
 	}

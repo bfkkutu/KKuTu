@@ -239,7 +239,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.nickname = a.nickname, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+		} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.nickname = a.nickname, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -672,6 +672,7 @@
 				$(".product-title")[6].innerHTML = `<i class="fa fa-comment"></i>${L["nfChat"]}`;
 			}, 500);
 		});*/
+		//detectAdBlock();
 	}
 	
 	function getRes(a){

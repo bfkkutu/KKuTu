@@ -298,6 +298,14 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
+	},
+	'KMH': { lang: "ko", // 한국어 가운데잇기
+		rule: "Classic",
+		opts: [ "mis", "ext", "rank" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
 	}
 };
 exports.GAME_TYPE = Object.keys(exports.RULE);
@@ -323,7 +331,7 @@ exports.KO_INJEONG = [
 	"MIN", "NYA", "ANS", "CKR", "DBD", "HAK",
 	"DONG", "MFA", "ZHS", "KTR", "ILN", "TRR",
 	"THP", "UND", "TLR", "HKI", "MINBE", "BST",
-	"PCN", "FGO", "YGO"
+	"FGO", "YGO", "PCN", "WOW"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI"
