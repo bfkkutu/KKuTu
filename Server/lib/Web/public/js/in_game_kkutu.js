@@ -276,6 +276,7 @@
 				break;
 			case "clearchat":
 				clearChat();
+				notice("채팅이 관리자에 의해 초기화 되었습니다.", "채팅")
 				break;
 			case "banned":
 				if($data.id == a.id){
@@ -645,7 +646,7 @@
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
 			if(a.newUser == true) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
-			else return console.log(`NEWUSER: ${a.newuser}`);
+			else return console.log(`NEWUSER: false`);
 		})
 		
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
@@ -2720,7 +2721,7 @@
 					target: b
 				}, !0) : fail(450)
 			}), $stage.menu.newRoom.on("click", function(a) {
-				var b,
+				var b, sa, sb,
 					h = $("#room-selecttheme").is(":checked"),
 					j = $("#room-bantheme").is(":checked"),
 					k = $("#room-mode").val();
@@ -2741,6 +2742,24 @@
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").show();
 				}
+				if($(".my-level").text().substr(3) <= 30){
+					sa = setInterval(function(){
+						$("label[for='room-twenty']").text("비기너")
+						$("label[for='room-twenty']").css('color','black')
+					}, 4000)
+					setTimeout(function(){
+						sb = setInterval(function(){
+							$("label[for='room-twenty']").css('color','#D92121')
+							$("label[for='room-twenty']").text("초보자 추천")
+						}, 4000)
+					}, 2000)
+				}
+				$(".closeBtn").on("click", function(fo){
+					clearInterval(sa)
+					clearInterval(sb)
+					$("label[for='room-twenty']").text("비기너")
+					$("label[for='room-twenty']").css('color','black')
+				})
 				$stage.dialog.quick.hide(), $data.typeRoom = "enter", showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.newRoom)
 			}), $stage.menu.setRoom.on("click", function(a) {
 				var b, c, d, e = RULE[MODE[$data.room.mode]],

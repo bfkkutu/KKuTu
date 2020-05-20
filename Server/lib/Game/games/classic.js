@@ -26,11 +26,13 @@ const ROBOT_START_DELAY = [ 1200, 800, 400, 200, 0 ];
 const ROBOT_TYPE_COEF = [ 1250, 750, 500, 250, 0 ];
 const ROBOT_THINK_COEF = [ 4, 2, 1, 0, 0 ]; /* 생각하는 시간 */
 const ROBOT_HIT_LIMIT = [ 1000 ]; /* 횟수 제한 */
-const ROBOT_LENGTH_LIMIT = [ 3, 4, 9, 99, 99 ]; /* 길이 제한 */
+var ROBOT_LENGTH_LIMIT = [ 3, 4, 9, 99, 99 ]; /* 길이 제한 */
 /* 두음 법칙 */
 const RIEUL_TO_NIEUN = [4449, 4450, 4457, 4460, 4462, 4467]; /* ㄹ - ㄴ */
 const RIEUL_TO_IEUNG = [4451, 4455, 4456, 4461, 4466, 4469]; /* ㄹ - ㅇ */
 const NIEUN_TO_IEUNG = [4455, 4461, 4466, 4469]; /* ㄴ - ㅇ */
+
+var robotChain = [];
 
 exports.init = function(_DB, _DIC){
 	DB = _DB;
@@ -143,6 +145,8 @@ exports.getTitle = function(){
 exports.roundReady = function(){
 	var my = this;
 	if(!my.game.title) return;
+	
+	robotChain = [];
 	
 	clearTimeout(my.game.turnTimer);
 	my.game.round++;
@@ -260,7 +264,7 @@ exports.turnStart = function(force){
 	}, true);
 	my.game.turnTimer = setTimeout(my.turnEnd, Math.min(my.game.roundTime, my.game.turnTime + 100));
 	if(si = my.game.seq[my.game.turn]) if(si.robot){
-		si._done = [];
+		//si._done = [];
 		my.readyRobot(si);
 	}
 };
@@ -304,6 +308,7 @@ exports.submit = function(client, text){
 	
 	if(!isChainable(text, my.mode, my.game.char, my.game.subChar)) return client.chat(text);
 	if(my.game.chain.indexOf(text) != -1 && !my.opts.returns) return client.publish('turnError', { code: 409, value: text }, true);
+	if(my.opts.twenty && text.length > 20) client.publish('turnError', { code: 415, value: text }, true);
 	
 	l = my.rule.lang;
 	my.game.loading = true;
@@ -376,6 +381,7 @@ exports.submit = function(client, text){
 					my.game.loading = false;
 					client.publish('turnError', { code: firstMove ? 402 : 403, value: text }, true);
 					if(client.robot){
+						//client._done = [];
 						my.readyRobot(client);
 					}
 				}
@@ -480,12 +486,14 @@ exports.readyRobot = function(robot){
 	var lmax;
 	var isRev = (Const.GAME_TYPE[my.mode] == "KAP" || Const.GAME_TYPE[my.mode] == "EAP" || Const.GAME_TYPE[my.mode] == "JAP");
 	
+	if(my.opts.twenty) ROBOT_LENGTH_LIMIT = [ 3, 4, 9, 20, 20 ]
+	
 	getAuto.call(my, my.game.theme, my.game.char, my.game.subChar, 2).then(function(list){
 		if(list.length){
 			list.sort(function(a, b){ return b.hit - a.hit; });
 			if(ROBOT_HIT_LIMIT[level] > list[0].hit) denied();
 			else{
-				if(level >= 3 && !robot._done.length){
+				if(level >= 3 && !robotChain.length){
 					if(Math.random() < 0.5) list.sort(function(a, b){ return b._id.length - a._id.length; });
 					if(list[0]._id.length < 8 && my.game.turnTime >= 2300){
 						for(i in list){
@@ -518,15 +526,15 @@ exports.readyRobot = function(robot){
 		if(my.opts.selecttheme){
 			if(list) do{
 				if(!(w = list.shift())) break;
-			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id) || !w.theme.includes(theme));
+			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robotChain.includes(w._id) || !w.theme.includes(theme) || robotChain.includes(text));
 		}else if(my.opts.bantheme){
 			if(list) do{
 				if(!(w = list.shift())) break;
-			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id) || w.theme.includes(theme));
+			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robotChain.includes(w._id) || w.theme.includes(theme) || robotChain.includes(text));
 		}else{
 			if(list) do{
 				if(!(w = list.shift())) break;
-			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robot._done.includes(w._id));
+			}while(w._id.length > ROBOT_LENGTH_LIMIT[level] || robotChain.includes(w._id) || robotChain.includes(text));
 		}
 		if(w){
 			text = w._id;
@@ -536,7 +544,8 @@ exports.readyRobot = function(robot){
 	}
 	function after(){
 		delay += text.length * ROBOT_TYPE_COEF[level];
-		robot._done.push(text);
+		//robot._done.push(text);
+		robotChain.push(text);
 		setTimeout(my.turnRobot, delay, robot, text);
 	}
 	function getWishList(list){

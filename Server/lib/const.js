@@ -58,7 +58,8 @@ exports.OPTIONS = {
 	'selth': { name: "SelectTheme" },
 	'btm': { name: "BanTheme" },
 	'mdt': { name: "MiddleToss" },
-	'tmnt': { name: "Tournament" }
+	'tmnt': { name: "Tournament" },
+	'twt': { name: "Twenty" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -93,7 +94,7 @@ exports.RULE = {
 	'EKT': { lang: "en", // 영어 끄투
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "rtu",
-		"nrt", "uwd", "upl", "rtn" ],
+		"nrt", "upl", "rtn" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -102,7 +103,7 @@ exports.RULE = {
 	'ESH': { lang: "en", // 영어 끝말잇기
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "nrt", "rtu",
-		"uwd", "upl", "rank", "ogow" ],
+		"upl", "rank", "ogow", "twt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -128,7 +129,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm", "tmnt" ],
+		"nrt", "leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm", "twt", "tmnt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -169,7 +170,7 @@ exports.RULE = {
 	'KAP': { lang: "ko", // 한국어 앞말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "uwd", "upl", "rtn", "ogow" ],
+		"nrt", "leg", "rtu", "upl", "rtn", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -244,7 +245,7 @@ exports.RULE = {
 	/*'EAP': { lang: "en", // 영어 앞말잇기 임시 비활성화
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "nrt", "rtu",
-		"uwd", "upl" ],
+		"upl" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -285,7 +286,7 @@ exports.RULE = {
 	}*/,
 	'KRH': { lang: "ko", // 한국어 랜덤잇기
 		rule: "Classic",
-		opts: [ "mis", "ext", "rank" ],
+		opts: [ "mis", "ext", "rank", "twt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -293,7 +294,7 @@ exports.RULE = {
 	},
 	'ERH': { lang: "en", // 영어 랜덤잇기
 		rule: "Classic",
-		opts: [ "mis", "ext", "rank" ],
+		opts: [ "mis", "ext", "rank", "twt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -301,7 +302,7 @@ exports.RULE = {
 	},
 	'KMH': { lang: "ko", // 한국어 가운데잇기
 		rule: "Classic",
-		opts: [ "mis", "ext", "rank" ],
+		opts: [ "mis", "ext", "man", "rank", "twt" ],
 		time: 1,
 		ai: true,
 		big: false,
