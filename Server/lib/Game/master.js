@@ -153,6 +153,9 @@ function processAdmin(id, value, requestId){
 		case "yell":
 			KKuTu.publish('yell', { value: value });
 			return null;
+		case "clearchat":
+			KKuTu.publish('clearchat');
+			return null;
 		case "notice":
 			KKuTu.publish('notice', { value: value });
 			return null;
