@@ -522,6 +522,10 @@ Server.get("/beta/kkutu", function(req, res){
 Server.get("/bfsoft", function(req, res){
 	page(req, res, "bfsoft");
 });
+
+Server.get("/unsupported", function(req, res){
+	page(req, res, "unsupported");
+});
 Server.get("*", function(req, res){
 	page(req, res, "notfound");
 });

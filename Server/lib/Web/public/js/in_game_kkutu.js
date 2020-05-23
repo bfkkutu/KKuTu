@@ -2210,7 +2210,7 @@
 			group: b,
 			options: {}
 		});
-		return c = $data.shop[a] || b, d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? "/img/kkutu/moremi/badge/" + c._id + d : "M" == c.group.charAt(0) ? "/img/kkutu/moremi/" + c.group.slice(1) + "/" + c._id + d : "/img/kkutu/shop/" + c._id + ".png"
+		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? "/img/kkutu/moremi/badge/" + c._id + d : "M" == c.group.charAt(0) ? "/img/kkutu/moremi/" + c.group.slice(1) + "/" + c._id + d : "/img/kkutu/shop/" + c._id + ".png"
 	}
 
 	function iDynImage(a, b) {
@@ -2742,24 +2742,6 @@
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").show();
 				}
-				if($(".my-level").text().substr(3) <= 30){
-					sa = setInterval(function(){
-						$("label[for='room-twenty']").text("비기너")
-						$("label[for='room-twenty']").css('color','black')
-					}, 4000)
-					setTimeout(function(){
-						sb = setInterval(function(){
-							$("label[for='room-twenty']").css('color','#D92121')
-							$("label[for='room-twenty']").text("초보자 추천")
-						}, 4000)
-					}, 2000)
-				}
-				$(".closeBtn").on("click", function(fo){
-					clearInterval(sa)
-					clearInterval(sb)
-					$("label[for='room-twenty']").text("비기너")
-					$("label[for='room-twenty']").css('color','black')
-				})
 				$stage.dialog.quick.hide(), $data.typeRoom = "enter", showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.newRoom)
 			}), $stage.menu.setRoom.on("click", function(a) {
 				var b, c, d, e = RULE[MODE[$data.room.mode]],
