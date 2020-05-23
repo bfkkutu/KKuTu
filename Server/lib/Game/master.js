@@ -159,6 +159,12 @@ function processAdmin(id, value, requestId){
 		case "notice":
 			KKuTu.publish('notice', { value: value });
 			return null;
+		case "roomsize":
+			KKuTu.publish('roomsize', { value: value });
+			return null;
+		case "gamesize":
+			KKuTu.publish('gamesize', { value: value });
+			return null;
 		case "ban":
 			var date = moment().format("YYYYMMDDHHmmss");
 			var target = value.split(",")[0];

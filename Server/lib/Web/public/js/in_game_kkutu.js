@@ -271,6 +271,12 @@
 			case "yellto":
 				if($data.id == a.id) yell(a.value), notice(a.value, L.yell);
 				break;
+			case "roomsize":
+				if($data.room.opts.tournament) $stage.box.room.height(a.value)
+				break;
+			case "gamesize":
+				if($data.room.opts.tournament) $stage.box.game.height(a.value)
+				break;
 			case "notice":
 				notice(a.value, L.yell);
 				break;
@@ -425,7 +431,7 @@
 			case "roundEnd":
 				for (c in a.users) $data.setUser(c, a.users[c]);
 				$data._resultRank = a.ranks, roundEnd(a.result, a.data);
-				if(!$stage.dialog.result.is(":visible")) $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
+				if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(920) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 				break;
 			case "kickVote":
 				$data._kickTarget = $data.users[a.target], $data.id != a.target && $data.id != $data.room.master && kickVoting(a.target), notice(($data._kickTarget.profile.title || $data._kickTarget.profile.name) + L.kickVoting);
@@ -854,7 +860,7 @@
 	function processRoom(a) {
 		var b, c, d, e;
 		if (a.myRoom = $data.place == a.room.id || a.target == $data.id, a.myRoom) {
-			if ($target = $data.users[a.target], a.kickVote && (notice(getKickText($target.profile, a.kickVote)), $target.id == a.id && alert(L.hasKicked)), -1 == a.room.players.indexOf($data.id)) $data.room && $data.room.gaming && (stopAllSounds(), $data.practicing = !1, $data._gaming = !1, $stage.box.room.height(360), playBGM("lobby")), $data.users[$data.id].game.ready = !1, $data.users[$data.id].game.team = 0, $data.users[$data.id].game.form = "J", $stage.menu.spectate.removeClass("toggled"), $stage.menu.ready.removeClass("toggled"), $data.room = null, $data.resulting = !1, $data._players = null, $data._master = null, $data.place = 0, a.room.practice && (!$data.admin ? delete $data.users[0] : null, $data.room = $data._room, $data.place = $data._place, $data.master = $data.__master, $data._players = $data.__players, !$data.admin ? delete $data._room : null);
+			if ($target = $data.users[a.target], a.kickVote && (notice(getKickText($target.profile, a.kickVote)), $target.id == a.id && alert(L.hasKicked)), -1 == a.room.players.indexOf($data.id)) $data.room && $data.room.gaming && (stopAllSounds(), $data.practicing = !1, $data._gaming = !1, $data.room.opts.tournament ? $stage.box.room.height(920) : $stage.box.room.height(360), playBGM("lobby")), $data.users[$data.id].game.ready = !1, $data.users[$data.id].game.team = 0, $data.users[$data.id].game.form = "J", $stage.menu.spectate.removeClass("toggled"), $stage.menu.ready.removeClass("toggled"), $data.room = null, $data.resulting = !1, $data._players = null, $data._master = null, $data.place = 0, a.room.practice && (!$data.admin ? delete $data.users[0] : null, $data.room = $data._room, $data.place = $data._place, $data.master = $data.__master, $data._players = $data.__players, !$data.admin ? delete $data._room : null);
 			else if (a.room.practice && !$data.practicing && ($data.practicing = !0, $data._room = $data.room, $data._place = $data.place, $data.__master = $data.master, $data.__players = $data._players), $data.room && ($data._players = $data.room.players.toString(), $data._master = $data.room.master, $data._rTitle = $data.room.title, $data._rMode = getOptions($data.room.mode, $data.room.opts, !0), $data._rLimit = $data.room.limit, $data._rRound = $data.room.round, $data._rTime = $data.room.time), $data.room = a.room, $data.place = $data.room.id, $data.master = $data.room.master == $data.id, a.spec && a.target == $data.id) {
 				if ($data._spectate || ($data._spectate = !0, clearBoard(), drawRound()), a.boards) {
 					$data.selectedRound = 1;
@@ -892,7 +898,7 @@
 		if (!$data._replay && ("for-gaming" != d || a)) {
 			$data.practicing && (d = "for-gaming"), $(".kkutu-menu button").hide();
 			for (c in $stage.box) $stage.box[c].hide();
-			$stage.box.me.show(), $stage.box.chat.show().width(790).height(190), $stage.chat.height(120), "for-lobby" == d ? ($data._ar_first = !0, $stage.box.userList.show(), $data._shop ? ($stage.box.roomList.hide(), $stage.box.shop.show()) : ($stage.box.roomList.show(), $stage.box.shop.hide()), updateUserList(b || d != $data._only), updateRoomList(b || d != $data._only), updateMe(), $data._jamsu && (clearTimeout($data._jamsu), !$data.admin ? delete $data._jamsu : null)) : "for-master" == d || "for-normal" == d ? ($(".team-chosen").removeClass("team-chosen"), $data.users[$data.id].game.ready || "S" == $data.users[$data.id].game.form ? ($stage.menu.ready.addClass("toggled"), $(".team-selector").addClass("team-unable")) : ($stage.menu.ready.removeClass("toggled"), $(".team-selector").removeClass("team-unable"), $("#team-" + $data.users[$data.id].game.team).addClass("team-chosen"), $data.opts.ar && $data._ar_first && ($stage.menu.ready.addClass("toggled"), $stage.menu.ready.trigger("click"), $data._ar_first = !1)), $data._shop = !1, $stage.box.room.show().height(360), "for-master" == d && $stage.dialog.inviteList.is(":visible") && updateUserList(), updateRoom(!1), updateMe()) : "for-gaming" == d && ($data._gAnim && ($stage.box.room.show(), $data._gAnim = !1), $data._shop = !1, $data._ar_first = !0, $stage.box.me.hide(), $stage.box.game.show(), $(".ChatBox").width(1e3).height(140), $stage.chat.height(70), updateRoom(!0)), $data._only = d, setLocation($data.place), $(".kkutu-menu ." + d).show()
+			$stage.box.me.show(), $stage.box.chat.show().width(790).height(190), $stage.chat.height(120), "for-lobby" == d ? ($data._ar_first = !0, $stage.box.userList.show(), $data._shop ? ($stage.box.roomList.hide(), $stage.box.shop.show()) : ($stage.box.roomList.show(), $stage.box.shop.hide()), updateUserList(b || d != $data._only), updateRoomList(b || d != $data._only), updateMe(), $data._jamsu && (clearTimeout($data._jamsu), !$data.admin ? delete $data._jamsu : null)) : "for-master" == d || "for-normal" == d ? ($(".team-chosen").removeClass("team-chosen"), $data.users[$data.id].game.ready || "S" == $data.users[$data.id].game.form ? ($stage.menu.ready.addClass("toggled"), $(".team-selector").addClass("team-unable")) : ($stage.menu.ready.removeClass("toggled"), $(".team-selector").removeClass("team-unable"), $("#team-" + $data.users[$data.id].game.team).addClass("team-chosen"), $data.opts.ar && $data._ar_first && ($stage.menu.ready.addClass("toggled"), $stage.menu.ready.trigger("click"), $data._ar_first = !1)), $data._shop = !1, $data.room.opts.tournament ? $stage.box.room.show().height(920) : $stage.box.room.show().height(360), "for-master" == d && $stage.dialog.inviteList.is(":visible") && updateUserList(), updateRoom(!1), updateMe()) : "for-gaming" == d && ($data._gAnim && ($stage.box.room.show(), $data._gAnim = !1), $data._shop = !1, $data._ar_first = !0, $stage.box.me.hide(), $stage.box.game.show(), $(".ChatBox").width(1e3).height(140), $stage.chat.height(70), updateRoom(!0)), $data._only = d, setLocation($data.place), $(".kkutu-menu ." + d).show()
 		}
 	}
 
@@ -1409,7 +1415,7 @@
 		}, 500), $stage.box.game.height(1).animate({
 			height: 410
 		}, 500), stopBGM(), $stage.dialog.resultSave.attr("disabled", !1), clearBoard(), $stage.game.display.html(L.soon), playSound("game_start"), forkChat(), addTimeout(function() {
-			$stage.box.room.height(360).hide(), $stage.chat.scrollTop(999999999)
+			$data.room.opts.tournament ? $stage.box.room.height(920).hide() : $stage.box.room.height(360).hide(), $stage.chat.scrollTop(999999999)
 		}, 500)
 	}
 
@@ -1628,7 +1634,7 @@
 				$data._coef = .05
 			}, 500)
 		}, 2e3), stopRecord()
-		if(!$stage.dialog.result.is(":visible")) $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
+		if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(920) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 	}
 
 	function drawRanking(a) {
@@ -2000,7 +2006,7 @@
 	function badWords(a) {
 		//a = a.replace("<", "&lt");
 		if (OSV.test(a)){
-			return a.replace(OSV, "[타서버 언급 금지]");
+			return a.replace(OSV, "[타서버 홍보 방지]");
 		} else if (OSVURL.test(a)){
 			return a.replace(OSVURL, "[타서버 링크 공유 금지]");
 		} else if (XSS.test(a)){
@@ -2321,7 +2327,7 @@
 		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,}|^^ㅣ|^^I|^^l)[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(같|새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|쥬|주|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|뷰|부|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|징|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","조[^가-힣]*건[^가-힣]*만[^가-힣]*남","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
 		XSS = new RegExp(["(&lt;|<)(i|I)(m|M)(g|G)", "(&lt;|<)(s|S)(c|C)(r|R)(i|I)(p|P)(t|T)", "(&lt;|<)(h|H)(1|2|3|4|5|6)","(&lt;|<)(a|A)"].join("|")),
 		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)"].join("|")),
-		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr"].join("|")),
+		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
 		ws, rws, $stage, $sound = {},
 		$_sound = {},
 		$data = {},

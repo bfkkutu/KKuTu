@@ -308,7 +308,7 @@ exports.submit = function(client, text){
 	
 	if(!isChainable(text, my.mode, my.game.char, my.game.subChar)) return client.chat(text);
 	if(my.game.chain.indexOf(text) != -1 && !my.opts.returns) return client.publish('turnError', { code: 409, value: text }, true);
-	if(my.opts.twenty && text.length > 20) client.publish('turnError', { code: 415, value: text }, true);
+	if(my.opts.twenty && text.length > 20) return client.publish('turnError', { code: 415, value: text }, true);
 	
 	l = my.rule.lang;
 	my.game.loading = true;
@@ -724,7 +724,7 @@ function getAuto(theme, char, subc, type){
 		});
 		function forManner(list){
 			lst = list;
-			MAN.upsert([ '_id', char ]).set([ key, lst.length ? true : false ]).on(null, null, onFail);
+			if(!my.opts.ignoreinitial) MAN.upsert([ '_id', char ]).set([ key, lst.length ? true : false ]).on(null, null, onFail);
 		}
 		function onFail(){
 			MAN.createColumn(key, "boolean").on(function(){
