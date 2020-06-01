@@ -21,14 +21,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	let isHacker = true;
 	let _setInterval = window.setInterval;
 	
-	$(document).ready(function() { //호환성 조정
-		if (jQuery.browser.name == "msie"){
-			alert("지원하지 않는 브라우저입니다.\n다른 브라우저를 사용해 주세요.");
-			$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
-			$("#Bottom").remove();
-		}
-	});
-	
 	function getCorona(){
 		$.get("/corona", function(a) {
 			$("#corona").text(`확진 ${a.cf}명`);
@@ -77,7 +69,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 		b = {
 			list: $("#server-list"),
 			total: $("#server-total"),
-			start: $("#game-start"),
+			start: $("#game-start"), 
 			ref: $("#server-refresh"),
 			refi: $("#server-refresh>i")
 		}, $("#Background").attr("src", "").addClass("jt-image").css({
@@ -106,12 +98,12 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
 			$("#Bottom").remove();
 		})
-		if(!location.href.includes("bfkkutu.kr") && !location.href.includes("localhost")){
+		/* if(!location.href.includes("bfkkutu.kr") && !location.href.includes("localhost")){
 			$("#Bottom").empty();
 			$("#Middle").empty();
 			alert("BF끄투의 도메인이 bfkkutu.kr로 변경되었습니다.")
 			location.href = "https://bfkkutu.kr"
-		}
+		} */
 		getCorona();
 	})
 })();

@@ -29,6 +29,10 @@ var Redis	 = require("redis");
 var Parser	 = require("body-parser");
 var DDDoS	 = require("dddos");
 var Server	 = Express();
+// 해티 수정
+var webServer = Express();
+var vHost = require('vhost');
+// 해티 수정 끝
 var DB		 = require("./db");
 //볕뉘 수정 구문삭제 (28)
 var JLog	 = require("../sub/jjlog");
@@ -152,8 +156,8 @@ Server.use((req, res, next) => {
 });
 //볕뉘 수정 끝
 //디도스 감지 및 차단
-DDDoS = new DDDoS({
-	maxWeight: 40,
+/*DDDoS = new DDDoS({
+	maxWeight: 30,
 	checkInterval: 900,
 	rules: [{
 		regexp: "^/(cf|dict|gwalli|rpRanking|corona)",
@@ -166,17 +170,15 @@ DDDoS = new DDDoS({
 	}]
 });
 DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
-	var data = ip; //아이피를 data에 기록
 	var date = moment().format("MM_DD_HH_mm"); //지금 이 시간 (월 일 시 분)
 	JLog.warn(`DoS from IP ${ip} on ${path}`); //패킷을 보낸놈의 아이피를 따고
-	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", data+"  "+date, 'utf8', function(err, ip, path) { //기록하고
+	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", ip+"  "+date, 'utf8', function(err, ip, path) { //기록하고
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
 	})
 	//process.exit(1); //웹 서버를 조진다
-	if(!maintenance) maintenance = true; // 첫번째 작동
-	//else process.exit(1); // 두번째 작동
+	if(!maintenance) maintenance = true;
 };
-Server.use(DDDoS.express());
+Server.use(DDDoS.express());*/
 //디도스 감지 및 차단
 
 WebInit.init(Server, true);
@@ -207,12 +209,17 @@ DB.ready = function(){
 			}
 		}
 	});
-	Server.listen(80);
-	//Server.listen(443);
+	// 해티 수정
+	webServer.use(vHost('bfkkutu.kr', Server));
+	webServer.get('*', function(req, res) {
+		res.send(`<h1>403 Forbidden</h1>`);
+	});
+	webServer.listen(80);
 	if(Const.IS_SECURED) {
 		const options = Secure();
-		https.createServer(options, Server).listen(443);
+		https.createServer(options, webServer).listen(443);
 	}
+	// 해티 수정 끝
 };
 Const.MAIN_PORTS.forEach(function(v, i){
 	var KEY = process.env['WS_KEY'];
