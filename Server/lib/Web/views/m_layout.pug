@@ -24,6 +24,7 @@ html
 		block Subject
 		meta(charset='utf-8')
 		meta(name='viewport', content='width=device-width, initial-scale=1.0,maximum-scale=1.0, user-scalable=no')
+		
 		script(type='text/javascript').
 			function getObject(v, i) {
 				Object.defineProperty(v, i, {value: v[i], writable: false});
@@ -57,16 +58,24 @@ html
 		div#Jungle
 			span#mobile= locals.mobile
 			span#summonerID= DATA._id
-			img#Background(src='/img/bg/' + (locals.m_bg || 'def.png'))
+			img#Background(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/bg/' + (locals.m_bg || 'def.png'))
 			block Jungle
 		div#Middle
 			block Middle
 		div#Bottom
 			block Bottom
-			div.bottom-legal
-				a(href='?pc=true')= L('AS_PC')
-				br
-				a.bottom-contact(href='http://blog.jjo.kr/', target='_blank')= L('CREATOR')
-				a.bottom-contact(href='mailto:op@jjo.kr', target='_blank') Contact op@jjo.kr
-			div.bottom-legal!= L('GPL')
-			+separator(40)
+		div#Footer
+			block Footer
+			div.footer-div
+				p
+				div.footer-blank
+					p
+				div.footer-left(style='text-align: left;')
+					div!= L('copyright')
+					div!= L('GPL')
+				div.footer-right(style='text-align: right;')
+					div!= L('allDocument')
+					div!= L('dictionarySupport')
+				div.footer-blank
+					p
+			+separator(10)

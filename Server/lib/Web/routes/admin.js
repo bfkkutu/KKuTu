@@ -430,13 +430,33 @@ function onKKuTuDDB(req, res){
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
 			}else{ // 존재하면
 				//TABLE.remove([ '_id', item ]).on();
-				var i;
+				var i, n, ii, fmean = ""
 				var themes = $doc.theme.split(",")
+				var types = $doc.type.split(",")
+				var means = $doc.mean.split("＂")
+				var produced = `{`
+				for(n in means){
+					if(n != 0){
+						produced += ((n/2).toString().includes(".") ? `"${means[Number(n)]}":` : ` "${means[Number(n)]}",`)
+					}else continue;
+				}
+				means = produced.slice(0,-1)
+				means += `}`
+				means = JSON.parse(means)
 				for(i in themes){
 					if(themes[i] == theme){
-						var idx = themes.indexOf(theme)
-						$doc.theme.splice(idx, 1)
-						TABLE.update([ '_id', item ]).set([ 'theme', $doc.theme ]).on();
+						var thidx = themes.indexOf(theme)
+						var tyidx = types.indexOf(types[i])
+						themes.splice(thidx, 1)
+						types.splice(tyidx, 1)
+						delete means[i]
+						for(ii in JSON.stringify(means).split(",")){
+							fmean += JSON.stringify(means).replace(/[\{\}\[\]]/gi,"").split(",")[ii].replace('"',"＂").replace('"',"＂").replace(':',"").replace('"',"").replace('"',"")
+						}
+						TABLE.update([ '_id', item ]).set([ 'theme', themes.toString() ]).on();
+						TABLE.update([ '_id', item ]).set([ 'type', types.toString() ]).on();
+						TABLE.update([ '_id', item ]).set([ 'flag', Number(themes.length) ]).on();
+						TABLE.update([ '_id', item ]).set([ 'mean', fmean ]).on();
 						break;
 					} else continue;
 				}
