@@ -53,7 +53,8 @@ block CSS
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
 	// span#PORT= locals.PORT
-	span#URL= `${locals.PROTOCOL}://ws.${locals.HOST}:${locals.PORT}/${locals._id}`
+	//span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
+	span#URL= `${locals.PROTOCOL}://www.ws.kkutu.xyz:${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
 	span#RULE= JSON.stringify(locals.RULE)
@@ -73,7 +74,7 @@ block Middle
 	- var SECVER = L('security_version')
 	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
 	div#Intro
-		img#intro(src='/img/kkutu/intro.png')
+		img#intro(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/intro.png')
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
 		div#version= VERSION
 		div#intro-text= L('LOADING')
@@ -381,7 +382,7 @@ block Middle
 			h4#rank
 			h4#rankpoint
 		div.dialog-bar.profile-rankicon
-			img#rankicon(src='/img/kkutu/rankicon/unranked.png')
+			img#rankicon(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankicon/UNRANKED.png')
 		div.dialog-bar
 			h4(style='width: 83px;')= L('place')
 			h4.dialog-bar-value#profile-place
@@ -488,9 +489,9 @@ block Middle
 				td#clanListName(width=115)= L('clanName')
 				td#clanListID(width=115)= L('clanID')
 			tbody
-		div.dialog-bar
-			h4(style='color: #d91e1e;')= 'EVENT!'
-			button#clanCompetition= L('clanCompetition')
+		//div.dialog-bar
+		//	h4(style='color: #d91e1e;')= 'EVENT!'
+		//	button#clanCompetition= L('clanCompetition')
 		div.dialog-bar
 			button#newClan= L('newClan')
 			button#viewClan= L('viewClan')
@@ -661,9 +662,9 @@ block Middle
 				div.cw-q-body
 			div.b-left.bb(style='display: none;')
 			div.jjoriping
-				img.jjoObj.jjoEyeL(src='/img/jjoeyeL.png')
-				img.jjoObj.jjoNose(src='/img/jjonose.png')
-				img.jjoObj.jjoEyeR(src='/img/jjoeyeR.png')
+				img.jjoObj.jjoEyeL(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjoeyeL.png')
+				img.jjoObj.jjoNose(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjonose.png')
+				img.jjoObj.jjoEyeR(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjoeyeR.png')
 				div.jjoDisplayBar
 					div.jjo-display.ellipse
 					+GraphBar('jjo-turn-time')

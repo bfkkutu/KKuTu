@@ -21,23 +21,22 @@ block Subject
 
 block CSS
 	link(rel='stylesheet', href='/css/in_game_kkutu.css')
-
+	
 block Middle
 	+separator(5)
 	div(style='float: left; width: 100%;')
 	label= L('textver123') + L('version')
 		div(style='float: left; padding-left: 70px;')
 			h3#holder= L('title_none').replace(/\[.+?\]/g, "")
-			img#logo(src='/img/kkutu/short_logo.png')
+			img#logo(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/short_logo.png')
 		div#menu-bar(style='float: right; margin-top: 25px;')
 			a(target='_blank', href='http://cafe.bfkkutu.ze.am/', style='background-color: #189E47;')= 'Naver Cafe'
 			a(target='_blank', href='//discord.gg/scPVHcE', style='background-color: #233599;')= 'Discord'
 			a(target='_blank', href='//sdbx.dev/', style='background-color: #ff9900;')= 'Sandbox'
-			a(target='_blank', href='https://coronamap.site/', style='background-color: #ff0000;', id='corona')= 'corona'
 		div.jjoriping(style='margin-top: 40px;')
-			img.jjoObj.jjoEyeL(src='/img/jjoeyeL.png', style='left: -270px;')
-			img.jjoObj.jjoNose(src='/img/jjonose.png', style='left: -170px;')
-			img.jjoObj.jjoEyeR(src='/img/jjoeyeR.png', style='left: -70px;')
+			img.jjoObj.jjoEyeL(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjoeyeL.png', style='left: -270px;')
+			img.jjoObj.jjoNose(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjonose.png', style='left: -170px;')
+			img.jjoObj.jjoEyeR(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjoeyeR.png', style='left: -70px;')
 			div.jjoDisplayBar(style='width: 325px; height: 85px;')
 				button#game-start.jjo-display= L('gameStart')
 	div(style='float: right; margin-top: -120px; width: 50%;')

@@ -429,7 +429,17 @@ function onKKuTuDDB(req, res){
 			if($doc.theme.indexOf(theme) == -1){ // 존재하지 않으면
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
 			}else{ // 존재하면
-				TABLE.remove([ '_id', item ]).on();
+				//TABLE.remove([ '_id', item ]).on();
+				var i;
+				var themes = $doc.theme.split(",")
+				for(i in themes){
+					if(themes[i] == theme){
+						var idx = themes.indexOf(theme)
+						$doc.theme.splice(idx, 1)
+						TABLE.update([ '_id', item ]).set([ 'theme', $doc.theme ]).on();
+						break;
+					} else continue;
+				}
 				itemLog(item, req, theme, list.length);
 			}
 		});

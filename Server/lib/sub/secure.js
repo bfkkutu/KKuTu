@@ -30,11 +30,11 @@ module.exports = () => {
         options.pfx = File.readFileSync(Const.SSL_OPTIONS.PFX);
         options.passphrase = Const.SSL_OPTIONS.PFXPass;
     } else {
-        options.key = File.readFileSync(Const.SSL_OPTIONS.PRIVKEY);
+		options.key = File.readFileSync(Const.SSL_OPTIONS.PRIVKEY);
         options.cert = File.readFileSync(Const.SSL_OPTIONS.CERT);
         if(Const.SSL_OPTIONS.isCA == true) {
             options.ca = File.readFileSync(Const.SSL_OPTIONS.CA);
         }
-    }
+	}
     return options;
 }

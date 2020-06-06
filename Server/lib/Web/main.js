@@ -366,6 +366,9 @@ Server.get("/", cors(), function(req, res){
 	});
 	function onFinish($doc){
 		var id = req.session.id;
+		var ptc = 'ws';
+		
+		if(Const.IS_SECURED || Const.CF) ptc = 'wss'
 
 		if($doc){
 			req.session.profile = $doc.profile;
@@ -379,7 +382,7 @@ Server.get("/", cors(), function(req, res){
 				'_id': id,
 				'PORT': Const.MAIN_PORTS[server],
 				'HOST': req.hostname,
-				'PROTOCOL': Const.IS_SECURED ? 'wss' : 'ws',
+				'PROTOCOL': ptc,
 				'TEST': req.query.test,
 				'MOREMI_PART': Const.MOREMI_PART,
 				'AVAIL_EQUIP': Const.AVAIL_EQUIP,
@@ -393,8 +396,8 @@ Server.get("/", cors(), function(req, res){
 				'KO_THEME': Const.KO_THEME,
 				'EN_THEME': Const.EN_THEME,
 				'IJP_EXCEPT': Const.IJP_EXCEPT,
-				'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
-				'ogURL': "https://bfk.opg.kr/",
+				'ogImage': "https://bfkkutu.kr/img/kkutu/logo.png",
+				'ogURL': "https://bfkkutu.kr/",
 				'ogTitle': "새로운 끄투의 시작, BF끄투!",
 				'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
 			});
@@ -418,8 +421,8 @@ Server.get("/", cors(), function(req, res){
 				'KO_THEME': Const.KO_THEME,
 				'EN_THEME': Const.EN_THEME,
 				'IJP_EXCEPT': Const.IJP_EXCEPT,
-				'ogImage': "https://bfk.opg.kr/img/kkutu/logo.png",
-				'ogURL': "https://bfk.opg.kr/",
+				'ogImage': "https://bfkkutu.kr/img/kkutu/logo.png",
+				'ogURL': "https://bfkkutu.kr/",
 				'ogTitle': "새로운 끄투의 시작, BF끄투!",
 				'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
 			});
@@ -469,36 +472,6 @@ Server.get("/newUser", function(req, res){
 			}
 		});
 	}else return res.sendStatus(404);
-});
-
-Server.get("/corona", function(req, res){
-	
-	var url = "https://coronamap.site/";
-	var post;
- 
-
-	request(url, (error, response, body) => {
-		//if (error) throw error;
-
-		try {
-			let $ = cheerio.load(body);
-			let cf = '', dd = '', cd = '';
-			//  확진       사망      완치
-			$('div.wa').find('div.content').each(function (index, elem) {
-				cf = $(this).find('div').text().trim();
-			});
-			dd = $("div.wa").children("div.content1").children("div").text();
-			cd = dd.split("사망");
-			cd = cd[0].split("완치");
-			cd = cd[1].trim();
-			dd = dd.split("완치");
-			dd = dd[1].split("사망");
-			dd = dd[1].trim();
-			res.send({ cf: cf, dd: dd, cd: cd });
-		} catch (error) {
-			console.error(error);
-		}
-	});
 });
 
 //볕뉘 수정 구문 삭제(274~353)

@@ -32,6 +32,7 @@ exports.TESTER = GLOBAL.ADMIN.concat([
 ]);
 exports.IS_SECURED = GLOBAL.IS_SECURED;
 exports.SSL_OPTIONS = GLOBAL.SSL_OPTIONS;
+exports.CF = GLOBAL.CF;
 exports.OPTIONS = {
 	'man': { name: "Manner" },
 	'ext': { name: "Injeong" },
@@ -303,6 +304,14 @@ exports.RULE = {
 	'KMH': { lang: "ko", // 한국어 가운데잇기
 		rule: "Classic",
 		opts: [ "mis", "ext", "man", "rank", "twt" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
+	},
+	'RVS': { lang: "ko", // 거꾸로
+		rule: "Reverse",
+		opts: [ ],
 		time: 1,
 		ai: true,
 		big: false,

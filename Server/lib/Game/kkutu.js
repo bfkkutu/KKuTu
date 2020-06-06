@@ -1795,8 +1795,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.returns) rw.rankPoint = 0 // 리턴
 	
 	// 2주년 이벤트
-	rw.score = rw.score * 2;
-	rw.rankPoint = rw.rankPoint * 2;
+	/*rw.score = rw.score * 2;
+	rw.rankPoint = rw.rankPoint * 2;*/
 
 	return rw;
 }

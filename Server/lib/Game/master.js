@@ -89,6 +89,8 @@ const ENABLE_FORM = exports.ENABLE_FORM = [ "S", "J" ];
 const MODE_LENGTH = exports.MODE_LENGTH = Const.GAME_TYPE.length;
 const PORT = process.env['KKUTU_PORT'];
 
+const findClientIp = require('x-forwarded-for-wrangler');
+
 let moment = require('moment'); //moment.js
 
 const log4js = require('log4js');
@@ -123,7 +125,6 @@ process.on('uncaughtException', function(err){
 });
 function getClientIp(req, res) {
 	var clientIp = req.remoteAddress;
-	//var clientIp = req.info.connection.remoteAddress;
 	if (!clientIp) {
 		JLog.warn(`clientIp is empty.   (${clientIp})`)
 		return "";
@@ -206,9 +207,12 @@ function processAdmin(id, value, requestId){
 			DIC[target].send('alert', { id : target, value: value });
 			return null;
 		case "sweetalert":
-			var target = value.split(",")[0];
-			value = value.split(",")[1];
-			DIC[target].send('sweetalert', { id : target, value: value });
+			value = value.split(",");
+			var target = value[0];
+			var title = value[1];
+			var comment = value[2];
+			var kind = value[3];
+			DIC[target].send('sweetalert', { id : target, title: title, comment: comment, kind: kind });
 			return null;
 		case "yellto":
 			var target = value.split(",")[0];
@@ -697,7 +701,7 @@ exports.init = function(_SID, CHAN){
 
 function joinNewUser($c, ip, path) {
 	var thisDate = moment().format("MM월-DD일|HH시-mm분");
-	var clientIp = getTempIp($c);
+	var clientIp = $c.remoteAddress;
 	var clientId = $c.id;
 	
 	$c.send('welcome', {
@@ -942,14 +946,13 @@ KKuTu.onClientClosed = function($c, code, ip, path){
 	if($c.friends) narrateFriends($c.id, $c.friends, "off");
 	KKuTu.publish('disconn', { id: $c.id });
 	
-	
-	var thisDate = moment().format("MM월-DD일|HH시-mm분");
 	var clientIp = $c.remoteAddress;
+	var thisDate = moment().format("MM월-DD일|HH시-mm분");
 	var clientId = $c.id;
 	
-	logger.info(`Exit #` + $c.id + ` IP: ${$c.remoteAddress}`);
-	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Exit:[${$c.remoteAddress}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
+	logger.info(`Exit #` + $c.id + ` IP: ${clientIp}`);
+	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Exit:[${clientIp}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
 		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
 	})
-	JLog.info(`Exit #` + $c.id + ` IP: ${$c.remoteAddress}`);
+	JLog.info(`Exit #` + $c.id + ` IP: ${clientIp}`);
 };

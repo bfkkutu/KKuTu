@@ -266,7 +266,7 @@
 				if($data.id == a.id) alert(a.value);
 				break;
 			case "sweetalert":
-				if($data.id == a.id) Swal.fire('BF끄투', a.value, 'success')
+				if($data.id == a.id) Swal.fire(a.title, a.comment, a.kind) // id: 대상 title: 제목 comment: 내용 kind: 종류 (success/info/error 등)
 				break;
 			case "yellto":
 				if($data.id == a.id) yell(a.value), notice(a.value, L.yell);
@@ -512,7 +512,7 @@
 					}
 				}
 				if(a.code == 402){
-					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", '/img/kkutu/def.png'), location.href = '/login';
+					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", 'https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png'), location.href = '/login';
 				} else if(a.code == 444){
 					if(a.reason){
 						if(a.enddate != "영구"){
@@ -535,7 +535,7 @@
 							$("#alertbtn").hide()
 						}
 					ws.close();
-					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", '/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
+					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", 'https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
 				}else alert("[#" + a.code + "] " + L["error_" + a.code] + c);
 		}
 		$data._record && recordEvent(a)
@@ -1023,7 +1023,7 @@
 	function getAIProfile(a) {
 		return {
 			title: L["aiLevel" + a] + " " + L.robot,
-			image: "/img/kkutu/robot.png"
+			image: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/robot.png"
 		}
 	}
 
@@ -1292,7 +1292,7 @@
 		if(!e.robot){
 			var x = getRank(z);
 			
-			$("#rankicon").attr("src", "/img/kkutu/rankicon/" + x + ".png");
+			$("#rankicon").attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankicon/" + x + ".png");
 			
 			$("#ProfileDiag").css("height","495px"); // default size
 			$(".profile-level-progress").show();
@@ -1856,7 +1856,7 @@
 		if(lv=="admin"){
 			return $("<div>").css({
 				'float': "left",
-				'background-image': "url('/img/kkutu/lv/lvGM.png')",
+				'background-image': "url('https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/lv/lvGM.png')",
 				'background-position': lX + "% " + lY + "%",
 				'background-size': "100%"
 			});
@@ -1871,7 +1871,7 @@
 		}*/
 		return $("<div>").css({
 			'float': "left",
-			'background-image': "url('/img/kkutu/lv/newlv.png')",
+			'background-image': "url('https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/lv/newlv.png')",
 			'background-position': lX + "% " + lY + "%",
 			'background-size': "2560%"
 		});
@@ -2068,7 +2068,7 @@
 		var rank = calculateRank(a, b);
 		return $("<div>").css({
 			'float': "left",
-			'background-image': `url('/img/kkutu/rankicon/${rank}.png')`,
+			'background-image': `url('https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankicon/${rank}.png')`,
 			'background-position': "100% 100%",
 			'background-size': "100%"
 		});
@@ -2216,7 +2216,7 @@
 			group: b,
 			options: {}
 		});
-		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? "/img/kkutu/moremi/badge/" + c._id + d : "M" == c.group.charAt(0) ? "/img/kkutu/moremi/" + c.group.slice(1) + "/" + c._id + d : "/img/kkutu/shop/" + c._id + ".png"
+		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/badge/" + c._id + d : "M" == c.group.charAt(0) ? "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/" + c.group.slice(1) + "/" + c._id + d : "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/shop/" + c._id + ".png"
 	}
 
 	function iDynImage(a, b) {
@@ -2233,7 +2233,7 @@
 	
 	function iNTGImage(a){
 		var b, c;
-		return c = $data.shop[a], b = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "/img/kkutu/moremi/nametag/" + c._id + b
+		return c = $data.shop[a], b = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/nametag/" + c._id + b
 	}
 
 	function queueObtain(a) {
@@ -2251,7 +2251,7 @@
 				Mrhand: "Mhand"
 			};
 		if(b.MSKIN == "hide_moremi"){
-			for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", "/img/kkutu/def.png").css({
+			for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png").css({
 				width: "100%",
 				height: "100%"
 			}));
@@ -2272,14 +2272,14 @@
 			width: "100%",
 			height: "100%"
 		}));
-		e.children(".moremi-back").after($("<img>").addClass("moremies moremi-body").attr("src", b.robot ? `/img/kkutu/moremi/robot.png` : `/img/kkutu/moremi/skin/${s}.png`).css({
+		e.children(".moremi-back").after($("<img>").addClass("moremies moremi-body").attr("src", b.robot ? `https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/robot.png` : `https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/skin/${s}.png`).css({
 			width: "100%",
 			height: "100%"
 		}));
 		e.children(".moremi-rhand").css("transform", "scaleX(-1)")
 		if(r !== "shop" && u !== undefined){
 			if(o !== "UNRANKED"){
-				e.append($("<img>").addClass("moremies moremi-tier").attr("src", "/img/kkutu/rankedge/" + o + ".png").css({
+				e.append($("<img>").addClass("moremies moremi-tier").attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankedge/" + o + ".png").css({
 					width: "100%",
 					height: "100%"
 				}));
@@ -2324,7 +2324,7 @@
 		TICK = 30,
 		EXP = [],
 		RP = "bwBuAGwAeQBiAGYAawBrAHUAdAB1AGMAYQBuAHIAZQBhAGQAdABoAGkAcwBmAGkAbABlAHQAaABhAHQAdgBlAHIAaQBmAGkAZQBkAGIAeQBiAGYAawBrAHUAdAB1AGMAbABpAGUAbgB0AA==",
-		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,}|^^ㅣ|^^I|^^l)[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(같|새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|쥬|주|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|뷰|부|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|징|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","조[^가-힣]*건[^가-힣]*만[^가-힣]*남","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
+		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,}|^^ㅣ|^^I|^^l)[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(기|끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(같|새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|사|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|쥬|주|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|뷰|부|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|슈|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","조[^가-힣]*건[^가-힣]*만[^가-힣]*남","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)"].join("|")),
 		XSS = new RegExp(["(&lt;|<)(i|I)(m|M)(g|G)", "(&lt;|<)(s|S)(c|C)(r|R)(i|I)(p|P)(t|T)", "(&lt;|<)(h|H)(1|2|3|4|5|6)","(&lt;|<)(a|A)"].join("|")),
 		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)"].join("|")),
 		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
@@ -2582,70 +2582,70 @@
 			}, void 0 == _WebSocket) return loading(L.websocketUnsupport), void alert(L.websocketUnsupport);
 		for ($data._soundList = [{
 				key: "k",
-				value: "/media/kkutu/k.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/k.mp3"
 			}, {
 				key: "lobby",
-				value: "/media/kkutu/LobbyBGM_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "/media/kkutu/LobbyBGM_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "2",
-				value: "/media/kkutu/LobbyBGM_allgro.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_allgro.mp3"
 			}, {
 				key: "3",
-				value: "/media/kkutu/LobbyBGM_newstart.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_newstart.mp3"
 			}, {
 				key: "4",
-				value: "/media/kkutu/LobbyBGM_original.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_original.mp3"
 			}, {
 				key: "jaqwi",
-				value: "/media/kkutu/JaqwiBGM.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/JaqwiBGM.mp3"
 			}, {
 				key: "jaqwiF",
-				value: "/media/kkutu/JaqwiFastBGM.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/JaqwiFastBGM.mp3"
 			}, {
 				key: "game_start",
-				value: "/media/kkutu/game_start.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/game_start.mp3"
 			}, {
 				key: "round_start",
-				value: "/media/kkutu/round_start.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/round_start.mp3"
 			}, {
 				key: "fail",
-				value: "/media/kkutu/fail.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/fail.mp3"
 			}, {
 				key: "timeout",
-				value: "/media/kkutu/timeout.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/timeout.mp3"
 			}, {
 				key: "lvup",
-				value: "/media/kkutu/lvup.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/lvup.mp3"
 			}, {
 				key: "Al",
-				value: "/media/kkutu/Al.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/Al.mp3"
 			}, {
 				key: "success",
-				value: "/media/kkutu/success.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/success.mp3"
 			}, {
 				key: "missing",
-				value: "/media/kkutu/missing.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/missing.mp3"
 			}, {
 				key: "mission",
-				value: "/media/kkutu/mission.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/mission.mp3"
 			}, {
 				key: "kung",
-				value: "/media/kkutu/kung.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/kung.mp3"
 			}, {
 				key: "horr",
-				value: "/media/kkutu/horr.mp3"
+				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/horr.mp3"
 			}], i = 0; i <= 10; i++) $data._soundList.push({
 			key: "T" + i,
-			value: "/media/kkutu/T" + i + ".mp3"
+			value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/T" + i + ".mp3"
 		}, {
 			key: "K" + i,
-			value: "/media/kkutu/K" + i + ".mp3"
+			value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/K" + i + ".mp3"
 		}, {
 			key: "As" + i,
-			value: "/media/kkutu/As" + i + ".mp3"
+			value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/As" + i + ".mp3"
 		});
 		loadSounds($data._soundList, function() {
 			processShop(h)
@@ -3203,7 +3203,7 @@
 						$("#myClanMax").html(`클랜원 수: ${Object.keys(b.users).length}/${b.max}명`),
 						$("#myClanActivate").html(`클랜 활동량: ${b.score}`),
 						$("#clanUserList tbody").empty(),
-						$("#myClanLevel").attr("src",`/img/kkutu/clanlv/lv${g}.png`)
+						$("#myClanLevel").attr("src",`https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/clanlv/lv${g}.png`)
 						for(f in Object.keys(b.users)){
 							$("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys(b.users)[f]))
 						}

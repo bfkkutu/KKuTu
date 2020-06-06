@@ -21,12 +21,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 	let isHacker = true;
 	let _setInterval = window.setInterval;
 	
-	function getCorona(){
-		$.get("/corona", function(a) {
-			$("#corona").text(`확진 ${a.cf}명`);
-		});
-	};
-	
 	function detectHacker(type, callback) {
 		if (type == 'devtools') {
 			delete window.WebSocket, delete window.setInterval;
@@ -82,7 +76,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 				for (e in c)
 					if (c[e] < b * d) return void $("#server-" + e).trigger("click")
 		}), b.ref.on("click", function(c) {
-			if (b.refi.hasClass("fa-spin")) return alert(L.serverWait);
+			//if (b.refi.hasClass("fa-spin")) return alert(L.serverWait);
 			b.refi.addClass("fa-spin"), setTimeout(a, 1e3)
 		}), setInterval(function() {
 			b.ref.trigger("click")
@@ -98,12 +92,5 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
 			$("#Bottom").remove();
 		})
-		/* if(!location.href.includes("bfkkutu.kr") && !location.href.includes("localhost")){
-			$("#Bottom").empty();
-			$("#Middle").empty();
-			alert("BF끄투의 도메인이 bfkkutu.kr로 변경되었습니다.")
-			location.href = "https://bfkkutu.kr"
-		} */
-		getCorona();
 	})
 })();

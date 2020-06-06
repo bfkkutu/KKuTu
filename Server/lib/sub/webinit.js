@@ -54,7 +54,8 @@ function page(req, res, file, data){
 	}else{
 		req.session.createdAt = new Date();
 	}
-	var addr = req.ip || "";
+	//var addr = req.ip || "";
+	var addr = req.headers['x-forwarded-for']
 	var sid = req.session.id || "";
 	
 	data.published = global.isPublic;
@@ -82,7 +83,7 @@ function page(req, res, file, data){
 	}else{
 		data.page = file;
 	}
-	if(data.page != "notfound") JLog.log(`${addr.slice(7)}@${sid.slice(0, 10)} ${data.page}, ${JSON.stringify(req.params)}`);
+	if(data.page != "notfound") JLog.log(`${addr}@${sid.slice(0, 10)} ${data.page}, ${JSON.stringify(req.params)}`);
 	res.render(data.page, data, function(err, html){
 		if(err) res.send(err.toString());
 		else res.send(html);
@@ -90,6 +91,7 @@ function page(req, res, file, data){
 }
 exports.init = function(Server, shop){
 	Server.get("/language/:page/:lang", function(req, res){
+		res.setHeader('Content-Type', 'text/javascript');
 		var page = req.params.page.replace(/_/g, "/");
 		var lang = req.params.lang;
 		
