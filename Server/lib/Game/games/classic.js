@@ -644,6 +644,8 @@ function getAuto(theme, char, subc, type){
 	var MAN = DB.kkutu_manner[my.rule.lang];
 	var bool = type == 1;
 	
+	if(my.opts.ignoreinitial) key = "IGIN"
+	
 	adc = char + (subc ? ("|"+subc) : "");
 	switch(gameType){
 		case 'KUT':
@@ -724,7 +726,7 @@ function getAuto(theme, char, subc, type){
 		});
 		function forManner(list){
 			lst = list;
-			if(!my.opts.ignoreinitial) MAN.upsert([ '_id', char ]).set([ key, lst.length ? true : false ]).on(null, null, onFail);
+			MAN.upsert([ '_id', char ]).set([ key, lst.length ? true : false ]).on(null, null, onFail);
 		}
 		function onFail(){
 			MAN.createColumn(key, "boolean").on(function(){
