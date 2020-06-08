@@ -555,41 +555,15 @@
 	function welcome(){
 		var Blocker = window.$Request;
 		
-		if(!location.href.includes("bfkkutu.kr") && !location.href.includes("localhost")){
-			$("#Bottom").empty();
-			$("#Middle").empty();
-			alert("BF끄투의 도메인이 bfkkutu.kr로 변경되었습니다.")
-			location.href = "https://bfkkutu.kr"
-		}
-		
-		$("#Chatting").hide();
 		$("#room-injeong-pick").hide();
 		$("#quick-selecttheme-panel").remove();
 		$("#quick-bantheme-panel").remove();
 		if(!$data.admin){
+			delete window.$Request;
+			
 			$("#room-tournament-panel").remove();
 			$("#quick-tournament-panel").remove();
-		}
-		
-		if($data._cF){
-			if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
-			else $("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
-		}else{
-			if($data.admin) $("#chatinput").attr('placeholder', '');
-			else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
-		}
-		
-		if($data.nickname == "불건전닉네임"){
-			resetNick();
-			ws.close();
-		}
-		
-		if($data.nickname == "잘못된닉네임"){
-			resetNick();
-			ws.close();
-		}
-		
-		if (!$data.admin) {
+			
 			$("#room-time").children("option")[9].remove()
 			try {
 				var $_console$$ = console;
@@ -605,26 +579,28 @@
 				})
 			} catch ($ignore$$) {
 			}
-		}
-		
-		if (!$data.admin){
-			delete window.$Request;
+			
 			$(document).ready(function() {
 				$(document).on("contextmenu dragstart selectstart", function(e) {
 					return false;
 				});
 			});
 		}
-		if ($data.honor) console.log("1ST Gen"), alertKKuTu("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
-		else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.");
-		//else Swal.fire("안내","BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.","info");
 		
-		if (jQuery.browser.name == "msedge"){
-			$("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
+		if($data._cF){
+			if($data.admin) $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+			else $("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
+		}else{
+			if($data.admin) $("#chatinput").attr('placeholder', '');
+			else $("#chatinput").attr('readonly', false), $("#chatinput").attr('placeholder', '');
 		}
 		
-		//popupKKuTu("/img/popup.png", false, 430, 120);
-		popupKKuTu(false, "5월 23일부터 5월 25일까지 2주년 기념 이벤트가 진행될 예정입니다.\n자세한 내용은 디스코드 공지를 참고하세요.", 430, 120);
+		if($data.nickname == "불건전닉네임" || $data.nickname == "잘못된닉네임") resetNick(), ws.close();
+		
+		if ($data.honor) console.log("1ST Gen"), alertKKuTu("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
+		else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.");
+		
+		if (jQuery.browser.name == "msedge") $("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
 		
 		playBGM("lobby"), $("#Intro").animate({
 			opacity: 1
@@ -651,38 +627,23 @@
 			return ws.close();
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
-			if(a.newUser == true) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
-			else return console.log(`NEWUSER: false`);
+			if(a.newUser) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
 		})
 		
 		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
-		
-		/*const Toast = Swal.mixin({
-			toast: true,
-			position: 'top-end',
-			showConfirmButton: false,
-			timer: 3000,
-			timerProgressBar: true,
-			onOpen: (toast) => {
-				toast.addEventListener('mouseenter', Swal.stopTimer)
-				toast.addEventListener('mouseleave', Swal.resumeTimer)
-			}
-		})*/
-
-		/*Toast.fire({
-			icon: 'success',
-			title: '서버에 연결되었습니다.'
-		})*/
-		
-		/*$("#chatinput").on("propertychange change keyup paste input", function() {
-			//$("#Chatting").show();
-			$(".product-title")[6].innerHTML = `<i class="fa fa-comment"></i>${L["nfChat"]} ${L["Chatting"]}`;
-			setTimeout(function(){
-				//$("#Chatting").hide()
-				$(".product-title")[6].innerHTML = `<i class="fa fa-comment"></i>${L["nfChat"]}`;
-			}, 500);
-		});*/
 		//detectAdBlock();
+	}
+	
+	function detectAdBlock(){
+		$.ajax({
+			url: "/js/advertisements.js",
+			dataType: "script"
+		}).fail(function() {
+			alert("애드가드 감지");
+			ws.close();
+		}).success(function(){
+			console.log("no adblock detected")
+		})
 	}
 	
 	function getRes(a){
@@ -804,30 +765,30 @@
 		}
 	}
 	
-	function alertKKuTu(a){
+	function alertKKuTu(text){
 		$stage.dialog.alertKKuTu.hide();
 		showDialog($stage.dialog.alertKKuTu);
 		$("#alert").css("text-align", "center");
 		$("#alertbtn").attr('style', "float: right;");
-		$("#alertText").html(a);
+		$("#alertText").html(text);
 	}
 	
-	function promptKKuTu(a){
+	function promptKKuTu(text){
 		$stage.dialog.promptKKuTu.hide();
 		$("#prompt").css("text-align", "center");
 		$("#promptbtn").attr('style', "float: right;");
-		$("#promptText").html(a);
+		$("#promptText").html(text);
 		$("#prompt-input").attr('style', "width: 97%;");
 		showDialog($stage.dialog.promptKKuTu);
 	}
 	
-	function popupKKuTu(a, b, c, d){ //c: width d: height
+	function popupKKuTu(img, text, w, h){ //w: width h: height
 		$stage.dialog.popupKKuTu.hide();
 		$("#popup-img").attr("src", "")
 		$("#popup-text").text("");
-		if(a) $("#popup-img").attr("src", a)
-		if(b) $("#popup-text").text(b);
-		$stage.dialog.popupKKuTu.attr('style', `width: ${c}px; height: ${d}px;`);
+		if(img) $("#popup-img").attr("src", img)
+		if(text) $("#popup-text").text(text);
+		$stage.dialog.popupKKuTu.attr('style', `width: ${w}px; height: ${h}px;`);
 		showDialog($stage.dialog.popupKKuTu);
 	}
 
@@ -971,14 +932,15 @@
 	}
 
 	function addonNickname(a, b) {
-		if(typeof b.equip.BDG == "string"){
-			var master = b.equip.BDG.includes("master"),
-				challenger = b.equip.BDG.includes("challenger"),
-				champion = b.equip.BDG.includes("champion");
+		var master, challenger, champion = b.equip.BDG;
+		if(typeof champion == "string"){
+			master = champion.includes("master"),
+			challenger = champion.includes("challenger"),
+			champion = champion.includes("champion");
 		}else{
-			var master = false,
-				challenger = false,
-				champion = false;
+			master = false,
+			challenger = false,
+			champion = false;
 		}
 		b.equip.NIK && a.addClass("x-" + b.equip.NIK), "b9_bf" == b.equip.BDG && a.addClass("x-bf"), "b5_yt" == b.equip.BDG && a.addClass("x-yt"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "b6_word" == b.equip.BDG && a.addClass("x-word"), "b6_design" == b.equip.BDG && a.addClass("x-design"), "b5_bj" == b.equip.BDG && a.addClass("x-bj"), "1yearbadge" == b.equip.BDG && a.addClass("x-1yearbadge"), "b6_usermanage" == b.equip.BDG && a.addClass("x-uman"), "b6_develop" == b.equip.BDG && a.addClass("x-develop"), "b7_general_affairs" == b.equip.BDG && a.addClass("x-money"), master && a.addClass("x-master"), "b8_assist_manager" == b.equip.BDG && a.addClass("x-premanager"), "b6_music" == b.equip.BDG && a.addClass("x-music"), challenger && a.addClass("x-challenger"), champion && a.addClass("x-champion"), "b9_honor" == b.equip.BDG && a.addClass("x-honor")
 	}
@@ -1001,8 +963,7 @@
 
 	function roomListBar(a) {
 		var b, c, d = getOptions(a.mode, a.opts);
-		// 의미없는 짓거리였다
-		//var f = requestAdminRoom();
+		
 		return b = $("<div>").attr("id", "room-" + a.id).addClass("rooms-item").append(c = $("<div>").addClass("rooms-channel channel-" + a.channel).on("click", function(b) {
 			requestRoomInfo(a.id)
 		})).append($("<div>").addClass("rooms-number").html(a.id)).append($("<div>").addClass("rooms-title ellipse").text(badWords(a.title))).append($("<div>").addClass("rooms-limit").html(a.players.length + " / " + a.limit)).append($("<div>").width(270).append($("<div>").addClass("rooms-mode").html(d.join(" / ").toString())).append($("<div>").addClass("rooms-round").html(L.rounds + " " + a.round)).append($("<div>").addClass("rooms-time").html(a.time + L.SECOND))).append($("<div>").addClass("rooms-lock").html(a.password ? "<i class='fa fa-lock'></i>" : "<i class='fa fa-unlock'></i>")).on("click", function(a) {
@@ -1216,10 +1177,6 @@
 			d = d ? d.profile.title || d.profile.name : L.hidden, b.append($("<tr>").attr("id", "rpranking-" + a.id).addClass("rpranking-" + (a.rank + 1)).append($("<td>").html(a.rank + 1)).append($("<td>").append(getRankImage(a.score, a.id).addClass("rpranking-image")).append($("<label>").css("padding-top", 2).html(L[`${calculateRank(a.score, a.id)}`]))).append($("<td>").html(d)).append($("<td>").html(commify(a.score))))
 		}), $("#rpranking-" + $data.id).addClass("rpranking-me"), $stage.dialog.rplbPage.html(L.page + " " + d), $stage.dialog.rplbPrev.attr("disabled", d <= 1), $stage.dialog.rplbNext.attr("disabled", a.data.length < 15), $stage.dialog.rplbMe.attr("disabled", !!$data.guest), $data._rplbpage = d - 1
 	}
-	
-	function getRanker(a) {
-		return Number(a.data[0].score);
-	}
 
 	function updateCommunity() {
 		function a(a) {
@@ -1259,36 +1216,12 @@
 				c.append($("<div>").addClass("ri-player").append(f = $("<div>").addClass("moremi rip-moremi")).append(e = $("<div>").addClass("ellipse rip-title").html(a.profile.title || a.profile.name)).append($("<div>").addClass("rip-team team-" + g.t).html($("#team-" + g.t).html())).append($("<div>").addClass("rip-form").html(L["pform_" + g.f]))), a.id == b.master && e.prepend($("<label>").addClass("rip-master").html("[" + L.master + "]&nbsp;")), e.prepend(getLevelImage(a.data.score).addClass("profile-level rip-level")), renderMoremi(f, a.equip, a.id)
 		}), showDialog($stage.dialog.roomInfo), $stage.dialog.roomInfo.show()
 	}
-	
-	// 의미없는 짓거리였다
-	/*function requestAdminRoom(){
-		var a = 0;
-		var b;
-		var c = $.ajax({
-			url: '/adminList',
-			method: 'GET',
-			async: false
-		}).responseText;
-		var d;
-		rooms : for(a in $data.rooms){
-			players : for(b in $data.rooms[a].players){
-				if(typeof $data.users[$data.rooms[a].players[b]] !== 'undefined'){
-					d = c.indexOf($data.users[$data.rooms[a].players[b]].id);
-					if(d !== -1) break players;
-				}else{
-					continue players;
-				}
-			}
-		}
-		return d !== -1;
-	}*/
 
 	function requestProfile(a) {
 		var b, c, d, e = $data.users[a] || $data.robots[a],
 			f = $("#profile-record").empty(),
-			z = $data.users[a],
-			adminLv = e.data.score <= -1;
-		if (!e) return void notice(L.error_405);
+			z = $data.users[a];
+		if(!e) return void notice(L.error_405);
 		if(!e.robot){
 			var x = getRank(z);
 			
@@ -1297,49 +1230,6 @@
 			$("#ProfileDiag").css("height","495px"); // default size
 			$(".profile-level-progress").show();
 			$(".profile-score-text").show();
-			
-			/*if(x == "BRONZE"){
-				//$(".profile-head").bgColor("#CD7F32");
-				$(".profile-head").css({
-					'background-image': "",
-					'background-color': "#CD7F32"
-				});
-			}else if(x == "SILVER"){
-				//$(".profile-head").bgColor("#C0C0C0");
-				$(".profile-head").css({
-					'background-image': "",
-					'background-color': "#C0C0C0"
-				});
-			}else if(x == "GOLD"){
-				//$(".profile-head").bgColor("#FFD700");
-				$(".profile-head").css({
-					'background-image': "",
-					'background-color': "#FFD700"
-				});
-			}else if(x == "PLATINUM"){
-				//$(".profile-head").bgColor("#7BCCB5");
-				$(".profile-head").css({
-					'background-image': "",
-					'background-color': "#7BCCB5"
-				});
-			}else if(x == "DIAMOND"){
-				//$(".profile-head").bgColor("#4EE2EC");
-				$(".profile-head").css({
-					'background-image': "",
-					'background-color': "#4EE2EC"
-				});
-			}else if(x == "MASTER"){
-				$(".profile-head").css({
-					'background-image': "url('/img/kkutu/master.png')",
-					'background-color': ""
-				});
-			}else{
-				//$(".profile-head").bgColor("");
-				$(".profile-head").css({
-					'background-image': "",
-					'background-color': ""
-				});
-			}*/
 		}
 		
 		$stage.dialog.profileCopyID.on("click", function(a) {
@@ -1357,11 +1247,6 @@
 				"font-size": "11px"
 			}).text(e.exordial))), e.robot) $stage.dialog.profileLevel.show(), $stage.dialog.profileLevel.prop("disabled", $data.id != $data.room.master), $("#rank").html(L['UNRANKED']), $("#rankpoint").html(L['0LP']), $("#profile-place").html($data.room.id + L.roomNumber);
 		else {
-			$.get(`/clan?type=getclan&id=${e.id}`, function(a){
-				var b = $(".profile-title.ellipse").html();
-				if(!a.name) $(".profile-title.ellipse").html(`${b}`);
-				else $(".profile-title.ellipse").html(`[${a.name}] ${b}`);
-			})
 			$stage.dialog.profileLevel.hide(), $("#rank").html(L[x]), $("#rankpoint").html(z.data.rankPoint + L['LP']), $("#profile-place").html(e.place ? e.place + L.roomNumber : L.lobby);
 			for (d in e.data.record) {
 				var g = e.data.record[d];
@@ -1370,7 +1255,7 @@
 			renderMoremi(b, e.equip, e.id)
 			if(e.equip.NTG) $(".profile-title").css("background-image", "url("+iNTGImage(e.equip.NTG)+")")
 		}
-		if(adminLv){
+		if(e.data.score <= -1){
 			$(".profile-level-progress").hide();
 			$(".profile-level-text").text("운영자");
 			$(".profile-score-text").hide();
@@ -1389,12 +1274,8 @@
 	}
 	
 	function getWarn(a){
-		var jqXHR = $.ajax({
-				url: `/getWarn?target=${a}`,
-				method: 'GET',
-				async: false
-			});
-		var warn = JSON.parse(jqXHR.responseText);
+		var res = getRes(`/getWarn?target=${a}`);
+		var warn = JSON.parse(res);
 		if(!warn.message) return alert("경고 누적 횟수를 조회하지 못했습니다."+warn.error)
 		else return warn.message
 	}
@@ -2076,12 +1957,8 @@
 	
 	function calculateRank(a, b){
 		var rank;
-		var jqXHR = $.ajax({
-				url: '/rpRanking',
-				method: 'GET',
-				async: false
-			});
-		var rpRanking = JSON.parse(jqXHR.responseText);
+		var res = getRes('/rpRanking');
+		var rpRanking = JSON.parse(res);
 		
 		if(a >= 5000){ // 5000점 이상
 			rank = 'MASTER';
@@ -2245,24 +2122,24 @@
 	}
 
 	function renderMoremi(a, b, r) {
-		var c, d, e = $(a).empty(),
+		var c, d, s = b.MSKIN,
+			e = $(a).empty(),
 			f = {
 				Mlhand: "Mhand",
 				Mrhand: "Mhand"
 			};
-		if(b.MSKIN == "hide_moremi"){
+		if(r !== "shop"){
+			var u = $data.users[r];
+			if(u !== undefined) var o = getRank(u);
+		}
+		if(!s) s = "def";
+		else if(s == "hide_moremi"){
 			for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png").css({
 				width: "100%",
 				height: "100%"
 			}));
 			return;
 		}
-		if(r !== "shop"){
-			var u = $data.users[r];
-			if(u !== undefined) var o = getRank(u);
-		}
-		if(b.MSKIN == undefined) var s = "def";
-		else var s = b.MSKIN;
 		b || (b = {});
 		for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", iImage(b[d], f[d] || d)).css({
 			width: "100%",
@@ -2913,12 +2790,8 @@
 				if($("#find-target").val() != $data.id) $("#profile-friendadd").show();
 			}), $stage.dialog.findNickOK.on("click", function(a) {
 				var b = $("#find-nick-target").val(),
-					c = $.ajax({
-						url: `/getid?target=${b}`,
-						method: 'GET',
-						async: false
-					}),
-					d = JSON.parse(c.responseText);
+					c = getRes(`/getid?target=${b}`),
+					d = JSON.parse(c);
 				requestProfile(d.id);
 				if(d.id != $data.id) $("#profile-friendadd").show();
 			}), $stage.menu.leaderboard.on("click", function(a) {
