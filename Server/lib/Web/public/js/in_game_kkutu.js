@@ -512,7 +512,7 @@
 					}
 				}
 				if(a.code == 402){
-					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", 'https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png'), location.href = '/login';
+					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/def.png`), location.href = '/login';
 				} else if(a.code == 444){
 					if(a.reason){
 						if(a.enddate != "영구"){
@@ -535,7 +535,7 @@
 							$("#alertbtn").hide()
 						}
 					ws.close();
-					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", 'https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png'), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
+					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/def.png`), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
 				}else alert("[#" + a.code + "] " + L["error_" + a.code] + c);
 		}
 		$data._record && recordEvent(a)
@@ -644,6 +644,21 @@
 		}).success(function(){
 			console.log("no adblock detected")
 		})
+	}
+	
+	function getClan(id){
+		$clan = {}
+		$.get(`/clan?type=getclan&id=${id}`, function($clan$$){
+			if($clan$$){
+				$clan.name = $clan$$.name
+				$clan.id = $clan$$.id
+				$clan.users = $clan$$.users
+				$clan.score = $clan$$.score
+				$clan.max = $clan$$.max
+				$clan.perm = $clan$$.perm
+			}
+		})
+		return console.log(`Loaded Clan Data Successfully: ${$clan}`)
 	}
 	
 	function getRes(a){
@@ -984,7 +999,7 @@
 	function getAIProfile(a) {
 		return {
 			title: L["aiLevel" + a] + " " + L.robot,
-			image: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/robot.png"
+			image: `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/robot.png`
 		}
 	}
 
@@ -1225,7 +1240,7 @@
 		if(!e.robot){
 			var x = getRank(z);
 			
-			$("#rankicon").attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankicon/" + x + ".png");
+			$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png");
 			
 			$("#ProfileDiag").css("height","495px"); // default size
 			$(".profile-level-progress").show();
@@ -1253,7 +1268,7 @@
 				f.append($("<div>").addClass("profile-record-field").append($("<div>").addClass("profile-field-name").html(L["mode" + d])).append($("<div>").addClass("profile-field-record").html(g[0] + L.P + " " + g[1] + L.W)).append($("<div>").addClass("profile-field-score").html(commify(g[2]) + L.PTS)))
 			}
 			renderMoremi(b, e.equip, e.id)
-			if(e.equip.NTG) $(".profile-title").css("background-image", "url("+iNTGImage(e.equip.NTG)+")")
+			//if(e.equip.NTG) $(".profile-title").css("background-image", "url("+iNTGImage(e.equip.NTG)+")")
 		}
 		if(e.data.score <= -1){
 			$(".profile-level-progress").hide();
@@ -1263,7 +1278,7 @@
 		if($data.id == e.id) $("#ProfileDiag").css("height","465px");
 		else if(e.exordial) $("#ProfileDiag").css("height","510px");
 		$("#profile-friendadd").hide(),
-		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), e.robot ? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
+		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != a/*e.robot */? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
 
 	function requestInvite(a) {
@@ -1737,7 +1752,7 @@
 		if(lv=="admin"){
 			return $("<div>").css({
 				'float': "left",
-				'background-image': "url('https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/lv/lvGM.png')",
+				'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/lv/lvGM.png')`,
 				'background-position': lX + "% " + lY + "%",
 				'background-size': "100%"
 			});
@@ -1752,7 +1767,7 @@
 		}*/
 		return $("<div>").css({
 			'float': "left",
-			'background-image': "url('https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/lv/newlv.png')",
+			'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/lv/newlv.png')`,
 			'background-position': lX + "% " + lY + "%",
 			'background-size': "2560%"
 		});
@@ -1949,7 +1964,7 @@
 		var rank = calculateRank(a, b);
 		return $("<div>").css({
 			'float': "left",
-			'background-image': `url('https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankicon/${rank}.png')`,
+			'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/${rank}.png')`,
 			'background-position': "100% 100%",
 			'background-size': "100%"
 		});
@@ -2093,7 +2108,7 @@
 			group: b,
 			options: {}
 		});
-		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/badge/" + c._id + d : "M" == c.group.charAt(0) ? "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/" + c.group.slice(1) + "/" + c._id + d : "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/shop/" + c._id + ".png"
+		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/badge/` + c._id + d : "M" == c.group.charAt(0) ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/` + c.group.slice(1) + "/" + c._id + d : `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/shop/` + c._id + ".png"
 	}
 
 	function iDynImage(a, b) {
@@ -2110,7 +2125,7 @@
 	
 	function iNTGImage(a){
 		var b, c;
-		return c = $data.shop[a], b = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/nametag/" + c._id + b
+		return c = $data.shop[a], b = c.options.hasOwnProperty("gif") ? ".gif" : ".png", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/nametag/` + c._id + b
 	}
 
 	function queueObtain(a) {
@@ -2134,7 +2149,7 @@
 		}
 		if(!s) s = "def";
 		else if(s == "hide_moremi"){
-			for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/def.png").css({
+			for (c in MOREMI_PART) d = "M" + MOREMI_PART[c], e.append($("<img>").addClass("moremies moremi-" + d.slice(1)).attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/def.png`).css({
 				width: "100%",
 				height: "100%"
 			}));
@@ -2149,14 +2164,14 @@
 			width: "100%",
 			height: "100%"
 		}));
-		e.children(".moremi-back").after($("<img>").addClass("moremies moremi-body").attr("src", b.robot ? `https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/robot.png` : `https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/moremi/skin/${s}.png`).css({
+		e.children(".moremi-back").after($("<img>").addClass("moremies moremi-body").attr("src", b.robot ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/robot.png` : `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/skin/${s}.png`).css({
 			width: "100%",
 			height: "100%"
 		}));
 		e.children(".moremi-rhand").css("transform", "scaleX(-1)")
 		if(r !== "shop" && u !== undefined){
 			if(o !== "UNRANKED"){
-				e.append($("<img>").addClass("moremies moremi-tier").attr("src", "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankedge/" + o + ".png").css({
+				e.append($("<img>").addClass("moremies moremi-tier").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankedge/` + o + ".png").css({
 					width: "100%",
 					height: "100%"
 				}));
@@ -2208,6 +2223,7 @@
 		ws, rws, $stage, $sound = {},
 		$_sound = {},
 		$data = {},
+		$clan = false,
 		$lib = {
 			Classic: {},
 			DaneoClassic: {},
@@ -2459,70 +2475,70 @@
 			}, void 0 == _WebSocket) return loading(L.websocketUnsupport), void alert(L.websocketUnsupport);
 		for ($data._soundList = [{
 				key: "k",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/k.mp3"
+				value: "/media/kkutu/k.mp3"
 			}, {
 				key: "lobby",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
+				value: "/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
+				value: "/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "2",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_allgro.mp3"
+				value: "/media/kkutu/LobbyBGM_allgro.mp3"
 			}, {
 				key: "3",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_newstart.mp3"
+				value: "/media/kkutu/LobbyBGM_newstart.mp3"
 			}, {
 				key: "4",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/LobbyBGM_original.mp3"
+				value: "/media/kkutu/LobbyBGM_original.mp3"
 			}, {
 				key: "jaqwi",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/JaqwiBGM.mp3"
+				value: "/media/kkutu/JaqwiBGM.mp3"
 			}, {
 				key: "jaqwiF",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/JaqwiFastBGM.mp3"
+				value: "/media/kkutu/JaqwiFastBGM.mp3"
 			}, {
 				key: "game_start",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/game_start.mp3"
+				value: "/media/kkutu/game_start.mp3"
 			}, {
 				key: "round_start",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/round_start.mp3"
+				value: "/media/kkutu/round_start.mp3"
 			}, {
 				key: "fail",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/fail.mp3"
+				value: "/media/kkutu/fail.mp3"
 			}, {
 				key: "timeout",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/timeout.mp3"
+				value: "/media/kkutu/timeout.mp3"
 			}, {
 				key: "lvup",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/lvup.mp3"
+				value: "/media/kkutu/lvup.mp3"
 			}, {
 				key: "Al",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/Al.mp3"
+				value: "/media/kkutu/Al.mp3"
 			}, {
 				key: "success",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/success.mp3"
+				value: "/media/kkutu/success.mp3"
 			}, {
 				key: "missing",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/missing.mp3"
+				value: "/media/kkutu/missing.mp3"
 			}, {
 				key: "mission",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/mission.mp3"
+				value: "/media/kkutu/mission.mp3"
 			}, {
 				key: "kung",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/kung.mp3"
+				value: "/media/kkutu/kung.mp3"
 			}, {
 				key: "horr",
-				value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/horr.mp3"
+				value: "/media/kkutu/horr.mp3"
 			}], i = 0; i <= 10; i++) $data._soundList.push({
 			key: "T" + i,
-			value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/T" + i + ".mp3"
+			value: "/media/kkutu/T" + i + ".mp3"
 		}, {
 			key: "K" + i,
-			value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/K" + i + ".mp3"
+			value: "/media/kkutu/K" + i + ".mp3"
 		}, {
 			key: "As" + i,
-			value: "https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/media/kkutu/As" + i + ".mp3"
+			value: "/media/kkutu/As" + i + ".mp3"
 		});
 		loadSounds($data._soundList, function() {
 			processShop(h)
@@ -2757,14 +2773,16 @@
 				$("#roomlist-loading").show(),
 				updateRoomList(true), updateUserList(true);
 			}), $stage.menu.Clan.on("click",function(a){
+				if(!$clan) getClan($data.id)
 				showDialog($stage.dialog.clanDiag);
-				$.get("/clan?type=clanlist", function(b){
+				$("#clanList").append($("<label>").text("클랜 목록 사용 일시 중단! 디스코드 클랜 홍보 채널을 이용하세요."))
+				/*$.get("/clan?type=clanlist", function(b){
 					var c, d, e = JSON.parse(b.list);
 					$("#clanList tbody").empty();
 					for(c in e){
 						$("#clanList").append($("<tr>").attr("id", "clan-" + e[c].clanname).addClass("clan-" + e[c].clanname).append($("<td>").html(e[c].clanname)).append($("<td>").html(e[c].clanid)))
 					}
-				})
+				})*/
 			}), $stage.menu.invite.on("click", function(a) {
 				showDialog($stage.dialog.invite), updateUserList(!0)
 			}), $stage.menu.practice.on("click", function(a) {
@@ -3050,138 +3068,127 @@
 			}), $stage.dialog.newClan.on("click", function(a) {
 				showDialog($stage.dialog.newClanDiag)
 			}), $stage.dialog.viewClan.on("click", function(a) {
-				showDialog($stage.dialog.viewClanDiag),
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					if(!b.name) alert("클랜에 가입하지 않았습니다."), $stage.dialog.viewClanDiag.hide();
-					else{
-						var f, g = getLevel(b.score);
-						$("#deleteClan").hide()
-						$("#kickTarget").hide()
-						$("#kickUser").hide()
-						$("#leaveClan").show()
-						$("#extendMax").hide()
-						if(b.perm == 0){
-							$("#deleteClan").show()
-							$("#kickTarget").show()
-							$("#kickUser").show()
-							$("#leaveClan").hide()
-							$("#extendMax").show()
-						}else if(b.perm == 1){
-							$("#kickTarget").show()
-							$("#kickUser").show()
-							$("#extendMax").show()
-						}
-						$("#myClanName").html(`클랜 이름: ${b.name}`),
-						$("#myClanID").html(`클랜 ID: ${b.id}`),
-						$("#myClanMax").html(`클랜원 수: ${Object.keys(b.users).length}/${b.max}명`),
-						$("#myClanActivate").html(`클랜 활동량: ${b.score}`),
-						$("#clanUserList tbody").empty(),
-						$("#myClanLevel").attr("src",`https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/clanlv/lv${g}.png`)
-						for(f in Object.keys(b.users)){
-							$("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys(b.users)[f]))
-						}
+				showDialog($stage.dialog.viewClanDiag)
+				if(!$clan.name) alert("클랜에 가입하지 않았습니다."), $stage.dialog.viewClanDiag.hide();
+				else{
+					var f, g = getLevel($clan.score);
+					$("#deleteClan").hide()
+					$("#kickTarget").hide()
+					$("#kickUser").hide()
+					$("#leaveClan").show()
+					$("#extendMax").hide()
+					if($clan.perm == 0){
+						$("#deleteClan").show()
+						$("#kickTarget").show()
+						$("#kickUser").show()
+						$("#leaveClan").hide()
+						$("#extendMax").show()
+					}else if($clan.perm == 1){
+						$("#kickTarget").show()
+						$("#kickUser").show()
+						$("#extendMax").show()
 					}
-				})
+					$("#myClanName").html(`클랜 이름: ${$clan.name}`),
+					$("#myClanID").html(`클랜 ID: ${$clan.id}`),
+					$("#myClanMax").html(`클랜원 수: ${Object.keys($clan.users).length}/${$clan.max}명`),
+					$("#myClanActivate").html(`클랜 활동량: ${$clan.score}`),
+					$("#clanUserList tbody").empty(),
+					$("#myClanLevel").attr("src",`https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/clanlv/lv${g}.png`)
+					for(f in Object.keys($clan.users)){
+						$("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys($clan.users)[f]))
+					}
+				}
 			}), $stage.dialog.deleteClan.on("click", function(a) {
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					var c = confirm(`정말 ${b.name} 클랜을 삭제하시겠습니까?`);
-					if(c){
-						if(b.users[$data.id] == 0){
-							$.get(`/clan?type=delete&id=${b.id}`),
-							alert(`${b.name} 클랜이 삭제되었습니다.`);
-							$stage.dialog.viewClanDiag.hide();
-						}else{
-							alert("클랜 마스터만 클랜을 삭제할 수 있습니다.");
-						}
+				var c = confirm(`정말 ${$clan.name} 클랜을 삭제하시겠습니까?`);
+				if(c){
+					if($clan.users[$data.id] == 0){
+						$.get(`/clan?type=delete&id=${$clan.id}`),
+						alert(`${$clan.name} 클랜이 삭제되었습니다.`);
+						$clan = {}
+						$stage.dialog.viewClanDiag.hide();
+					}else{
+						alert("클랜 마스터만 클랜을 삭제할 수 있습니다.");
 					}
-				})
+				}
 			}), $stage.dialog.makeClan.on("click", function(b) {
 				var a = $("#clanName").val();
 				
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					if(!b.name){
-						if(a == null) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
-						else if(a == undefined) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
-						else if(/[(ㄱ-ㅎ)]/gi.test(a)) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
-						else if(!/[(가-힣a-zA-Z)]/gi.test(a)) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-						else if(a.length > 8) alert("클랜 이름 길이 제한은 최대 8글자까지입니다.")
-						else if(a.match("<")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-						else if(a.match(">")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-						else if(a.match("&lt")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-						else if(a.match("　")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-						else {
-							a = delBadWords(a);
-							$.get(`/clan?type=create&id=${$data.id}&clanname=${a}`, function(r){
-								if(r.message == "MONEYFAIL") alert("핑이 부족합니다! (10000핑 필요)"), $stage.dialog.newClanDiag.hide();
-								else alert(`10000핑을 소비하여 ${a} 클랜을 만들었습니다!`), $stage.dialog.newClanDiag.hide();
-							})
-						}
-					}else if(b.name == undefined) alert("이미 클랜에 가입되어 있습니다!"), $stage.dialog.newClanDiag.hide();
-					else alert("이미 클랜에 가입되어 있습니다!")
-				})
+				if(!$clan.name){
+					if(a == null) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
+					else if(a == undefined) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
+					else if(/[(ㄱ-ㅎ)]/gi.test(a)) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
+					else if(!/[(가-힣a-zA-Z)]/gi.test(a)) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+					else if(a.length > 8) alert("클랜 이름 길이 제한은 최대 8글자까지입니다.")
+					else if(a.match("<")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+					else if(a.match(">")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+					else if(a.match("&lt")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+					else if(a.match("　")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+					else {
+						a = delBadWords(a);
+						$.get(`/clan?type=create&id=${$data.id}&clanname=${a}`, function(r){
+							if(r.message == "MONEYFAIL") alert("핑이 부족합니다! (10000핑 필요)"), $stage.dialog.newClanDiag.hide();
+							else{ 
+								alert(`10000핑을 소비하여 ${a} 클랜을 만들었습니다!`)
+								getClan($data.id);
+								$stage.dialog.newClanDiag.hide();
+							}
+						})
+					}
+				}else if($clan.name == undefined) alert("이미 클랜에 가입되어 있습니다!"), $stage.dialog.newClanDiag.hide();
+				else alert("이미 클랜에 가입되어 있습니다!")
 			}), $stage.dialog.kickUser.on("click", function(c) {
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					var a = $("#kickTarget").val(),
-						cf = confirm(`정말 ${a}님을 추방하시겠습니까?`);
-					if(cf && a === $data.id) alert("자기 자신은 추방할 수 없습니다!");
-					else if(cf && b.users[$data.id] == 2) alert("클랜 마스터와 클랜 관리자만 추방할 수 있습니다.");
-					else if(cf){
-						$.get(`/clan?type=removeuser&userid=${a}&clanid=${b.id}`, function(d){
-							if(d.message == "FAIL") alert("추방 실패! 추방 대상 유저 ID가 잘못되었을 수 있습니다.");
-							else alert(`${a}님을 추방했습니다!`);
-						})
-					}
-				})
+				var a = $("#kickTarget").val(),
+					cf = confirm(`정말 ${a}님을 추방하시겠습니까?`);
+				if(cf && a === $data.id) alert("자기 자신은 추방할 수 없습니다!");
+				else if(cf && $clan.users[$data.id] == 2) alert("클랜 마스터와 클랜 관리자만 추방할 수 있습니다.");
+				else if(cf){
+					$.get(`/clan?type=removeuser&userid=${a}&clanid=${$clan.id}`, function(d){
+						if(d.message == "FAIL") alert("추방 실패! 추방 대상 유저 ID가 잘못되었을 수 있습니다.");
+						else alert(`${a}님을 추방했습니다!`), getClan($data.id)
+					})
+				}
 			}), $stage.dialog.extendMax.on("click", function(c) {
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					var cf = confirm(`5000핑을 소비하여 클랜원 제한을 ${Number(b.max)+10}명으로 늘리시겠습니까?`);
-					if(cf && b.users[$data.id] != 0) alert("클랜 마스터만 확장할 수 있습니다.");
-					else if(cf){
-						$.get(`/clan?type=extend&clanid=${b.id}&masterid=${$data.id}`, function(d){
-							if(d.message == "FAIL") alert("알 수 없는 문제로 인해 실패했습니다.");
-							else if(d.message == "LOWPERM") alert("권한이 부족합니다.");
-							else if(d.message == "MAX") alert("클랜 확장 한도에 도달했습니다. (50명)");
-							else alert(`클랜원 제한을 ${Number(b.max)+10}명으로 늘렸습니다.`), $stage.dialog.viewClanDiag.hide(), $stage.dialog.viewClan.trigger("click");
-						})
-					}
-				})
+				var cf = confirm(`5000핑을 소비하여 클랜원 제한을 ${Number($clan.max)+10}명으로 늘리시겠습니까?`);
+				if(cf && $clan.users[$data.id] != 0) alert("클랜 마스터만 확장할 수 있습니다.");
+				else if(cf){
+					$.get(`/clan?type=extend&clanid=${$clan.id}&masterid=${$data.id}`, function(d){
+						if(d.message == "FAIL") alert("알 수 없는 문제로 인해 실패했습니다.");
+						else if(d.message == "LOWPERM") alert("권한이 부족합니다.");
+						else if(d.message == "MAX") alert("클랜 확장 한도에 도달했습니다. (50명)");
+						else alert(`클랜원 제한을 ${Number($clan.max)+10}명으로 늘렸습니다.`), $stage.dialog.viewClanDiag.hide(), $clan.max = Number($clan.max)+10, $stage.dialog.viewClan.trigger("click");
+					})
+				}
 			}), $stage.dialog.joinClan.on("click", function(a) {
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					if(!b.name){
-						var f = $("#joinTarget").val();
-						$.get(`/clan?type=adduser&userid=${$data.id}&clanid=${f}&userp=2`, function(d){
-							if(d.message == "FAIL") alert("가입 실패! 가입 대상 클랜 ID가 잘못되었을 수 있습니다.");
-							else if(d.message == "USERLIMITFAIL") alert("가입 실패! 클랜원 한도에 도달한 클랜입니다.");
-							else alert(`${f} 클랜에 가입했습니다!`);
-						})
-					}else{
-						alert("이미 클랜에 가입되어 있습니다.");
-					}
-				})
+				if(!$clan.name){
+					var f = $("#joinTarget").val();
+					$.get(`/clan?type=adduser&userid=${$data.id}&clanid=${f}&userp=2`, function(d){
+						if(d.message == "FAIL") alert("가입 실패! 가입 대상 클랜 ID가 잘못되었을 수 있습니다.");
+						else if(d.message == "USERLIMITFAIL") alert("가입 실패! 클랜원 한도에 도달한 클랜입니다.");
+						else alert(`${f} 클랜에 가입했습니다!`), getClan($data.id)
+					})
+				}else{
+					alert("이미 클랜에 가입되어 있습니다.");
+				}
 			}), $stage.dialog.clanCompetition.on("click", function(a) {
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					if(!b.name){
-						Swal.fire("BF끄투","클랜에 가입되어 있지 않습니다.","error")
-					}else{
-						showDialog($stage.dialog.clanCompetitionDiag)
-					}
-				})
+				if(!$clan.name){
+					Swal.fire("BF끄투","클랜에 가입되어 있지 않습니다.","error")
+				}else{
+					showDialog($stage.dialog.clanCompetitionDiag)
+				}
 			}), $stage.dialog.joinClanCompetition.on("click", function(a) {
 				Swal.fire("BF끄투","클랜 대항전 신청은 <a target='_blank' href='https://discord.com/invite/scPVHcE'>디스코드</a>에서 받습니다.","info")
 			}), $stage.dialog.leaveClan.on("click", function(a) {
-				$.get(`/clan?type=getclan&id=${$data.id}`, function(b){
-					if(!b.name){
-						alert("클랜에 가입되어 있지 않습니다!");
-					}else{
-						var cf = confirm(`정말 ${b.name} 클랜을 떠나시겠습니까?`);
-						if(cf){
-							$.get(`/clan?type=removeuser&userid=${$data.id}&clanid=${b.id}`, function(d){
-								if(d.message == "FAIL") alert("알 수 없는 오류로 인해 클랜 탈퇴에 실패했습니다."), $stage.dialog.viewClanDiag.hide();
-								else alert(`${b.name} 클랜을 떠났습니다!`), $stage.dialog.viewClanDiag.hide();
-							})
-						}
+				if(!$clan.name){
+					alert("클랜에 가입되어 있지 않습니다!");
+				}else{
+					var cf = confirm(`정말 ${$clan.name} 클랜을 떠나시겠습니까?`);
+					if(cf){
+						$.get(`/clan?type=removeuser&userid=${$data.id}&clanid=${$clan.id}`, function(d){
+							if(d.message == "FAIL") alert("알 수 없는 오류로 인해 클랜 탈퇴에 실패했습니다."), $stage.dialog.viewClanDiag.hide();
+							else alert(`${$clan.name} 클랜을 떠났습니다!`), $clan = {}, $stage.dialog.viewClanDiag.hide();
+						})
 					}
-				})
+				}
 			}), i = 0; i < 5; i++) $("#team-" + i).on("click", f),
 			$("#room-unknownword.game-option").click(() => $("#room-unknownword.game-option").is(':checked') ? $(".game-option").not("#room-unknownword.game-option").not("#room-mission.game-option").not("#room-abcmission.game-option").not("#room-moremission.game-option").not("#room-returns.game-option").not("#room-randomturn.game-option").not("#room-ignoreinitial.game-option").prop('checked', false).prop('disabled', true) : $(".game-option").prop('disabled', false));
 		$("#replay-file").on("change", function(a) {
