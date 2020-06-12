@@ -509,6 +509,23 @@ Server.post("/gwalli/users", function(req, res){
 	});
 	res.sendStatus(200);
 });
+Server.post("/gwalli/monthly", function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
+	
+	var i;
+	var list = req.body.idlist;
+	var ping = req.body.ping;
+	
+	for(i in list){
+		MainDB.users.findOne([ '_id', list[i] ]).on(function($doc){
+			if(!$doc) return res.sendStatus(400)
+			
+			MainDB.users.upsert([ '_id', list[i] ]).set([ 'money', Number($doc.money)+ping ]).on();
+			return res.send({ result: "SUCCESS" })
+		});
+	}
+});
 Server.post("/gwalli/shop", function(req, res){
 	if(!checkAdmin(req, res, 'DESIGNER')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);

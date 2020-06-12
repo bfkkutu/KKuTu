@@ -2475,70 +2475,70 @@
 			}, void 0 == _WebSocket) return loading(L.websocketUnsupport), void alert(L.websocketUnsupport);
 		for ($data._soundList = [{
 				key: "k",
-				value: "/media/kkutu/k.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/k.mp3"
 			}, {
 				key: "lobby",
-				value: "/media/kkutu/LobbyBGM_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "/media/kkutu/LobbyBGM_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "2",
-				value: "/media/kkutu/LobbyBGM_allgro.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_allgro.mp3"
 			}, {
 				key: "3",
-				value: "/media/kkutu/LobbyBGM_newstart.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_newstart.mp3"
 			}, {
 				key: "4",
-				value: "/media/kkutu/LobbyBGM_original.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_original.mp3"
 			}, {
 				key: "jaqwi",
-				value: "/media/kkutu/JaqwiBGM.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/JaqwiBGM.mp3"
 			}, {
 				key: "jaqwiF",
-				value: "/media/kkutu/JaqwiFastBGM.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/JaqwiFastBGM.mp3"
 			}, {
 				key: "game_start",
-				value: "/media/kkutu/game_start.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/game_start.mp3"
 			}, {
 				key: "round_start",
-				value: "/media/kkutu/round_start.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/round_start.mp3"
 			}, {
 				key: "fail",
-				value: "/media/kkutu/fail.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/fail.mp3"
 			}, {
 				key: "timeout",
-				value: "/media/kkutu/timeout.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/timeout.mp3"
 			}, {
 				key: "lvup",
-				value: "/media/kkutu/lvup.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/lvup.mp3"
 			}, {
 				key: "Al",
-				value: "/media/kkutu/Al.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/Al.mp3"
 			}, {
 				key: "success",
-				value: "/media/kkutu/success.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/success.mp3"
 			}, {
 				key: "missing",
-				value: "/media/kkutu/missing.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/missing.mp3"
 			}, {
 				key: "mission",
-				value: "/media/kkutu/mission.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/mission.mp3"
 			}, {
 				key: "kung",
-				value: "/media/kkutu/kung.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/kung.mp3"
 			}, {
 				key: "horr",
-				value: "/media/kkutu/horr.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/horr.mp3"
 			}], i = 0; i <= 10; i++) $data._soundList.push({
 			key: "T" + i,
-			value: "/media/kkutu/T" + i + ".mp3"
+			value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/T" + i + ".mp3"
 		}, {
 			key: "K" + i,
-			value: "/media/kkutu/K" + i + ".mp3"
+			value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/K" + i + ".mp3"
 		}, {
 			key: "As" + i,
-			value: "/media/kkutu/As" + i + ".mp3"
+			value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/As" + i + ".mp3"
 		});
 		loadSounds($data._soundList, function() {
 			processShop(h)

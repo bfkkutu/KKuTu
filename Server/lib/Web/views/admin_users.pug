@@ -93,3 +93,10 @@ block Middle
 				input#chatlog-id(placeholder='식별 번호')
 				textarea#chatlog-list(rows=40, cols=70, readonly)
 				button#chatlog-load 불러오기
+		fieldset
+			legend 월급 지급 (총무만 사용)
+			legend 사용 안내: 핑 칸에 지급할 월급량 입력 (단위: 핑) 후 지급 대상 식별 번호 입력 (단어 추가처럼 여러명 가능)
+			div
+				input#monthly-ping(placeholder='핑')
+				textarea#monthly-idlist(rows=15, cols=30)
+				button#monthly-ok 지급

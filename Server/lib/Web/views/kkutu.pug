@@ -41,19 +41,18 @@ block Subject
 	title= L('title')
 
 block JS
-	script(type='text/javascript', src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/js/in_game_kkutu.min.js')
-	//-script(type='text/javascript', src='/js/in_game_kkutu.obfus.js')
-	script(type="text/javascript", src="https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/js/in_$request.obfus.js")
-	script(type='text/javascript', src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/js/fabric.min.js')
-	script(src='https://www.google.com/recaptcha/api.js')
+	script(type='text/javascript', src='/js/in_game_kkutu.min.js')
+	script(type="text/javascript", src="https://cdn.jsdelivr.net/npm/bfkkutudelivr@"+L('cdn_version')+"/js/in_$request.obfus.js")
+	script(type='text/javascript', src='https://cdn.jsdelivr.net/npm/fabric@2.0.0-rc.4')
+	//script(src='https://www.google.com/recaptcha/api.js')
 
 block CSS
-	link(rel='stylesheet', href='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/css/in_game_kkutu_shop.css')
+	link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/css/in_game_kkutu_shop.css')
 	
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
 	// span#PORT= locals.PORT
-	//span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
+	//span#URL= `${locals.PROTOCOL}://ws.${locals.HOST}:${locals.PORT}/${locals._id}`
 	span#URL= `${locals.PROTOCOL}://www.ws.kkutu.xyz:${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
@@ -74,7 +73,7 @@ block Middle
 	- var SECVER = L('security_version')
 	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
 	div#Intro
-		img#intro(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/intro.png')
+		img#intro(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/kkutu/intro.png')
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
 		div#version= VERSION
 		div#intro-text= L('LOADING')
@@ -382,7 +381,7 @@ block Middle
 			h4#rank
 			h4#rankpoint
 		div.dialog-bar.profile-rankicon
-			img#rankicon(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/kkutu/rankicon/UNRANKED.png')
+			img#rankicon(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/kkutu/rankicon/UNRANKED.png')
 		div.dialog-bar
 			h4(style='width: 83px;')= L('place')
 			h4.dialog-bar-value#profile-place
@@ -662,9 +661,9 @@ block Middle
 				div.cw-q-body
 			div.b-left.bb(style='display: none;')
 			div.jjoriping
-				img.jjoObj.jjoEyeL(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjoeyeL.png')
-				img.jjoObj.jjoNose(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjonose.png')
-				img.jjoObj.jjoEyeR(src='https://cdn.jsdelivr.net/gh/lshqqytiger/BFKKuTuDelivr@latest/img/jjoeyeR.png')
+				img.jjoObj.jjoEyeL(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjoeyeL.png')
+				img.jjoObj.jjoNose(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjonose.png')
+				img.jjoObj.jjoEyeR(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjoeyeR.png')
 				div.jjoDisplayBar
 					div.jjo-display.ellipse
 					+GraphBar('jjo-turn-time')
@@ -695,7 +694,6 @@ block Middle
 		+GraphBar('my-gauge')
 		div.bar-text.my-gauge-text
 	+Product('Chat')
-		label#Chatting=L('Chatting')
 		div#Chat
 		input#Talk(style="display: none;")
 		button#ChatBtn(style="display: none;")
