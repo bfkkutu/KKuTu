@@ -906,7 +906,7 @@
 			d = getLevel(b.data.score),
 			e = EXP[d - 2] || 0, 
 			f = EXP[d - 1],
-			g = getRank(b);
+			g = b.data.rankPoint < 5000 ? calculateRank(b.data.rankPoint, null, null) : getRank(b);
 		for (a in b.data.record) c += b.data.record[a][1];
 		renderMoremi(".my-image", b.equip, b.id), $(".my-stat-level").replaceWith(getLevelImage(b.data.score).addClass("my-stat-level")), $(".my-stat-name").text(b.profile.title || b.profile.name), $(".my-stat-record").html(L.globalWin + " " + c + L.W), $(".my-stat-ping").html(commify(b.money) + L.ping), $(".my-rankPoint").html(b.data.rankPoint + L['LP']), $(".my-rank").html(L[g]), $(".my-okg .graph-bar").width($data._playTime % 6e5 / 6e3 + "%"), $(".my-okg-text").html(prettyTime($data._playTime)), $(".my-level").html(L.LEVEL + " " + d), $(".my-gauge .graph-bar").width((b.data.score - e) / (f - e) * 190), $(".my-gauge-text").html(commify(b.data.score) + " / " + commify(f))
 	}
@@ -1186,10 +1186,11 @@
 	function drawRPLeaderboard(a) {
 		var b = $stage.dialog.rplbTable.empty(),
 			c = a.data[0] ? a.data[0].rank : 0,
-			d = (a.page || Math.floor(c / 20)) + 1;
+			d = (a.page || Math.floor(c / 20)) + 1,
+			rd = getRankList(a);
 		a.data.forEach(function(a, c) {
 			var d = $data.users[a.id];
-			d = d ? d.profile.title || d.profile.name : L.hidden, b.append($("<tr>").attr("id", "rpranking-" + a.id).addClass("rpranking-" + (a.rank + 1)).append($("<td>").html(a.rank + 1)).append($("<td>").append(getRankImage(a.score, a.id).addClass("rpranking-image")).append($("<label>").css("padding-top", 2).html(L[`${calculateRank(a.score, a.id)}`]))).append($("<td>").html(d)).append($("<td>").html(commify(a.score))))
+			d = d ? d.profile.title || d.profile.name : L.hidden, b.append($("<tr>").attr("id", "rpranking-" + a.id).addClass("rpranking-" + (a.rank + 1)).append($("<td>").html(a.rank + 1)).append($("<td>").append($("<div>").css({'float': "left",'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/${rd[a.id]}.png')`,'background-position': "100% 100%",'background-size': "100%"}).addClass("rpranking-image")).append($("<label>").css("padding-top", 2).html(L[`${rd[a.id]}`]))).append($("<td>").html(d)).append($("<td>").html(commify(a.score))))
 		}), $("#rpranking-" + $data.id).addClass("rpranking-me"), $stage.dialog.rplbPage.html(L.page + " " + d), $stage.dialog.rplbPrev.attr("disabled", d <= 1), $stage.dialog.rplbNext.attr("disabled", a.data.length < 15), $stage.dialog.rplbMe.attr("disabled", !!$data.guest), $data._rplbpage = d - 1
 	}
 
@@ -1238,7 +1239,7 @@
 			z = $data.users[a];
 		if(!e) return void notice(L.error_405);
 		if(!e.robot){
-			var x = getRank(z);
+			var x = e.data.rankPoint < 5000 ? calculateRank(e.data.rankPoint, null, null) : getRank(z);
 			
 			$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png");
 			
@@ -1957,11 +1958,12 @@
 	}
 	
 	function getRank(a){
-		return calculateRank(a.data.rankPoint, a.id);
+		if(a.data.rankPoint < 5000) return calculateRank(a.data.rankPoint, null, null)
+		else return getRankName(a.data.rankPoint, a.id);
 	}
 	
 	function getRankImage(a, b){
-		var rank = calculateRank(a, b);
+		var rank = getRankName(a, b);
 		return $("<div>").css({
 			'float': "left",
 			'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/${rank}.png')`,
@@ -1970,15 +1972,39 @@
 		});
 	}
 	
-	function calculateRank(a, b){
-		var rank;
+	function getRankName(a, b){
 		var res = getRes('/rpRanking');
 		var rpRanking = JSON.parse(res);
 		
+		return calculateRank(a, b, rpRanking);
+	}
+	
+	function getRankList(a){
+		var i;
+		var er = {};
+		if(!a){
+			var res = getRes('/rpRanking');
+			var pdata = JSON.parse(res);
+			
+			for(i in pdata.data){
+				er[pdata.data[i].id] = calculateRank(pdata.data[i].score, pdata.data[i].id, pdata)
+			}
+			return er;
+		}else{
+			for(i in a.data){
+				er[a.data[i].id] = calculateRank(a.data[i].score, a.data[i].id, a)
+			}
+			return er;
+		}
+	}
+	
+	function calculateRank(a, b, c){
+		var rank;
+		
 		if(a >= 5000){ // 5000점 이상
 			rank = 'MASTER';
-			if(rpRanking.data[0].id == b) rank = "CHAMPION";
-			if(rpRanking.data[1].id == b || rpRanking.data[2].id == b) rank = "CHALLENGER";
+			if(c.data[0].id == b) rank = "CHAMPION";
+			if(c.data[1].id == b || c.data[2].id == b) rank = "CHALLENGER";
 		}else{
 			if(a < 50){
 				rank = 'UNRANKED';
@@ -2145,7 +2171,7 @@
 			};
 		if(r !== "shop"){
 			var u = $data.users[r];
-			if(u !== undefined) var o = getRank(u);
+			if(u !== undefined) var o = u.data.rankPoint < 5000 ? calculateRank(u.data.rankPoint, null, null) : getRank(u);
 		}
 		if(!s) s = "def";
 		else if(s == "hide_moremi"){
