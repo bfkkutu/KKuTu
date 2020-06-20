@@ -33,7 +33,7 @@ block Middle
 		td 추가 전 주의사항: 띄어쓰기 없는지, 단어 관리규칙을 위반하는 단어는 없는지, 주제 제대로 입력 했는지 확인.
 		div
 			input#db-theme(placeholder='주제코드 (~주제코드로 해당 주제 단어 검색)', style="width: 270px;")
-			textarea#db-list(rows=40, cols=70)
+			textarea#db-list(rows=30, cols=45)
 			button#db-ok 단어 추가
 			
 	fieldset
@@ -41,7 +41,7 @@ block Middle
 		td 삭제 전 주의사항: 주제 제대로 입력 했는지 확인.
 		div
 			input#dbdel-theme(placeholder='주제코드 (~주제코드로 해당 주제 단어 검색)', style="width: 270px;")
-			textarea#dbdel-list(rows=40, cols=70)
+			textarea#dbdel-list(rows=30, cols=45)
 			button#dbdel-ok 단어 삭제
 			
 	//fieldset
@@ -72,6 +72,13 @@ block Middle
 			div#word-hit
 			button#word-add 단어 추가
 			button#db-apply 변경사항 적용
+			
+	fieldset
+		legend 단어 입력 횟수 조회하기
+		div
+			label#hit-count= '단어를 입력하고 조회 버튼을 누르세요.'
+			input#hit-word(placeholder='단어')
+			button#hit-go 조회
 				
 	fieldset
 		legend 추가 요청 받기
