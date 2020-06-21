@@ -431,7 +431,7 @@
 			case "roundEnd":
 				for (c in a.users) $data.setUser(c, a.users[c]);
 				$data._resultRank = a.ranks, roundEnd(a.result, a.data);
-				if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(920) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
+				if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 				break;
 			case "kickVote":
 				$data._kickTarget = $data.users[a.target], $data.id != a.target && $data.id != $data.room.master && kickVoting(a.target), notice(($data._kickTarget.profile.title || $data._kickTarget.profile.name) + L.kickVoting);
@@ -597,9 +597,9 @@
 		
 		if($data.nickname == "불건전닉네임" || $data.nickname == "잘못된닉네임") resetNick(), ws.close();
 		
-		if ($data.honor) console.log("1ST Gen"), alertKKuTu("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
-		else alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.");
+		alertKKuTu("BF끄투는 끄투 원작자 쪼리핑님의 끄투 오픈소스 프로젝트를 기반으로 제작된 온라인 게임입니다.<br>다른 끄투 서버를 모방하거나 베끼지 않았습니다.<br>또한 다른 서버를 홍보하는 행위는 금지됩니다.");
 		
+		if ($data.honor) $("#alertText").html("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
 		if (jQuery.browser.name == "msedge") $("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
 		
 		playBGM("lobby"), $("#Intro").animate({
@@ -612,25 +612,20 @@
 		
 		// Block the Devtools
 		Blocker('devtools', () => {
-			//alert("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
 			alert("개발자 도구(F12)는 보안상의 이유로 사용하실 수 없습니다.")
 			return ws.close();
 		}, $data, $stage)
 		Blocker('macro', () => {
-			//alert("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
 			alert("운영정책 위반으로 서버와의 연결이 끊어졌습니다.")
 			return ws.close();
 		}, $data, $stage)
 		checkIp((data) => {
-			//alert("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
 			alert("비정상적인 아이피로 판단되어 접근이 차단됐습니다.")
 			return ws.close();
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
 			if(a.newUser) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
 		})
-		
-		if ($data.admin) $("#badwordfilter").prepend(`<option value="NO">필터링 안함</option>`);
 		//detectAdBlock();
 	}
 	
@@ -658,7 +653,7 @@
 				$clan.perm = $clan$$.perm
 			}
 		})
-		return console.log(`Loaded Clan Data Successfully: ${$clan}`)
+		return console.log(`Loaded Clan Data Successfully`)
 	}
 	
 	function getRes(a){
@@ -836,7 +831,7 @@
 	function processRoom(a) {
 		var b, c, d, e;
 		if (a.myRoom = $data.place == a.room.id || a.target == $data.id, a.myRoom) {
-			if ($target = $data.users[a.target], a.kickVote && (notice(getKickText($target.profile, a.kickVote)), $target.id == a.id && alert(L.hasKicked)), -1 == a.room.players.indexOf($data.id)) $data.room && $data.room.gaming && (stopAllSounds(), $data.practicing = !1, $data._gaming = !1, $data.room.opts.tournament ? $stage.box.room.height(920) : $stage.box.room.height(360), playBGM("lobby")), $data.users[$data.id].game.ready = !1, $data.users[$data.id].game.team = 0, $data.users[$data.id].game.form = "J", $stage.menu.spectate.removeClass("toggled"), $stage.menu.ready.removeClass("toggled"), $data.room = null, $data.resulting = !1, $data._players = null, $data._master = null, $data.place = 0, a.room.practice && (!$data.admin ? delete $data.users[0] : null, $data.room = $data._room, $data.place = $data._place, $data.master = $data.__master, $data._players = $data.__players, !$data.admin ? delete $data._room : null);
+			if ($target = $data.users[a.target], a.kickVote && (notice(getKickText($target.profile, a.kickVote)), $target.id == a.id && alert(L.hasKicked)), -1 == a.room.players.indexOf($data.id)) $data.room && $data.room.gaming && (stopAllSounds(), $data.practicing = !1, $data._gaming = !1, $data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby")), $data.users[$data.id].game.ready = !1, $data.users[$data.id].game.team = 0, $data.users[$data.id].game.form = "J", $stage.menu.spectate.removeClass("toggled"), $stage.menu.ready.removeClass("toggled"), $data.room = null, $data.resulting = !1, $data._players = null, $data._master = null, $data.place = 0, a.room.practice && (!$data.admin ? delete $data.users[0] : null, $data.room = $data._room, $data.place = $data._place, $data.master = $data.__master, $data._players = $data.__players, !$data.admin ? delete $data._room : null);
 			else if (a.room.practice && !$data.practicing && ($data.practicing = !0, $data._room = $data.room, $data._place = $data.place, $data.__master = $data.master, $data.__players = $data._players), $data.room && ($data._players = $data.room.players.toString(), $data._master = $data.room.master, $data._rTitle = $data.room.title, $data._rMode = getOptions($data.room.mode, $data.room.opts, !0), $data._rLimit = $data.room.limit, $data._rRound = $data.room.round, $data._rTime = $data.room.time), $data.room = a.room, $data.place = $data.room.id, $data.master = $data.room.master == $data.id, a.spec && a.target == $data.id) {
 				if ($data._spectate || ($data._spectate = !0, clearBoard(), drawRound()), a.boards) {
 					$data.selectedRound = 1;
@@ -874,7 +869,7 @@
 		if (!$data._replay && ("for-gaming" != d || a)) {
 			$data.practicing && (d = "for-gaming"), $(".kkutu-menu button").hide();
 			for (c in $stage.box) $stage.box[c].hide();
-			$stage.box.me.show(), $stage.box.chat.show().width(790).height(190), $stage.chat.height(120), "for-lobby" == d ? ($data._ar_first = !0, $stage.box.userList.show(), $data._shop ? ($stage.box.roomList.hide(), $stage.box.shop.show()) : ($stage.box.roomList.show(), $stage.box.shop.hide()), updateUserList(b || d != $data._only), updateRoomList(b || d != $data._only), updateMe(), $data._jamsu && (clearTimeout($data._jamsu), !$data.admin ? delete $data._jamsu : null)) : "for-master" == d || "for-normal" == d ? ($(".team-chosen").removeClass("team-chosen"), $data.users[$data.id].game.ready || "S" == $data.users[$data.id].game.form ? ($stage.menu.ready.addClass("toggled"), $(".team-selector").addClass("team-unable")) : ($stage.menu.ready.removeClass("toggled"), $(".team-selector").removeClass("team-unable"), $("#team-" + $data.users[$data.id].game.team).addClass("team-chosen"), $data.opts.ar && $data._ar_first && ($stage.menu.ready.addClass("toggled"), $stage.menu.ready.trigger("click"), $data._ar_first = !1)), $data._shop = !1, $data.room.opts.tournament ? $stage.box.room.show().height(920) : $stage.box.room.show().height(360), "for-master" == d && $stage.dialog.inviteList.is(":visible") && updateUserList(), updateRoom(!1), updateMe()) : "for-gaming" == d && ($data._gAnim && ($stage.box.room.show(), $data._gAnim = !1), $data._shop = !1, $data._ar_first = !0, $stage.box.me.hide(), $stage.box.game.show(), $(".ChatBox").width(1e3).height(140), $stage.chat.height(70), updateRoom(!0)), $data._only = d, setLocation($data.place), $(".kkutu-menu ." + d).show()
+			$stage.box.me.show(), $stage.box.chat.show().width(790).height(190), $stage.chat.height(120), "for-lobby" == d ? ($data._ar_first = !0, $stage.box.userList.show(), $data._shop ? ($stage.box.roomList.hide(), $stage.box.shop.show()) : ($stage.box.roomList.show(), $stage.box.shop.hide()), updateUserList(b || d != $data._only), updateRoomList(b || d != $data._only), updateMe(), $data._jamsu && (clearTimeout($data._jamsu), !$data.admin ? delete $data._jamsu : null)) : "for-master" == d || "for-normal" == d ? ($(".team-chosen").removeClass("team-chosen"), $data.users[$data.id].game.ready || "S" == $data.users[$data.id].game.form ? ($stage.menu.ready.addClass("toggled"), $(".team-selector").addClass("team-unable")) : ($stage.menu.ready.removeClass("toggled"), $(".team-selector").removeClass("team-unable"), $("#team-" + $data.users[$data.id].game.team).addClass("team-chosen"), $data.opts.ar && $data._ar_first && ($stage.menu.ready.addClass("toggled"), $stage.menu.ready.trigger("click"), $data._ar_first = !1)), $data._shop = !1, $data.room.opts.tournament ? $stage.box.room.show().height(460) : $stage.box.room.show().height(360), "for-master" == d && $stage.dialog.inviteList.is(":visible") && updateUserList(), updateRoom(!1), updateMe()) : "for-gaming" == d && ($data._gAnim && ($stage.box.room.show(), $data._gAnim = !1), $data._shop = !1, $data._ar_first = !0, $stage.box.me.hide(), $stage.box.game.show(), $(".ChatBox").width(1e3).height(140), $stage.chat.height(70), updateRoom(!0)), $data._only = d, setLocation($data.place), $(".kkutu-menu ." + d).show()
 		}
 	}
 
@@ -1236,14 +1231,14 @@
 	function requestProfile(a) {
 		var b, c, d, e = $data.users[a] || $data.robots[a],
 			f = $("#profile-record").empty(),
-			z = $data.users[a];
+			z = $data.users[a],
+			ph = 495; // default size
 		if(!e) return void notice(L.error_405);
 		if(!e.robot){
 			var x = e.data.rankPoint < 5000 ? calculateRank(e.data.rankPoint, null, null) : getRank(z);
 			
 			$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png");
 			
-			$("#ProfileDiag").css("height","495px"); // default size
 			$(".profile-level-progress").show();
 			$(".profile-score-text").show();
 		}
@@ -1276,8 +1271,9 @@
 			$(".profile-level-text").text("운영자");
 			$(".profile-score-text").hide();
 		}
-		if($data.id == e.id) $("#ProfileDiag").css("height","465px");
-		else if(e.exordial) $("#ProfileDiag").css("height","510px");
+		if($data.id == e.id) ph = 465;
+		else if(e.exordial) ph = 510;
+		$("#ProfileDiag").css("height",`${ph}px`);
 		$("#profile-friendadd").hide(),
 		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != a/*e.robot */? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
@@ -1312,7 +1308,7 @@
 		}, 500), $stage.box.game.height(1).animate({
 			height: 410
 		}, 500), stopBGM(), $stage.dialog.resultSave.attr("disabled", !1), clearBoard(), $stage.game.display.html(L.soon), playSound("game_start"), forkChat(), addTimeout(function() {
-			$data.room.opts.tournament ? $stage.box.room.height(920).hide() : $stage.box.room.height(360).hide(), $stage.chat.scrollTop(999999999)
+			$data.room.opts.tournament ? $stage.box.room.height(460).hide() : $stage.box.room.height(360).hide(), $stage.chat.scrollTop(999999999)
 		}, 500)
 	}
 
@@ -1531,7 +1527,7 @@
 				$data._coef = .05
 			}, 500)
 		}, 2e3), stopRecord()
-		if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(920) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
+		if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 	}
 
 	function drawRanking(a) {
@@ -1739,33 +1735,18 @@
 
 	function getLevelImage(score, profile, sid) {
 		var my = this;
-		//var isAdmin = getAdmin();
-		//var lv = getLevel(score) - 1;
-		if (score <= "-1") {
-			var lv = "admin";
-			var lX = 100;
-			var lY = 100;
-		} else {
-			var lv = getLevel(score) - 1;
-			var lX = (lv % 25) * -100;
-			var lY = Math.floor(lv * 0.04) * -100;
-		}
-		if(lv=="admin"){
+		var lv = getLevel(score) - 1;
+		var lX = (lv % 25) * -100;
+		var lY = Math.floor(lv * 0.04) * -100;
+		
+		if(score <= "-1"){
 			return $("<div>").css({
 				'float': "left",
 				'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/lv/lvGM.png')`,
-				'background-position': lX + "% " + lY + "%",
+				'background-position': "100% 100%",
 				'background-size': "100%"
 			});
 		}
-		/*if(isAdmin != -1){
-			return $("<div>").css({
-				'float': "left",
-				'background-image': "url('/img/kkutu/lv/lvGM.png')",
-				'background-position': lX + "% " + lY + "%",
-				'background-size': "100%"
-			});
-		}*/
 		return $("<div>").css({
 			'float': "left",
 			'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/lv/newlv.png')`,
@@ -1943,7 +1924,7 @@
 				});
 				alert("유해 링크로 판단되어 자동으로 신고처리 되었습니다.")
 				return true;
-			}
+			}else return false;
 		}
 	}
 	
@@ -1973,15 +1954,15 @@
 	}
 	
 	function getRankName(a, b){
-		var res = getRes('/rpRanking');
-		var rpRanking = JSON.parse(res);
+		var rpRanking = JSON.parse(getRes('/rpRanking'));
 		
 		return calculateRank(a, b, rpRanking);
 	}
 	
 	function getRankList(a){
-		var i;
-		var er = {};
+		var i,
+			er = {};
+			
 		if(!a){
 			var res = getRes('/rpRanking');
 			var pdata = JSON.parse(res);
@@ -2051,15 +2032,14 @@
 
 	function chat(a, b, c, d) {
 		var e, f, g, h, i = d ? new Date(d) : new Date,
-			j = $data.users[a.id] ? $data.users[a.id].equip : {};
-		var s = "",
-			p, v;
+			j = $data.users[a.id] ? $data.users[a.id].equip : {},
+			p, v, s = "";
 		if($data.room){
 			p = $(".room-users")[0].children[`room-user-${a.id}`];
 			if(!p) updateRoom(!1), p = $(".room-users")[0].children[`room-user-${a.id}`], v = p.innerText.includes(L.stat_spectate);
 			else v = p.innerText.includes(L.stat_spectate);
 		}
-		if(v == undefined){
+		/*if(v == undefined){
 			s = "";
 		}else if(v){
 			if(v == undefined) s = "";
@@ -2067,7 +2047,8 @@
 			else s = "";
 		}else{
 			s = "";
-		}
+		}*/
+		!v ? s = "" : s = "x-spectator"
 		if (!$data._shut[a.title || a.name]) {
 			if (c) {
 				if ($data.opts.dw) return;
@@ -2195,7 +2176,7 @@
 			height: "100%"
 		}));
 		e.children(".moremi-rhand").css("transform", "scaleX(-1)")
-		if(r !== "shop" && u !== undefined){
+		if(r != "shop" && u != undefined){
 			if(o !== "UNRANKED"){
 				e.append($("<img>").addClass("moremies moremi-tier").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankedge/` + o + ".png").css({
 					width: "100%",
@@ -3516,12 +3497,3 @@
 	const allowCountry = ['KR'];
 	
 })();
-
-document.onload = function() { //호환성 조정
-	if (navigator.appName == "Microsoft Internet Explorer") {
-		alert("지원하지 않는 브라우저입니다.\n다른 브라우저를 사용해 주세요.");
-		
-		$("#Middle").html("<center><h1><br/><font color='black'>잘못된 접근입니다.</font></h1></center>");
-		$("#Bottom").remove();
-	}
-};
