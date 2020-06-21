@@ -1891,24 +1891,11 @@
 			return a.replace(XSS, "-");
 		} else {
 			if (BAD.test(a)) {
-				var filterType = $("#badwordfilter").val().substr(0, 2);
+				var filter = $("#badwordfilter").val().substr(0, 2)
 			
-				if (filterType == "NO") {
-					if($data.admin) return a.toString();
-					else return a.replace(BAD, "**")
-				}
-				if (filterType == "**") {
-					return a.replace(BAD, filterType)
-				}
-				if (filterType == "♥♥") {
-					return a.replace(BAD, filterType)
-				}
-				if (filterType == "★★") {
-					return a.replace(BAD, filterType)
-				}
-			
+				if (filterType == "NO") return a.toString();
+				else return a.replace(BAD, filterType);
 				++badCount;
-				return a.replace(BAD, "**");
 			} else return a;
 		}
 	}
