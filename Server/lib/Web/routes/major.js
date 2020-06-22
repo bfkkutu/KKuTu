@@ -340,7 +340,7 @@ Server.post("/report", function(req, res){
 	var submitter = req.body.submitter;
 	var reason = req.body.reason;
 	var date = moment().format('YYYY_MM_DD_HH_mm');
-	File.writeFileSync(`./lib/Web/report/${target}_${date}.json`,`{"target":"${target}","submitter":"${submitter}","date":"${date}","reason":"${reason}"}`, 'utf8',(err) => {
+	File.writeFileSync(`./lib/Web/report/${target}_${date}.json`,`{"target":"${target}","submitter":"${submitter}","date":"${date}","reason":"${reason}","compt":false}`, 'utf8',(err) => {
 		if (err) return res.send({ error: 404 });
 	});
 });

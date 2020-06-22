@@ -281,6 +281,25 @@ Server.get("/gwalli/reports", function(req, res) {
 		return res.send({ list: data })
 	}, 1000);
 });
+Server.get("/gwalli/compt", function(req, res) {
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(req.query.pw != GLOBAL.PASS) return res.sendStatus(400);
+	if(!req.query.file) return;
+	
+	var data = File.readFileSync(`./lib/Web/report/${req.query.file}.json`, "utf8", function(err) {
+		return res.send({ error: 404 })
+	});
+	data = JSON.parse(data)
+	
+	setTimeout(function(){
+		if(!data.compt){
+			File.writeFileSync(`./lib/Web/report/${req.query.file}.json`, `{"target":"${data.target}","submitter":"${data.submitter}","date":"${data.date}","reason":"${data.reason}","compt":true}`, 'utf8',(err) => {
+				if (err) return res.send({ error: 404 });
+			});
+		}else return res.send({ error: 404 })
+		return res.send({ result: "OK" })
+	}, 100);
+});
 Server.get("/gwalli/chatlog", function(req, res) {
 	if(!checkAdmin(req, res, 'USERS')) return;
 	
@@ -426,41 +445,45 @@ function onKKuTuDDB(req, res){
 				return;
 			}
 			
+			if($doc.flag == 0) TABLE.remove([ '_id', item ]).on(); // ??
+			
 			if($doc.theme.indexOf(theme) == -1){ // 존재하지 않으면
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
 			}else{ // 존재하면
-				//TABLE.remove([ '_id', item ]).on();
-				var i, n, ii, fmean = ""
-				var themes = $doc.theme.split(",")
-				var types = $doc.type.split(",")
-				var means = $doc.mean.split("＂")
-				var produced = `{`
-				for(n in means){
-					if(n != 0){
-						produced += ((n/2).toString().includes(".") ? `"${means[Number(n)]}":` : ` "${means[Number(n)]}",`)
-					}else continue;
+				if($doc.flag == 1) TABLE.remove([ '_id', item ]).on();
+				else{
+					var i, n, ii, fmean = ""
+					var themes = $doc.theme.split(",")
+					var types = $doc.type.split(",")
+					var means = $doc.mean.split("＂")
+					var produced = `{`
+					for(n in means){
+						if(n != 0){
+							produced += ((n/2).toString().includes(".") ? `"${means[Number(n)]}":` : ` "${means[Number(n)]}",`)
+						}else continue;
+					}
+					means = produced.slice(0,-1)
+					means += `}`
+					means = JSON.parse(means)
+					for(i in themes){
+						if(themes[i] == theme){
+							var thidx = themes.indexOf(theme)
+							var tyidx = types.indexOf(types[i])
+							themes.splice(thidx, 1)
+							types.splice(tyidx, 1)
+							delete means[i]
+							for(ii in JSON.stringify(means).split(",")){
+								fmean += JSON.stringify(means).replace(/[\{\}\[\]]/gi,"").split(",")[ii].replace('"',"＂").replace('"',"＂").replace(':',"").replace('"',"").replace('"',"")
+							}
+							TABLE.update([ '_id', item ]).set([ 'theme', themes.toString() ]).on();
+							TABLE.update([ '_id', item ]).set([ 'type', types.toString() ]).on();
+							TABLE.update([ '_id', item ]).set([ 'flag', Number(themes.length) ]).on();
+							TABLE.update([ '_id', item ]).set([ 'mean', fmean ]).on();
+							break;
+						} else continue;
+					}
+					itemLog(item, req, theme, list.length);
 				}
-				means = produced.slice(0,-1)
-				means += `}`
-				means = JSON.parse(means)
-				for(i in themes){
-					if(themes[i] == theme){
-						var thidx = themes.indexOf(theme)
-						var tyidx = types.indexOf(types[i])
-						themes.splice(thidx, 1)
-						types.splice(tyidx, 1)
-						delete means[i]
-						for(ii in JSON.stringify(means).split(",")){
-							fmean += JSON.stringify(means).replace(/[\{\}\[\]]/gi,"").split(",")[ii].replace('"',"＂").replace('"',"＂").replace(':',"").replace('"',"").replace('"',"")
-						}
-						TABLE.update([ '_id', item ]).set([ 'theme', themes.toString() ]).on();
-						TABLE.update([ '_id', item ]).set([ 'type', types.toString() ]).on();
-						TABLE.update([ '_id', item ]).set([ 'flag', Number(themes.length) ]).on();
-						TABLE.update([ '_id', item ]).set([ 'mean', fmean ]).on();
-						break;
-					} else continue;
-				}
-				itemLog(item, req, theme, list.length);
 			}
 		});
 	});
@@ -498,6 +521,19 @@ Server.post("/gwalli/kkutuDdb/:word", function(req, res){
 		});
 	});
 });*/
+Server.get("/gwalli/hitword", function(req, res){
+	if(!checkAdmin(req, res, 'WORDS')) return;
+	var TABLE = MainDB.kkutu[req.query.lang];
+	
+	if(!TABLE) res.sendStatus(400);
+	if(!TABLE.findOne) res.sendStatus(400);
+	
+	TABLE.findOne([ '_id', req.query.word ]).on(function($doc){
+		if(!$doc) return res.sendStatus(400)
+		else if(!$doc.hit) return res.sendStatus(400)
+		else return res.send({ hit: $doc.hit })
+	})
+});
 Server.post("/gwalli/users", function(req, res){
 	if(!checkAdmin(req, res, 'USERS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
@@ -522,7 +558,7 @@ Server.post("/gwalli/monthly", function(req, res){
 			if(!$doc) return res.sendStatus(400)
 			
 			MainDB.users.upsert([ '_id', list[i] ]).set([ 'money', Number($doc.money)+ping ]).on();
-			return res.send({ result: "SUCCESS" })
+			return res.send({ result: "OK" })
 		});
 	}
 });

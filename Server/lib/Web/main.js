@@ -98,6 +98,7 @@ fs.watchFile("./lib/sub/global.json", () => {
 
 function getClientIp(req, res){
 	var clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+	if (typeof clientIp == "string" && clientIp.includes(",")) clientIp = clientIp.split(",")[0]
 	if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
 	
 	return clientIp;
@@ -108,7 +109,7 @@ Server.use((req, res, _next) => {
 	//console.log(`Packet from ${clientIp}`);
 	
 	if(IpFilters.ips.indexOf(clientIp) == -1) _next();
-	else res.send(`<head><title>BF끄투 - 이용정지<style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><script>alert("회원님의 아이피는 영구적으로 이용이 제한되었습니다.")</script><center><h2>회원님의 아이피는 영구적으로 이용이 제한되었습니다.</h2></body></center>`);
+	else res.send(`<head><title>BF끄투 - 406</title><style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><center><h1>406 Not Acceptable</h1><div>서버가 요청을 거절했습니다.</div><br/>서버에서 받아들일 수 없는 요청이거나 서버에서 차단한 요청입니다.</body></center>`);
 });
 /*Server.use((req, res, _next) => {
 	var clientIp = getClientIp(req, res);
@@ -224,7 +225,7 @@ DB.ready = function(){
 Const.MAIN_PORTS.forEach(function(v, i){
 	var KEY = process.env['WS_KEY'];
 	var protocol;
-	if(Const.IS_SECURED) {
+	if(Const.IS_SECURED/* || Const.CF*/) {
 		protocol = 'wss';
 	} else {
 		protocol = 'ws';
@@ -247,7 +248,7 @@ function GameClient(id, url){
 		JLog.info(`Game server #${my.id} connected`);
 	});
 	my.socket.on('error', function(err){
-		JLog.warn(`Game server #${my.id} has an error: ${err.toString()}`);
+		JLog.warn(`Game server #${my.id} has an error: ${err.toString()} | ${err.code}`);
 	});
 	my.socket.on('close', function(code){
 		JLog.error(`Game server #${my.id} closed: ${code}`);

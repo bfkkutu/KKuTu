@@ -1916,13 +1916,10 @@
 	}
 	
 	function delBadWords(a) {
-		if (OSV.test(a)){
-			return a.replace(OSV, "");
-		} else if (XSS.test(a)){
-			return a.replace(XSS, "");
-		} else if (BAD.test(a)) {
-			return a.replace(BAD, "");
-		} else return a;
+		if (OSV.test(a)) return a.replace(OSV, "");
+		else if (XSS.test(a)) return a.replace(XSS, "");
+		else if (BAD.test(a)) return a.replace(BAD, "");
+		else return a;
 	}
 	
 	function getRank(a){
