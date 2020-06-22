@@ -1882,6 +1882,7 @@
 	}
 	
 	function badWords(a) {
+		var filter = $("#badwordfilter").val().substr(0, 2)
 		//a = a.replace("<", "&lt");
 		if (OSV.test(a)){
 			return a.replace(OSV, "[타서버 홍보 방지]");
@@ -1890,13 +1891,8 @@
 		} else if (XSS.test(a)){
 			return a.replace(XSS, "-");
 		} else {
-			if (BAD.test(a)) {
-				var filter = $("#badwordfilter").val().substr(0, 2)
-			
-				if (filterType == "NO") return a.toString();
-				else return a.replace(BAD, filterType);
-				++badCount;
-			} else return a;
+			if (BAD.test(a) && filter != "NO") return a.replace(BAD, filter);
+			else return a;
 		}
 	}
 	
