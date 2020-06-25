@@ -103,7 +103,7 @@
 		$("#only-waiting").attr("checked", $data.opts.ow), 
 		$("#only-unlock").attr("checked", $data.opts.ou), 
 		updateUserList(true), updateRoomList(true);
-		if($("#darkTheme").is(":checked")){
+		/*if($("#darkTheme").is(":checked")){
 			$stage.loading.show().html("다크 테마를 적용하고 있습니다...")
 			setTimeout(function(){
 				$("#Background").attr("src","/img/bg/dark.png");
@@ -147,7 +147,7 @@
 				$(".menu-btn").css("background-color","#363434");
 				$stage.loading.hide()
 			}, 2500)
-		}
+		}*/
 		$data.bgm && ($data.muteBGM ? ($data.bgm.volume = 0, $data.bgm.stop()) : ($data.bgm.volume = $("#bgmvol").val(), $data.bgm = playBGM("lobby", !0)))
 	}
 
@@ -263,7 +263,7 @@
 				if($data.id == a.id) $stage.menu.spectate.trigger("click"), alert("관리자에 의해 관전 상태로 변경되었습니다.");
 				break;
 			case "alert":
-				if($data.id == a.id) alert(a.value);
+				if($data.id == a.id) alertKKuTu(a.value);
 				break;
 			case "sweetalert":
 				if($data.id == a.id) Swal.fire(a.title, a.comment, a.kind) // id: 대상 title: 제목 comment: 내용 kind: 종류 (success/info/error 등)
@@ -1241,17 +1241,18 @@
 			
 			$(".profile-level-progress").show();
 			$(".profile-score-text").show();
+			
+			$stage.dialog.profileCopyID.on("click", function(a) {
+				var tempElem = document.createElement('textarea');
+				tempElem.value = e.id;
+				document.body.appendChild(tempElem);
+				tempElem.select();
+				document.execCommand("copy");
+				document.body.removeChild(tempElem);
+				Swal.fire('BF끄투', "이 유저의 식별번호 "+tempElem.value+"가 복사되었습니다.<br>(일부 브라우저의 경우 수동으로 복사해야 할 수 있습니다)", 'success')
+			})
 		}
 		
-		$stage.dialog.profileCopyID.on("click", function(a) {
-			var tempElem = document.createElement('textarea');
-			tempElem.value = e.id;
-			document.body.appendChild(tempElem);
-			tempElem.select();
-			document.execCommand("copy");
-			document.body.removeChild(tempElem);
-			Swal.fire('BF끄투', "이 유저의 식별번호 "+tempElem.value+"가 복사되었습니다.<br>(일부 브라우저의 경우 수동으로 복사해야 할 수 있습니다)", 'success')
-		})
 		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append($("<div>").append($("<progress>").addClass("profile-level-progress").attr("max",100).attr("value",Math.floor((e.data.score - (EXP[d - 2] || 0)) / ((EXP[d - 1]) - (EXP[d - 2] || 0)) * 100)))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
 				width: 300,
@@ -1733,7 +1734,7 @@
 		return b + 1
 	}
 
-	function getLevelImage(score, profile, sid) {
+	function getLevelImage(score) {
 		var my = this;
 		var lv = getLevel(score) - 1;
 		var lX = (lv % 25) * -100;
@@ -1805,10 +1806,7 @@
 	}
 
 	function playBGM(a, b) {
-		if(a == "lobby"){
-			var bgmtype;
-			a = $("#bgmselect").val().substr(0, 1);
-		}
+		a == "lobby" ? a = $("#bgmselect").val().substr(0, 1) : a = a;
 		return $data.bgm && $data.bgm.stop(), $data.bgm = playSound(a, !0);
 	}
 
@@ -1882,18 +1880,12 @@
 	}
 	
 	function badWords(a) {
-		var filter = $("#badwordfilter").val().substr(0, 2)
-		//a = a.replace("<", "&lt");
-		if (OSV.test(a)){
-			return a.replace(OSV, "[타서버 홍보 방지]");
-		} else if (OSVURL.test(a)){
-			return a.replace(OSVURL, "[타서버 링크 공유 금지]");
-		} else if (XSS.test(a)){
-			return a.replace(XSS, "-");
-		} else {
-			if (BAD.test(a) && filter != "NO") return a.replace(BAD, filter);
-			else return a;
-		}
+		var filter = $("#badwordfilter").val().substr(0, 2);
+		if (OSV.test(a)) a = a.replace(OSV, "[타서버 홍보 방지]");
+		if (OSVURL.test(a)) a = a.replace(OSVURL, "[타서버 링크 공유 금지]");
+		if (XSS.test(a)) a = a.replace(XSS, "-");
+		if (BAD.test(a) && filter != "NO") a = a.replace(BAD, filter)
+		return a;
 	}
 	
 	function checkBadURL(a){
@@ -1912,10 +1904,10 @@
 	}
 	
 	function delBadWords(a) {
-		if (OSV.test(a)) return a.replace(OSV, "");
-		else if (XSS.test(a)) return a.replace(XSS, "");
-		else if (BAD.test(a)) return a.replace(BAD, "");
-		else return a;
+		if (OSV.test(a)) a = a.replace(OSV, "");
+		if (XSS.test(a)) a = a.replace(XSS, "");
+		if (BAD.test(a)) a = a.replace(BAD, "");
+		return a;
 	}
 	
 	function getRank(a){
@@ -2721,11 +2713,7 @@
 							$("#room-injeong-pick").hide();
 						}
 					})
-					if(b==17){
-						$("#room-wordLimit-panel").show();
-					}else{
-						$("#room-wordLimit-panel").hide();
-					}
+					b == 17 ? $("#room-wordLimit-panel").show() : $("#room-wordLimit-panel").hide();
 				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [],/* -1 != d.opts.indexOf("ijp") ? $("#room-injpick-panel").show() : $("#room-injpick-panel").hide(),*/ "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
 					$(b).html(Number($(b).val()) * d.time + L.SECOND)
 				});

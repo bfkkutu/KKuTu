@@ -344,7 +344,7 @@ exports.KO_INJEONG = [
 	"WOW"
 ];
 exports.EN_INJEONG = [
-	"LOL", "LVL", "ENANI"
+	"LOL", "LVL", "ENANI", "POP"
 ];
 exports.KO_THEME = [
 	"30", "40", "60", "80", "90",
