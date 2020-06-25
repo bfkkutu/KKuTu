@@ -312,15 +312,15 @@ function processAdmin(id, value, requestId){
 					MainDB.users.update([ '_id', target ]).set([ 'black', "경고 누적" ]).on();
 					MainDB.users.update([ '_id', target ]).set([ 'bandate', 99999999999999 ]).on();
 					if(DIC[target]){
-						KKuTu.publish('yell', { value: `${target}님의 경고가 4회 이상 누적되어 계정이 영구 정지되었습니다.` });
-						DIC[target].send('alert', { id : target, value: "경고가 4회 이상 누적되어 계정이 영구 정지되었습니다. 관리자에게 문의하세요." });
-						DIC[target].socket.close();
+						KKuTu.publish('notice', { value: `${target}님의 경고가 4회 이상 누적되어 계정이 영구 정지되었습니다.` });
+						DIC[target].send('banned', { enddate: "영구", reason: "경고 누적" });
 					}
 				}else{
 					MainDB.users.update([ '_id', target ]).set([ 'warn', newwarn ]).on();
 					if(DIC[target]){
 						DIC[target].send('yellto', { id : target, value: `경고 ${warn}회가 부여되었습니다. 현재 경고: ${newwarn}` });
 					}
+					KKuTu.publish('notice', { value: `${target}님에게 경고 ${warn}회가 부여되었습니다.` });
 				}
 			});
 			return null;
@@ -328,7 +328,7 @@ function processAdmin(id, value, requestId){
 			var target = value.split(",")[0];
 			var warn = Number(value.split(",")[1]);
 			var date = moment().format("YYYYMMDDHHmmss");
-			KKuTu.publish('yell', { value: `${target}님에게 경고 ${warn}회가 설정되었습니다.` });
+			KKuTu.publish('notice', { value: `${target}님에게 경고 ${warn}회가 설정되었습니다.` });
 			MainDB.users.findOne([ '_id', target ]).on(function($user){
 				if(!$user) return null;
 				else if(!$user.warn) return null;
@@ -355,13 +355,14 @@ function processAdmin(id, value, requestId){
 			}
 			KKuTu.publish('breakroom', value);
 			delete ROOM[value];
-			KKuTu.publish('yell', { value: `방 ${value}이 삭제되었습니다.` });
+			KKuTu.publish('notice', { value: `방 ${value}이 삭제되었습니다.` });
 			return null;
 		case "roomtitle":
 			var target = value.split(",")[0];
 			var newtitle = value.split(",")[0];
 			ROOM[target].title = newtitle;
 			KKuTu.publish('roomtitle', value);
+			KKuTu.publish('notice', { value: `방 ${target}의 제목이 변경되었습니다.` });
 			return null;
 		case "update":
 			for(var i in DIC){
@@ -615,7 +616,7 @@ exports.init = function(_SID, CHAN){
 			MainDB.session.findOne([ '_id', key ]).limit([ 'profile', true ]).on(function($body){
 				$c = new KKuTu.Client(socket, $body ? $body.profile : null, key);
 				$c.admin = GLOBAL.ADMIN.indexOf($c.id) != -1;
-				$c.remoteAddress = info.connection.remoteAddress;
+				$c.remoteAddress = info.headers['x-forwarded-for'] || info.connection.remoteAddress;
 				if($c.remoteAddress === "::ffff:172.30.1.254"){
 					$c.admin = true;
 				}
