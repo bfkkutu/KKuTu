@@ -333,7 +333,7 @@ exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아",
 exports.KO_INJEONG = [
 	"IMS", "VOC", "KTV", "KOT", "DOT", "DGM",
 	"RAG", "LVL", "LOL", "MMM", "MAP", "MKK",
-	"MNG", "MOB", "CYP", "STA", "OIJ", "BUS",
+	"MNG", "MOB", "STA", "OIJ", "BUS",
 	"ESB", "ELW", "OVW", "NEX", "BAN", "EMD",
 	"KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUN",
@@ -351,8 +351,8 @@ exports.KO_THEME = [
 	"140", "150", "160", "170", "190",
 	"220", "230", "240", "270", "310",
 	"320", "350", "360", "380", "420",
-	"430", "450", "490", "530", "1001",
-	"440", "200"
+	"430", "450", "490", "530", "440",
+	"200"
 ];
 exports.EN_THEME = [
 	"e05", "e08", "e12", "e13", "e15",

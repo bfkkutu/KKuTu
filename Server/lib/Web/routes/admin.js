@@ -445,15 +445,16 @@ function onKKuTuDDB(req, res){
 				return;
 			}
 			
-			if($doc.flag == 0) TABLE.remove([ '_id', item ]).on(); // ??
+			var themes = $doc.theme.split(",")
 			
-			if($doc.theme.indexOf(theme) == -1){ // 존재하지 않으면
+			if(themes.length == 0) TABLE.remove([ '_id', item ]).on();
+			
+			if(themes.indexOf(theme) == -1){ // 존재하지 않으면
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
 			}else{ // 존재하면
-				if($doc.flag == 1) TABLE.remove([ '_id', item ]).on();
+				if(themes.length == 1) TABLE.remove([ '_id', item ]).on();
 				else{
 					var i, n, ii, fmean = ""
-					var themes = $doc.theme.split(",")
 					var types = $doc.type.split(",")
 					var means = $doc.mean.split("＂")
 					var produced = `{`
@@ -477,7 +478,7 @@ function onKKuTuDDB(req, res){
 							}
 							TABLE.update([ '_id', item ]).set([ 'theme', themes.toString() ]).on();
 							TABLE.update([ '_id', item ]).set([ 'type', types.toString() ]).on();
-							TABLE.update([ '_id', item ]).set([ 'flag', Number(themes.length) ]).on();
+							//TABLE.update([ '_id', item ]).set([ 'flag', Number($doc.flag)-1 ]).on();
 							TABLE.update([ '_id', item ]).set([ 'mean', fmean ]).on();
 							break;
 						} else continue;
@@ -561,6 +562,34 @@ Server.post("/gwalli/monthly", function(req, res){
 			return res.send({ result: "OK" })
 		});
 	}
+});
+Server.post("/gwalli/warn", function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(!req.body.id) return res.send({ error: 404 });
+	else if(!req.body.warn) return res.send({ error: 404 });
+	var id = req.body.id;
+	var warn = Number(req.body.warn);
+	MainDB.users.findOne([ '_id', id ]).on(function($user){
+		if(!$user) return res.send({ error: 404 });
+		else if(warn >= 4){
+			MainDB.users.update([ '_id', id ]).set([ 'warn', 0 ]).on();
+			MainDB.users.update([ '_id', id ]).set([ 'black', "경고 누적" ]).on();
+			MainDB.users.update([ '_id', id ]).set([ 'bandate', 99999999999999 ]).on();
+			return res.send("OK")
+		}else{
+			MainDB.users.update([ '_id', id ]).set([ 'warn', warn ]).on();
+			return res.send("OK")
+		}
+	});
+});
+Server.get("/gwalli/getWarn", function(req, res){
+	if(!req.query.id) return res.send({ error: 404 });
+	var id = req.query.id;
+	MainDB.users.findOne([ '_id', id ]).on(function($user){
+		if(!$user) return res.send({ error: 404 });
+		else if(!$user.warn) return res.send({ error: 404 });
+		else return res.send({ message: $user.warn });
+	});
 });
 Server.post("/gwalli/shop", function(req, res){
 	if(!checkAdmin(req, res, 'DESIGNER')) return;

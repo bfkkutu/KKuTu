@@ -46,8 +46,7 @@ block Middle
 						td 접속된 서버
 						td 최근 로그인
 						td 밴 사유
-						td 친구 목록
-						td 신규 유저 여부
+						td 경고 누적
 					tbody#user-data
 			button#user-apply 변경사항 적용
 	fieldset
@@ -98,6 +97,16 @@ block Middle
 					input#report-compt-one(placeholder='피신고자 ID')
 					input#report-compt-two(placeholder='신고 일시')
 					button#report-compt 완료 처리
+			fieldset
+				legend 경고 누적 수 조회 및 변경
+				legend 경고 누적 수 조회하기: 빈칸에 ID를 입력하고 조회합니다.
+				div
+					input#warn-id(placeholder='ID')
+					button#warn-go 조회
+				legend 경고 누적 수 변경하기: 빈칸에 ID를 입력하고 경고 누적 수를 변경한 뒤 반영합니다.
+				div
+					input#warn-count(placeholder='경고 누적 수', type='number')
+					button#warn-set 반영
 		fieldset
 			legend 채팅 로그 조회
 			div

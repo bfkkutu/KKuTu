@@ -155,8 +155,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.8.8 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.8.8 User</a>",
+    "version": "4.8.9 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.8.9 User</a>",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -497,7 +497,6 @@
     "theme_MKK": "메카쿠시티 액터즈",
     "theme_MNG": "모노가타리 시리즈",
     "theme_MOB": "모바일 게임",
-    "theme_CYP": "사이퍼즈",
     "theme_STA": "스타크래프트",
     "theme_OIJ": "신조어",
     "theme_ESB": "앙상블 스타즈!",
@@ -637,7 +636,6 @@
     "theme_510": "항공",
     "theme_520": "해양",
     "theme_530": "화학",
-    "theme_1001": "나라 이름과 수도",
     "jqTheme": "주제",
 
     "class_n": "명",
