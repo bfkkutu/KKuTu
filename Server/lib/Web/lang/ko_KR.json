@@ -155,8 +155,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.8.9 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.8.9 User</a>",
+    "version": "4.9.0 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.9.0 User</a>",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -547,6 +547,8 @@
 	"theme_PCN": "프린세스 커넥트! Re:Dive",
 	"theme_WOW": "월드 오브 워크래프트",
 	"theme_POP": "PopSong",
+	"theme_KGY": "카구야 님은 고백받고 싶어",
+	"theme_SMW": "서머너즈 워",
 
     "class_1": "명",
     "class_2": "대명",

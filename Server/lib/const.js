@@ -333,7 +333,7 @@ exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아",
 exports.KO_INJEONG = [
 	"IMS", "VOC", "KTV", "KOT", "DOT", "DGM",
 	"RAG", "LVL", "LOL", "MMM", "MAP", "MKK",
-	"MNG", "MOB", "STA", "OIJ", "BUS",
+	"MNG", "MOB", "STA", "OIJ", "BUS", "KGY",
 	"ESB", "ELW", "OVW", "NEX", "BAN", "EMD",
 	"KPO", "JLN", "JAN", "ZEL", "POK", "HAI",
 	"HSS", "KMV", "HDC", "HOS", "RUN", "MUN",
@@ -341,7 +341,7 @@ exports.KO_INJEONG = [
 	"CKR", "DBD", "HAK", "DONG", "MFA", "ZHS",
 	"KTR", "ILN", "TRR", "THP", "UND", "TLR",
 	"HKI", "MINBE", "BST", "FGO", "YGO", "PCN",
-	"WOW"
+	"WOW", "SMW"
 ];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI", "POP"
