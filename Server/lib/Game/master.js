@@ -359,7 +359,7 @@ function processAdmin(id, value, requestId){
 			return null;
 		case "roomtitle":
 			var target = value.split(",")[0];
-			var newtitle = value.split(",")[0];
+			var newtitle = value.split(",")[1];
 			ROOM[target].title = newtitle;
 			KKuTu.publish('roomtitle', value);
 			KKuTu.publish('notice', { value: `방 ${target}의 제목이 변경되었습니다.` });

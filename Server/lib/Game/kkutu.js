@@ -338,6 +338,8 @@ exports.Client = function(socket, profile, sid){
 		var data, room = ROOM[my.place];
 		if(!my) return;
 		if(!msg) return;
+		if(!my.id) return;
+		//if(!JSON.parse(msg)) return;
 		
 		JLog.log(`Chan @${channel} Msg #${my.id}: ${(JSON.parse(msg).type === 'drawingCanvas' ? 'is drawing data' : msg)}`);
 		try{ data = JSON.parse(msg); }catch(e){ data = { error: 400 }; }
@@ -1752,8 +1754,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	
 	//rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
 	
-	//rw.score = rw.score * 1.5; //2시즌 시작 기념 이벤트
-	//rw.rankPoint = rw.rankPoint * 1.5; //2시즌 시작 기념 이벤트
+	//rw.score = rw.score * 1.5; // 새시즌 시작 기념 이벤트
+	//rw.rankPoint = rw.rankPoint * 1.5; // 새시즌 시작 기념 이벤트
 	
 	/*if (rankPoint >= 5000){
 		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
@@ -1795,10 +1797,6 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	
 	if (opts.randomturn && all <= 3) rw.rankPoint = rw.rankPoint - (rw.rankPoint * 0.7); // 랜덤 턴
 	if (opts.returns) rw.rankPoint = 0 // 리턴
-	
-	// 2주년 이벤트
-	/*rw.score = rw.score * 2;
-	rw.rankPoint = rw.rankPoint * 2;*/
 
 	return rw;
 }
