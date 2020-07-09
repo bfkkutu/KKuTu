@@ -756,8 +756,8 @@ function getChar(text, lim){
 	var my = this;
 	
 	switch(Const.GAME_TYPE[my.mode]){
+		case 'KUT': return text.slice(text.length - 3);
 		case 'EKT': return text.slice(text.length - 3);
-		case 'KUT': return text.slice(text.length - 2);
 		case 'ESH':
 		case 'KLH':
 		case 'KKT':

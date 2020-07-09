@@ -53,7 +53,7 @@ block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
 	// span#PORT= locals.PORT
 	//span#URL= `${locals.PROTOCOL}://ws.${locals.HOST}:${locals.PORT}/${locals._id}`
-	span#URL= `${locals.PROTOCOL}://www.ws.kkutu.xyz:${locals.PORT}/${locals._id}`
+	span#URL= `${locals.PROTOCOL}://ws.kkutu.app:${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
 	span#RULE= JSON.stringify(locals.RULE)
@@ -119,9 +119,11 @@ block Middle
 				option(value=L('bgm_allgro'))= L('bgm_allgro')
 				option(value=L('bgm_newstart'))= L('bgm_newstart')
 				option(value=L('bgm_original'))= L('bgm_original')
+				option(value=L('bgm_beta'))= L('bgm_beta')
 		div.dialog-bar
 			h4= L('BADWORDFILTER')
 			select#badwordfilter
+				option(value='NO')= L('NOFILTER')
 				option(value=L('FILTER1'), selected)= L('FILTER1')
 				option(value=L('FILTER2'))= L('FILTER2')
 				option(value=L('FILTER3'))= L('FILTER3')
@@ -560,7 +562,7 @@ block Middle
 	+Dialog('ChatLogDiag', 350, 500, L('chatLog'))
 		div#chat-log-board(style='height: 475px; font-size: 11px; overflow-y: scroll;')
 	+Dialog('AlertDiag', 370, 140, L('Alert'))
-		div#alert
+		div#alert(style="height: 70px;")
 			h3#alertText
 		div.dialog-bar.tail-button#alertbtn
 			button#alert-ok= L('OK')
