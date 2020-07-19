@@ -166,6 +166,15 @@ function processAdmin(id, value, requestId){
 		case "gamesize":
 			KKuTu.publish('gamesize', { value: value });
 			return null;
+		case "loadimage":
+			KKuTu.publish('loadimage', { imgLoc: value.split(",")[0], imgW: value.split(",")[1], imgH: value.split(",")[2] });
+			return null;
+		case "loadsound":
+			KKuTu.publish('loadsound', { soundLoc: value.split(",")[0] });
+			return null;
+		case "playmedia":
+			KKuTu.publish('playmedia', { value: value });
+			return null;
 		case "ban":
 			var date = moment().format("YYYYMMDDHHmmss");
 			var target = value.split(",")[0];

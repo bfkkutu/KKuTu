@@ -23,7 +23,8 @@
 		{ key: 'FEAT', sub: [
 			{ key: 'PLAYTS', href: "https://opg.kr/" },
 			{ key: 'KKTDN', href: "https://kkutu.xyz/" },
-			{ key: 'IWANT', href: "/alliance.html" },
+			{ key: 'OURKKT', href: "/" },
+			{ key: 'IWANT', onclick: "alert('제휴 관련 문의는 디스코드 베프#4867 또는 BF끄투 디스코드로 문의해 주세요.');" },
 		]},
 	];
 	const PUBLIC = locals.published;
@@ -55,11 +56,16 @@ mixin Menu()
 		- for(i in MENU)
 			- if(MENU[i].href)
 				button.menu-btn(id='menu-item-'+MENU[i].key, onclick='location.href = "'+MENU[i].href+'";')!= L(MENU[i].key)
+			- else if(MENU[i].onclick)
+				button.menu-btn(id='menu-item-'+MENU[i].key, onclick=MENU[i].onclick)!= L(MENU[i].key)
 			- else if(MENU[i].sub)
 				div.menu-btn(id='menu-item-'+MENU[i].key)!= L(MENU[i].key)
 					div.menu-sub-separator
 					- for(j in MENU[i].sub)
-						div.menu-sub-btn(onclick='location.href = "'+MENU[i].sub[j].href+'";')!= L(MENU[i].sub[j].key)
+						- if(MENU[i].sub[j].onclick)
+							div.menu-sub-btn(onclick=MENU[i].sub[j].onclick)!= L(MENU[i].sub[j].key)
+						- else
+							div.menu-sub-btn(onclick='location.href = "'+MENU[i].sub[j].href+'";')!= L(MENU[i].sub[j].key)
 		div#account
 			span#profile= SESSION.profile ? JSON.stringify(SESSION.profile) : '{}'
 			div#account-info

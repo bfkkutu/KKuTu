@@ -67,7 +67,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 			ref: $("#server-refresh"),
 			refi: $("#server-refresh>i")
 		}, $("#Background").attr("src", "").addClass("jt-image").css({
-			"background-image": "url(/img/kkutu/gamebg.png)",
+			"background-image": `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/gamebg.png')`,
 			"background-size": "200px 200px"
 		}), b.start.prop("disabled", !0).on("click", function(a) {
 			var b, e;

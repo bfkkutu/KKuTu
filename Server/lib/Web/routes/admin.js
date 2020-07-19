@@ -526,8 +526,8 @@ Server.get("/gwalli/hitword", function(req, res){
 	if(!checkAdmin(req, res, 'WORDS')) return;
 	var TABLE = MainDB.kkutu[req.query.lang];
 	
-	if(!TABLE) res.sendStatus(400);
-	if(!TABLE.findOne) res.sendStatus(400);
+	if(!TABLE) return res.sendStatus(400);
+	if(!TABLE.findOne) return res.sendStatus(400);
 	
 	TABLE.findOne([ '_id', req.query.word ]).on(function($doc){
 		if(!$doc) return res.sendStatus(400)
