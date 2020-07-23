@@ -100,7 +100,7 @@ log4js.configure({
 });
 const logger = log4js.getLogger('System');
 
-const Bot = require('./handler');
+const Bot = require('./bot');
 
 File.watchFile("./lib/sub/global.json", () => {
 	GLOBAL = require("../sub/global.json");

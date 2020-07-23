@@ -22,7 +22,7 @@ log4js.configure({
   categories: { default: { appenders: ['System'], level: 'info' } }
 });
 const logger = log4js.getLogger('System');
-const Bot    = require("../../Game/handler");
+const Bot    = require("../../Game/bot");
 var File	 = require("fs");
 var fs		 = require("fs");
 var MainDB	 = require("../db");
