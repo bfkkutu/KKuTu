@@ -121,7 +121,7 @@ exports.RULE = {
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "mdt", "rms", "loa", "str",
-		"k32", "nrt", "rtu", "upl", "rank", "ogow", "selth", "btm" ],
+		"nrt", "rtu", "upl", "rank", "ogow", "selth", "btm" ],
 		time: 1,
 		ai: true,
 		big: false,

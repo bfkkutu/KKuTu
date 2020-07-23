@@ -2496,6 +2496,9 @@
 				key: "5",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGMBeta.mp3"
 			}, {
+				key: "6",
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_BetaFull.mp3"
+			}, {
 				key: "jaqwi",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/JaqwiBGM.mp3"
 			}, {

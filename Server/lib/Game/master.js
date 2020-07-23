@@ -100,6 +100,8 @@ log4js.configure({
 });
 const logger = log4js.getLogger('System');
 
+const Bot = require('./handler');
+
 File.watchFile("./lib/sub/global.json", () => {
 	GLOBAL = require("../sub/global.json");
 	JLog.info("global.json is Auto-Updated at {lib/Game/master.js}");
@@ -190,6 +192,7 @@ function processAdmin(id, value, requestId){
 				MainDB.users.update([ '_id', target ]).set([ 'bandate', enddate ]).on();
 			});
 			KKuTu.publish('yell', { value: DIC[target].nickname + "님이 차단되었습니다." });
+			Bot.ban(DIC[target], reason, enddate)
 			if(temp = DIC[target]){
 				temp.send('banned', { id : target, reason: reason, enddate: (enddate == 99999999999999 ? "영구" : enddate) });
 				temp.socket.send('{"type":"error","code":456}');

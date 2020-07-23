@@ -29,5 +29,10 @@
 		"PFX": "Your PFX Bundle Here",
 		"isPFX": false,
 		"isCA": false
+	},
+	"BOT_OPTIONS": {
+		"ENABLED": false,
+		"TOKEN": "",
+		"CHANNELS": { "BAN": "" }
 	}
 }
