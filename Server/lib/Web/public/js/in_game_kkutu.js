@@ -2485,19 +2485,16 @@
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_newbfkkutu.mp3"
 			}, {
 				key: "2",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_allgro.mp3"
-			}, {
-				key: "3",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_newstart.mp3"
 			}, {
+				key: "3",
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
+			}, {
 				key: "4",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_original.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_allgro.mp3"
 			}, {
 				key: "5",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGMBeta.mp3"
-			}, {
-				key: "6",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_BetaFull.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LobbyBGM_original.mp3"
 			}, {
 				key: "jaqwi",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/JaqwiBGM.mp3"
