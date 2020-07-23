@@ -22,6 +22,7 @@ log4js.configure({
   categories: { default: { appenders: ['System'], level: 'info' } }
 });
 const logger = log4js.getLogger('System');
+const Bot    = require("../../Game/handler");
 var File	 = require("fs");
 var fs		 = require("fs");
 var MainDB	 = require("../db");
@@ -185,6 +186,8 @@ Server.get("/gwalli/kkutudb/:word", function(req, res){
 	if(!checkAdmin(req, res, 'WORDS')) return;
 	
 	var TABLE = MainDB.kkutu[req.query.lang];
+	
+	//Bot.word("수정", theme, req.params.word)
 	
 	if(!TABLE) return res.sendStatus(400);
 	if(!TABLE.findOne) return res.sendStatus(400);
@@ -377,6 +380,7 @@ function onKKuTuDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
+	Bot.word("추가", theme, list)
 	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;
@@ -434,6 +438,7 @@ function onKKuTuDDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
+	Bot.word("삭제", theme, list)
 	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;

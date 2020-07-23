@@ -33,6 +33,6 @@
 	"BOT_OPTIONS": {
 		"ENABLED": false,
 		"TOKEN": "",
-		"CHANNELS": { "BAN": "" }
+		"CHANNELS": { "BAN": "", "WORD": "" }
 	}
 }
