@@ -14,8 +14,11 @@ Bot.on("ready", () => {
 String.prototype.replaceAll = function(org, dest) {
     return this.split(org).join(dest);
 }
-exports.ban = function(target, reason, enddate){
-	if(GLOBAL.BOT_OPTIONS.ENABLED) Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.BAN).send('```제재 대상자: '+target.id+'('+target.nickname+')\n'+'제재 사유: '+reason+'\n'+'처리 결과: 계정 정지 ('+enddate+')```');
+exports.ban = function(target, judge, reason, enddate){
+	if(GLOBAL.BOT_OPTIONS.ENABLED) Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.BAN).send('```제재 대상자: '+target.id+' ('+target.nickname+')\n'+'제재 사유: '+reason+'\n'+'처리자: '+(judge ? judge : "알 수 없음" )+'\n'+'처리 결과: 계정 정지 ('+enddate+')```');
+}
+exports.warn = function(target, judge, warn, nowwarn){
+	if(GLOBAL.BOT_OPTIONS.ENABLED) Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.BAN).send('```제재 대상자: '+target._id+' ('+target.nickname+')\n'+'처리 결과: 경고 '+warn+'회 (현재 누적 '+nowwarn+'회)'+'\n'+'처리자: '+(judge ? judge : "알 수 없음" )+'```경고 사유는 처리자께서 따로 적어주시기 바랍니다.');
 }
 exports.word = function(type, theme, list){
 	list = JSON.stringify(list).replace("[", "").replace("]", "").replaceAll('"', "")

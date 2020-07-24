@@ -570,19 +570,23 @@ Server.post("/gwalli/monthly", function(req, res){
 });
 Server.post("/gwalli/warn", function(req, res){
 	if(!checkAdmin(req, res, 'USERS')) return;
+	
 	if(!req.body.id) return res.send({ error: 404 });
-	else if(!req.body.warn) return res.send({ error: 404 });
+	if(!req.body.warn) return res.send({ error: 404 });
+	
 	var id = req.body.id;
 	var warn = Number(req.body.warn);
+	
 	MainDB.users.findOne([ '_id', id ]).on(function($user){
 		if(!$user) return res.send({ error: 404 });
-		else if(warn >= 4){
-			MainDB.users.update([ '_id', id ]).set([ 'warn', 0 ]).on();
-			MainDB.users.update([ '_id', id ]).set([ 'black', "경고 누적" ]).on();
-			MainDB.users.update([ '_id', id ]).set([ 'bandate', 99999999999999 ]).on();
+		
+		if(warn >= 4){
+			MainDB.users.update([ '_id', id ]).set([ 'warn', 0 ], [ 'black', "경고 누적" ], [ 'bandate', 99999999999999 ]).on();
+			Bot.ban($user, "관리자 페이지", `경고 누적 (${warn}회)`, "영구")
 			return res.send("OK")
 		}else{
 			MainDB.users.update([ '_id', id ]).set([ 'warn', warn ]).on();
+			Bot.warn($user, "관리자 페이지", warn-Number($user.warn), warn)
 			return res.send("OK")
 		}
 	});
