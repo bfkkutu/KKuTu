@@ -380,7 +380,7 @@ function onKKuTuDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
-	Bot.word("추가", theme, list)
+	Bot.word("추가", theme, req.body.list)
 	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;
@@ -438,7 +438,7 @@ function onKKuTuDDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
-	Bot.word("삭제", theme, list)
+	Bot.word("삭제", theme, req.body.list)
 	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;
