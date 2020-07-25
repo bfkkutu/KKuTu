@@ -121,7 +121,7 @@ exports.RULE = {
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "mdt", "rms", "loa", "str",
-		"nrt", "rtu", "upl", "rank", "ogow", "selth", "btm" ],
+		"nrt", "rtu", "upl", "rank", "ogow"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -130,7 +130,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow", "selth", "btm", "twt", "tmnt" ],
+		"nrt", "leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow"/*, "selth", "btm"*/, "twt", "tmnt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -268,7 +268,7 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
-	},
+	}/*,
 	'KLH': { lang: "ko", // 한국어 길이 제한 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext" ],
@@ -276,7 +276,7 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
-	}/*,
+	}*//*,
 	'ADL': { lang: "ko", // 한국어 노운워드
 		rule: "Daneo",
 		opts: [ "mis" ],

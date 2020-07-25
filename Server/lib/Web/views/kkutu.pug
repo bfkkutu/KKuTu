@@ -116,10 +116,10 @@ block Middle
 			h4= L('bgmselect')
 			select#bgmselect
 				option(value=L('bgm_newbfkkutu'), selected)= L('bgm_newbfkkutu')
-				option(value=L('bgm_allgro'))= L('bgm_allgro')
 				option(value=L('bgm_newstart'))= L('bgm_newstart')
+				option(value=L('bgm_beta'))= L('bgm_tlok')
+				option(value=L('bgm_allgro'))= L('bgm_allgro')
 				option(value=L('bgm_original'))= L('bgm_original')
-				option(value=L('bgm_beta'))= L('bgm_beta')
 		div.dialog-bar
 			h4= L('BADWORDFILTER')
 			select#badwordfilter
@@ -233,8 +233,8 @@ block Middle
 					option(value=16)= L('modeKUT')
 					option(value=18)= L('modeKRH')
 					option(value=20)= L('modeKMH')
-					//-option(value=19)= L('modeADL')-//
-					option(value=17)= L('modeKLH')
+					//option(value=19)= L('modeADL')
+					//option(value=17)= L('modeKLH')
 					option(value=8)= L('modeKAP')
 					option(value=6)= L('modeKTY')
 					option(value=10)= L('modeKDA')
@@ -247,13 +247,13 @@ block Middle
 					option(value=1)= L('modeESH')
 					option(value=0)= L('modeEKT')
 					option(value=19)= L('modeERH')
-					//-option(value=17)= L('modeEAP')-//
+					//option(value=17)= L('modeEAP')
 					option(value=7)= L('modeETY')
 					option(value=11)= L('modeEDA')
 					option(value=13)= L('modeESS')
 					option(value=15)= L('modeEDG')
 				optgroup(label=L('mcTesting'))
-					//-option(value=99)= L('modeETS')-//
+					//option(value=99)= L('modeETS')
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
 			h4
 			h4#game-mode-expl.dialog-bar-value(style='width: 100%; font-size: 11px;')
@@ -587,6 +587,8 @@ block Middle
 			h3#popup-text
 		div.dialog-bar.tail-button#confirmbtn
 			button#popup-ok= L('OK')
+	+Dialog('TailDiag', 500, 300, L('Tail'))
+		div#tail-board(style="width: 500px; height: 275px; background-color: black; border-radius: 0px 0px 13.5px 13.5px;")
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar
 			h4(style='width: 100%;')= L('obtained') + '!'

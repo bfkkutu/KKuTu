@@ -353,6 +353,9 @@ function processAdmin(id, value, requestId){
 			KKuTu.publish('forcespectate', value);
 			DIC[value].send('forcespectate', { id : value });
 			return null;
+		case "opentail":
+			DIC[id].send('opentail');
+			return null;
 		case "tailroom":
 			if(temp = ROOM[value]){
 				if(T_ROOM[value] == id){

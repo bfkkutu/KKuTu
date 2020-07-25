@@ -540,6 +540,21 @@ Server.get("/gwalli/hitword", function(req, res){
 		else return res.send({ hit: $doc.hit })
 	})
 });
+Server.get("/gwalli/manner", function(req, res){
+	if(!checkAdmin(req, res, 'WORDS')) return;
+	var MANNER = MainDB.kkutu_manner[req.query.lang];
+	
+	if(!MANNER) return res.sendStatus(400);
+	if(!MANNER.findOne) return res.sendStatus(400);
+	
+	MANNER.findOne([ '_id', req.query.letter ]).on(function($doc){
+		if(!$doc) return res.send({ error: 404 })
+		else{
+			MANNER.remove([ '_id', req.query.letter ]).on();
+			return res.send({ result: 1 });
+		}
+	})
+});
 Server.post("/gwalli/users", function(req, res){
 	if(!checkAdmin(req, res, 'USERS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);

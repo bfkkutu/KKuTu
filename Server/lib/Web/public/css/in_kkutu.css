@@ -1015,6 +1015,10 @@ iframe{
 	padding-left: 131px;
 }
 
+.tail-item{
+	color: #CCC;
+}
+
 @keyframes RoundEffect{
 	0%		{ font-size: 16px; color: #FFFF44; background-color: rgba(0, 0, 0, 1); }
 	100%	{ font-size: 12px; color: #FFFFFF; background-color: rgba(0, 0, 0, 0); }

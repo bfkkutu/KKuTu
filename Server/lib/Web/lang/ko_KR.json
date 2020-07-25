@@ -88,6 +88,7 @@
 	"Alert": "BF끄투 알림",
 	"Prompt": "BF끄투",
 	"Popup": "BF끄투 팝업",
+	"Tail": "감시 로그",
     "ITEM_FROM": "재료 아이템",
     "PRE_SEASON": "전 시즌",
 
@@ -155,8 +156,8 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "4.9.6 User",
-	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.9.6 User</a>",
+    "version": "4.9.7 User",
+	"version_down": "<a href='/help/whatisversion.html' target='_blank'>4.9.7 User</a>",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -200,7 +201,7 @@
 	"BGMHelp": "BGM 지원: <a href='https://www.youtube.com/watch?v=H8PX5PInrJY' target='_blank'>라크다르 - 새로운 시작</a>",
     "PLAYTSHelp": "본 서버는 PlayTS 연맹의 도메인, 서비스를 사용하고 있습니다.",
 	"CORONAHelp": "코로나19 관련 정보 제공: <a href='https://coronamap.site/' target='_blank'>코로나 맵</a>",
-	"copyright": "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp새로운 끄투의 시작, BF끄투 Copyright (C) 2018 이승훈(<a target='_blank' href='mailto:bfk@sdbx.dev'>bfk@sdbx.dev</a>, <a target='_blank' href='mailto:admin@bfkkutu.kr'>admin@bfkkutu.kr</a>)",
+	"copyright": "&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp새로운 끄투의 시작, BF끄투 Copyright (C) 2018 이승훈(<a target='_blank' href='mailto:op@bf2.xyz'>op@bf2.xyz</a> / <a target='_blank' href='mailto:admin@bfkkutu.kr'>admin@bfkkutu.kr</a>)",
 	"welcome": "환영합니다.",
     "welcomeTestServer": "테스트 서버에 오신 것을 환영합니다.",
     "loadRemain": "불러오는 중... 앞으로 ",
