@@ -588,7 +588,7 @@ block Middle
 		div.dialog-bar.tail-button#confirmbtn
 			button#popup-ok= L('OK')
 	+Dialog('TailDiag', 500, 300, L('Tail'))
-		div#tail-board(style="width: 500px; height: 275px; background-color: black; border-radius: 0px 0px 13.5px 13.5px;")
+		div#tail-board(style="width: 500px; height: 275px; background-color: black; border-radius: 0px 0px 13.5px 13.5px; overflow-y: scroll;")
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar
 			h4(style='width: 100%;')= L('obtained') + '!'

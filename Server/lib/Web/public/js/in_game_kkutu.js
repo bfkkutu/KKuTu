@@ -373,10 +373,31 @@
 					jpmsg = JSON.parse(a.msg);
 				switch(jpmsg.type){
 					case "talk":
-						parsedData += `채팅 | ${a.id}: ${jpmsg.value}`
+						parsedData += `${jpmsg.relay ? "끝말잇기" : "채팅"} | ${a.id}: ${jpmsg.value}`
 						break;
 					case "leave":
 						parsedData += `방 나감 | ${a.id}`
+						break;
+					case "handover":
+						parsedData += `방장 인계 | ${a.id} -> ${jpmsg.target}`
+						break;
+					case "invite":
+						parsedData += `초대 전송 | ${a.id} -> ${jpmsg.target}`
+						break;
+					case "kick":
+						parsedData += `강퇴 | ${a.id} -> ${jpmsg.robot ? "AI" : jpmsg.target}`
+						break;
+					case "ready":
+						parsedData += `준비 상태 변경 | ${a.id}`
+						break;
+					case "form":
+						parsedData += `${jpmsg.mode == "S" ? "관전" : "준비" } 상태 변경 | ${a.id}`
+						break;
+					case "practice":
+						parsedData += `연습 | 플레이어: ${a.id}, AI 수준: ${L['aiLevel'+jpmsg.level]}`
+						break;
+					case "start":
+						parsedData += `게임 시작 | 시작한 사람: ${a.id}`
 						break;
 					case undefined:
 						break;
@@ -386,6 +407,7 @@
 				}
 				if(jpmsg.pw) parsedData += `방 정보 | 비밀번호: ${(jpmsg.pw == "" ? "없음" : jpmsg.pw)}, 플레이어: ${jpmsg.players}`
 				$("#tail-board").append($(`<div class="tail-item" style="color: #CCC;">${parsedData}</div>`));
+				$("#tail-board").scrollTop(99999999);
 				notice(a.a + "|" + a.rid + "@" + a.id + ": " + (a.msg instanceof String ? a.msg : JSON.stringify(a.msg)).replace(/</g, "&lt;").replace(/>/g, "&gt;"), "tail");
 				break;
 			case "chat":
