@@ -2660,6 +2660,12 @@
 			}
 		}).on("focusout", function(a) {
 			$(".cw-q-body").empty(), $stage.game.cwcmd.css("opacity", 0)
+		}), $("#tail-btn").on("click", function(a) {
+			send("talk", {
+				relay: false,
+				data: $data._sel,
+				value: "#" + $("#tail-input").val().trim()
+			}), $("#tail-input").val("")
 		}), $("#room-limit").on("change", function(a) {
 			var b = $(a.currentTarget),
 				c = b.val();

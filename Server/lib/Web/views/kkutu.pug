@@ -587,8 +587,10 @@ block Middle
 			h3#popup-text
 		div.dialog-bar.tail-button#confirmbtn
 			button#popup-ok= L('OK')
-	+Dialog('TailDiag', 500, 300, L('Tail'))
+	+Dialog('TailDiag', 500, 340, L('Tail'))
 		div#tail-board(style="width: 500px; height: 275px; background-color: black; border-radius: 0px 0px 13.5px 13.5px; overflow-y: scroll;")
+		input#tail-input(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
+		button#tail-btn(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	+Dialog('ObtainDiag', 300, 200, L('notice'), true)
 		div.dialog-bar
 			h4(style='width: 100%;')= L('obtained') + '!'
