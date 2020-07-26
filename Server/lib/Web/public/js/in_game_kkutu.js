@@ -369,14 +369,38 @@
 			case "tail":
 				//a.a = "번 방";
 				a.msg = (a.msg instanceof String ? a.msg : JSON.stringify(a.msg)).replace(/</g, "&lt;").replace(/>/g, "&gt;")
-				var parsedData = `${a.rid}번 방 | `,
-					jpmsg = JSON.parse(a.msg);
+				var parsedData, jpmsg = JSON.parse(a.msg);
+				switch(a.a){
+					case "tr": // tailroom
+						parsedData = `${a.rid}번 방 | 감시 시작 | 비밀번호: ${(jpmsg.pw == "" ? "없음" : jpmsg.pw)}, 플레이어: ${jpmsg.players}`
+						break;
+					case "trX": // tailroom cancel
+						parsedData = `${a.rid}번 방 | 감시 종료 | 비밀번호: ${(jpmsg.pw == "" ? "없음" : jpmsg.pw)}, 플레이어: ${jpmsg.players}`
+						break;
+					case "tu": // tailuser
+						parsedData = `유저 ${a.rid} | 감시 시작 | 닉네임: ${jpmsg.nickname ? jpmsg.nickname : jpmsg.profile.title}, 자기 소개: ${jpmsg.exordial == "" ? "없음" : jpmsg.exordial}, 보유 핑: ${jpmsg.money}, 상태: ${jpmsg.game.ready ? "준비" : "대기"}, 위치: ${jpmsg.place == 0 ? "로비" : jqmsg.place+"번 방"}`
+						break;
+					case "tuX": // tailuser cancel
+						parsedData = `유저 ${a.rid} | 감시 종료 | 닉네임: ${jpmsg.nickname ? jpmsg.nickname : jpmsg.profile.title}, 자기 소개: ${jpmsg.exordial == "" ? "없음" : jpmsg.exordial}, 보유 핑: ${jpmsg.money}, 상태: ${jpmsg.game.ready ? "준비" : "대기"}, 위치: ${jpmsg.place == 0 ? "로비" : jqmsg.place+"번 방"}`
+						break;
+					case "room":
+						parsedData = `${a.rid}번 방 | `
+						break;
+					case "user":
+						parsedData = `유저 ${a.id != a.rid ? a.id : a.rid} | `
+						break;
+					case undefined:
+						break;
+					default:
+						parsedData += a.msg
+						break;
+				}
 				switch(jpmsg.type){
 					case "talk":
 						parsedData += `${jpmsg.relay ? "끝말잇기" : "채팅"} | ${a.id}: ${jpmsg.value}`
 						break;
 					case "leave":
-						parsedData += `방 나감 | ${a.id}`
+						parsedData += `방 나감 | ${a.a == "user" ? a.rid+"번 방" : a.id}`
 						break;
 					case "handover":
 						parsedData += `방장 인계 | ${a.id} -> ${jpmsg.target}`
@@ -388,27 +412,29 @@
 						parsedData += `강퇴 | ${a.id} -> ${jpmsg.robot ? "AI" : jpmsg.target}`
 						break;
 					case "ready":
-						parsedData += `준비 상태 변경 | ${a.id}`
+						parsedData += `준비 상태 변경 | ${a.a == "user" ? a.rid+"번 방" : a.id}`
 						break;
 					case "form":
-						parsedData += `${jpmsg.mode == "S" ? "관전" : "준비" } 상태 변경 | ${a.id}`
+						parsedData += `${jpmsg.mode == "S" ? "관전" : "준비" } 상태 변경 | ${a.a == "user" ? a.rid+"번 방" : a.id}`
 						break;
 					case "practice":
 						parsedData += `연습 | 플레이어: ${a.id}, AI 수준: ${L['aiLevel'+jpmsg.level]}`
 						break;
 					case "start":
-						parsedData += `게임 시작 | 시작한 사람: ${a.id}`
+						parsedData += `게임 시작 | 방장: ${a.id}`
 						break;
 					case undefined:
+						break;
+					case "test":
+						return;
 						break;
 					default:
 						parsedData += a.msg
 						break;
 				}
-				if(jpmsg.pw) parsedData += `방 정보 | 비밀번호: ${(jpmsg.pw == "" ? "없음" : jpmsg.pw)}, 플레이어: ${jpmsg.players}`
 				$("#tail-board").append($(`<div class="tail-item" style="color: #CCC;">${parsedData}</div>`));
 				$("#tail-board").scrollTop(99999999);
-				notice(a.a + "|" + a.rid + "@" + a.id + ": " + (a.msg instanceof String ? a.msg : JSON.stringify(a.msg)).replace(/</g, "&lt;").replace(/>/g, "&gt;"), "tail");
+				//notice(a.a + "|" + a.rid + "@" + a.id + ": " + (a.msg instanceof String ? a.msg : JSON.stringify(a.msg)).replace(/</g, "&lt;").replace(/>/g, "&gt;"), "tail");
 				break;
 			case "chat":
 				if(!$data.admin){
