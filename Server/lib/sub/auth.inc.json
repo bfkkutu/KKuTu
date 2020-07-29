@@ -42,5 +42,9 @@
         "clientID": "",
 		"clientSecret": "",
         "callbackURL": "/login/github/callback"
+    }, "daldalso": {
+        "clientID": "",
+        "clientSecret": "",
+        "callbackURL": "/login/daldalso/callback"
     }
 }
