@@ -332,7 +332,7 @@ iframe{
 .GameBox{
 	width: calc(100% - 10px);
 	height: 410px;
-	background-image: url('/img/kkutu/gamebg.png');
+	background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/gamebg.png');
 }
 	.GameBox .product-title{ height: 12px; }
 	.GameBox .product-title h5{ float: left; }
@@ -408,31 +408,31 @@ iframe{
 		margin-bottom: 10px;
 	}
 	.button-color#color-red {
-		background: #DEB887 url('/img/kkutu/paint_red.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_red.png') no-repeat center;
 	}
 	.button-color#color-orange {
-		background: #DEB887 url('/img/kkutu/paint_orange.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_orange.png') no-repeat center;
 	}
 	.button-color#color-yellow {
-		background: #DEB887 url('/img/kkutu/paint_yellow.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_yellow.png') no-repeat center;
 	}
 	.button-color#color-green {
-		background: #DEB887 url('/img/kkutu/paint_green.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_green.png') no-repeat center;
 	}
 	.button-color#color-blue {
-		background: #DEB887 url('/img/kkutu/paint_blue.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_blue.png') no-repeat center;
 	}
 	.button-color#color-indigo {
-		background: #DEB887 url('/img/kkutu/paint_indigo.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_indigo.png') no-repeat center;
 	}
 	.button-color#color-violet {
-		background: #DEB887 url('/img/kkutu/paint_violet.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_violet.png') no-repeat center;
 	}
 	.button-color#color-black {
-		background: #DEB887 url('/img/kkutu/paint_black.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_black.png') no-repeat center;
 	}
 	.button-color#color-white {
-		background: #DEB887 url('/img/kkutu/paint_white.png') no-repeat center;
+		background: #DEB887 url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/paint_white.png') no-repeat center;
 	}
 		.hint-item{
 			width: calc(50% - 4px);
@@ -762,9 +762,9 @@ iframe{
 				box-shadow: 0px 1px 1px #CCCCCC;
 				background-color: #333333;
 			}
-				.result-me-before-bar{ background-image: url('/img/kkutu/scorebar.png'); }
-				.result-me-current-bar{ background-image: url('/img/kkutu/currentbar.png'); }
-				.result-me-bonus-bar{ background-image: url('/img/kkutu/bonusbar.png'); }
+				.result-me-before-bar{ background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/scorebar.png'); }
+				.result-me-current-bar{ background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/currentbar.png'); }
+				.result-me-bonus-bar{ background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/bonusbar.png'); }
 				.result-me-score-text{
 					margin-top: -33px;
 					margin-left: 65px;
@@ -795,7 +795,7 @@ iframe{
 		.my-stat-ping{ margin-top: 5px; width: 100px; }
 	.my-level{ margin: 13px 0px; width: 190px; font-size: 15px; text-align: center; }
 	.my-gauge{ border-radius: 10px; margin: 3px 0px; width: 190px; height: 30px; overflow: hidden; background-color: #20568E; }
-		.my-gauge .graph-bar{ background-image: url('/img/kkutu/scorebar.png'); }
+		.my-gauge .graph-bar{ background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/scorebar.png'); }
 	.my-gauge-text{ margin-top: -25px; width: 190px; color: #EEEEEE; text-align: center; text-shadow: 0px 1px 1px #141414; }
 	#dress-goods{
 		margin-top: 5px;

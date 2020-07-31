@@ -308,14 +308,6 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
-	},
-	'RVS': { lang: "ko", // 거꾸로
-		rule: "Reverse",
-		opts: [ ],
-		time: 1,
-		ai: true,
-		big: false,
-		ewq: true
 	}
 };
 exports.GAME_TYPE = Object.keys(exports.RULE);

@@ -69,7 +69,7 @@ span{
 	font-size: 15px;
 	text-align: center;
 	color: #47330D;
-	background-image: url('/img/topbg.png');
+	background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/topbg.png');
 	background-color: #DEAF56;
 	transition: all 200ms ease;
 }
@@ -268,7 +268,7 @@ span{
 	width: 100%;
 	height: 30px;
 	box-shadow: 0px 2px 2px #111111;
-	background-image: url('/img/topbg.png');
+	background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/topbg.png');
 	z-index: 1;
 }
 #Middle{
@@ -347,3 +347,32 @@ code{
 .tier-D{ color: #96C7F9; text-shadow: 0px 0px 3px #88BBEE; }
 .tier-M{ color: #2AC9AF; text-shadow: 0px 0px 5px #11AA88; }
 .tier-C{ color: #2EFFDF; text-shadow: 0px 0px 5px #1072AA; }
+
+.footer-div{
+	margin-top: 10px;
+	color: #CCCCCC;
+	background-color: #304a58;
+	position: absolute;
+	bottom: 0;
+	height: 7%;
+	width: 100%;
+	z-index: -1;
+}
+.footer-left{
+	float: left;
+	width: 35%;
+}
+.footer-right{
+	float: left;
+	width: 35%;
+}
+.footer-blank{
+	float: left;
+	width: 15%;
+}
+
+.in-iframe{
+	float: left;
+    width: 200px;
+    background-color: rgba(0,0,0,0.175);
+}
