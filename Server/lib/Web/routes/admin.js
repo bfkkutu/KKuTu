@@ -48,6 +48,17 @@ File.watchFile("./lib/sub/global.json", () => {
 	JLog.info("global.json is Auto-Updated at {lib/Web/routes/admin.js}");
 })
 
+function translateToPromise(query) { 
+	return new Promise((res, rej) => {
+		query.on((doc) => { res(doc); }, null, (err) => { rej(err); });
+	});
+}
+function validate(list, item){
+	if(typeof list == "object") list = list.filter(x => x != item)
+	else list = (list == item ? "" : list)
+	return list
+}
+
 exports.run = function(Server, page){
 
 /*Server.get("/gwalli", function(req, res) {
@@ -373,6 +384,7 @@ function onKKuTuDB(req, res){
 	
 	var theme = req.body.theme;
 	var list = req.body.list;
+	var validatedList = req.body.list.split("\n");
 	var TABLE = MainDB.kkutu[req.body.lang];
 	
 	if(list) list = list.split(/[,\r\n]+/);
@@ -380,14 +392,13 @@ function onKKuTuDB(req, res){
 	if(!TABLE) res.sendStatus(400);
 	if(!TABLE.insert) res.sendStatus(400);
 	
-	Bot.word("추가", theme, req.body.list)
-	//noticeAdmin(req, theme, list.length);
-	list.forEach(function(item){
-		if(!item) return;
-		item = item.trim();
-		if(!item.length) return;
-		TABLE.findOne([ '_id', item ]).on(function($doc){
-			if(!$doc) return TABLE.insert([ '_id', item ], [ 'type', "INJEONG" ], [ 'theme', theme ], [ 'mean', "＂1＂" ], [ 'flag', 2 ]).on();
+	(async () => {
+		await Promise.all(list.map(async item => {
+			if(!item) return;
+			item = item.trim();
+			if(!item.length) return;
+			var $doc = await translateToPromise(TABLE.findOne([ '_id', item ]));
+			if(!$doc) return await translateToPromise(TABLE.insert([ '_id', item ], [ 'type', "INJEONG" ], [ 'theme', theme ], [ 'mean', "＂1＂" ], [ 'flag', 2 ]));
 			var means = $doc.mean.split(/＂[0-9]+＂/g).slice(1);
 			var len = means.length;
 			
@@ -395,13 +406,15 @@ function onKKuTuDB(req, res){
 				$doc.type += ",INJEONG";
 				$doc.theme += "," + theme;
 				$doc.mean += `＂${len+1}＂`;
-				TABLE.update([ '_id', item ]).set([ 'type', $doc.type ], [ 'theme', $doc.theme ], [ 'mean', $doc.mean ]).on();
+				await translateToPromise(TABLE.update([ '_id', item ]).set([ 'type', $doc.type ], [ 'theme', $doc.theme ], [ 'mean', $doc.mean ]));
 			}else{
 				JLog.warn(`Word '${item}' already has the theme '${theme}'!`);
+				validatedList = validate(validatedList, item);
 			}
-		});
-		itemLog(item, req, theme, list.length);
-	});
+			itemLog(item, req, theme, list.length);
+		}));
+		Bot.word("추가", theme, validatedList.join("\n"));
+	})();
 	if(!req.body.nof) res.sendStatus(200);
 }
 Server.post("/gwalli/kkutudb/:word", function(req, res){
@@ -433,13 +446,12 @@ function onKKuTuDDB(req, res){
 	var list = req.body.list;
 	var TABLE = MainDB.kkutu[req.body.lang];
 	
+	Bot.word("삭제", theme, list);
+	
 	if(list) list = list.split(/[,\r\n]+/);
 	else return res.sendStatus(400);
 	if(!TABLE) res.sendStatus(400);
-	if(!TABLE.insert) res.sendStatus(400);
 	
-	Bot.word("삭제", theme, req.body.list)
-	//noticeAdmin(req, theme, list.length);
 	list.forEach(function(item){
 		if(!item) return;
 		item = item.trim();
@@ -449,11 +461,9 @@ function onKKuTuDDB(req, res){
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`)
 				return;
 			}
-			
 			var themes = $doc.theme.split(",")
 			
 			if(themes.length == 0) TABLE.remove([ '_id', item ]).on();
-			
 			if(themes.indexOf(theme) == -1){ // 존재하지 않으면
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`);
 			}else{ // 존재하면
@@ -677,6 +687,9 @@ Server.post("/gwalli/shopGIIL", function(req, res){ // shop give item id list
 };
 
 function noticeAdmin(req, ...args){
+	req.ip = req.headers['x-forwarded-for'] || "";
+	if(typeof req.ip == "string" && req.ip.includes(",")) req.ip = req.ip.split(",")[0]
+
 	if(req.originalUrl == "/gwalli/shopditem"){
 		logger.info(`[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`);
 		fs.appendFileSync(`../IP-Log/ItemLog.txt`,`\n[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`, 'utf8',(err, ip, path) => { //기록하고
@@ -692,6 +705,9 @@ function noticeAdmin(req, ...args){
 	}
 }
 function itemLog(item, req, ...args){
+	req.ip = req.headers['x-forwarded-for'] || "";
+	if(typeof req.ip == "string" && req.ip.includes(",")) req.ip = req.ip.split(",")[0]
+	
 	if(req.originalUrl == "/gwalli/kkutuDdb") logger.info(`[ADMIN]: ${req.originalUrl} Removed Word ${item} ${req.ip} | ${args.join(' | ')}`);
 	else logger.info(`[ADMIN]: ${req.originalUrl} Added Word ${item} ${req.ip} | ${args.join(' | ')}`);
 	fs.appendFileSync(`../IP-Log/WordInit.txt`,`\n[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(' | ')}`, 'utf8',(err, ip, path) => { //기록하고
