@@ -1898,8 +1898,7 @@
 	}
 
 	function playBGM(a, b) {
-		a == "lobby" ? a = $("#bgmselect").val().substr(0, 1) : a = a;
-		return $data.bgm && $data.bgm.stop(), $data.bgm = playSound(a, !0);
+		return $data.bgm && $data.bgm.stop(), $data.bgm = playSound(a == "lobby" ? $("#bgmselect").val() : a, !0);
 	}
 
 	function stopBGM() {
@@ -3067,8 +3066,8 @@
 					else{
 						alert(`닉네임이 ${e.text}(으)로 변경되었습니다.`)
 					}
-					$stage.dialog.dress.hide()
-				})
+					$stage.dialog.dress.hide();
+				});
 			}), $("#DressDiag .dress-type").on("click", function(a) {
 				var b = $(a.currentTarget),
 					c = b.attr("id").slice(11);
@@ -3113,7 +3112,7 @@
 					});
 					alert(`신고가 완료되었습니다.\n\n대상: ${$("#report-target").text()}\n신고자: ${$data.id}\n사유: ${$("#report-reason").val()}`), $stage.dialog.reportDiag.hide();
 				}else{
-					alert("본인 또한 처벌 받을 수 있음에 동의해주세요.")
+					alert("본인 또한 처벌 받을 수 있음에 동의해주세요.");
 				}
 			}), $stage.dialog.inquireSubmit.on("click", function(a) {
 				$.post("/inquire", {
@@ -3125,10 +3124,10 @@
 				$.post("/buy/" + $data._sgood, function(a) {
 					var b = $data.users[$data.id];
 					if (a.error) return fail(a.error);
-					alert(L.purchased), b.money = a.money, b.box = a.box, updateMe()
-				}), $stage.dialog.purchase.hide()
+					alert(L.purchased), b.money = a.money, b.box = a.box, updateMe();
+				}), $stage.dialog.purchase.hide();
 			}), $stage.dialog.purchaseNO.on("click", function(a) {
-				$stage.dialog.purchase.hide()
+				$stage.dialog.purchase.hide();
 			}), $stage.menu.cursing.click(function() {
 				$stage.dialog.cursing.toggle();
 				
@@ -3137,43 +3136,28 @@
 				}
 			}), $stage.dialog.obtainOK.on("click", function(a) {
 				var b = $data._obtain.shift();
-				b ? drawObtain(b) : $stage.dialog.obtain.hide()
+				b ? drawObtain(b) : $stage.dialog.obtain.hide();
 			}), $stage.dialog.alertKKuTuOK.on("click", function(a) {
-				$stage.dialog.alertKKuTu.hide()
+				$stage.dialog.alertKKuTu.hide();
 			}), $("#popup-ok").on("click", function(a) {
 				$stage.dialog.popupKKuTu.hide();
 			}), $stage.dialog.newClan.on("click", function(a) {
 				showDialog($stage.dialog.newClanDiag)
 			}), $stage.dialog.viewClan.on("click", function(a) {
-				showDialog($stage.dialog.viewClanDiag)
+				showDialog($stage.dialog.viewClanDiag);
 				if(!$clan.name) alert("클랜에 가입하지 않았습니다."), $stage.dialog.viewClanDiag.hide();
 				else{
 					var f, g = getLevel($clan.score);
-					$("#deleteClan").hide()
-					$("#kickTarget").hide()
-					$("#kickUser").hide()
-					$("#leaveClan").show()
-					$("#extendMax").hide()
-					if($clan.perm == 0){
-						$("#deleteClan").show()
-						$("#kickTarget").show()
-						$("#kickUser").show()
-						$("#leaveClan").hide()
-						$("#extendMax").show()
-					}else if($clan.perm == 1){
-						$("#kickTarget").show()
-						$("#kickUser").show()
-						$("#extendMax").show()
-					}
+					$("#deleteClan").hide(), $("#kickTarget").hide(), $("#kickUser").hide(), $("#leaveClan").show(), $("#extendMax").hide();
+					if($clan.perm == 0) $("#deleteClan").show(), $("#kickTarget").show(), $("#kickUser").show(), $("#leaveClan").hide(), $("#extendMax").show();
+					else if($clan.perm == 1) $("#kickTarget").show(), $("#kickUser").show(), $("#extendMax").show();
 					$("#myClanName").html(`클랜 이름: ${$clan.name}`),
 					$("#myClanID").html(`클랜 ID: ${$clan.id}`),
 					$("#myClanMax").html(`클랜원 수: ${Object.keys($clan.users).length}/${$clan.max}명`),
 					$("#myClanActivate").html(`클랜 활동량: ${$clan.score}`),
 					$("#clanUserList tbody").empty(),
 					$("#myClanLevel").attr("src",`https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/clanlv/lv${g}.png`)
-					for(f in Object.keys($clan.users)){
-						$("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys($clan.users)[f]))
-					}
+					for(f in Object.keys($clan.users)) $("#clanUserList").append($("<tr>").attr("id", "clanuser-bf").html(Object.keys($clan.users)[f]))
 				}
 			}), $stage.dialog.deleteClan.on("click", function(a) {
 				var c = confirm(`정말 ${$clan.name} 클랜을 삭제하시겠습니까?`);
@@ -3191,15 +3175,15 @@
 				var a = $("#clanName").val();
 				
 				if(!$clan.name){
-					if(a == null) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
-					else if(a == undefined) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
-					else if(/[(ㄱ-ㅎ)]/gi.test(a)) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.")
-					else if(!/[(가-힣a-zA-Z)]/gi.test(a)) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-					else if(a.length > 8) alert("클랜 이름 길이 제한은 최대 8글자까지입니다.")
-					else if(a.match("<")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-					else if(a.match(">")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-					else if(a.match("&lt")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
-					else if(a.match("　")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.")
+					if(a == null) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.");
+					else if(a == undefined) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.");
+					else if(/[(ㄱ-ㅎ)]/gi.test(a)) alert("클랜 이름을 자음만으로 지정하실 수 없습니다.");
+					else if(!/[(가-힣a-zA-Z)]/gi.test(a)) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.");
+					else if(a.length > 8) alert("클랜 이름 길이 제한은 최대 8글자까지입니다.");
+					else if(a.match("<")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.");
+					else if(a.match(">")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.");
+					else if(a.match("&lt")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.");
+					else if(a.match("　")) alert("클랜 이름에 잘못된 문자가 포함되어 있습니다.");
 					else {
 						a = delBadWords(a);
 						$.get(`/clan?type=create&id=${$data.id}&clanname=${a}`, function(r){
@@ -3209,7 +3193,7 @@
 								getClan($data.id);
 								$stage.dialog.newClanDiag.hide();
 							}
-						})
+						});
 					}
 				}else if($clan.name == undefined) alert("이미 클랜에 가입되어 있습니다!"), $stage.dialog.newClanDiag.hide();
 				else alert("이미 클랜에 가입되어 있습니다!")
