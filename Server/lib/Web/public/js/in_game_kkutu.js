@@ -2851,14 +2851,14 @@
 			}), $stage.menu.Clan.on("click",function(a){
 				if(!$clan) getClan($data.id)
 				showDialog($stage.dialog.clanDiag);
-				$("#clanList").append($("<label>").text("클랜 목록 사용 일시 중단! 디스코드 클랜 홍보 채널을 이용하세요."))
-				/*$.get("/clan?type=clanlist", function(b){
+				//$("#clanList").append($("<label>").text("클랜 목록 사용 일시 중단! 디스코드 클랜 홍보 채널을 이용하세요."))
+				$.get("/clan?type=clanlist", function(b){
 					var c, d, e = JSON.parse(b.list);
 					$("#clanList tbody").empty();
 					for(c in e){
 						$("#clanList").append($("<tr>").attr("id", "clan-" + e[c].clanname).addClass("clan-" + e[c].clanname).append($("<td>").html(e[c].clanname)).append($("<td>").html(e[c].clanid)))
 					}
-				})*/
+				})
 			}), $stage.menu.invite.on("click", function(a) {
 				showDialog($stage.dialog.invite), updateUserList(!0)
 			}), $stage.menu.practice.on("click", function(a) {
@@ -3187,9 +3187,9 @@
 					else {
 						a = delBadWords(a);
 						$.get(`/clan?type=create&id=${$data.id}&clanname=${a}`, function(r){
-							if(r.message == "MONEYFAIL") alert("핑이 부족합니다! (10000핑 필요)"), $stage.dialog.newClanDiag.hide();
+							if(r.message == "MONEYFAIL") alert("핑이 부족합니다! (5000 필요)"), $stage.dialog.newClanDiag.hide();
 							else{ 
-								alert(`10000핑을 소비하여 ${a} 클랜을 만들었습니다!`)
+								alert(`5000핑을 소비하여 ${a} 클랜을 만들었습니다!`)
 								getClan($data.id);
 								$stage.dialog.newClanDiag.hide();
 							}

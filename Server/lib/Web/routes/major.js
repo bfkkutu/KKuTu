@@ -119,7 +119,7 @@ Server.get("/clan", function(req, res){
 		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
 			if(!$ec) return res.send({ message: "FAIL" });
 			else{
-				var postM = $ec.money - 10000;
+				var postM = $ec.money - 5000;
 				
 				if(postM < 0) return res.send({ message: "MONEYFAIL" });
 				else {
@@ -207,7 +207,7 @@ Server.get("/clan", function(req, res){
 				if(!$user) return res.send({ message: "FAIL" });
 				else if(Number($ec.users[`${query.masterid}`]) != 0) return res.send({ message: "LOWPERM" });
 				else {
-					var postM = $user.money - 10000;
+					var postM = $user.money - 5000;
 				
 					if(postM < 0) return res.send({ message: "MONEYFAIL" });
 					else {
@@ -250,7 +250,7 @@ Server.get("/clan", function(req, res){
 		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
 			if(!$ec) return res.send({ message: "FAIL" });
 			else{
-				var postM = $ec.money - 10000;
+				var postM = $ec.money - 5000;
 				
 				if(postM < 0) return res.send({ message: "MONEYFAIL" });
 				else {
