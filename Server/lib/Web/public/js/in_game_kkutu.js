@@ -2853,10 +2853,10 @@
 				showDialog($stage.dialog.clanDiag);
 				//$("#clanList").append($("<label>").text("클랜 목록 사용 일시 중단! 디스코드 클랜 홍보 채널을 이용하세요."))
 				$.get("/clan?type=clanlist", function(b){
-					var c, d, e = JSON.parse(b.list);
+					var c, d, e = b.list;
 					$("#clanList tbody").empty();
 					for(c in e){
-						$("#clanList").append($("<tr>").attr("id", "clan-" + e[c].clanname).addClass("clan-" + e[c].clanname).append($("<td>").html(e[c].clanname)).append($("<td>").html(e[c].clanid)))
+						$("#clanList").append($("<tr>").attr("id", "clan-" + e[c].clanname).addClass("clan-" + e[c].clanname).append($("<td>").html(e[c].clanname)).append($("<td>").html(e[c].clanid)).append($("<td>").html(e[c].clanscore)))
 					}
 				})
 			}), $stage.menu.invite.on("click", function(a) {

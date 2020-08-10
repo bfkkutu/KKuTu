@@ -226,7 +226,7 @@ Server.get("/clan", function(req, res){
 		MainDB.clans.find().on(function($ec){
 			if(!$ec) return res.send({ message: "FAIL" });
 			else{
-				return res.send({ list: JSON.stringify($ec) });
+				return res.send({ list: $ec });
 			}
 		});
 	}
