@@ -408,7 +408,8 @@ Server.get("/injeong/:word", function(req, res){
 	});
 });
 Server.get("/cf/:word", function(req, res){
-	res.send(getCFRewards(req.params.word, Number(req.query.l || 0), req.query.b == "1"));
+	var ev = req.query.e;
+	res.send(getCFRewards(req.params.word, Number(req.query.l || 0), req.query.b == "1", ev));
 });
 Server.get("/shop", function(req, res){
 	MainDB.kkutu_shop.find().limit([ 'cost', true ], [ 'term', true ], [ 'group', true ], [ 'options', true ], [ 'updatedAt', true ]).on(function($goods){
@@ -571,21 +572,24 @@ Server.post("/cf", function(req, res){
 		if(!$user.box) $user.box = {};
 		var req = {}, word = "", level = 0;
 		var cfr, gain = [];
-		var blend;
+		var blend, event;
 		
 		for(i in tray){
+			if(tray[i].includes("$WPE")) event = true;
+			else if(event) return res.json({ error: 461 });
 			word += tray[i].slice(4);
 			level += 68 - tray[i].charCodeAt(3);
 			req[tray[i]] = (req[tray[i]] || 0) + 1;
 			if(($user.box[tray[i]] || 0) < req[tray[i]]) return res.json({ error: 434 });
 		}
 		MainDB.kkutu[parseLanguage(word)].findOne([ '_id', word ]).on(function($dic){
-			if(!$dic){
+			if(!$dic && !event){
 				if(word.length == 3){
 					blend = true;
 				}else return res.json({ error: 404 });
 			}
-			cfr = getCFRewards(word, level, blend);
+			if(!blend && event && !$dic.theme.includes("NLD")) return res.json({ error: 462 });
+			cfr = getCFRewards(word, level, blend, event);
 			if($user.money < cfr.cost) return res.json({ error: 407 });
 			for(i in req) consume($user, i, req[i]);
 			for(i in cfr.data){
@@ -625,7 +629,7 @@ Server.get("/dict/:word", function(req, res){
 });
 
 };
-function getCFRewards(word, level, blend){
+function getCFRewards(word, level, blend, event){
 	var R = [];
 	var f = {
 		len: word.length, // 최대 6
@@ -643,6 +647,16 @@ function getCFRewards(word, level, blend){
 			R.push({ key: "$WPC?", value: 1, rate: 1 });
 		}
 		cost = Math.round(cost * 0.2);
+	}else if(event){
+		R.push({ key: "dictPage", value: Math.round(f.len * 0.6), rate: 1 });
+		R.push({ key: "korea_flag", value: 1, rate: 0.07 });
+		R.push({ key: "clock_minju", value: 1, rate: 0.07 });
+		R.push({ key: "minju", value: 1, rate: 0.07 });
+		R.push({ key: "pants_korea", value: 1, rate: 0.07 });
+		R.push({ key: "korea", value: 1, rate: 0.07 });
+		R.push({ key: "mustache", value: 1, rate: 0.07 });
+		R.push({ key: "brave_eyes", value: 1, rate: 0.07 });
+		cost = 0;
 	}else{
 		R.push({ key: "dictPage", value: Math.round(f.len * 0.6), rate: 1 });
 		R.push({ key: "boxB4", value: 1, rate: Math.min(1, f.lev / 7) });

@@ -335,6 +335,9 @@ exports.KO_INJEONG = [
 	"HKI", "MINBE", "BST", "FGO", "YGO", "PCN",
 	"WOW", "SMW"
 ];
+exports.KO_EVENT = [
+	"NLD"
+];
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI", "POP"
 ];

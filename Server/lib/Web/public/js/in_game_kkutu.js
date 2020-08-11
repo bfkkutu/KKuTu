@@ -1211,26 +1211,28 @@
 
 		function b() {
 			var b, h = {
+					WPE: 1,
 					WPC: 1,
 					WPB: 2,
 					WPA: 3
 				},
 				j = "",
-				k = 0;
+				k = 0,
+				ev = false;
 			e.empty(), $(".cf-tray-selected").removeClass("cf-tray-selected"), $data._tray.forEach(function(a) {
-				b = iGoods(a), j += a.slice(4), k += h[a.slice(1, 4)], e.append($("<div>").addClass("jt-image").css("background-image", "url(" + b.image + ")").attr("id", "cf-tray-" + a).on("click", d)), $("#cf-\\" + a).addClass("cf-tray-selected")
+				ev = a.includes("$WPE"), b = iGoods(a), j += a.slice(4), k += h[a.slice(1, 4)], e.append($("<div>").addClass("jt-image").css("background-image", "url(" + b.image + ")").attr("id", "cf-tray-" + a).on("click", d)), $("#cf-\\" + a).addClass("cf-tray-selected")
 			}), f.html(L.searching), g.empty(), $stage.dialog.cfCompose.removeClass("cf-composable"), i.html(""), tryDict(j, function(a) {
 				var b = !1;
 				if (a.error) {
 					if (3 != j.length) return f.html(L["wpFail_" + a.error]);
 					b = !0, f.html(L.cfBlend)
 				}
-				c(j, k, b), $stage.dialog.cfCompose.addClass("cf-composable"), a.error || f.html(processWord(a.word, a.mean, a.theme, a.type.split(",")))
+				c(j, k, b, ev), $stage.dialog.cfCompose.addClass("cf-composable"), a.error || f.html(processWord(a.word, a.mean, a.theme, a.type.split(",")))
 			}), "" == j && a()
 		}
 
-		function c(a, b, c) {
-			$.get("/cf/" + a + "?l=" + b + "&b=" + (c ? "1" : ""), function(a) {
+		function c(a, b, c, d) { // word, length, blend
+			$.get(`/cf/${a}?l=${b}&b=${c ? "1" : ""}&e=${d}`, function(a) {
 				if (a.error) return fail(a.error);
 				g.empty(), a.data.forEach(function(a) {
 					var b = iGoods(a.key),
@@ -2185,10 +2187,11 @@
 		var c, d = document.createElement("canvas"),
 			e = d.getContext("2d");
 		switch (d.width = d.height = 50, e.font = "24px NBGothic", e.textAlign = "center", e.textBaseline = "middle", a) {
+			case "WPE":
 			case "WPC":
 			case "WPB":
 			case "WPA":
-				c = ["WPC", "WPB", "WPA"].indexOf(a), e.beginPath(), e.arc(25, 25, 25, 0, 2 * Math.PI), e.fillStyle = ["#DDDDDD", "#A6C5FF", "#FFEF31"][c], e.fill(), e.fillStyle = ["#000000", "#4465C3", "#E69D12"][c], e.fillText(b, 25, 25)
+				c = ["WPE", "WPC", "WPB", "WPA"].indexOf(a), e.beginPath(), e.arc(25, 25, 25, 0, 2 * Math.PI), e.fillStyle = ["#FFCC00", "#DDDDDD", "#A6C5FF", "#FFEF31"][c], e.fill(), e.fillStyle = ["#000000", "#000000", "#4465C3", "#E69D12"][c], e.fillText(b, 25, 25)
 		}
 		return d.toDataURL()
 	}
@@ -2552,16 +2555,16 @@
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_bf.mp3"
 			}, {
 				key: "2",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "3",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
 			}, {
 				key: "4",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_allgro.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
 			}, {
 				key: "5",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_original.mp3"

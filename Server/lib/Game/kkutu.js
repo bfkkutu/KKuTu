@@ -1335,18 +1335,20 @@ exports.Room = function(room, channel){
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
 				if(o.game.wpc){
-					if(!my.opts.returns) o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
-					/*var list = [
-						"할", "로", "윈", "좀", "비", "사", "탕", "유", "령"
-						, "잭", "오", "랜", "턴", "호", "박", "프", "랑", "켄"
-						, "파", "티"
+					//if(!my.opts.returns) o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					var list = [
+						"광", "복", "절", "대", "한", "독", "립", "만", "세"
+						, "유", "관", "순", "열", "안", "중", "근", "의"
+						, "사", "운", "동", "가", "일", "제", "강", "점"
+						, "기", "헤", "이", "그", "특", "민", "족", "표"
+						, "3", "인", "공", "자", "거"
 					];
-					var luck = Outer.randomInt(130); //할로윈 이벤트
-					if(luck >= 21){
+					var luck = Outer.randomInt(200);
+					if(luck >= list.length - 1){
 						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					}else{
-						o.obtain("$WPC" + list[luck], 1); //할로윈 이벤트
-					}*/
+						o.obtain("$WPCE" + list[luck], 1);
+					}
 					//o.obtain("", 1); // 이벤트 용
 				}
 				o.onOKG(rw.playTime);
