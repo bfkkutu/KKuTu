@@ -1341,13 +1341,13 @@ exports.Room = function(room, channel){
 						, "유", "관", "순", "열", "안", "중", "근", "의"
 						, "사", "운", "동", "가", "일", "제", "강", "점"
 						, "기", "헤", "이", "그", "특", "민", "족", "표"
-						, "3", "인", "공", "자", "거"
+						, "3", "인", "공", "자", "거", "태", "극", "국"
 					];
 					var luck = Outer.randomInt(200);
 					if(luck >= list.length - 1){
 						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					}else{
-						o.obtain("$WPCE" + list[luck], 1);
+						o.obtain("$WPE" + list[luck], 1);
 					}
 					//o.obtain("", 1); // 이벤트 용
 				}
