@@ -441,7 +441,7 @@
 					if(!$data._cF){
 						chat(a.profile || {
 							title: L.robot
-						}, a.value, a.from, a.timestamp);
+						}, a.origin, a.from, a.timestamp);
 					}else{
 						$("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
 						alert("채팅이 얼었습니다. 관리자만 채팅할 수 있습니다.");
@@ -449,7 +449,7 @@
 				}else{
 					a.notice ? notice(L["error_" + a.code]) : chat(a.profile || {
 						title: L.robot
-					}, a.value, a.from, a.timestamp);
+					}, a.origin, a.from, a.timestamp);
 				}
 				break;
 			case "drawCanvas":
@@ -2123,7 +2123,7 @@
 			b = badWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass(`chat-head ellipse ${s}`).text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
 				requestProfile(a.id)
 			}), $stage.chatLog.append(g = g.clone()), g.append($("<div>").addClass("expl").css("font-weight", "normal").html("#" + (a.id || "").substr(0, 5))), (h = b.match(/https?:\/\/[\w\.\?\/&#%=-_\+]+/g)) && (b = f.html(), h.forEach(function(a) {
-				b = b.replace(a, "<a href='#' style='color: #2222FF;' onclick='if(confirm(\"" + L.linkWarning + '")) window.open("' + a + "\");'>" + a + "</a>")
+				b = b.replace(a, `<a href='#' style='color: #2222FF;' onclick='if(confirm("${L.linkWarning}")) window.open("${a}");'>${a}</a>`)
 			}), f.html(b)), c && (!0 !== c && ($data._recentFrom = c), f.html("<label style='color: #7777FF; font-weight: bold;'>&lt;" + L.whisper + "&gt;</label>" + f.html())), addonNickname(e, {
 				equip: j
 			}), $stage.chat.scrollTop(999999999)

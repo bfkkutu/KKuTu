@@ -432,11 +432,11 @@ exports.Client = function(socket, profile, sid){
 		}
 		if(Cluster.isWorker && type == 'user') process.send({ type: "user-publish", data: data });
 	};
-	my.chat = function(msg, code){
+	my.chat = function(msg, code, origin){
 		var date = moment().format("MM월-DD일|HH시-mm분");
 		if(my.noChat) return my.send('chat', { notice: true, code: 443 });
 		File.appendFileSync(`./lib/Web/chatlog/all/${my.id}.log`, `[${date}] ${my.id}: ${msg}\n`, 'utf8');
-		my.publish('chat', { value: msg, notice: code ? true : false, code: code });
+		my.publish('chat', { value: msg, notice: code ? true : false, code: code, origin: origin });
 	};
 	my.checkExpire = function(){
 		var now = new Date();
@@ -1335,8 +1335,8 @@ exports.Room = function(room, channel){
 			o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
 			if(rw.together){
 				if(o.game.wpc){
-					//if(!my.opts.returns) o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
-					var list = [
+					if(!my.opts.returns) o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
+					/*var list = [
 						"광", "복", "절", "대", "한", "독", "립", "만", "세"
 						, "유", "관", "순", "열", "안", "중", "근", "의"
 						, "사", "운", "동", "가", "일", "제", "강", "점"
@@ -1348,7 +1348,7 @@ exports.Room = function(room, channel){
 						o.game.wpc.forEach(function(item){ o.obtain("$WPC" + item, 1); }); // 글자 조각 획득 처리
 					}else{
 						o.obtain("$WPE" + list[luck], 1);
-					}
+					}*/
 					//o.obtain("", 1); // 이벤트 용
 				}
 				o.onOKG(rw.playTime);

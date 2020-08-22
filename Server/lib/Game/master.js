@@ -779,7 +779,7 @@ function processClientRequest($c, msg) {
 			} else {
 				var mmsg = markdownEmoji(msg.value);
 				fs.appendFileSync(`./lib/Web/chatlog/lobby/${$c.id}.log`, `[${date}] ${$c.id}: ${msg.value}\n`, 'utf8');
-				$c.chat(mmsg);
+				$c.chat(mmsg, false, msg.value);
 			}
 			break;
 		case 'friendAdd':
