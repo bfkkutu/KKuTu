@@ -441,7 +441,7 @@
 					if(!$data._cF){
 						chat(a.profile || {
 							title: L.robot
-						}, a.origin, a.from, a.timestamp);
+						}, /*(a.origin ? a.origin : */a.value/*)*/, a.from, a.timestamp);
 					}else{
 						$("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
 						alert("채팅이 얼었습니다. 관리자만 채팅할 수 있습니다.");
@@ -449,7 +449,7 @@
 				}else{
 					a.notice ? notice(L["error_" + a.code]) : chat(a.profile || {
 						title: L.robot
-					}, a.origin, a.from, a.timestamp);
+					}, /*(a.origin ? a.origin : */a.value/*)*/, a.from, a.timestamp);
 				}
 				break;
 			case "drawCanvas":

@@ -769,7 +769,8 @@ function processClientRequest($c, msg) {
 						temp.send('chat', {
 							from: $c.profile.title || $c.profile.name,
 							profile: $c.profile,
-							value: msg.value
+							value: msg.value/*,
+							origin: msg.value*/
 						});
 						fs.appendFileSync(`./lib/Web/whisperlog/${$c.id}_${v}.log`, `[${date}] ${$c.id} to ${v}: ${msg.value}\n`, 'utf8');
 					} else {
@@ -777,9 +778,9 @@ function processClientRequest($c, msg) {
 					}
 				});
 			} else {
-				var mmsg = markdownEmoji(msg.value);
+				var mmsg = /*markdownEmoji(*/msg.value//);
 				fs.appendFileSync(`./lib/Web/chatlog/lobby/${$c.id}.log`, `[${date}] ${$c.id}: ${msg.value}\n`, 'utf8');
-				$c.chat(mmsg, false, msg.value);
+				$c.chat(mmsg, /*false, msg.value*/);
 			}
 			break;
 		case 'friendAdd':

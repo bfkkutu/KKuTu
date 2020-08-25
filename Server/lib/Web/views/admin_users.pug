@@ -27,6 +27,7 @@ block Middle
 	fieldset
 		legend 자격
 		input#db-password(type='password', placeholder='암호')
+		input#m-password(type='password', placeholder='총괄 암호')
 		//-input#db-lang(placeholder='테이블')
 	fieldset
 		legend 유저 DB 다루기
@@ -121,3 +122,7 @@ block Middle
 				input#monthly-ping(placeholder='핑')
 				textarea#monthly-idlist(rows=15, cols=30)
 				button#monthly-ok 지급
+		fieldset
+			legend 랭크 포인트 초기화 (총괄 권한 요구)
+			div
+				button#reset-rankpoint 실행

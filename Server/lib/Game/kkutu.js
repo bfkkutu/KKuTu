@@ -432,11 +432,11 @@ exports.Client = function(socket, profile, sid){
 		}
 		if(Cluster.isWorker && type == 'user') process.send({ type: "user-publish", data: data });
 	};
-	my.chat = function(msg, code, origin){
+	my.chat = function(msg, code/*, origin*/){
 		var date = moment().format("MM월-DD일|HH시-mm분");
 		if(my.noChat) return my.send('chat', { notice: true, code: 443 });
 		File.appendFileSync(`./lib/Web/chatlog/all/${my.id}.log`, `[${date}] ${my.id}: ${msg}\n`, 'utf8');
-		my.publish('chat', { value: msg, notice: code ? true : false, code: code, origin: origin });
+		my.publish('chat', { value: msg, notice: code ? true : false, code: code/*, origin: origin*/ });
 	};
 	my.checkExpire = function(){
 		var now = new Date();

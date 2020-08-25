@@ -260,7 +260,7 @@ Server.post("/gwalli/users/ipban", function(req, res) {
 				if (!err) return res.sendStatus(400);
 				
 				JLog.info(`[${clientIp}](IP) was banned At [${requestId}]`);
-				res.send("OK")
+				res.send("SUCCESS")
 			})
 		}
 	});
@@ -311,7 +311,7 @@ Server.get("/gwalli/compt", function(req, res) {
 				if (err) return res.send({ error: 404 });
 			});
 		}else return res.send({ error: 404 })
-		return res.send({ result: "OK" })
+		return res.send({ result: "SUCCESS" })
 	}, 100);
 });
 Server.get("/gwalli/chatlog", function(req, res) {
@@ -547,7 +547,7 @@ Server.get("/gwalli/hitword", function(req, res){
 	TABLE.findOne([ '_id', req.query.word ]).on(function($doc){
 		if(!$doc) return res.sendStatus(400)
 		else if(!$doc.hit) return res.sendStatus(400)
-		else return res.send({ hit: $doc.hit })
+		else return res.send({ result: $doc.hit })
 	})
 });
 Server.get("/gwalli/manner", function(req, res){
@@ -558,7 +558,7 @@ Server.get("/gwalli/manner", function(req, res){
 	if(!MANNER.findOne) return res.sendStatus(400);
 	
 	MANNER.findOne([ '_id', req.query.letter ]).on(function($doc){
-		if(!$doc) return res.send({ error: 404 })
+		if(!$doc) return res.send({ result: 404 })
 		else{
 			MANNER.remove([ '_id', req.query.letter ]).on();
 			return res.send({ result: 1 });
@@ -589,7 +589,7 @@ Server.post("/gwalli/monthly", function(req, res){
 			if(!$doc) return res.sendStatus(400)
 			
 			MainDB.users.upsert([ '_id', list[i] ]).set([ 'money', Number($doc.money)+ping ]).on();
-			return res.send({ result: "OK" })
+			return res.send({ result: "SUCCESS" })
 		});
 	}
 });
@@ -608,11 +608,11 @@ Server.post("/gwalli/warn", function(req, res){
 		if(warn >= 4){
 			MainDB.users.update([ '_id', id ]).set([ 'warn', 0 ], [ 'black', "경고 누적" ], [ 'bandate', 99999999999999 ]).on();
 			Bot.ban($user, "관리자 페이지", `경고 누적 (${warn}회)`, "영구")
-			return res.send("OK")
+			return res.send({ result: "SUCCESS" })
 		}else{
 			MainDB.users.update([ '_id', id ]).set([ 'warn', warn ]).on();
 			Bot.warn($user, "관리자 페이지", warn-Number($user.warn), warn)
-			return res.send("OK")
+			return res.send({ result: "SUCCESS" })
 		}
 	});
 });
@@ -622,7 +622,26 @@ Server.get("/gwalli/getWarn", function(req, res){
 	MainDB.users.findOne([ '_id', id ]).on(function($user){
 		if(!$user) return res.send({ error: 404 });
 		else if(!$user.warn) return res.send({ error: 404 });
-		else return res.send({ message: $user.warn });
+		else return res.send({ result: $user.warn });
+	});
+});
+Server.get("/gwalli/resetRP", function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(req.query.pw != GLOBAL.MPASS) return res.send({ error: 500 });
+	
+	MainDB.users.find().on(function($list){
+		if(!$list) return res.sendStatus(400);
+		
+		var resetTarget = [];
+		
+		for(var i in $list){
+			if($list[i].kkutu["rankPoint"] > 50){
+				$list[i].kkutu["rankPoint"] = 0;
+				MainDB.users.update([ '_id', $list[i]._id ]).set([ 'kkutu', $list[i].kkutu ]).on();
+				JLog.info(`Resetting RankPoint! User $list[i]._id`)
+			}
+		}
+		return res.send({ result: "SUCCESS" });
 	});
 });
 Server.post("/gwalli/shop", function(req, res){
