@@ -28,6 +28,7 @@
     "SETTING": "설정",
 	
     "GLOBAL_NOTICE": "클릭하여 닫기",
+    "PORTAL_NOTICE": "클릭하여 닫기",
 
     "VERSION": "버전",
     "LEVEL": "레벨",
@@ -156,7 +157,7 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "5.0.6 User",
+    "version": "5.0.7 User",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",

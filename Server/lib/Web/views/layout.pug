@@ -39,9 +39,9 @@ html
 
 		block OpenGraph
 			meta(property='og:image', content=locals.ogImage || "https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/ogImage.png")
-			meta(property='og:url', content=locals.ogURL || "http://JJo.kr/")
-			meta(property='og:title', content=locals.ogTitle || "쪼롤 - League of Legends 정보 검색 사이트")
-			meta(property='og:description', content=locals.ogDescription || "롤 전적검색은 JJO.KR")
+			meta(property='og:url', content=locals.ogURL || "http://bfkkutu.kr/")
+			meta(property='og:title', content=locals.ogTitle || "새로운 끄투의 시작 - BF끄투")
+			meta(property='og:description', content=locals.ogDescription || "새로운 끄투의 시작 - BF끄투")
 
 		+PageHead()
 			block Preload
@@ -53,7 +53,7 @@ html
 			+Menu()
 			div#global-notice
 				div#gn-content
-					include ../public/global_notice_inside.html
+					include ../public/notice/global.html
 				+Expl(L('GLOBAL_NOTICE'))
 			block Top
 		div#Jungle
