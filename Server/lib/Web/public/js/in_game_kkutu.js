@@ -782,22 +782,27 @@
 		
 		return (verified ? ($.post("/updateMe", {
 			nickname: delBadWords(a),
-			exordial: undefined
+			exordial: false
 		}, function(e){
 			if(e.error) return fail(e.error);
-		}), alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요."), location.reload()) : resetNick())
+			alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요.");
+			location.reload();
+		})) : resetNick())
 	}
 	
 	function setNick(){
 		promptKKuTu("BF끄투에서 사용할 닉네임을 입력하세요.<br>닉네임을 설정하면 상기 이용 약관, <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> 및 <a href='http://bfk.kro.kr' target='_blank'>운영 정책</a>에<br>동의하는 것으로 간주합니다.")
 		$stage.dialog.promptKKuTuOK.on("click", function(c) {
 			var verified = checkNick($("#prompt-input").val());
-			return (verified ? (alertKKuTu("닉네임 설정이 완료되었습니다."), $.post("/updateMe", {
+			return (verified ? ($.post("/updateMe", {
 				nickname: delBadWords($("#prompt-input").val()),
-				exordial: undefined
+				exordial: false
 			}, function(e){
 				if(e.error) return fail(e.error);
-			}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`), location.reload()) : setNick());
+				alertKKuTu("닉네임 설정이 완료되었습니다.");
+				$.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`);
+				location.reload();
+			})) : setNick());
 		})
 	}
 
