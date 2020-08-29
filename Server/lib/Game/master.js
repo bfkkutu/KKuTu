@@ -747,6 +747,9 @@ function processClientRequest($c, msg) {
 
 			$c.publish('yell', {value: msg.value});
 			break;
+		case 'updatedMe':
+			$c.publish('updateUser', msg);
+			break;
 		case 'refresh':
 			$c.refresh();
 			break;

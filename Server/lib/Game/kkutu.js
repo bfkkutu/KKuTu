@@ -388,8 +388,8 @@ exports.Client = function(socket, profile, sid){
 			o.data = my.data;
 			o.money = my.money;
 			o.equip = my.equip;
-			o.exordial = my.exordial;
 			o.nickname = my.nickname;
+			o.exordial = my.exordial;
 		}
 		return o;
 	};
@@ -505,11 +505,12 @@ exports.Client = function(socket, profile, sid){
 					}
 				}
 			}*/
-			my.exordial = $user.exordial || "";
 			my.nickname = $user.nickname || undefined;
+			my.exordial = $user.exordial || "";
 			if (my.nickname) my.profile.title = my.nickname;
 			my.equip = $user.equip || {};
 			my.box = $user.box || {};
+			
 			my.data = new exports.Data($user.kkutu);
 			if(my.data.nickname) my.profile.name = my.profile.title = my.data.nickname;
 			my.money = Number($user.money);

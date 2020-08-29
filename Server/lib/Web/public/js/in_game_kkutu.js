@@ -300,6 +300,11 @@
 				clearChat();
 				notice("채팅이 관리자에 의해 청소되었습니다.", "채팅")
 				break;
+			case "updateUser":
+				$data.users[a.id].nickname = a.nickname;
+				$data.users[a.id].exordial = a.exordial;
+				updateUserList(true);
+				break;
 			case "banned":
 				if($data.id == a.id){
 					if(a.enddate != "영구"){
@@ -757,53 +762,42 @@
 		return jqXHR.responseText;
 	}
 	
+	function checkNick(nick){
+		if(!nick) return alertKKuTu("닉네임을 입력해 주세요.");
+		if(/[(ㄱ-ㅎ)]/gi.test(nick)) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다.");
+		if(!/[(가-힣a-zA-Z)]/gi.test(nick)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(nick.length > 10) return alertKKuTu("닉네임 길이 제한은 최대 10글자까지입니다.");
+		if(nick.match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(nick.match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(nick.match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(nick.match("　")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(nick.match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+		if(nick.match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+		return true;
+	}
+	
 	function resetNick(){
 		var a = prompt("불건전하거나 잘못된 닉네임을 사용하였으므로 닉네임이 강제로 변경되었습니다. 새로운 닉네임을 입력해 주세요.");
-
-		if(a == null) return resetNick();
-		if(a == undefined) return resetNick();
-		if(/[(ㄱ-ㅎ)]/gi.test(a)) return alert("닉네임을 자음만으로 지정하실 수 없습니다."), resetNick();
-		if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-		if(a.length > 10) return alert("닉네임 길이 제한은 최대 10글자까지입니다."), resetNick();
-		if(a.match("<")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-		if(a.match(">")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-		if(a.match("&lt")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-		if(a.match("　")) return alert("닉네임에 잘못된 문자가 포함되어 있습니다."), resetNick();
-		if(a.match("불건전닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
-		if(a.match("잘못된닉네임")) return alert("이 닉네임은 닉네임으로 지정할 수 없습니다."), resetNick();
-			
-		$.post("/nickname", {
-			data: delBadWords(a)
+		var verified = checkNick(a);
+		
+		return (verified ? ($.post("/updateMe", {
+			nickname: delBadWords(a),
+			exordial: undefined
 		}, function(e){
 			if(e.error) return fail(e.error);
-		})
-		return alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요.");
+		}), alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요."), location.reload()) : resetNick())
 	}
 	
 	function setNick(){
 		promptKKuTu("BF끄투에서 사용할 닉네임을 입력하세요.<br>닉네임을 설정하면 상기 이용 약관, <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> 및 <a href='http://bfk.kro.kr' target='_blank'>운영 정책</a>에<br>동의하는 것으로 간주합니다.")
-		function checkNick(a){
-			if(a == null) return setNick();
-			if(a == undefined) return setNick();
-			if(/[(ㄱ-ㅎ)]/gi.test(a)) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다."), setNick();
-			if(!/[(가-힣a-zA-Z)]/gi.test(a)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-			if(a.length > 10) return alertKKuTu("닉네임 길이 제한은 최대 10글자까지입니다."), setNick();
-			if(a.match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-			if(a.match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-			if(a.match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-			if(a.match("　")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다."), setNick();
-			if(a.match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
-			if(a.match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다."), setNick();
-			alertKKuTu("닉네임 설정이 완료되었습니다."), location.reload();
-			// TODO: 좀 더 정교한 콜백.
-			$.post("/nickname", {
-				data: delBadWords(a)
+		$stage.dialog.promptKKuTuOK.on("click", function(c) {
+			var verified = checkNick($("#prompt-input").val());
+			return (verified ? (alertKKuTu("닉네임 설정이 완료되었습니다."), $.post("/updateMe", {
+				nickname: delBadWords($("#prompt-input").val()),
+				exordial: undefined
 			}, function(e){
 				if(e.error) return fail(e.error);
-			}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`)
-		}
-		$stage.dialog.promptKKuTuOK.on("click", function(c) {
-			return checkNick($("#prompt-input").val())
+			}), $.get(`/newUser?id=${$data.id}&cp=${$data.id}cp`), location.reload()) : setNick());
 		})
 	}
 
@@ -1026,9 +1020,9 @@
 
 	function userListBar(a, b) {
 		var c;
-		return c = b ? $("<div>").attr("id", "invite-item-" + a.id).addClass("invite-item users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name").html(a.profile.title || a.profile.name)).on("click", function(a) {
+		return c = b ? $("<div>").attr("id", "invite-item-" + a.id).addClass("invite-item users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name").html(!$data.users[a.id].nickname ? (a.profile.title || a.profile.name) : $data.users[a.id].nickname)).on("click", function(a) {
 			requestInvite($(a.currentTarget).attr("id").slice(12))
-		}) : $("<div>").attr("id", "users-item-" + a.id).addClass("users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name ellipse").html(a.profile.title || a.profile.name)).on("click", function(a) {
+		}) : $("<div>").attr("id", "users-item-" + a.id).addClass("users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name ellipse").html(!$data.users[a.id].nickname ? (a.profile.title || a.profile.name) : $data.users[a.id].nickname)).on("click", function(a) {
 			requestProfile($(a.currentTarget).attr("id").slice(11))
 		}), addonNickname(c, a), c
 	}
@@ -3044,31 +3038,22 @@
 					$data.box = a, drawMyDress()
 				}))
 			}), $stage.dialog.dressOK.on("click", function(a) {
-				$(a.currentTarget).attr("disabled", !0), $.post("/exordial", {
-					data: $("#dress-exordial").val()
-				}, function(a) {
-					if ($stage.dialog.dressOK.attr("disabled", !1), a.error) return fail(a.error);
-					$stage.dialog.dress.hide()
-				})
-			}), $stage.dialog.dressOK.on("click", function(a) {
-				if($("#dress-nickname").val() == $data.nickname) return;
-				if(!$("#dress-nickname").val()) return alertKKuTu("닉네임을 입력해 주세요.");
-				if(/[(ㄱ-ㅎ)]/gi.test($("#dress-nickname").val())) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다.");
-				if(!/[(가-힣a-zA-Z)]/gi.test($("#dress-nickname").val())) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("　")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
-				if($("#dress-nickname").val().match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
-				if($("#dress-nickname").val().match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+				var nickChanged = $("#dress-nickname").val() != $data.nickname;
+				var verified = checkNick($("#dress-nickname").val());
 				
-				$(a.currentTarget).attr("disabled", !0), $.post("/nickname", {
-					data: delBadWords($("#dress-nickname").val())
+				if(!verified) return;
+				
+				$(a.currentTarget).attr("disabled", !0);
+				$.post("/updateMe", {
+					nickname: (nickChanged ? delBadWords($("#dress-nickname").val()) : false),
+					exordial: delBadWords($("#dress-exordial").val()) || ""
 				}, function(e) {
 					if(e.error) return fail(e.error);
 					else{
-						alert(`닉네임이 ${e.text}(으)로 변경되었습니다.`)
+						if(nickChanged) $data.users[$data.id].nickname = delBadWords($("#dress-nickname").val()), $data.nickname = delBadWords($("#dress-nickname").val()), send("updatedMe", { id: $data.id, nickname: $data.nickname, exordial: $data.users[$data.id].exordial }), alert(`닉네임이 ${$data.nickname}(으)로 변경되었습니다.`), updateUserList(true)
+						$data.users[$data.id].exordial = delBadWords($("#dress-exordial").val())
 					}
+					$stage.dialog.dressOK.attr("disabled", false);
 					$stage.dialog.dress.hide();
 				});
 			}), $("#DressDiag .dress-type").on("click", function(a) {

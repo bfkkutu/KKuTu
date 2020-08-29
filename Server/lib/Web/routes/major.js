@@ -49,6 +49,11 @@ function consume($user, key, value, force){
 		if(($user.box[key] -= value) <= 0) delete $user.box[key];
 	}
 }
+function translateToPromise(query) { 
+	return new Promise((res, rej) => {
+		query.on((doc) => { res(doc); }, null, (err) => { rej(err); });
+	});
+}
 
 exports.run = function(Server, page){
 
@@ -419,7 +424,22 @@ Server.get("/shop", function(req, res){
 });
 
 // POST
-Server.post("/exordial", function(req, res){
+Server.post("/updateMe", async function (req, res) {
+	var nickname = req.body.nickname;
+	var exordial = req.body.exordial || "";
+	var verified;
+	
+	if (req.session.profile) {
+		if(nickname){
+			verified = await translateToPromise(MainDB.users.findOne([ 'nickname', nickname.slice(0, 10) ]));
+			if(verified) return res.send({ error: 600 });
+			else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname.slice(0, 10) ]).on();
+		}
+		MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial.slice(0, 100) ]).on();
+		return res.send({ result: 200 });
+    } else return res.send({ error: 400 });
+});
+/*Server.post("/exordial", function(req, res){
 var text = req.body.data || "";
 
 if(req.session.profile){
@@ -443,7 +463,7 @@ Server.post("/nickname", function (req, res) {
 			}
 		});
     } else return res.send({ error: 400 });
-});
+});*/
 Server.post("/buy/:id", function(req, res){
 	if(req.session.profile){
 		var uid = req.session.profile.id;
