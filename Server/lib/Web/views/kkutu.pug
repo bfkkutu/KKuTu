@@ -253,6 +253,7 @@ block Middle
 					option(value=13)= L('modeESS')
 					option(value=15)= L('modeEDG')
 				optgroup(label=L('mcTesting'))
+					//option(value=20)= L('modeRVS')
 					//option(value=99)= L('modeETS')
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
 			h4
@@ -441,6 +442,17 @@ block Middle
 			textarea#inquire-text(type='textfield', style='width: 288px;')
 		div.dialog-bar.tail-button
 			button#inquire-submit= L('submit')
+	+Dialog('ManagementDiag', 300, 160, L('management'))
+		div.dialog-bar
+			h4= L('mngID')
+			h4#target-id
+		div.dialog-bar
+			h4= L('mngNickname')
+			h4#target-nickname
+			p
+		div.dialog-bar
+			button#mngKick= L('mngKick')
+			button#mngBan= L('mngBan')
 	+Dialog('KickVoteDiag', 300, 160, L('kickVote'))
 		div.dialog-bar#kick-vote-text(style='text-align: center;')
 		div.dialog-bar(style='text-align: center;')= L('kickVoteNotice')
@@ -568,11 +580,11 @@ block Middle
 		div.dialog-bar.tail-button#alertbtn
 			button#alert-ok= L('OK')
 	+Dialog('ConfirmDiag', 370, 140, L('Confirm'))
-		div#confirm
+		div#confirm(style="height: 70px;")
 			h3#confirmText
 		div.dialog-bar.tail-button#confirmbtn
-			button#confirm-yes= L('OK')
 			button#confirm-no= L('NO')
+			button#confirm-yes= L('OK')
 	+Dialog('PromptDiag', 370, 140, L('Prompt'), true)
 		div#promptHead
 		div#prompt

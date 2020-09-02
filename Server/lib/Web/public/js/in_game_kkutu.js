@@ -90,11 +90,8 @@
 		$data.opts = a, 
 		$data.muteBGM = $data.opts.mb, 
 		$data.muteEff = $data.opts.me, 
-		/*$data.bwf = $data.opts.bf,*/ 
-		/*$("#bgmvol").val($data.bgmvolume),*/
 		$("#mute-bgm").attr("checked", $data.muteBGM), 
 		$("#mute-effect").attr("checked", $data.muteEff), 
-		/*$("#badwordfilter").val($data.opts.bwf),*/ 
 		$("#deny-invite").attr("checked", $data.opts.di), 
 		$("#deny-whisper").attr("checked", $data.opts.dw), 
 		$("#deny-friend").attr("checked", $data.opts.df), 
@@ -103,51 +100,6 @@
 		$("#only-waiting").attr("checked", $data.opts.ow), 
 		$("#only-unlock").attr("checked", $data.opts.ou), 
 		updateUserList(true), updateRoomList(true);
-		/*if($("#darkTheme").is(":checked")){
-			$stage.loading.show().html("다크 테마를 적용하고 있습니다...")
-			setTimeout(function(){
-				$("#Background").attr("src","/img/bg/dark.png");
-				$(".UserListBox").css("background-color","#363434");
-				$(".RoomListBox").css("background-color","#363434");
-				$(".ShopBox").css("background-color","#363434");
-				$(".RoomBox").css("background-color","#363434");
-				$(".GameBox").css("background-color","#363434");
-				$(".MeBox").css("background-color","#363434");
-				$(".ChatBox").css("background-color","#363434");
-				$(".Product").css("color","#ffffff");
-				$(".product-title").css("background-color","#363434");
-				$("h5").css("color","#ffffff");
-				$("h4").css("color","#ffffff");
-				$("select").css("color","#ffffff");
-				$("select").css("background-color","#363434");
-				$("button").css("color","#ffffff");
-				$("button").css("background-color","#363434");
-				$("label").css("color","#ffffff");
-				$("#Top").css("background-color","#363434");
-				$("#Top").css("color","#ffffff");
-				$(".for-master").css("background-color","#363434");
-				$(".for-lobby").css("background-color","#363434");
-				$(".for-normal").css("background-color","#363434");
-				$(".for-master").css("color","#ffffff");
-				$(".for-lobby").css("color","#ffffff");
-				$(".for-normal").css("color","#ffffff");
-				$("input").css("background-color","#363434");
-				$("input").css("color","#ffffff");
-				$(".rooms-create").css({"background-image":"url()","background-color":"#363434"});
-				$(".rooms-item").css({"background-image":"url()","background-color":"#363434"});
-				$(".rooms-admin-waiting").css({"background":"url()","background-color":"#363434"});
-				$(".rooms-testing-waiting").css({"background":"url()","background-color":"#363434"});
-				$(".rooms-admin-gaming").css({"background":"url()","background-color":"#363434"});
-				$(".rooms-testing-gaming").css({"background":"url()","background-color":"#363434"});
-				$(".rooms-gaming").css({"background-image":"url()","background-color":"#363434"});
-				$(".dialog").css("background-color","#363434");
-				$(".dialog-head").css("background-color","#363434");
-				$(".dialog-title").css("color","#ffffff");
-				$(".menu-btn").css("color","#ffffff");
-				$(".menu-btn").css("background-color","#363434");
-				$stage.loading.hide()
-			}, 2500)
-		}*/
 		$data.bgm && ($data.muteBGM ? ($data.bgm.volume = 0, $data.bgm.stop()) : ($data.bgm.volume = $("#bgmvol").val(), $data.bgm = playBGM("lobby", !0)))
 	}
 
@@ -892,6 +844,16 @@
 		$stage.dialog.popupKKuTu.attr('style', `width: ${w}px; height: ${h}px;`);
 		showDialog($stage.dialog.popupKKuTu);
 	}
+	
+	function confirmKKuTu(text, yesfunc, nofunc){ //w: width h: height
+		$stage.dialog.confirmKKuTu.hide();
+		$("#confirm").css("text-align", "center");
+		$("#confirmbtn").attr('style', "float: right;");
+		$("#confirmText").html(text);
+		$("#confirm-yes").on("click", (e) => yesfunc(e));
+		$("#confirm-no").on("click", (e) => nofunc(e));
+		showDialog($stage.dialog.confirmKKuTu);
+	}
 
 	function sendWhisper(a, b) {
 		b.length && ($data._whisper = a, send("talk", {
@@ -1025,10 +987,10 @@
 
 	function userListBar(a, b) {
 		var c;
-		return c = b ? $("<div>").attr("id", "invite-item-" + a.id).addClass("invite-item users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name").html(!$data.users[a.id].nickname ? (a.profile.title || a.profile.name) : $data.users[a.id].nickname)).on("click", function(a) {
+		return c = b ? $("<div>").attr("id", "invite-item-" + a.id).addClass("invite-item users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name").html(a.nickname)).on("click", function(a) {
 			requestInvite($(a.currentTarget).attr("id").slice(12))
-		}) : $("<div>").attr("id", "users-item-" + a.id).addClass("users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name ellipse").html(!$data.users[a.id].nickname ? (a.profile.title || a.profile.name) : $data.users[a.id].nickname)).on("click", function(a) {
-			requestProfile($(a.currentTarget).attr("id").slice(11))
+		}) : $("<div>").attr("id", "users-item-" + a.id).addClass("users-item").append($("<div>").addClass("jt-image users-image").css("background-image", "url('" + a.profile.image + "')")).append(getLevelImage(a.data.score).addClass("users-level")).append($("<div>").addClass("users-name ellipse").html(a.nickname)).on("click", function(e) {
+			($data.admin && e.shiftKey) ? (showDialog($stage.dialog.management), $("#target-id").text(a.id), $("#target-nickname").text(a.nickname)) : requestProfile($(e.currentTarget).attr("id").slice(11))
 		}), addonNickname(c, a), c
 	}
 
@@ -1369,7 +1331,7 @@
 		else if(e.exordial) ph = 510;
 		$("#ProfileDiag").css("height",`${ph}px`);
 		$("#profile-friendadd").hide(),
-		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != a/*e.robot */? $("#profile-warn").hide() : $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
+		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != a/*e.robot */? $("#profile-warn").hide() : $("#profile-warn").show(), $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
 
 	function requestInvite(a) {
@@ -2288,7 +2250,7 @@
 		TICK = 30,
 		EXP = [],
 		RP = "bwBuAGwAeQBiAGYAawBrAHUAdAB1AGMAYQBuAHIAZQBhAGQAdABoAGkAcwBmAGkAbABlAHQAaABhAHQAdgBlAHIAaQBmAGkAZQBkAGIAeQBiAGYAawBrAHUAdAB1AGMAbABpAGUAbgB0AA==",
-		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,}|^^ㅣ|^^I|^^l)[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|쌔|쎄|썌|쎼)[^가-힣]*(기|끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(같|새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|미|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|쥬|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|뷰|부|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","조[^가-힣]*건[^가-힣]*만[^가-힣]*남","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","PORN"].join("|")),
+		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,}|^^ㅣ|^^I|^^l)[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|썌|쎼)[^가-힣]*(기|끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(같|새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|쥬|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|뷰|부|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","조[^가-힣]*건[^가-힣]*만[^가-힣]*남","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","PORN"].join("|")),
 		XSS = new RegExp(["(&lt;|<)(i|I)(m|M)(g|G)", "(&lt;|<)(s|S)(c|C)(r|R)(i|I)(p|P)(t|T)", "(&lt;|<)(h|H)(1|2|3|4|5|6)","(&lt;|<)(a|A)"].join("|")),
 		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)","(나비|케이니|오메가|투데이)[^가-힣]*(끄투|그투)"].join("|")),
 		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
@@ -2302,6 +2264,7 @@
 			Jaqwi: {},
 			Crossword: {},
 			Typing: {},
+			Reverse: {},
 			Hunmin: {},
 			Daneo: {},
 			Sock: {},
@@ -2451,9 +2414,6 @@
 					viewClan: $("#viewClan"),
 					leaveClan: $("#leaveClan"),
 					joinClan: $("#joinClan"),
-					clanCompetition: $("#clanCompetition"),
-					joinClanCompetition: $("#joinClanCompetition"),
-					clanCompetitionDiag: $("#ClanCompetitionDiag"),
 					deleteClan: $("#deleteClan"),
 					tail: $("#TailDiag"),
 					invite: $("#InviteDiag"),
@@ -2474,6 +2434,9 @@
 					profileReport: $("#profile-report"),
 					profileFriendAdd: $("#profile-friendadd"),
 					profileCopyID: $("#profile-copyid"),
+					management: $("#ManagementDiag"),
+					mngKick: $("#mngKick"),
+					mngBan: $("#mngBan"),
 					findIDOK: $("#find-id-ok"),
 					findNickOK: $("#find-nick-ok"),
 					reportDiag: $("#ReportDiag"),
@@ -2513,6 +2476,7 @@
 					promptKKuTu: $("#PromptDiag"),
 					promptKKuTuOK: $("#prompt-ok"),
 					popupKKuTu: $("#PopupDiag"),
+					confirmKKuTu: $("#ConfirmDiag"),
 					obtain: $("#ObtainDiag"),
 					obtainOK: $("#obtain-ok"),
 					help: $("#HelpDiag")
@@ -2706,23 +2670,6 @@
 					h = $("#room-selecttheme").is(":checked"),
 					j = $("#room-bantheme").is(":checked"),
 					k = $("#room-mode").val();
-				/*if((h || j) && (k == 2 || k == 3)){
-					$("#room-selecttheme-panel").hide();
-					$("#room-bantheme-panel").hide();
-					$("#room-injeong-pick").show();
-				}else if(k == 2 || k == 3){
-					$("#room-selecttheme-panel").show();
-					$("#room-bantheme-panel").show();
-					$("#room-injeong-pick").hide();
-				}else{
-					$("#room-selecttheme-panel").hide();
-					$("#room-bantheme-panel").hide();
-				}
-				if(k == 10 || k == 11){
-					$("#room-selecttheme-panel").hide();
-					$("#room-bantheme-panel").hide();
-					$("#room-injeong-pick").show();
-				}*/
 				$stage.dialog.quick.hide(), $data.typeRoom = "enter", showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.newRoom)
 			}), $stage.menu.setRoom.on("click", function(a) {
 				var b, c, d, e = RULE[MODE[$data.room.mode]],
@@ -2732,23 +2679,6 @@
 				$data.typeRoom = "setRoom", $("#room-title").val($data.room.title), $("#room-limit").val($data.room.limit), $("#room-mode").val($data.room.mode).trigger("change"), $("#room-round").val($data.room.round), $("#room-wordLimit").val($data.room.wordLimit), $("#room-time").val($data.room.time / e.time);
 				for (c in OPTIONS) d = OPTIONS[c].name.toLowerCase(), $("#room-" + d).attr("checked", $data.room.opts[d]);
 				$data._injpick = $data.room.opts.injpick;
-				/*if((h || j) && (k == 2 || k == 3)){
-					$("#room-selecttheme-panel").hide();
-					$("#room-bantheme-panel").hide();
-					$("#room-injeong-pick").show();
-				}else if(k == 2 || k == 3){
-					$("#room-selecttheme-panel").show();
-					$("#room-bantheme-panel").show();
-					$("#room-injeong-pick").hide();
-				}else{
-					$("#room-selecttheme-panel").hide();
-					$("#room-bantheme-panel").hide();
-				}
-				if(k == 10 || k == 11){
-					$("#room-selecttheme-panel").hide();
-					$("#room-bantheme-panel").hide();
-					$("#room-injeong-pick").show();
-				}*/
 				showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.setRoom)
 			}), $("#quick-mode, #QuickDiag .game-option").on("change", function(a) {
 				var b, f, g = $("#quick-mode").val(),
@@ -2779,13 +2709,6 @@
 					c = [],
 					f = $(".dialog-opt#ko-pick-list").find("input").is(":checked"),
 					h = $("#room-mode").val();
-				/*if(!f && h == 3 || h == 2){
-					$("#room-selecttheme")[0].checked = false;
-					$("#room-bantheme")[0].checked = false;
-					$("#room-selecttheme-panel").show();
-					$("#room-bantheme-panel").show();
-					$("#room-injeong-pick").hide();
-				}*/
 				$data._injpick = b.find("input").each(function(a, b) {
 					var d = $(b),
 						e = d.attr("id").slice(8);
@@ -2794,30 +2717,8 @@
 			}), $("#room-mode").on("change", function(a) {
 				var b = $("#room-mode").val(),
 					d = RULE[MODE[b]];
-					/*$("#room-selecttheme").change(function() {
-						if($("#room-selecttheme")[0].checked || $("#room-bantheme")[0].checked){
-							$("#room-selecttheme-panel").hide();
-							$("#room-bantheme-panel").hide();
-							$("#room-injeong-pick").show();
-						}else{
-							$("#room-selecttheme-panel").show();
-							$("#room-bantheme-panel").show();
-							$("#room-injeong-pick").hide();
-						}
-					})
-					$("#room-bantheme").change(function() {
-						if($("#room-selecttheme")[0].checked || $("#room-bantheme")[0].checked){
-							$("#room-selecttheme-panel").hide();
-							$("#room-bantheme-panel").hide();
-							$("#room-injeong-pick").show();
-						}else{
-							$("#room-selecttheme-panel").show();
-							$("#room-bantheme-panel").show();
-							$("#room-injeong-pick").hide();
-						}
-					})*/
-					/*b == 17 ? $("#room-wordLimit-panel").show() : */$("#room-wordLimit-panel").hide();
-				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [],/* -1 != d.opts.indexOf("ijp") ? $("#room-injpick-panel").show() : $("#room-injpick-panel").hide(),*/ "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
+					$("#room-wordLimit-panel").hide();
+				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [], "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
 					$(b).html(Number($(b).val()) * d.time + L.SECOND)
 				});
 				$("#quick-time").children("option").each(function(a, b) {
@@ -2853,7 +2754,6 @@
 			}), $stage.menu.Clan.on("click",function(a){
 				if(!$clan) getClan($data.id)
 				showDialog($stage.dialog.clanDiag);
-				//$("#clanList").append($("<label>").text("클랜 목록 사용 일시 중단! 디스코드 클랜 홍보 채널을 이용하세요."))
 				$.get("/clan?type=clanlist", function(b){
 					var c, d, e = b.list;
 					$("#clanList tbody").empty();
@@ -2879,7 +2779,7 @@
 				send("leave")
 			}), $stage.menu.replay.on("click", function(a) {
 				$data._replay && replayStop(), showDialog($stage.dialog.replay), g(), $stage.dialog.replay.is(":visible") && $("#replay-file").trigger("change")
-			}), $stage.menu.findUser.on("click", function(a) {
+			})/*, $stage.menu.findUser.on("click", function(a) {
 				showDialog($stage.dialog.findUser)
 			}), $stage.dialog.findIDOK.on("click", function(a) {
 				requestProfile($("#find-id-target").val());
@@ -2890,10 +2790,20 @@
 					d = JSON.parse(c);
 				requestProfile(d.id);
 				if(d.id != $data.id) $("#profile-friendadd").show();
-			}), $stage.menu.leaderboard.on("click", function(a) {
+			})*/, $stage.menu.leaderboard.on("click", function(a) {
 				$data._lbpage = 0, $stage.dialog.leaderboard.is(":visible") ? $stage.dialog.leaderboard.hide() : $.get("/ranking", function(a) {
 					drawLeaderboard(a), showDialog($stage.dialog.leaderboard)
 				})
+			}), $stage.dialog.mngKick.on("click", function(a) {
+				confirmKKuTu(`${$("#target-nickname").text()}님을 강퇴하시겠습니까?`, (e) => {
+					$("#tail-input").val(`kick ${$("#target-id").text()}`);
+					$("#tail-btn").trigger("click");
+					$stage.dialog.management.hide();
+					$stage.dialog.confirmKKuTu.hide();
+					alertKKuTu(`${$("#target-nickname").text()}님을 강퇴했습니다.`);
+				}, (e) => {$stage.dialog.confirmKKuTu.hide()});
+			}), $stage.dialog.mngBan.on("click", function(a) {
+				// prompt
 			}), $stage.dialog.lbPrev.on("click", function(a) {
 				$(a.currentTarget).attr("disabled", !0), $.get("/ranking?p=" + ($data._lbpage - 1), function(a) {
 					drawLeaderboard(a)
@@ -2925,10 +2835,8 @@
 			}), $stage.dialog.settingServer.on("click", function(a) {
 				$("#setting-server").prop("disabled", true);
 				alert("이동할 서버가 없습니다.");
-				//location.href = "/"
 			}), $stage.dialog.settingOK.on("click", function(a) {
 				applyOptions({
-					/*vb: $("#bgmvol").val($data.bgmuvol),*/
 					mb: $("#mute-bgm").is(":checked"),
 					me: $("#mute-effect").is(":checked"),
 					di: $("#deny-invite").is(":checked"),
@@ -3050,7 +2958,7 @@
 				
 				$(a.currentTarget).attr("disabled", !0);
 				$.post("/updateMe", {
-					nickname: (nickChanged ? delBadWords($("#dress-nickname").val()) : false),
+					nickname: (nickChanged ? delBadWords($("#dress-nickname").val()) : ""),
 					exordial: delBadWords($("#dress-exordial").val()) || ""
 				}, function(e) {
 					if(e.error) return fail(e.error);
@@ -3104,15 +3012,7 @@
 						reason: $("#report-reason").val()
 					});
 					alert(`신고가 완료되었습니다.\n\n대상: ${$("#report-target").text()}\n신고자: ${$data.id}\n사유: ${$("#report-reason").val()}`), $stage.dialog.reportDiag.hide();
-				}else{
-					alert("본인 또한 처벌 받을 수 있음에 동의해주세요.");
-				}
-			}), $stage.dialog.inquireSubmit.on("click", function(a) {
-				$.post("/inquire", {
-					inquiredText: $("#inquire-text").val(),
-					submitter: $data.id
-				});
-				alert(`문의 접수가 완료되었습니다.\n\n문의자: ${$data.id}\n문의 내용: ${$("#report-reason").val()}`), $stage.dialog.reportDiag.hide();
+				}else alert("본인 또한 처벌 받을 수 있음에 동의해주세요.");
 			}), $stage.dialog.purchaseOK.on("click", function(a) {
 				$.post("/buy/" + $data._sgood, function(a) {
 					var b = $data.users[$data.id];
@@ -3223,14 +3123,6 @@
 				}else{
 					alert("이미 클랜에 가입되어 있습니다.");
 				}
-			}), $stage.dialog.clanCompetition.on("click", function(a) {
-				if(!$clan.name){
-					Swal.fire("BF끄투","클랜에 가입되어 있지 않습니다.","error")
-				}else{
-					showDialog($stage.dialog.clanCompetitionDiag)
-				}
-			}), $stage.dialog.joinClanCompetition.on("click", function(a) {
-				Swal.fire("BF끄투","클랜 대항전 신청은 <a target='_blank' href='https://discord.com/invite/scPVHcE'>디스코드</a>에서 받습니다.","info")
 			}), $stage.dialog.leaveClan.on("click", function(a) {
 				if(!$clan.name){
 					alert("클랜에 가입되어 있지 않습니다!");
@@ -3383,6 +3275,23 @@
 			data: a
 		})
 	}, $lib.Typing.turnGoing = $lib.Jaqwi.turnGoing, $lib.Typing.turnEnd = function(a, b) {
+		var c = $("<div>").addClass("deltaScore").html("+" + b.score),
+			d = $("#game-user-" + a);
+		b.error ? ($data.chain++, drawList(), playSound("fail")) : b.ok ? ($data.id == a ? ($data.chain++, drawList(), playSound("mission"), pushHistory(b.value, "")) : $data._spectate && playSound("mission"), addScore(a, b.score), drawObtainedScore(d, c), updateScore(a, getScore(a))) : (clearInterval($data._tTime), $lib.Typing.spaceOff(), $stage.game.here.hide(), stopBGM(), playSound("horr"), addTimeout(drawSpeed, 1e3, b.speed), $data._round < $data.room.round && restGoing(10))
+	}, $lib.Reverse.roundReady = function(a) {
+		$data.room.game.title.length;
+		$data._chatter = mobile ? $stage.game.hereText : $stage.talk, clearBoard(), $data._round = a.round, $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 1e4, $data.chain = 0, drawRound(a.round), playSound("round_start"), recordEvent("roundReady", {
+			data: a
+		})
+	}, $lib.Reverse.turnStart = function(a) {
+		$data._spectate || ($stage.game.here.show(), mobile ? $stage.game.hereText.val("").focus() : $stage.talk.val("").focus(), $lib.Typing.spaceOn()), ws.onmessage = _onMessage, clearInterval($data._tTime), clearTrespasses(), $data._tTime = addInterval(turnGoing, TICK), $data._roundTime = a.roundTime, playBGM("jaqwi"), recordEvent("turnStart", {
+			data: a
+		})
+		$stage.game.display.html($("<label>").css("color", "#FFFF44").html($data.chain % 2 ? "거꾸로!" : "제시어를 입력하세요"))
+	}, $lib.Reverse.turnGoing = function() {
+		var a, b, c = $stage.game.roundBar;
+		$data.room || clearInterval($data._tTime), $data._roundTime -= TICK, b = $data._spectate ? L.stat_spectate : (.001 * $data._roundTime).toFixed(1) + L.SECOND, c.width($data._roundTime / $data.room.time * .1 + "%").html(b), c.hasClass("round-extreme") || $data._roundTime <= $data._fastTime && (a = $data.bgm.currentTime / $data.bgm.duration, $data.bgm.paused ? stopBGM() : playBGM("jaqwiF"), $data.bgm.currentTime = $data.bgm.duration * a, c.addClass("round-extreme"))
+	}, $lib.Reverse.turnEnd = function(a, b) {
 		var c = $("<div>").addClass("deltaScore").html("+" + b.score),
 			d = $("#game-user-" + a);
 		b.error ? ($data.chain++, drawList(), playSound("fail")) : b.ok ? ($data.id == a ? ($data.chain++, drawList(), playSound("mission"), pushHistory(b.value, "")) : $data._spectate && playSound("mission"), addScore(a, b.score), drawObtainedScore(d, c), updateScore(a, getScore(a))) : (clearInterval($data._tTime), $lib.Typing.spaceOff(), $stage.game.here.hide(), stopBGM(), playSound("horr"), addTimeout(drawSpeed, 1e3, b.speed), $data._round < $data.room.round && restGoing(10))
