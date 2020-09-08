@@ -29,7 +29,9 @@ button{
 }
 #with-google span{ display: block; }
 #daldalso {
-	background: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/auth/daldalso.png')
+	background: url('https://daldal.so/media/images/oauth-button.png');
+	width: 230px;
+	height: 50px;
 }
 .bfkkutu{
 	background: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/short_logo.png');
