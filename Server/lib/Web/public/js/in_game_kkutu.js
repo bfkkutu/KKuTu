@@ -1331,7 +1331,7 @@
 		else if(e.exordial) ph = 510;
 		$("#ProfileDiag").css("height",`${ph}px`);
 		$("#profile-friendadd").hide(),
-		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != a/*e.robot */? $("#profile-warn").hide() : $("#profile-warn").show(), $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"]), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
+		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != e.id/*e.robot*/ ? $("#profile-warn").hide() : ($("#profile-warn").show(), $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"])), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
 	}
 
 	function requestInvite(a) {
@@ -1869,9 +1869,22 @@
 	}
 
 	function playSound(a, b) {
+		//playSoundBeta(a, (!v ? 0.5 : v))
 		var c, d, e = b && $data.muteBGM || !b && $data.muteEff;
 		//e = $("#bgmvol").val();
 		return d = $sound[a] || $sound.missing, window.hasOwnProperty("AudioBuffer") && d instanceof AudioBuffer ? (c = audioContext.createBufferSource(), c.startedAt = audioContext.currentTime, c.loop = b, c.buffer = e ? audioContext.createBuffer(2, d.length, audioContext.sampleRate) : d, c.connect(audioContext.destination)) : (d.readyState && (d.audio.currentTime = 0), d.audio.loop = b || !1, d.audio.volume = e ? 0 : $("#bgmvol").val(), c = d), $_sound[a] && $_sound[a].stop(), $_sound[a] = c, c.key = a, c.start(), c
+	}
+	
+	function playSoundBeta(source, volume){
+		if(!$audio.canPlayType('audio/mp3')) alert('브라우저가 mp3 재생을 지원하지 않습니다.');
+		else {
+			$audio.pause();
+			$audio.currentTime = 0;
+			//$audio.src = $soundBeta[source];
+			$audio.volume = volume;
+			$audio.loop = true;
+			$audio.play();
+		}
 	}
 
 	function stopAllSounds() {
@@ -2255,6 +2268,7 @@
 		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)","(나비|케이니|오메가|투데이)[^가-힣]*(끄투|그투)"].join("|")),
 		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
 		ws, rws, $stage, $sound = {},
+		$audio = new Audio(),
 		$_sound = {},
 		$data = {},
 		$clan = false,
@@ -2959,7 +2973,7 @@
 				$(a.currentTarget).attr("disabled", !0);
 				$.post("/updateMe", {
 					nickname: (nickChanged ? delBadWords($("#dress-nickname").val()) : ""),
-					exordial: delBadWords($("#dress-exordial").val()) || ""
+					exordial: delBadWords($("#dress-exordial").val())
 				}, function(e) {
 					if(e.error) return fail(e.error);
 					else{
