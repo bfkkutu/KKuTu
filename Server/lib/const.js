@@ -37,15 +37,15 @@ exports.OPTIONS = {
 	'man': { name: "Manner" },
 	'ext': { name: "Injeong" },
 	'mis': { name: "Mission" },
-	'loa': { name: "Loanword" },
+	//'loa': { name: "Loanword" },
 	'prv': { name: "Proverb" },
-	'str': { name: "Strict" },
+	//'str': { name: "Strict" },
 	'k32': { name: "Sami" },
 	'no2': { name: "No2" },
 	'ulm': { name: "Unlimited" },
 	'sht': { name: "Short" },
 	//'rms': { name: "RandomMission" },
-	'nrt': { name: "NoReturn" },
+	//'nrt': { name: "NoReturn" },
 	'rtu': { name: "RandomTurn" },
 	'uwd': { name: "UnknownWord" },
 	'rtn': { name: "Returns" },
@@ -95,7 +95,7 @@ exports.RULE = {
 	'EKT': { lang: "en", // 영어 끄투
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms", "rtu",
-		"nrt", "upl", "rtn" ],
+		/*"nrt", */"upl", "rtn" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -103,7 +103,7 @@ exports.RULE = {
 	},
 	'ESH': { lang: "en", // 영어 끝말잇기
 		rule: "Classic",
-		opts: [ "ext", "mis", "rms", "nrt", "rtu",
+		opts: [ "ext", "mis", "rms"/*, "nrt"*/, "rtu",
 		"upl", "rank", "ogow", "twt" ],
 		time: 1,
 		ai: true,
@@ -120,8 +120,8 @@ exports.RULE = {
 	},*/
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
-		opts: [ "ijp", "man", "ext", "mis", "mdt", "rms", "loa", "str",
-		"nrt", "rtu", "upl", "rank", "ogow"/*, "selth", "btm"*/ ],
+		opts: [ "ijp", "man", "ext", "mis", "mdt", "rms"/*, "loa", "str"*/,
+		/*"nrt", */"rtu", "upl", "rank", "ogow"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -129,8 +129,8 @@ exports.RULE = {
 	},
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
-		opts: [ "ijp", "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow"/*, "selth", "btm"*/, "twt", "tmnt" ],
+		opts: [ /*"ijp", */"man", "ext", "mis", "rms"/*, "loa", "str"*/,
+		/*"nrt", */"leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow"/*, "selth", "btm"*/, "twt", "tmnt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -170,8 +170,8 @@ exports.RULE = {
 	},
 	'KAP': { lang: "ko", // 한국어 앞말잇기
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "rms", "loa", "str",
-		"nrt", "leg", "rtu", "upl", "rtn", "ogow" ],
+		opts: [ "man", "ext", "mis", "rms"/*, "loa", "str"*/,
+		/*"nrt", */"leg", "rtu", "upl", "rtn", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -180,7 +180,7 @@ exports.RULE = {
 	},
 	'HUN': { lang: "ko", // 훈민정음
 		rule: "Hunmin",
-		opts: [ "ext", "mis", "loa", "str",
+		opts: [ "ext", "mis"/*, "loa", "str"*/,
 		"rtu", "upl" ],
 		time: 1,
 		ai: true,
@@ -235,14 +235,6 @@ exports.RULE = {
 		big: true,
 		ewq: true
 	},
-	/*'JSH': { lang: "ja", // 일본어 끝말잇기(미개발)
-		rule: "Classic",
-		opts: [ "ext" ],
-		time: 1,
-		ai: true,
-		big: false,
-		ewq: true
-	},*/
 	/*'EAP': { lang: "en", // 영어 앞말잇기 임시 비활성화
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "nrt", "rtu",
@@ -268,7 +260,7 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
-	}/*,
+	},/*,
 	'KLH': { lang: "ko", // 한국어 길이 제한 끝말잇기
 		rule: "Classic",
 		opts: [ "man", "ext" ],
@@ -276,18 +268,10 @@ exports.RULE = {
 		ai: true,
 		big: false,
 		ewq: true
-	}*//*,
-	'ADL': { lang: "ko", // 한국어 노운워드
-		rule: "Daneo",
-		opts: [ "mis" ],
-		time: 1,
-		ai: true,
-		big: false,
-		ewq: true
-	}*/,
+	},*/
 	'KRH': { lang: "ko", // 한국어 랜덤잇기
 		rule: "Classic",
-		opts: [ "mis", "ext", "rank", "twt" ],
+		opts: [ "man", "ext", "mis", "rank", "twt" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -304,6 +288,14 @@ exports.RULE = {
 	'KMH': { lang: "ko", // 한국어 가운데잇기
 		rule: "Classic",
 		opts: [ "mis", "ext", "man", "rank", "twt" ],
+		time: 1,
+		ai: true,
+		big: false,
+		ewq: true
+	},
+	'RVS': { lang: "ko", // 한국어 거꾸로
+		rule: "Reverse",
+		opts: [  ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -333,7 +325,7 @@ exports.KO_INJEONG = [
 	"CKR", "DBD", "HAK", "DONG", "MFA", "ZHS",
 	"KTR", "ILN", "TRR", "THP", "UND", "TLR",
 	"HKI", "MINBE", "BST", "FGO", "YGO", "PCN",
-	"WOW", "SMW"
+	"WOW", "SMW", "CPR"
 ];
 exports.KO_EVENT = [
 	"NLD"

@@ -473,7 +473,7 @@
 			case "roundEnd":
 				for (c in a.users) $data.setUser(c, a.users[c]);
 				$data._resultRank = a.ranks, roundEnd(a.result, a.data);
-				if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
+				$data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 				break;
 			case "kickVote":
 				$data._kickTarget = $data.users[a.target], $data.id != a.target && $data.id != $data.room.master && kickVoting(a.target), notice(($data._kickTarget.profile.title || $data._kickTarget.profile.name) + L.kickVoting);
@@ -1565,6 +1565,7 @@
 		$(".result-me-expl").empty(), $stage.game.display.html(L.roundEnd), $data._resultPage = 1, $data._result = null, $data._relay = !1;
 		for (e in a) g = a[e], f = $data._replay ? $rec.users[g.id] : $data.users[g.id], f || (f = NULL_USER), f.data && g.reward && (g.reward.score = $data._replay ? 0 : Math.round(g.reward.score), j = getLevel(k = f.data.score) > getLevel(f.data.score - g.reward.score), n.append(h = $("<div>").addClass("result-board-item").append(i = $("<div>").addClass("result-board-rank").html(g.rank + 1)).append(getLevelImage(k).addClass("result-board-level")).append($("<div>").addClass("result-board-name").html(f.profile.title || f.profile.name)).append($("<div>").addClass("result-board-score").html(b.scores ? L.avg + " " + commify(b.scores[g.id]) + L.kpm : commify(g.score || 0) + L.PTS)).append($("<div>").addClass("result-board-reward").html(g.reward.score ? "+" + commify(g.reward.score) : "-")).append($("<div>").addClass("result-board-lvup").css("display", j ? "block" : "none").append($("<i>").addClass("fa fa-arrow-up")).append($("<div>").html(L.lvUp)))), f.game.team && i.addClass("team-" + f.game.team), g.id == $data.id && (g.exp = f.data.score - g.reward.score, g.level = getLevel(g.exp), $data._result = g, h.addClass("result-board-me"), $(".result-me-expl").append(function(a, b, c) {
 			function d(a, b, c) {
+				if(!a) $data.practicing && ($data.room.gaming = !0, send("leave")), $data.resulting = !1, $stage.dialog.result.hide(), !$data.admin ? delete $data._replay : null, !$data.admin ? delete $data._resultRank : null, $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 				a.append($("<h5>").addClass("result-me-blog-head").html(b)).append($("<h5>").addClass("result-me-blog-body").html(c))
 			}
 			var e, f, g = $("<div>").append($("<h4>").html(L.scoreGain)).append(e = $("<div>")).append($("<h4>").html(L.moneyGain)).append(f = $("<div>"));
@@ -1583,7 +1584,7 @@
 				$data._coef = .05
 			}, 500)
 		}, 2e3), stopRecord()
-		if(!$stage.dialog.result.is(":visible")) $data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
+		$data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby"), forkChat(), updateUI()
 	}
 
 	function drawRanking(a) {
@@ -2532,18 +2533,21 @@
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_bf.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_Blanding_Future.mp3"
 			}, {
 				key: "2",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_bf.mp3"
 			}, {
 				key: "3",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "4",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
 			}, {
 				key: "5",
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
+			}, {
+				key: "6",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_original.mp3"
 			}, {
 				key: "jaqwi",
