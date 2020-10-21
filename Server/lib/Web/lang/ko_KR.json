@@ -157,7 +157,7 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "5.1.1 User",
+    "version": "5.1.2 User",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -554,6 +554,7 @@
 	"theme_KGY": "카구야 님은 고백받고 싶어",
 	"theme_SMW": "서머너즈 워",
 	"theme_CPR": "기업",
+	"theme_OPC": "원피스",
 	
 	"theme_NLD": "광복절 이벤트",
 
