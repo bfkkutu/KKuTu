@@ -60,7 +60,8 @@ exports.OPTIONS = {
 	'btm': { name: "BanTheme" },
 	'mdt': { name: "MiddleToss" },
 	'tmnt': { name: "Tournament" },
-	'twt': { name: "Twenty" }
+	'twt': { name: "Twenty" },
+	'bdb': { name: "BanDouble" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -271,7 +272,7 @@ exports.RULE = {
 	},*/
 	'KRH': { lang: "ko", // 한국어 랜덤잇기
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "rank", "twt" ],
+		opts: [ "man", "ext", "mis", "rank", "twt", "bdb" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -325,7 +326,7 @@ exports.KO_INJEONG = [
 	"CKR", "DBD", "HAK", "DONG", "MFA", "ZHS",
 	"KTR", "ILN", "TRR", "THP", "UND", "TLR",
 	"HKI", "MINBE", "BST", "FGO", "YGO", "PCN",
-	"WOW", "SMW", "CPR"
+	"WOW", "SMW", "CPR", "OPC"
 ];
 exports.KO_EVENT = [
 	"NLD"

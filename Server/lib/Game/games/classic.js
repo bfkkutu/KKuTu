@@ -309,6 +309,7 @@ exports.submit = function(client, text){
 	if(!isChainable(text, my.mode, my.game.char, my.game.subChar)) return client.chat(text);
 	if(my.game.chain.indexOf(text) != -1 && !my.opts.returns) return client.publish('turnError', { code: 409, value: text }, true);
 	if(my.opts.twenty && text.length > 20) return client.publish('turnError', { code: 415, value: text }, true);
+	if(my.opts.bandouble && text.length == 2) return client.publish('turnError', { code: 417, value: text }, true);
 	
 	l = my.rule.lang;
 	my.game.loading = true;
@@ -352,11 +353,6 @@ exports.submit = function(client, text){
 					baby: $doc ? $doc.baby : null
 				}, true);
 				if(my.game.mission === true){
-					/*if(my.opts.abcmission){
-						my.game.mission = getMission_abc();
-					} else if (!my.opts.abcmission){
-						my.game.mission = getMission(my.rule.lang);
-					}*/
 					if (my.opts.moremission) { // 더 많은 미션이 있으면
 						my.game.mission = getMission(my.rule.lang, 'more');
 					} else if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
@@ -407,30 +403,30 @@ exports.submit = function(client, text){
 					denied(415);
 				}
 			}
-			if(my.opts.selecttheme){
+			/*if(my.opts.selecttheme){
 				if($doc.theme.match(toRegex(my.game.theme)) == null) denied(407);
 				else preApproved();
 			}else if(my.opts.bantheme){
 				if($doc.theme.match(toRegex(my.game.theme)) == null) preApproved();
 				else denied(407);
-			}else if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
-			else if(my.opts.strict && (!$doc.type.match(Const.KOR_STRICT) || $doc.flag >= 4)) denied(406);
-			else if(my.opts.loanword && ($doc.flag & Const.KOR_FLAG.LOANWORD)) denied(405);
+			}else */if(!my.opts.injeong && ($doc.flag & Const.KOR_FLAG.INJEONG)) denied();
+			//else if(my.opts.strict && (!$doc.type.match(Const.KOR_STRICT) || $doc.flag >= 4)) denied(406);
+			//else if(my.opts.loanword && ($doc.flag & Const.KOR_FLAG.LOANWORD)) denied(405);
 			else if(my.opts.leng && (text.length > my.leng.max)) denied(410);
 			else if(my.opts.leng && (text.length < my.leng.min)) denied(411);
-			else if(my.opts.noreturn && (((gamemode == 'EKT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'EKT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
-			else if(my.opts.noreturn && (((gamemode == 'KUT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'KUT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
+			//else if(my.opts.noreturn && (((gamemode == 'EKT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'EKT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
+			//else if(my.opts.noreturn && (((gamemode == 'KUT') && ((text.substr(0,2) == text.substr((text.length-2),2))) || (text.substr(0,3) == text.substr((text.length-3),3))) || ((gamemode != 'KUT') && (text.substr(0,1) == text.substr((text.length-1),1))))) denied(412);
 			else {
-				if(my.opts.unknownword) denied(414);
-				else if (!check_word(text)) denied(413);
+				/*if(my.opts.unknownword) denied(414);
+				else */if (!check_word(text)) denied(413);
 				else preApproved();
 			}
 		} else {
-			if(my.opts.unknownword){
+			/*if(my.opts.unknownword){
 				if (check_word(text)) preApproved();
 				else denied(413);
 			}
-			else denied();
+			else */denied();
 		}
 	}
 	function isChainable(){
