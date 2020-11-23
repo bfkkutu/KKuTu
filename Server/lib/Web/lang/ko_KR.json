@@ -157,7 +157,7 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "5.1.3 User",
+    "version": "5.1.4 User",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -749,11 +749,15 @@
     "cfComposed": "조합에 성공했습니다!",
     "hasExpired": " 항목의 사용 기한이 다 되어 사라졌습니다.",
 	
-	"management": "관리",
+	"management": "관리 메뉴",
+	"management-ban": "관리 메뉴 - 차단",
 	"mngID": "식별 번호",
 	"mngNickname": "닉네임",
 	"mngKick": "강퇴",
 	"mngBan": "차단",
+	"mngReason": "차단 사유",
+	"mngDate": "기간 (일)",
+	"mngBanPermanent": "영구 차단",
 
     "cmd_r": "(/r) 준비 단추를 누릅니다. 방장일 경우 시작 단추를 누릅니다.",
     "cmd_cls": "(/cls) 채팅 창을 비웁니다.",

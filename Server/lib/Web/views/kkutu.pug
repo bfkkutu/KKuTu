@@ -52,7 +52,7 @@ block CSS
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
 	// span#PORT= locals.PORT
-	//span#URL= `${locals.PROTOCOL}://ws.${locals.HOST}:${locals.PORT}/${locals._id}`
+	//span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
 	span#URL= `${locals.PROTOCOL}://ws.kkutu.app:${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
@@ -103,12 +103,13 @@ block Middle
 		button#ExitBtn.for-master.for-normal.for-gaming(style='display: none; background-color: #FFADAD;')= L('exit')
 		button#ReplayBtn.for-lobby(style='display: none; background-color: #D9FF82;')= L('replay')
 		button#ClanBtn.for-lobby(style='display: none; background-color: #fff200;')= L('Clan')
+		//button#AchievementBtn.for-lobby.for-master.for-normal(style='display: none; background-color: #fff200;')= L('Achievement')
 		button#ReloadRoom.tiny-menu.for-lobby(style='display: none; background-color: #7DB7FF;')!= L('reload')
 		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
 	+Dialog('SettingDiag', 320, 340, L('settingsText'))
 		div.dialog-bar
 			h4= L('BGMVOL')
-			input#bgmvol(type='range' min='0' max='1' value='1' step='0.01' style='width:50%;')
+			input#bgmvol(type='range' min='0' max='1' value='0.5' step='0.01' style='width:50%;')
 			h4= L('BGMext')
 			+SettingOption('mute-bgm', L('bgm'))
 			+SettingOption('mute-effect', L('effect'))
@@ -120,6 +121,7 @@ block Middle
 				option(value=3)= L('bgm_3')
 				option(value=4)= L('bgm_4')
 				option(value=5)= L('bgm_5')
+				option(value=6)= L('bgm_6')
 		div.dialog-bar
 			h4= L('BADWORDFILTER')
 			select#badwordfilter
@@ -178,6 +180,11 @@ block Middle
 			button#rplb-next(style='margin-right: 6px;')= L('nextPage')
 			button#rplb-me= L('myRank')
 			button#rplb-prev= L('prevPage')
+	+Dialog('AchievementDiag', 300, 450, L('Achievement'))
+		div.dialog-bar
+			h3= L('nonAchieved')
+		div.dialog-bar
+			h3= L('achieved')
 	//- +Dialog('CursingDiag', 310, 60, "욕설 사용량 확인하기")
 		div.dialog-bar#cursing-value -//
 	+Dialog('QuickDiag', 300, 360, L('quickRoom'))
@@ -453,6 +460,18 @@ block Middle
 		div.dialog-bar
 			button#mngKick= L('mngKick')
 			button#mngBan= L('mngBan')
+	+Dialog('MngBanDiag', 300, 240, L('management-ban'))
+		div.dialog-bar
+			h4= L('mngReason')
+			textarea#ban-reason(type='textfield', style='width: 288px;')
+		div.dialog-bar
+			h4= L('mngDate')
+			input#ban-date(type='number', style='width: 288px;')
+			p
+			label= L('mngBanPermanent')
+				input#ban-permanent(type='checkbox')
+		div.dialog-bar.tail-button
+			button#ban-submit= L('mngBan')
 	+Dialog('KickVoteDiag', 300, 160, L('kickVote'))
 		div.dialog-bar#kick-vote-text(style='text-align: center;')
 		div.dialog-bar(style='text-align: center;')= L('kickVoteNotice')

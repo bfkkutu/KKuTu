@@ -826,10 +826,10 @@
 		$("#alertText").html(text);
 	}
 	
-	function promptKKuTu(text){
+	function promptKKuTu(text, callback){
 		$stage.dialog.promptKKuTu.hide();
 		$("#prompt").css("text-align", "center");
-		$("#promptbtn").attr('style', "float: right;");
+		$("#promptbtn").attr('style', "float: right;").on("click", (e) => {callback($("#promptText").val()), $("#promptText").val("")});
 		$("#promptText").html(text);
 		$("#prompt-input").attr('style', "width: 97%;");
 		showDialog($stage.dialog.promptKKuTu);
@@ -2450,8 +2450,11 @@
 					profileFriendAdd: $("#profile-friendadd"),
 					profileCopyID: $("#profile-copyid"),
 					management: $("#ManagementDiag"),
+					managementBan: $("#MngBanDiag"),
 					mngKick: $("#mngKick"),
 					mngBan: $("#mngBan"),
+					mngBanSubmit: $("#ban-submit"),
+					mngBanPermanent: $("#ban-permanent"),
 					findIDOK: $("#find-id-ok"),
 					findNickOK: $("#find-nick-ok"),
 					reportDiag: $("#ReportDiag"),
@@ -2821,7 +2824,31 @@
 					alertKKuTu(`${$("#target-nickname").text()}님을 강퇴했습니다.`);
 				}, (e) => {$stage.dialog.confirmKKuTu.hide()});
 			}), $stage.dialog.mngBan.on("click", function(a) {
-				// prompt
+				showDialog($stage.dialog.managementBan)
+			}), $stage.dialog.mngBanSubmit.on("click", function(a) {
+				var target = $("#target-id").val(),
+					reason = $("#ban-reason").val(),
+					banDate = $("#ban-permanent").is(":checked") ? "영구" : $("#ban-date").val(),
+					endDate = new Date(),
+					comment = "",
+					cmdDate = "";
+				if(reason == '') return alertKKuTu("차단 사유를 입력해주세요.");
+				if(banDate != '영구' && Number(banDate) == 0) return alertKKuTu("차단 기간을 입력해주세요.");
+				if(banDate != '영구'){
+					endDate.setTime(endDate.getTime() + (Number(banDate) * 24 * 60 * 60 * 1000));
+					comment = `${$("#target-nickname").text()}님을 차단하시겠습니까?<p></p>사유: ${reason}<br></br>기간: ${banDate}일<br></br>종료일: ${endDate.getFullYear()}년 ${endDate.getMonth()+1}월 ${endDate.getDate()}일 ${endDate.getHours()}시 ${endDate.getMinutes()}분`
+				}else comment = `${$("#target-nickname").text()}님을 영구적으로 차단하시겠습니까?<p></p>사유: ${reason}<br></br>기간: 영구`
+				cmdDate = `${endDate.getFullYear()}${endDate.getMonth()+1}${endDate.getDate()}${endDate.getHours()}${endDate.getMinutes()}${endDate.getSeconds()}`
+				confirmKKuTu(comment, (e) => {
+					$("#tail-input").val(`ban ${$("#target-id").text()},${reason},${banDate != '영구' ? cmdDate : '영구'}`);
+					$("#tail-btn").trigger("click");
+					$stage.dialog.managementBan.hide();
+					$stage.dialog.management.hide();
+					$stage.dialog.confirmKKuTu.hide();
+					alertKKuTu(banDate != '영구' ? `${$("#target-nickname").text()}님을 차단했습니다.<p></p>사유: ${reason}<br></br>기간: ${banDate}<br></br>종료일: ${endDate.getFullYear()}년 ${endDate.getMonth()+1}월 ${endDate.getDate()}일 ${endDate.getHours()}시 ${endDate.getMinutes()}분` : `${$("#target-nickname").text()}님을 영구적으로 차단했습니다.<p></p>사유: ${reason}<br></br>기간: 영구`);
+				}, (e) => {$stage.dialog.confirmKKuTu.hide()});
+			}), $stage.dialog.mngBanPermanent.on("change", function(a) {
+				$("#ban-date").attr("disabled", $("#ban-permanent").is(":checked"))
 			}), $stage.dialog.lbPrev.on("click", function(a) {
 				$(a.currentTarget).attr("disabled", !0), $.get("/ranking?p=" + ($data._lbpage - 1), function(a) {
 					drawLeaderboard(a)
