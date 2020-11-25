@@ -363,26 +363,27 @@ code{
 .tier-C{ color: #2EFFDF; text-shadow: 0px 0px 5px #1072AA; }
 
 .footer-div{
-	margin-top: 10px;
+	padding-top: 10px;
 	color: #CCCCCC;
-	background-color: #304a58;
+    background-color: #304a58;
+    display: flex;
+    justify-content: space-between;
 	position: absolute;
 	bottom: 0;
-	height: 7%;
+	height: 85px;
 	width: 100%;
-	z-index: -1;
 }
+
 .footer-left{
+    padding-left: 10%;
 	float: left;
-	width: 35%;
+	width: 40%;
 }
+
 .footer-right{
+    padding-right: 10%;
 	float: left;
-	width: 35%;
-}
-.footer-blank{
-	float: left;
-	width: 15%;
+	width: 40%;
 }
 
 .in-iframe{

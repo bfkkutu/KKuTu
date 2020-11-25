@@ -606,7 +606,10 @@
 		$("#room-injeong-pick").hide();
 		/*$("#quick-selecttheme-panel").remove();
 		$("#quick-bantheme-panel").remove();*/
-		$("#AlertDiag").css("z-index",5)
+		$(".footer-div").css("z-index", '-1')
+		$(".footer-left").css("z-index", '-1')
+		$(".footer-right").css("z-index", '-1')
+		$("#AlertDiag").css("z-index", 5)
 		if(!$data.admin){
 			delete window.$Request;
 			

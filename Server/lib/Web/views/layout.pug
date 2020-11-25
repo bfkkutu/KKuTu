@@ -67,12 +67,12 @@ html
 			block Bottom
 		div#Footer
 			block Footer
-			div.footer-div
+			div.footer-div(style='z-index: 0;')
 				p
-				div.footer-left(style='text-align: left;')
+				div.footer-left(style='text-align: left; z-index: -1;')
 					div!= L('copyright')
 					div!= L('GPL')
-				div.footer-right(style='text-align: right;')
+				div.footer-right(style='text-align: right; z-index: -1;')
 					div!= L('allDocument')
 					div!= L('dictionarySupport')
 			+separator(10)
