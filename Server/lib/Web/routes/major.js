@@ -425,17 +425,19 @@ Server.get("/shop", function(req, res){
 
 // POST
 Server.post("/updateMe", async function (req, res) {
-	var nickname = req.body.nickname;
-	var exordial = req.body.exordial || "";
+	var nickname = req.body.nickname ? req.body.nickname : false;
+	var exordial = req.body.exordial ? req.body.exordial : false;
 	var verified;
 	
 	if (req.session.profile) {
-		if(nickname){
+		if(exordial) MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial.slice(0, 100) ]).on();
+		else if(req.body.exordial == "") MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', '' ]).on();
+		
+		if(nickname != ""){
 			verified = await translateToPromise(MainDB.users.findOne([ 'nickname', nickname.slice(0, 10) ]));
 			if(verified) return res.send({ error: 600 });
 			else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname.slice(0, 10) ]).on();
 		}
-		MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial.slice(0, 100) ]).on();
 		return res.send({ result: 200 });
     } else return res.send({ error: 400 });
 });
@@ -608,7 +610,7 @@ Server.post("/cf", function(req, res){
 					blend = true;
 				}else return res.json({ error: 404 });
 			}
-			if(!blend && event && !$dic.theme.includes("NLD")) return res.json({ error: 462 });
+			//if(!blend && event && !$dic.theme.includes("NLD")) return res.json({ error: 462 });
 			cfr = getCFRewards(word, level, blend, event);
 			if($user.money < cfr.cost) return res.json({ error: 407 });
 			for(i in req) consume($user, i, req[i]);
@@ -646,6 +648,42 @@ Server.get("/dict/:word", function(req, res){
             type: $word.type
         });
     });
+});
+
+Server.post("/migrate/submit", function(req, res){
+	var oldID = req.body.old.id;
+	var oldSession = req.body.old.session;
+	var newID = req.body.new.id;
+	
+	MainDB.users.findOne([ '_id', newID ]).on(function($new){
+		if(!$new) return res.send({ error: 400 });
+		
+		MainDB.session.findOne([ '_id', oldSession.id ]).on(function($oldSession){
+			if(!$oldSession) return res.send({ error: 400 });
+			if($oldSession.profile.authType == 'daldalso') return res.send({ error: 400 });
+			
+			MainDB.users.findOne([ '_id', oldID ]).on(function($old){
+				if(!$old) return res.send({ error: 400 });
+				
+				MainDB.users.update([ '_id', newID ]).set([ 'money', $old.money ]
+				, [ 'kkutu', $old.kkutu ]
+				, [ 'box', $old.box ]
+				, [ 'equip', $old.equip ]
+				, [ 'exordial', $old.exordial ]
+				, [ 'black', $old.black ]
+				, [ 'server', $old.server ]
+				, [ 'password', $old.password ]
+				, [ 'friends', $old.friends ]
+				, [ 'nickname', $old.nickname ]
+				, [ 'newuser', $old.newuser ]
+				, [ 'clan', $old.clan ]
+				, [ 'bandate', $old.bandate ]
+				, [ 'warn', $old.warn ]).on(function(){
+					res.send({ result: 200 })
+				});
+			});
+		});
+	});
 });
 
 };

@@ -736,8 +736,7 @@
 		var verified = checkNick(a);
 		
 		return (verified ? ($.post("/updateMe", {
-			nickname: delBadWords(a),
-			exordial: false
+			nickname: delBadWords(a)
 		}, function(e){
 			if(e.error) return fail(e.error);
 			alert("닉네임이 " + a + "(으)로 변경되었습니다. 재접속 해주세요.");
@@ -750,8 +749,7 @@
 		$stage.dialog.promptKKuTuOK.on("click", function(c) {
 			var verified = checkNick($("#prompt-input").val());
 			return (verified ? ($.post("/updateMe", {
-				nickname: delBadWords($("#prompt-input").val()),
-				exordial: false
+				nickname: delBadWords($("#prompt-input").val())
 			}, function(e){
 				if(e.error) return fail(e.error);
 				alertKKuTu("닉네임 설정이 완료되었습니다.");
@@ -3000,6 +2998,7 @@
 				}))
 			}), $stage.dialog.dressOK.on("click", function(a) {
 				var nickChanged = $("#dress-nickname").val() != $data.nickname;
+				//var exorChanged = $("#dress-exordial").val() != $data.nickname;
 				var verified = checkNick($("#dress-nickname").val());
 				
 				if(!verified) return;
