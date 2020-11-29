@@ -1577,7 +1577,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
 	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
 	*/
-	if (opts.manner) rw.score = rw.score * 1.1; // 매너
+	if (opts.manner) rw.score = rw.score * 0.95; // 매너
 	if (opts.injeong) rw.score = rw.score * 0.8; // 어인정
 	if (opts.mission) { // 미션
 		if (!opts.randommission){
@@ -1591,22 +1591,22 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 			rw.score = rw.score * 0.9;
 		}
 	};
-	if (opts.proverb) rw.score = rw.score * 1.9; // 속담
-	if (opts.loanword) rw.score = rw.score * 1.7; // 우리말
-	if (opts.strict) rw.score = rw.score * 1.9; // 깐깐
-	if (opts.sami) rw.score = rw.score * 2.3; // 3232
-	if (opts.no2) rw.score = rw.score * 2.3; // 2글자 금지
+	if (opts.proverb) rw.score = rw.score * 1.4; // 속담
+	if (opts.loanword) rw.score = rw.score * 1.3; // 우리말
+	if (opts.strict) rw.score = rw.score * 1.4; // 깐깐
+	if (opts.sami) rw.score = rw.score * 1.6; // 3232
+	if (opts.no2) rw.score = rw.score * 1.6; // 2글자 금지
 
 	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
-	if (opts.randomturn) rw.score = rw.score * 1.8; // 랜덤 턴
+	if (opts.randomturn) rw.score = rw.score * 1.4; // 랜덤 턴
 	if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
-	if (opts.ignoreinitial) rw.score = rw.score * 2.2; // 두음 법칙 파괴
+	if (opts.ignoreinitial) rw.score = rw.score * 2.1; // 두음 법칙 파괴
 	if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
-	if (opts.ogow) rw.score = rw.score * 1.2;
+	if (opts.ogow) rw.score = rw.score * 1.1; // 한번만
 	if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
-	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 선택 (한국어 끝말잇기)
+	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 금지 (한국어 끝말잇기)
 	if (opts.middletoss) rw.score = rw.score * 1.2; // 미들 토스
-	if (opts.twenty) rw.score = rw.score * 1.1; // 토너먼트
+	if (opts.twenty) rw.score = rw.score * 0.95; // 20자 제한
 	if (opts.tournament) rw.score = rw.score * 3.0; // 토너먼트
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
