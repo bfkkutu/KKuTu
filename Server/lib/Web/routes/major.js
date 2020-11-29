@@ -650,43 +650,6 @@ Server.get("/dict/:word", function(req, res){
     });
 });
 
-Server.post("/migrate/submit", function(req, res){
-	var oldID = req.body.old.id;
-	var oldSession = req.body.old.session;
-	var newID = req.body.new.id;
-	
-	MainDB.users.findOne([ '_id', newID ]).on(function($new){
-		if(!$new) return res.send({ error: 400 });
-		
-		MainDB.session.findOne([ '_id', oldSession.id ]).on(function($oldSession){
-			if(!$oldSession) return res.send({ error: 400 });
-			if($oldSession.profile.authType == 'daldalso') return res.send({ error: 400 });
-			
-			MainDB.users.findOne([ '_id', oldID ]).on(function($old){
-				if(!$old) return res.send({ error: 400 });
-				
-				MainDB.users.update([ '_id', newID ]).set([ 'money', $old.money ]
-				, [ 'kkutu', $old.kkutu ]
-				, [ 'box', $old.box ]
-				, [ 'equip', $old.equip ]
-				, [ 'exordial', $old.exordial ]
-				, [ 'black', $old.black ]
-				, [ 'server', $old.server ]
-				, [ 'password', $old.password ]
-				, [ 'friends', $old.friends ]
-				, [ 'nickname', $old.nickname ]
-				, [ 'newuser', $old.newuser ]
-				, [ 'clan', $old.clan ]
-				, [ 'bandate', $old.bandate ]
-				, [ 'warn', $old.warn ]).on(function(){
-					res.send({ result: 200 })
-				});
-			});
-		});
-	});
-});
-
-};
 function getCFRewards(word, level, blend, event){
 	var R = [];
 	var f = {
