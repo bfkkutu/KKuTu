@@ -604,8 +604,8 @@
 		var Blocker = window.$Request;
 		
 		$("#room-injeong-pick").hide();
-		/*$("#quick-selecttheme-panel").remove();
-		$("#quick-bantheme-panel").remove();*/
+		$("#quick-selecttheme-panel").remove();
+		//$("#quick-bantheme-panel").remove();
 		$(".footer-div").css("z-index", '-1')
 		$(".footer-left").css("z-index", '-1')
 		$(".footer-right").css("z-index", '-1')
@@ -1193,7 +1193,7 @@
 			}), "" == j && a()
 		}
 
-		function c(a, b, c, d) { // word, length, blend
+		function c(a, b, c, d) { // word, length, blend, event word piece
 			$.get(`/cf/${a}?l=${b}&b=${c ? "1" : ""}&e=${d}`, function(a) {
 				if (a.error) return fail(a.error);
 				g.empty(), a.data.forEach(function(a) {
@@ -2690,17 +2690,64 @@
 			}), $stage.menu.newRoom.on("click", function(a) {
 				var b, sa, sb,
 					h = $("#room-selecttheme").is(":checked"),
-					j = $("#room-bantheme").is(":checked"),
+					//j = $("#room-bantheme").is(":checked"),
 					k = $("#room-mode").val();
+				/*if((h || j) && (k == 2 || k == 3)){
+					$("#room-bantheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else if(k == 2 || k == 3){
+					$("#room-bantheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}else $("#room-bantheme-panel").hide();
+				if(k == 10 || k == 11){
+					$("#room-bantheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}*/
+				if(h && (k == 6 || k == 7)){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else if(!h && (k == 6 || k == 7)){
+					$("#room-selecttheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}else if(k == 10 || k == 11){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else{
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}
 				$stage.dialog.quick.hide(), $data.typeRoom = "enter", showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.newRoom)
 			}), $stage.menu.setRoom.on("click", function(a) {
 				var b, c, d, e = RULE[MODE[$data.room.mode]],
 					h = $("#room-selecttheme").is(":checked"),
-					j = $("#room-bantheme").is(":checked"),
+					//j = $("#room-bantheme").is(":checked"),
 					k = $("#room-mode").val();
 				$data.typeRoom = "setRoom", $("#room-title").val($data.room.title), $("#room-limit").val($data.room.limit), $("#room-mode").val($data.room.mode).trigger("change"), $("#room-round").val($data.room.round), $("#room-wordLimit").val($data.room.wordLimit), $("#room-time").val($data.room.time / e.time);
 				for (c in OPTIONS) d = OPTIONS[c].name.toLowerCase(), $("#room-" + d).attr("checked", $data.room.opts[d]);
 				$data._injpick = $data.room.opts.injpick;
+				/*if((h || j) && (k == 2 || k == 3)){
+					$("#room-bantheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else if(k == 2 || k == 3){
+					$("#room-bantheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}else{
+					$("#room-bantheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}*/
+				if(h && (k == 6 || k == 7)){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else if(!h && (k == 6 || k == 7)){
+					$("#room-selecttheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}else if(k == 10 || k == 11){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else{
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}
 				showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.setRoom)
 			}), $("#quick-mode, #QuickDiag .game-option").on("change", function(a) {
 				var b, f, g = $("#quick-mode").val(),
@@ -2731,6 +2778,11 @@
 					c = [],
 					f = $(".dialog-opt#ko-pick-list").find("input").is(":checked"),
 					h = $("#room-mode").val();
+				if(!f && (h == 6 || h == 7)){
+					$("#room-selecttheme")[0].checked = false;
+					$("#room-selecttheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}
 				$data._injpick = b.find("input").each(function(a, b) {
 					var d = $(b),
 						e = d.attr("id").slice(8);
@@ -2738,8 +2790,18 @@
 				}), $data._injpick = c, $stage.dialog.injPick.hide()
 			}), $("#room-mode").on("change", function(a) {
 				var b = $("#room-mode").val(),
+					h = $("#room-selecttheme").is(":checked"),
 					d = RULE[MODE[b]];
-					$("#room-wordLimit-panel").hide();
+				$("#room-selecttheme").change(function() {
+					if($("#room-selecttheme")[0].checked){
+						$("#room-selecttheme-panel").hide();
+						$("#room-injeong-pick").show();
+					}else{
+						$("#room-selecttheme-panel").show();
+						$("#room-injeong-pick").hide();
+					}
+				});
+				/*b == 17 ? $("#room-wordLimit-panel").show() : */$("#room-wordLimit-panel").hide(); // 글자제한 끝말잇기
 				$("#game-mode-expl").html(L["modex" + b]), c(d.opts, "room"), $data._injpick = [], "Typing" == d.rule && $("#room-round").val(3), $("#room-time").children("option").each(function(a, b) {
 					$(b).html(Number($(b).val()) * d.time + L.SECOND)
 				});
@@ -2748,7 +2810,19 @@
 					else $(b).html(Number($(b).val()) * d.time + L.SECOND)
 				})
 				if(!$stage.dialog.quick.is(":visible") && d.opts.indexOf("ijp") != -1) $("#room-injeong-pick").show()
-				if(b == 3) $("#room-injeong-pick").hide()
+				if(h && (b == 6 || b == 7)){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else if(!h && (b == 6 || b == 7)){
+					$("#room-selecttheme-panel").show();
+					$("#room-injeong-pick").hide();
+				}else if(b == 10 || b == 11){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").show();
+				}else{
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}
 			}).trigger("change"), $stage.menu.spectate.on("click", function(a) {
 				$stage.menu.spectate.hasClass("toggled") ? (send("form", {
 					mode: "J"

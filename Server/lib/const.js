@@ -121,7 +121,7 @@ exports.RULE = {
 	},*/
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
-		opts: [ "ijp", "man", "ext", "mis", "mdt", "rms"/*, "loa", "str"*/,
+		opts: [ /*"ijp",*/ "man", "ext", "mis", "mdt", "rms"/*, "loa", "str"*/,
 		/*"nrt", */"rtu", "upl", "rank", "ogow"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
@@ -131,7 +131,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ /*"ijp", */"man", "ext", "mis", "rms"/*, "loa", "str"*/,
-		/*"nrt", */"leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow"/*, "selth", "btm"*/, "twt", "tmnt" ],
+		/*"nrt", */"leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow", "twt", "tmnt"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -155,7 +155,7 @@ exports.RULE = {
 	},
 	'KTY': { lang: "ko", // 한국어 타자대결
 		rule: "Typing",
-		opts: [ "prv" ],
+		opts: [ "ijp", "prv", "selth" ],
 		time: 1,
 		ai: false,
 		big: false,
@@ -163,7 +163,7 @@ exports.RULE = {
 	},
 	'ETY': { lang: "en", // 영어 타자대결
 		rule: "Typing",
-		opts: [ "prv" ],
+		opts: [ "ijp", "prv", "selth" ],
 		time: 1,
 		ai: false,
 		big: false,
@@ -272,7 +272,7 @@ exports.RULE = {
 	},*/
 	'KRH': { lang: "ko", // 한국어 랜덤잇기
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "rank", "twt", "bdb" ],
+		opts: [ "man", "ext", "mis", "bdb", "rank", "twt" ],
 		time: 1,
 		ai: true,
 		big: false,

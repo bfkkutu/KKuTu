@@ -25,6 +25,7 @@ var DIC;
 var LIST_LENGTH = 200;
 var DOUBLE_VOWELS = [ 9, 10, 11, 14, 15, 16, 19 ];
 var DOUBLE_TAILS = [ 3, 5, 6, 9, 10, 11, 12, 13, 14, 15, 18 ];
+var stack = 0;
 
 function traverse(func){
 	var my = this;
@@ -46,21 +47,37 @@ exports.getTitle = function(){
 	var i, j;
 	
 	if(my.opts.proverb) pick(TYL.PROVERBS[my.rule.lang]);
+	else if(my.opts.injpick.length > 0) DB.kkutu[my.rule.lang].find([ '_id', /^.{2,5}$/ ], [ 'hit', { $gte: 1 } ]).limit(416).on(function($res){
+		pick($res.map(function(item){ return item._id; }), $res.map(function(item){ return item.theme; }));
+	});
 	else DB.kkutu[my.rule.lang].find([ '_id', /^.{2,5}$/ ], [ 'hit', { $gte: 1 } ]).limit(416).on(function($res){
 		pick($res.map(function(item){ return item._id; }));
 	});
-	function pick(list){
+	function pick(list, theme){
 		var data = [];
 		var len = list.length;
 		var arr;
 		
+		stack++;
+		
 		for(i=0; i<my.round; i++){
 			arr = [];
 			for(j=0; j<LIST_LENGTH; j++){
-				arr.push(list[Math.floor(Math.random() * len)]);
+				var rd = Math.floor(Math.random() * len);
+				if(!theme) arr.push(list[rd]);
+				else {
+					if(my.opts.injpick.includes(theme[rd]) && theme[rd] != "") arr.push(list[rd]);
+					else continue;
+				}
 			}
 			data.push(arr);
 		}
+		if(stack < 5 && data.toString().split(",").includes("")) return pick(list, theme);
+		else if(stack >= 5 && data.toString().split(",").includes("")){
+			data = [];
+			for(i=0; i<my.round; i++) data.push(['선택하신 주제에 단어가 너무 적어 게임이 정상적으로 시작되지 못했습니다.'])
+		}
+		stack = 0;
 		my.game.lists = data;
 		R.go("①②③④⑤⑥⑦⑧⑨⑩");
 	}

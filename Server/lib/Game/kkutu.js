@@ -283,7 +283,7 @@ exports.Client = function(socket, profile, sid){
 			my.guest = true;
 			my.isAjae = false;
 			my.profile = {
-				id: sid,
+				id: "guest__" + sid,
 				title: getGuestName(sid),
 				image: GUEST_IMAGE
 			};
@@ -1158,8 +1158,8 @@ exports.Room = function(room, channel){
 		}
 		// 인정픽 검사
 		if(!my.rule) return 400;
-		if(my.rule.opts.includes("ijp")){ // KSH / KKT는 injpick이 선택 항목임.
-			if(my.mode == 2 || my.mode == 3) return false;
+		if(my.rule.opts.includes("ijp")){ // KTY / ETY는 injpick이 선택 항목임.
+			if(my.mode == 6 || my.mode == 7) return false;
 			if(!my.opts.injpick) return 400;
 			if(!my.opts.injpick.length) return 413;
 			if(!my.opts.injpick.every(function(item){
