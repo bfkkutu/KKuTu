@@ -67,13 +67,13 @@ exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lha
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
 exports.AVAIL_EQUIP = [
 	"NIK", "BDG1", "BDG2", "BDG3", "BDG4",
-	"Mhead", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "MSKIN", "NTG"
+	"Mhead", "Mheco", "Meye", "Mmouth", "Mhand", "Mclothes", "Mshoes", "Mback", "MSKIN", "NTG"
 ];
 exports.GROUPS = {
 	'spec': [ "PIX", "PIY", "PIZ", "CNS" ],
 	'skin': [ "NIK" ],
 	'badge': [ "BDG1", "BDG2", "BDG3", "BDG4" ],
-	'head': [ "Mhead" ],
+	'head': [ "Mhead", "Mheco" ],
 	'eye': [ "Meye" ],
 	'mouth': [ "Mmouth" ],
 	'clothes': [ "Mclothes" ],
@@ -143,7 +143,8 @@ exports.RULE = {
 		time: 1,
 		ai: true,
 		big: false,
-		ewq: false
+		ewq: false,
+		ijr: true // 인정픽 필수 여부
 	},
 	'KCW': { lang: "ko", // 한국어 십자말풀이
 		rule: "Crossword",
@@ -159,7 +160,8 @@ exports.RULE = {
 		time: 1,
 		ai: false,
 		big: false,
-		ewq: false
+		ewq: false,
+		ijr: false // 인정픽 필수 여부
 	},
 	'ETY': { lang: "en", // 영어 타자대결
 		rule: "Typing",
@@ -167,7 +169,8 @@ exports.RULE = {
 		time: 1,
 		ai: false,
 		big: false,
-		ewq: false
+		ewq: false,
+		ijr: false // 인정픽 필수 여부
 	},
 	'KAP': { lang: "ko", // 한국어 앞말잇기
 		rule: "Classic",
@@ -194,7 +197,8 @@ exports.RULE = {
 		time: 1,
 		ai: true,
 		big: false,
-		ewq: true
+		ewq: true,
+		ijr: true // 인정픽 필수 여부
 	},
 	'EDA': { lang: "en", // 영어 단어 대결
 		rule: "Daneo",
@@ -202,7 +206,8 @@ exports.RULE = {
 		time: 1,
 		ai: true,
 		big: false,
-		ewq: true
+		ewq: true,
+		ijr: true // 인정픽 필수 여부
 	},
 	'KSS': { lang: "ko", // 한국어 솎솎
 		rule: "Sock",
@@ -226,7 +231,8 @@ exports.RULE = {
 		time: 1,
 		ai: false,
 		big: true,
-		ewq: true
+		ewq: true,
+		ijr: true // 인정픽 필수 여부
 	},
 	'EDG': { lang: "en", // 영어 그림퀴즈
 		rule: "Drawing",
@@ -234,7 +240,8 @@ exports.RULE = {
 		time: 1,
 		ai: false,
 		big: true,
-		ewq: true
+		ewq: true,
+		ijr: true // 인정픽 필수 여부
 	},
 	/*'EAP': { lang: "en", // 영어 앞말잇기 임시 비활성화
 		rule: "Classic",

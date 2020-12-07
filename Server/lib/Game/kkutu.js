@@ -1158,8 +1158,8 @@ exports.Room = function(room, channel){
 		}
 		// 인정픽 검사
 		if(!my.rule) return 400;
-		if(my.rule.opts.includes("ijp")){ // KTY / ETY는 injpick이 선택 항목임.
-			if(my.mode == 6 || my.mode == 7) return false;
+		if(my.rule.opts.includes("ijp")){
+			if(!my.ijr) return false; // 인정픽 필수 여부
 			if(!my.opts.injpick) return 400;
 			if(!my.opts.injpick.length) return 413;
 			if(!my.opts.injpick.every(function(item){

@@ -112,6 +112,7 @@
     "GROUP_BDG3": "고급 휘장",
     "GROUP_BDG4": "일반 휘장",
     "GROUP_Mhead": "모레미 머리",
+	"GROUP_Mheco": "머리 장식",
     "GROUP_Meye": "모레미 눈",
     "GROUP_Mmouth": "모레미 입",
     "GROUP_Mhand": "모레미 손",
@@ -157,7 +158,7 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "5.1.7 User",
+    "version": "5.1.8 User",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",

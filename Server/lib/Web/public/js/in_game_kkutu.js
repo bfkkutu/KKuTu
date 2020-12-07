@@ -2691,7 +2691,7 @@
 				var b, sa, sb,
 					h = $("#room-selecttheme").is(":checked"),
 					//j = $("#room-bantheme").is(":checked"),
-					k = $("#room-mode").val();
+					k = RULE[MODE[$("#room-mode").val()]];
 				/*if((h || j) && (k == 2 || k == 3)){
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").show();
@@ -2703,25 +2703,25 @@
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").show();
 				}*/
-				if(h && (k == 6 || k == 7)){
+				if(k.ijr === undefined && !k.opts.includes('ijp')){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}else if(h && !k.ijr){
 					$("#room-selecttheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else if(!h && (k == 6 || k == 7)){
+				}else if(!h && !k.ijr){
 					$("#room-selecttheme-panel").show();
 					$("#room-injeong-pick").hide();
-				}else if(k == 10 || k == 11){
+				}else if(k.ijr){
 					$("#room-selecttheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else{
-					$("#room-selecttheme-panel").hide();
-					$("#room-injeong-pick").hide();
 				}
 				$stage.dialog.quick.hide(), $data.typeRoom = "enter", showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.newRoom)
 			}), $stage.menu.setRoom.on("click", function(a) {
 				var b, c, d, e = RULE[MODE[$data.room.mode]],
 					h = $("#room-selecttheme").is(":checked"),
 					//j = $("#room-bantheme").is(":checked"),
-					k = $("#room-mode").val();
+					k = RULE[MODE[$("#room-mode").val()]];
 				$data.typeRoom = "setRoom", $("#room-title").val($data.room.title), $("#room-limit").val($data.room.limit), $("#room-mode").val($data.room.mode).trigger("change"), $("#room-round").val($data.room.round), $("#room-wordLimit").val($data.room.wordLimit), $("#room-time").val($data.room.time / e.time);
 				for (c in OPTIONS) d = OPTIONS[c].name.toLowerCase(), $("#room-" + d).attr("checked", $data.room.opts[d]);
 				$data._injpick = $data.room.opts.injpick;
@@ -2735,18 +2735,18 @@
 					$("#room-bantheme-panel").hide();
 					$("#room-injeong-pick").hide();
 				}*/
-				if(h && (k == 6 || k == 7)){
+				if(k.ijr === undefined && !k.opts.includes('ijp')){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}else if(h && !k.ijr){
 					$("#room-selecttheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else if(!h && (k == 6 || k == 7)){
+				}else if(!h && !k.ijr){
 					$("#room-selecttheme-panel").show();
 					$("#room-injeong-pick").hide();
-				}else if(k == 10 || k == 11){
+				}else if(k.ijr){
 					$("#room-selecttheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else{
-					$("#room-selecttheme-panel").hide();
-					$("#room-injeong-pick").hide();
 				}
 				showDialog(b = $stage.dialog.room), b.find(".dialog-title").html(L.setRoom)
 			}), $("#quick-mode, #QuickDiag .game-option").on("change", function(a) {
@@ -2777,8 +2777,8 @@
 				var b = $($data._ijkey + "list"),
 					c = [],
 					f = $(".dialog-opt#ko-pick-list").find("input").is(":checked"),
-					h = $("#room-mode").val();
-				if(!f && (h == 6 || h == 7)){
+					h = RULE[MODE[$("#room-mode").val()]];
+				if(!f && !e.ijr){
 					$("#room-selecttheme")[0].checked = false;
 					$("#room-selecttheme-panel").show();
 					$("#room-injeong-pick").hide();
@@ -2810,18 +2810,18 @@
 					else $(b).html(Number($(b).val()) * d.time + L.SECOND)
 				})
 				if(!$stage.dialog.quick.is(":visible") && d.opts.indexOf("ijp") != -1) $("#room-injeong-pick").show()
-				if(h && (b == 6 || b == 7)){
+				if(d.ijr === undefined && !d.opts.includes('ijp')){
+					$("#room-selecttheme-panel").hide();
+					$("#room-injeong-pick").hide();
+				}else if(h && !d.ijr){
 					$("#room-selecttheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else if(!h && (b == 6 || b == 7)){
+				}else if(!h && !d.ijr){
 					$("#room-selecttheme-panel").show();
 					$("#room-injeong-pick").hide();
-				}else if(b == 10 || b == 11){
+				}else if(d.ijr){
 					$("#room-selecttheme-panel").hide();
 					$("#room-injeong-pick").show();
-				}else{
-					$("#room-selecttheme-panel").hide();
-					$("#room-injeong-pick").hide();
 				}
 			}).trigger("change"), $stage.menu.spectate.on("click", function(a) {
 				$stage.menu.spectate.hasClass("toggled") ? (send("form", {
