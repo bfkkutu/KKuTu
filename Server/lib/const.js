@@ -90,12 +90,13 @@ exports.RULE = {
 		time: 시간 상수,
 		ai: AI 가능?,
 		big: 큰 화면?,
-		ewq: 현재 턴 나가면 라운드 종료?
+		ewq: 현재 턴 나가면 라운드 종료?,
+		ijr: 인정픽 필수?
 	}
 */
 	'EKT': { lang: "en", // 영어 끄투
 		rule: "Classic",
-		opts: [ "man", "ext", "mis", "rms", "rtu",
+		opts: [ "ext", "mis", "rms", "rtu",
 		/*"nrt", */"upl", "rtn" ],
 		time: 1,
 		ai: true,

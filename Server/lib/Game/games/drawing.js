@@ -64,6 +64,7 @@ exports.roundReady = function(){
 		my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
 		getAnswer.call(my, my.game.theme).then(function($ans){
 			if(!my.game.done) return;
+			if($ans == null) $ans = { _id: '단어 수가 부족하여 정상적으로 게임이 진행되지 않습니다.', type: 'INJEONG', mean: '＂1＂', hit: 0, flag: 2, theme: '0' };
 			
 			// $ans가 null이면 골치아프다...
 			my.game.late = false;

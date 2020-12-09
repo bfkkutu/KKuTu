@@ -581,14 +581,14 @@ Server.post("/gwalli/monthly", function(req, res){
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
 	var i;
-	var list = req.body.idlist;
+	var list = req.body.list;
 	var ping = req.body.ping;
 	
 	for(i in list){
 		MainDB.users.findOne([ '_id', list[i] ]).on(function($doc){
-			if(!$doc) return res.sendStatus(400)
+			if(!$doc) return res.sendStatus(400);
 			
-			MainDB.users.upsert([ '_id', list[i] ]).set([ 'money', Number($doc.money)+ping ]).on();
+			MainDB.users.upsert([ '_id', list[i] ]).set([ 'money', Number($doc.money)+Number(ping) ]).on();
 			return res.send({ result: "SUCCESS" })
 		});
 	}
@@ -632,17 +632,37 @@ Server.get("/gwalli/resetRP", function(req, res){
 	MainDB.users.find().on(function($list){
 		if(!$list) return res.sendStatus(400);
 		
-		var resetTarget = [];
+		var rewardTarget = {
+			bronze: [],
+			silver: [],
+			gold: [],
+			platinum: [],
+			diamond: [],
+			master: []
+		}
 		
 		for(var i in $list){
-			if($list[i].kkutu["rankPoint"] > 50){
-				$list[i].kkutu["rankPoint"] = 0;
-				MainDB.users.update([ '_id', $list[i]._id ]).set([ 'kkutu', $list[i].kkutu ]).on();
-				JLog.info(`Resetting RankPoint! User $list[i]._id`)
-			}
+			if($list[i].kkutu["rankPoint"] >= 50 && $list[i].kkutu["rankPoint"] < 1000){
+				rewardTarget.bronze.push($list[i]._id);
+			} else if($list[i].kkutu["rankPoint"] >= 1000 && $list[i].kkutu["rankPoint"] < 2000){
+				rewardTarget.silver.push($list[i]._id);
+			} else if($list[i].kkutu["rankPoint"] >= 2000 && $list[i].kkutu["rankPoint"] < 3000){
+				rewardTarget.gold.push($list[i]._id);
+			} else if($list[i].kkutu["rankPoint"] >= 3000 && $list[i].kkutu["rankPoint"] < 4000){
+				rewardTarget.platinum.push($list[i]._id);
+			} else if($list[i].kkutu["rankPoint"] >= 4000 && $list[i].kkutu["rankPoint"] < 5000){
+				rewardTarget.diamond.push($list[i]._id);
+			} else if($list[i].kkutu["rankPoint"] >= 5000) rewardTarget.master.push($list[i]._id);
 		}
-		return res.send({ result: "SUCCESS" });
+		for(var n in $list){
+			$list[n].kkutu["rankPoint"] = 0;
+			MainDB.users.update([ '_id', $list[n]._id ]).set([ 'kkutu', $list[n].kkutu ]).on();
+		}
+		File.writeFileSync(`./lib/Web/logs.log`, `${JSON.stringify(rewardTarget)}`, 'utf8',(err) => {
+			if (err) return res.send({ result: 404 });
+		});
 	});
+	return res.send({ result: "SUCCESS" });
 });
 Server.post("/gwalli/shop", function(req, res){
 	if(!checkAdmin(req, res, 'DESIGNER')) return;

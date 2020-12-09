@@ -1948,11 +1948,11 @@
 		return badSign;
 	}
 	
-	function badWords(a) {
+	function badWords(a, sender) {
 		var filter = $("#badwordfilter").val().substr(0, 2);
 		if (OSV.test(a)) a = a.replace(OSV, "[타서버 홍보 방지]");
 		if (OSVURL.test(a)) a = a.replace(OSVURL, "[타서버 링크 공유 금지]");
-		if (XSS.test(a)) a = a.replace(XSS, "-");
+		if (XSS.test(a) && !sender.admin) a = a.replace(XSS, "-");
 		if (BAD.test(a) && filter != "NO") a = a.replace(BAD, filter)
 		return a;
 	}
@@ -2097,7 +2097,7 @@
 			}
 			checkBadURL(b) ? b = "유해 링크로 판단되어 검열되었습니다." : b = b,
 			b = badWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass(`chat-head ellipse ${s}`).text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
-				requestProfile(a.id)
+				($data.admin && b.shiftKey) ? (showDialog($stage.dialog.management), $("#target-id").text(a.id), $("#target-nickname").text($data.users[a.id].nickname)) : requestProfile(a.id)
 			}), $stage.chatLog.append(g = g.clone()), g.append($("<div>").addClass("expl").css("font-weight", "normal").html("#" + (a.id || "").substr(0, 5))), (h = b.match(/https?:\/\/[\w\.\?\/&#%=-_\+]+/g)) && (b = f.html(), h.forEach(function(a) {
 				b = b.replace(a, `<a href='#' style='color: #2222FF;' onclick='if(confirm("${L.linkWarning}")) window.open("${a}");'>${a}</a>`)
 			}), f.html(b)), c && (!0 !== c && ($data._recentFrom = c), f.html("<label style='color: #7777FF; font-weight: bold;'>&lt;" + L.whisper + "&gt;</label>" + f.html())), addonNickname(e, {
