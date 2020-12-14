@@ -132,8 +132,8 @@
 			return "/g" + (Number(c) + 416 + Number(a) - 1) + "/"
 			//return ":" + (Number(c) + 416 + Number(a) - 1)
 		}); */
-		var c = $data.URL.replace(/\/g([0-9]{5})\//, function(v, p1) {
-			return "/g" + (Number(p1) + 416 + Number(a) - 1) + "/";
+		var c = $data.URL.replace(/\/g([0-9]{5})\//, function(b, c) {
+			return "/g" + (Number(c) + 416 + Number(a) - 1) + "/";
 		}) + "&" + a + "&" + b;
 		rws || (rws = new _WebSocket(c), loading(L.connectToRoom + "\n<center><button id='ctr-close'>" + L.ctrCancel + "</button></center>"), $("#ctr-close").on("click", function() {
 			loading(), rws && rws.close()
@@ -2884,6 +2884,7 @@
 					if (!confirm(L.sureExit)) return;
 					clearGame()
 				}
+				rws.close()
 				send("leave")
 			}), $stage.menu.replay.on("click", function(a) {
 				$data._replay && replayStop(), showDialog($stage.dialog.replay), g(), $stage.dialog.replay.is(":visible") && $("#replay-file").trigger("change")
