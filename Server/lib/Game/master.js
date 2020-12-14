@@ -559,7 +559,7 @@ exports.init = function(_SID, CHAN){
 			HTTPS_Server = https.createServer(options)
 				.listen(global.test ? (Const.TEST_PORT + 416) : process.env['KKUTU_PORT']);
 			Server = new WebSocket.Server({server: HTTPS_Server});
-		} else {
+		} else { 
 			Server = new WebSocket.Server({
 				port: global.test ? (Const.TEST_PORT + 416) : process.env['KKUTU_PORT'],
 				perMessageDeflate: false

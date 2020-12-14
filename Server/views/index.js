@@ -17,7 +17,7 @@
  */
 
 const {
-	ipcRenderer, shell
+	ipcRenderer, shell, ipcMain
 } = require("electron");
 const LANG = require("../../language.json");
 let $stage;
@@ -26,7 +26,9 @@ let logs = 0;
 $(() => {
 	$stage = {
 		title: $("#title"),
-		log: $("#log-board")
+		log: $("#log-board"),
+		commandInput: $("#command"),
+		send: $("#sendcommand")
 	};
 	$stage.log.html(LANG['welcome']);
 });
@@ -57,3 +59,17 @@ ipcRenderer.on('log', (ev, level, msg) => {
 	$stage.log.append($(`<div class="log-item log-${level}">${msg}</div>`));
 	$stage.log.scrollTop(99999999);
 });
+function sendCommand(cmd){
+	function checkValue(cmd, val){
+		return cmd.indexOf(val)!== -1; // 포함하면 true
+	}
+	function log(msg){
+		$stage.log.append($(`<div>${msg}</div>`));
+	}
+	
+	if(!cmd) log(`ERROR! Command is not defined.`);
+	
+	if(checkValue(cmd, "log")) log(cmd.substr(3));
+	
+	if(checkValue(cmd, "yell")) log(`YELL: ${cmd.substr(4)}`);
+}

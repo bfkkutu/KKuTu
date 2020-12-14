@@ -26,3 +26,6 @@ html
 	body
 		div#title.server-off= TITLE
 		div#log-board
+		div#cmd
+			input#command(type="text" text="")
+			button#sendcommand(onClick='sendCommand($("#command").val())')= 'SEND'

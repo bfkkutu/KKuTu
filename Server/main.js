@@ -22,7 +22,8 @@ const ServerChecker = require("./ServerChecker.js")
 const {
 	app: App,
 	BrowserWindow,
-	Menu
+	Menu,
+	ipcMain
 } = require('electron');
 // please set the environmental variable KKT_SV_NAME as the name of your server.
 const Pug = require('electron-pug')({ pretty: true }, {
@@ -30,7 +31,6 @@ const Pug = require('electron-pug')({ pretty: true }, {
 	serverName: SETTINGS['server-name'] || process.env['KKT_SV_NAME']
 });
 const Runner = require("./runner.js");
-
 
 let mainWindow;
 

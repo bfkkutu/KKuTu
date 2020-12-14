@@ -71,13 +71,11 @@ const referrerPolicy = require('referrer-policy');
 //helmet
 const helmet = require('helmet');
 const csp = require('helmet-csp');
-
-// CORONA MAP
-const request = require('request'),
-	  cheerio = require('cheerio');
 	  
 const cors = require('cors');
 const Router = Express.Router();
+
+const hsc = require('http-status-codes');
 	
 var maintenance; // boolean
 
@@ -176,7 +174,7 @@ DDDoS.rules[0].logFunction = DDDoS.rules[1].logFunction = function(ip, path){
 	fs.writeFileSync("../DDDoS/DDDoS_"+date+".txt", ip+"  "+date, 'utf8', function(err, ip, path) { //기록하고
 		JLog.warn(`Completed writing IP Address ${ip} on ../DDDoS/DDDoS_`+date+`.txt`);
 	})
-	//process.exit(1); //웹 서버를 조진다
+	//process.exit(1);
 	if(!maintenance) maintenance = true;
 };
 Server.use(DDDoS.express());*/
@@ -212,31 +210,30 @@ DB.ready = function(){
 	});
 	// 해티 수정
 	webServer.use(vHost('bfkkutu.kr', Server));
+	webServer.use(vHost('ynn4p5h2352x7qaqc6ew.a67k7qqcd8gys8rst2mc.kro.kr', Server));
 	webServer.get('*', function(req, res) {
-		res.send(`<h1>403 Forbidden</h1>`);
+		res.status(hsc.StatusCodes.FORBIDDEN).send(`<h1>403 Forbidden</h1>`);
 	});
-	webServer.listen(80);
-	if(Const.IS_SECURED) {
+	if(Const.IS_SECURED || Const.WS) {
 		const options = Secure();
 		https.createServer(options, webServer).listen(443);
-	}
+	}else webServer.listen(80);
 	// 해티 수정 끝
 };
 Const.MAIN_PORTS.forEach(function(v, i){
 	var KEY = process.env['WS_KEY'];
 	var protocol;
-	if(Const.IS_SECURED/* || Const.CF*/) {
-		protocol = 'wss';
-	} else {
-		protocol = 'ws';
-	}
+	if(!Const.WS){
+		if(Const.IS_SECURED) protocol = 'wss';
+		else protocol = 'ws';
+	}else protocol = 'ws';
 	gameServers[i] = new GameClient(KEY, `${protocol}://${GLOBAL.GAME_SERVER_HOST}:${v}/${KEY}`);
 });
 function GameClient(id, url){
 	var my = this;
 
 	my.id = id;
-	my.socket = new WS(url, { perMessageDeflate: false, rejectUnauthorized: false});
+	my.socket = new WS(url, { perMessageDeflate: false, rejectUnauthorized: false });
 	
 	my.send = function(type, data){
 		if(!data) data = {};
@@ -369,7 +366,7 @@ Server.get("/", cors(), function(req, res){
 		var id = req.session.id;
 		var ptc = 'ws';
 		
-		if(Const.IS_SECURED || Const.CF) ptc = 'wss'
+		if(Const.IS_SECURED || Const.WS) ptc = 'wss';
 
 		if($doc){
 			req.session.profile = $doc.profile;
@@ -393,6 +390,7 @@ Server.get("/", cors(), function(req, res){
 				'RULE': Const.RULE,
 				'OPTIONS': Const.OPTIONS,
 				'KO_INJEONG': Const.KO_INJEONG,
+				'KO_EVENT': Const.KO_EVENT,
 				'EN_INJEONG': Const.EN_INJEONG,
 				'KO_THEME': Const.KO_THEME,
 				'EN_THEME': Const.EN_THEME,
@@ -417,11 +415,6 @@ Server.get("/", cors(), function(req, res){
 				'MODE': Const.GAME_TYPE,
 				'RULE': Const.RULE,
 				'OPTIONS': Const.OPTIONS,
-				'KO_INJEONG': Const.KO_INJEONG,
-				'EN_INJEONG': Const.EN_INJEONG,
-				'KO_THEME': Const.KO_THEME,
-				'EN_THEME': Const.EN_THEME,
-				'IJP_EXCEPT': Const.IJP_EXCEPT,
 				'ogImage': "https://bfkkutu.kr/img/kkutu/logo.png",
 				'ogURL': "https://bfkkutu.kr/",
 				'ogTitle': "새로운 끄투의 시작, BF끄투!",
@@ -475,38 +468,54 @@ Server.get("/newUser", function(req, res){
 	}else return res.sendStatus(404);
 });
 
-//볕뉘 수정 구문 삭제(274~353)
+Server.get("/portal_old", function(req, res){
+	var server = req.query.server;
+	
+	//볕뉘 수정 구문삭제(220~229, 240)
+	DB.session.findOne([ '_id', req.session.id ]).on(function($ses){
+		// var sid = (($ses || {}).profile || {}).sid || "NULL";
+		if(global.isPublic){
+			onFinish($ses);
+			// DB.jjo_session.findOne([ '_id', sid ]).limit([ 'profile', true ]).on(onFinish);
+		}else{
+			if($ses) $ses.profile.sid = $ses._id;
+			onFinish($ses);
+		}
+	});
+	function onFinish($doc){
+		var id = req.session.id;
+		var ptc = 'ws';
+		
+		if(Const.IS_SECURED || Const.CF) ptc = 'wss'
+
+		if($doc){
+			req.session.profile = $doc.profile;
+			id = $doc.profile.sid;
+		}else{
+			delete req.session.profile;
+		}
+		page(req, res, "portal_backup", {
+			'_page': "kkutu",
+			'ogImage': "https://bfkkutu.kr/img/kkutu/logo.png",
+			'ogURL': "https://bfkkutu.kr/",
+			'ogTitle': "새로운 끄투의 시작, BF끄투!",
+			'ogDescription': "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
+		});
+	}
+});
 
 Server.get("/legal/:page", function(req, res){
 	page(req, res, "legal/"+req.params.page);
-});
-
-/*Server.get("/gwallilogin", function(req, res){
-	page(req, res, "join");
-});*/
-
-Server.get("/donate", function(req, res){
-	page(req, res, "donate");
 });
 
 Server.get("/server_status", function(req, res){
 	page(req, res, "server_status");
 });
 
-Server.get("/beta/portal", function(req, res){
-	page(req, res, "beta_portal");
-});
-
-Server.get("/beta/kkutu", function(req, res){
-	page(req, res, "beta_kkutu");
-});
-Server.get("/bfsoft", function(req, res){
-	page(req, res, "bfsoft");
-});
-
 Server.get("/unsupported", function(req, res){
 	page(req, res, "unsupported");
 });
+
 Server.get("*", function(req, res){
 	page(req, res, "notfound");
 });

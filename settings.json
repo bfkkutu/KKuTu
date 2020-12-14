@@ -9,6 +9,10 @@
 		"cpu": 1,
 		"inst": 1
 	},
+	"ws": {
+		"enabled": true,
+		"cpu": 1
+	},
 	"log": {
 		"enabled": true,
 		"infopath": "/logs/%DATE%-info.log",

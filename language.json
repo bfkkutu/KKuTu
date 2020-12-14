@@ -1,12 +1,16 @@
 {
 	"menu-server": "서버",
-	"menu-server-on": "서버 켜기",
-	"menu-server-off": "서버 끄기",
+	"menu-server-on-all": "서버 전부 켜기",
+	"menu-server-off-all": "서버 전부 끄기",
+	"menu-webServer-on": "웹 서버 켜기",
+	"menu-webServer-off": "웹 서버 끄기",
+	"menu-gameServer-on": "게임 서버 켜기",
+	"menu-gameServer-off": "게임 서버 끄기",
+	"menu-webSocket-on": "웹 소켓 켜기",
+	"menu-webSocket-off": "웹 소켓 끄기",
 	"menu-program": "프로그램",
 	"menu-program-info": "프로그램 정보",
-	"menu-program-blog": "개발자 블로그",
 	"menu-program-repo": "끄투 레포지토리",
-	"menu-program-dev": "클릭하면 팅김",
 	"menu-program-exit": "종료",
 
 	"welcome": "[BF KKUTU]"

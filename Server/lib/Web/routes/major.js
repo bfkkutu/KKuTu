@@ -588,6 +588,8 @@ Server.post("/cf", function(req, res){
 	var tray = (req.body.tray || "").split('|');
 	var i, o;
 	
+	console.log(req.body.tray)
+	
 	if(tray.length < 1 || tray.length > 6) return res.json({ error: 400 });
 	MainDB.users.findOne([ '_id', uid ]).limit([ 'money', true ], [ 'box', true ]).on(function($user){
 		if(!$user) return res.json({ error: 400 });
@@ -668,7 +670,7 @@ function getCFRewards(word, level, blend, event){
 			R.push({ key: "$WPC?", value: 1, rate: 1 });
 		}
 		cost = Math.round(cost * 0.2);
-	}else if(event){
+	}/*else if(event){
 		R.push({ key: "dictPage", value: Math.round(f.len * 0.6), rate: 1 });
 		R.push({ key: "korea_flag", value: 1, rate: 0.07 });
 		R.push({ key: "clock_minju", value: 1, rate: 0.07 });
@@ -678,7 +680,7 @@ function getCFRewards(word, level, blend, event){
 		R.push({ key: "mustache", value: 1, rate: 0.07 });
 		R.push({ key: "brave_eyes", value: 1, rate: 0.07 });
 		cost = 0;
-	}else{
+	}*/else{
 		R.push({ key: "dictPage", value: Math.round(f.len * 0.6), rate: 1 });
 		R.push({ key: "boxB4", value: 1, rate: Math.min(1, f.lev / 7) });
 		if(f.lev >= 5){

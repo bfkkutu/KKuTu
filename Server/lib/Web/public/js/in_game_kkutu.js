@@ -128,8 +128,12 @@
 	}
 
 	function connectToRoom(a, b) {
-		var c = $data.URL.replace(/:(\d+)/, function(b, c) {
-			return ":" + (Number(c) + 416 + Number(a) - 1)
+		/* var c = $data.URL.replace(/:(\d+)/, function(b, c) {
+			return "/g" + (Number(c) + 416 + Number(a) - 1) + "/"
+			//return ":" + (Number(c) + 416 + Number(a) - 1)
+		}); */
+		var c = $data.URL.replace(/\/g([0-9]{5})\//, function(v, p1) {
+			return "/g" + (Number(p1) + 416 + Number(a) - 1) + "/";
 		}) + "&" + a + "&" + b;
 		rws || (rws = new _WebSocket(c), loading(L.connectToRoom + "\n<center><button id='ctr-close'>" + L.ctrCancel + "</button></center>"), $("#ctr-close").on("click", function() {
 			loading(), rws && rws.close()
@@ -679,6 +683,7 @@
 			if(a.newUser) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
 		})
 		//detectAdBlock();
+		isWelcome = true;
 	}
 	
 	function detectAdBlock(){
@@ -2350,11 +2355,18 @@
 				var b = L.closed + " (#" + a.code + ")";
 				rws && rws.close(), stopAllSounds(), alertKKuTu(b), $.get("/kkutu_notice.html", function(a) {
 					loading(a)
+					isWelcome = false;
 				})
 			}, ws.onerror = function(a) {
 				console.warn(L.error, a)
 			}
 		}
+		_setInterval(function() {
+			if (isWelcome) {
+				send('refresh');
+				if ($data.room) send('refresh', undefined, true);
+			}
+		}, 18000);
 		var i;
 		for ($data.PUBLIC = "true" == $("#PUBLIC").html(), $data.URL = $("#URL").html(), $data.version = $("#version").html(), $data.server = location.href.match(/\?.*server=(\d+)/)[1], $data.shop = {}, $data._okg = 0, $data._playTime = 0, $data._kd = "", $data._timers = [], $data._obtain = [], $data._wblock = {}, $data._shut = {}, $data.usersR = {}, EXP.push(getRequiredScore(1)), i = 2; i < MAX_LEVEL; i++) EXP.push(EXP[i - 2] + getRequiredScore(i));
 		if (EXP[MAX_LEVEL - 1] = 1 / 0, EXP.push(1 / 0), $stage = {
@@ -3570,7 +3582,8 @@
 		spamCount = 0,
 		badCount = 0,
 		badSign = "NONE",
-		isHacker = true;
+		isHacker = true,
+		isWelcome = false;
 	const allowCountry = ['KR'];
 	
 })();

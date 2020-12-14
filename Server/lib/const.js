@@ -32,7 +32,7 @@ exports.TESTER = GLOBAL.ADMIN.concat([
 ]);
 exports.IS_SECURED = GLOBAL.IS_SECURED;
 exports.SSL_OPTIONS = GLOBAL.SSL_OPTIONS;
-exports.CF = GLOBAL.CF;
+exports.WS = GLOBAL.WS;
 exports.OPTIONS = {
 	'man': { name: "Manner" },
 	'ext': { name: "Injeong" },

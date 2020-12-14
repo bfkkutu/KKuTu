@@ -27,12 +27,33 @@ const SETTINGS = require("../settings.json");
 let Config = require("./lib/sub/config.json");
 let def_Server = false;
 const SCRIPTS = {
-	'server-on':()=> {
-		startServer(def_Server)
+	'server-on-all':()=> {
+		startServer(def_Server, true)
 		def_Server = true;
 	},
-	'server-off':()=> {
-		stopServer()
+	'server-off-all':()=> {
+		stopServer(true)
+	},
+	'webServer-on':()=> {
+		startWeb(def_Server, false)
+		def_Server = true;
+	},
+	'webServer-off':()=> {
+		stopWeb(false)
+	},
+	'gameServer-on':()=> {
+		startGame(def_Server, false)
+		def_Server = true;
+	},
+	'gameServer-off':()=> {
+		stopGame(false)
+	},
+	'webSocket-on':()=> {
+		startWebSocket(def_Server, false)
+		def_Server = true;
+	},
+	'webSocket-off':()=> {
+		stopWebSocket(false)
 	},
 	'program-info': () => {
 		exports.send('alert', [
@@ -44,9 +65,10 @@ const SCRIPTS = {
 			`Repository: ${PKG.repository}`
 		].join('\n'));
 	},
-	'program-blog': () => exports.send('external', "http://blog.jjo.kr/"),
-	'program-repo': () => exports.send('external', "https://github.com/JJoriping/KKuTu"),
-	'exit': () => process.exit(0)
+	'program-repo': () => exports.send('external', "https://github.com/lshqqytiger/KKuTu"),
+	'sv-conn': () => exports.send('external', "https://bfkkutu.kr"),
+	'exit': () => process.exit(0),
+	'sendcommand': () => sendcommand()
 };
 // 해티 수정 (42~97)
 if (SETTINGS.log.enabled) {
@@ -112,14 +134,38 @@ exports.MAIN_MENU = [
 		label: LANG['menu-server'],
 		submenu: [
 			{
-				label: LANG['menu-server-on'],
+				label: LANG['menu-server-on-all'],
 				accelerator: "CmdOrCtrl+O",
-				click: () => exports.run("server-on")
+				click: () => exports.run("server-on-all")
 			},
 			{
-				label: LANG['menu-server-off'],
+				label: LANG['menu-server-off-all'],
 				accelerator: "CmdOrCtrl+P",
-				click: () => exports.run("server-off")
+				click: () => exports.run("server-off-all")
+			},
+			{
+				label: LANG['menu-webServer-on'],
+				click: () => exports.run("webServer-on")
+			},
+			{
+				label: LANG['menu-webServer-off'],
+				click: () => exports.run("webServer-off")
+			},
+			{
+				label: LANG['menu-gameServer-on'],
+				click: () => exports.run("gameServer-on")
+			},
+			{
+				label: LANG['menu-gameServer-off'],
+				click: () => exports.run("gameServer-off")
+			},
+			{
+				label: LANG['menu-webSocket-on'],
+				click: () => exports.run("webSocket-on")
+			},
+			{
+				label: LANG['menu-webSocket-off'],
+				click: () => exports.run("webSocket-off")
 			}
 		]
 	},
@@ -131,16 +177,8 @@ exports.MAIN_MENU = [
 				click: () => exports.run("program-info")
 			},
 			{
-				label: LANG['menu-program-blog'],
-				click: () => exports.run("program-blog")
-			},
-			{
 				label: LANG['menu-program-repo'],
 				click: () => exports.run("program-repo")
-			},
-			{
-				label: LANG['menu-program-dev'],
-				role: "toggledevtools"
 			},
 			{ type: "separator" },
 			{
@@ -151,15 +189,11 @@ exports.MAIN_MENU = [
 		]
 	},
 	{
-		label: "서버상태 봇",
+		label: "SVMGR",
 		submenu: [
 			{
-				label: "재부팅",
-				//click: ServerChecker.reboot
-			},
-			{
-				label: "재로드",
-				//click:()=> ServerChecker = require("./ServerChecker.js")
+				label: "CONN",
+				click: () => exports.run("sv-conn")
 			}
 		]
 	}
@@ -202,7 +236,7 @@ class ChildProcess{
 		if(this.process) this.process.kill(sig || 'SIGINT');
 	}
 }
-let webServer, gameServers;
+let webServer, gameServers, webSocket;
 
 function startServer(){
 	stopServer(false);
@@ -214,14 +248,49 @@ function startServer(){
 			gameServers.push(new ChildProcess('G', "node", `${__dirname}/lib/Game/cluster.js`, i, SETTINGS.game.cpu));
 		}
 	}
+	if(SETTINGS.ws.enabled) webSocket = new ChildProcess('H', "node", `${__dirname}/lib/Handler/cluster.js`, SETTINGS.ws.cpu);
 	exports.send('server-status', getServerStatus());
 	//ServerChecker.sendNotice(":white_check_mark: 열림", 3066993)
 }
 function stopServer(notice){
 	if(webServer) webServer.kill();
 	if(gameServers) gameServers.forEach(v => v.kill());
+	if(webSocket) webSocket.kill();
 	//if(notice) ServerChecker.sendNotice(":negative_squared_cross_mark: 닫힘*(수동)*", 10038562)
 }
+
+function startWeb(){
+	stopWeb(false);
+	if(SETTINGS.web.enabled) webServer = new ChildProcess('W', "node", `${__dirname}/lib/Web/cluster.js`, SETTINGS.web.cpu);
+	exports.send('server-status', getServerStatus());
+}
+function stopWeb(notice){
+	if(webServer) webServer.kill();
+}
+
+function startGame(){
+	stopGame(false);
+	if(SETTINGS.game.enabled) {
+		gameServers = [];	
+		for(let i=0; i<SETTINGS.game.inst; i++){
+			gameServers.push(new ChildProcess('G', "node", `${__dirname}/lib/Game/cluster.js`, i, SETTINGS.game.cpu));
+		}
+	}
+	exports.send('server-status', getServerStatus());
+}
+function stopGame(notice){
+	if(gameServers) gameServers.forEach(v => v.kill());
+}
+
+function startWebSocket(){
+	stopWebSocket(false);
+	if(SETTINGS.ws.enabled) webSocket = new ChildProcess('H', "node", `${__dirname}/lib/Handler/cluster.js`, SETTINGS.ws.cpu);
+	exports.send('server-status', getServerStatus());
+}
+function stopWebSocket(notice){
+	if(webSocket) webSocket.kill();
+}
+
 function getServerStatus(){
 	// 해티 수정 (203~209)
 	if(SETTINGS.web.enabled && SETTINGS.game.enabled) {
