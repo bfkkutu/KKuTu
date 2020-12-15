@@ -753,6 +753,9 @@ function processClientRequest($c, msg) {
 		case 'refresh':
 			$c.refresh();
 			break;
+		case 'wsrefresh':
+			$c.refresh();
+			break;
 		case 'talk':
 			if (!msg.value) return;
 			if (!msg.value.substr) return;

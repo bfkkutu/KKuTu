@@ -2363,8 +2363,8 @@
 		}
 		_setInterval(function() {
 			if (isWelcome) {
-				send('refresh');
-				if ($data.room) send('refresh', undefined, true);
+				send('wsrefresh');
+				if ($data.room) send('wsrefresh', undefined, true);
 			}
 		}, 18000);
 		var i;

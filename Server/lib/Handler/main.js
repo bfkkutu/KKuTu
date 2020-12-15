@@ -21,14 +21,17 @@ const url = require('url');
 const proxy = require('http2-proxy');
 
 const defaultWSHandler = (err, req, socket, head) => {
-	try{
-		if (err) {
-			JLog.info('Client disconnected. ', err);
-			socket.destroy();
-		}
-	}catch(e){
-		JLog.error(e.toString());
-	}
+	socket.id = url.parse(req.url).pathname.split("/")[2];
+	
+	socket.on('error', function(err){
+		JLog.warn(`[Handler] Handler has an error: ${err.toString()}`);
+	});
+	socket.on('close', function(code){
+		JLog.log(`[Handler] Socket @${socket.id} Closed`);
+		socket.removeAllListeners();
+		delete socket;
+	});
+	if(err) socket.destroy();
 }
 
 const ports = [
@@ -41,7 +44,7 @@ Server.on('upgrade', (req, socket, head) => {
 		var remoteIp = req.headers['x-hw-forwarded-for'] === undefined ? 'client' : req.headers['x-hw-forwarded-for'];
 		var pathname = url.parse(req.url).pathname;
 		if(!remoteIp || !pathname) {
-			JLog.log(`[WS] Invalid Response Received`);
+			JLog.log(`[Handler] Invalid Response Received`);
 			socket.destroy();
 		} else if(remoteIp == 'client') {
 			passWS(req, socket, head, pathname, remoteIp);
@@ -56,18 +59,18 @@ Server.on('upgrade', (req, socket, head) => {
 function passWS(req, socket, head, pathname, remoteIp) {
 	const remotePort = pathname.substring(2,7);
 	if (ports.includes(parseInt(remotePort)) && req.method == 'GET') {	  
-		JLog.log(`[WS] [${remoteIp}]: ${remotePort} ${pathname} GET`);
+		JLog.log(`[Handler] ${remoteIp} ${pathname} GET`);
 		proxy.ws(req, socket, head, {
 			hostname: '127.0.0.1',
 			port: remotePort,
 			path: pathname.substring(7,),
 			proxyTimeout: 8000,
 			onReq: (req, { headers }) => {
-				headers['x-hw-forwarded-for'] = remoteIp
+				headers['x-forwarded-for'] = remoteIp
 			}
 		}, defaultWSHandler);
 	} else {
-		JLog.warn(`[WS] [${remoteIp}]: ${remotePort} ${pathname} GET: Invalid Response Received`);
+		JLog.warn(`[Handler] ${remoteIp} ${pathname} GET: Invalid Response Received`);
 		socket.destroy();
 	}
 }

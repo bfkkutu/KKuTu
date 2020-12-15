@@ -55,8 +55,10 @@ function page(req, res, file, data){
 		req.session.createdAt = new Date();
 	}
 	//var addr = req.ip || "";
-	var addr = req.headers['x-forwarded-for']
+	var addr = req.headers['x-forwarded-for'] || "";
 	var sid = req.session.id || "";
+	
+	if(typeof addr == "string" && addr.includes(",")) addr = addr.split(",")[0]
 	
 	data.published = global.isPublic;
 	data.lang = req.query.locale || "ko_KR";
