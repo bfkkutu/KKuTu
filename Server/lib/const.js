@@ -61,7 +61,8 @@ exports.OPTIONS = {
 	'mdt': { name: "MiddleToss" },
 	'tmnt': { name: "Tournament" },
 	'twt': { name: "Twenty" },
-	'bdb': { name: "BanDouble" }
+	'bdb': { name: "BanDouble" },
+	'mman': { name: "MidManner" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -123,7 +124,7 @@ exports.RULE = {
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
 		opts: [ /*"ijp",*/ "man", "ext", "mis", "mdt", "rms"/*, "loa", "str"*/,
-		/*"nrt", */"rtu", "upl", "rank", "ogow"/*, "selth", "btm"*/ ],
+		/*"nrt", */"rtu", "upl", "rank", "ogow", "mman"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
 		big: false,

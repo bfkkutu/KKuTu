@@ -371,7 +371,33 @@ exports.submit = function(client, text){
 					catch(a){}
 				}
 			}
-			if(!my.opts.unknownword && (firstMove || my.opts.manner)) getAuto.call(my, my.game.theme, preChar, preSubChar, 1).then(function(w){
+			// 작업 시작. manner: 맨 뒤 글자 한방 금지, midmanner: 미들킬 금지
+			if(Const.GAME_TYPE[my.mode] == "KKT" && my.opts.middletoss){
+				if(firstMove || my.opts.manner || my.opts.midmanner){
+					getAuto.call(my, my.game.theme, text[2], preSubChar, 1).then(function(w){ // manner
+						if(!w && my.opts.manner){
+							my.game.loading = false;
+							client.publish('turnError', { code: firstMove ? 402 : 403, value: text }, true);
+							if(client.robot){
+								//client._done = [];
+								my.readyRobot(client);
+							}
+						}else if(my.opts.midmanner){
+							getAuto.call(my, my.game.theme, text[1], preSubChar, 1).then(function(q){
+								if(!q){
+									my.game.loading = false;
+									client.publish('turnError', { code: firstMove ? 402 : 418, value: text }, true);
+									if(client.robot){
+										//client._done = [];
+										my.readyRobot(client);
+									}
+								}else if(w && q) approved();
+								else if(!w && !my.opts.manner) approved();
+							});
+						}else if(w && !my.opts.midmanner) approved();
+					});
+				}
+			}else if(!my.opts.unknownword && (firstMove || my.opts.manner)) getAuto.call(my, my.game.theme, preChar, preSubChar, 1).then(function(w){
 				if(w) approved();
 				else {
 					my.game.loading = false;
