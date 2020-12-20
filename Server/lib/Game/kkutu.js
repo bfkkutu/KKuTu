@@ -1578,6 +1578,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
 	*/
 	if (opts.manner) rw.score = rw.score * 0.95; // 매너
+	if (opts.midmanner) rw.score = rw.score * 0.95; // 미들킬 금지
 	if (opts.injeong) rw.score = rw.score * 0.8; // 어인정
 	if (opts.mission) { // 미션
 		if (!opts.randommission){
@@ -1607,6 +1608,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 금지 (한국어 끝말잇기)
 	if (opts.middletoss) rw.score = rw.score * 1.2; // 미들 토스
 	if (opts.twenty) rw.score = rw.score * 0.95; // 20자 제한
+	if (opts.item) rw.score = rw.score * 0.8; // 아이템 전
 	if (opts.tournament) rw.score = rw.score * 3.0; // 토너먼트
 	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16

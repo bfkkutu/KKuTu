@@ -158,7 +158,7 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "5.4.0 User",
+    "version": "5.5.0 User",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -476,6 +476,8 @@
 	"explBanDouble": "두 글자 단어를 사용할 수 없게 됩니다.",
 	"optMidManner": "미들킬 금지",
 	"explMidManner": "가운데 단어에 한해서만 한방 단어 사용을 금지합니다.",
+	"optItem": "아이템 전",
+	"explItem": "아이템 사용을 허용합니다.",
     "hidden": "(미공개)",
     "pickInjeong": "주제 선택",
     "explInjPick": "게임에서 사용할 주제를 선택하세요.",
@@ -720,6 +722,8 @@
     "obtainExp": "경험치를 획득했습니다",
     "obtainMoney": "핑을 획득했습니다",
     "sureConsume": "정말 이 항목을 사용합니까?",
+	"item": "아이템",
+	"itemCount": "아이템은 라운드 당 한번만 사용할 수 있습니다.",
 
     "dress": "프로필 관리",
     "myExordial": "소개 한마디",

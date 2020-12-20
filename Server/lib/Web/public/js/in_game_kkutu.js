@@ -3298,10 +3298,27 @@
 			})
 		}), $stage.dialog.replayView.on("click", function(a) {
 			replayReady()
+		}), $("button.item").click(function(e) {
+			var data = {
+				item: {
+					id: this.id,
+					count: $data.itemCount
+				}
+			}
+			if($data.room && $data._gaming && $data.room.opts.item){
+				if($data.itemCount == 1) notice(L.itemCount, L.item)
+				else {
+					$data.itemCount++;
+					send("item", data)
+					$("#items").hide()
+				}
+			}
 		}), addInterval(function() {
 			spamCount > 0 ? spamCount = 0 : spamWarning > 0 && (spamWarning -= .03)
 		}, 1e3)
 	}), $lib.Classic.roundReady = function(a) {
+		$("#items").hide()
+		$data.itemCount = 0; // 아이템 사용 카운트
 		$data.room.game.title.length;
 		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $stage.game.display.html(getCharText(a.char, a.subChar)), $stage.game.chain.show().html($data.chain = 0), $data.room.opts.mission && $stage.game.items.show().css("opacity", 1).html($data.mission = a.mission), /*$data.room.opts.blockWord && $stage.game.items.show().css("opacity", 1).html($data.blockWord = a.blockWord),*/ "KAP" == MODE[$data.room.mode] && $(".jjoDisplayBar .graph-bar").css({
 			float: "right",
@@ -3310,9 +3327,32 @@
 			data: a
 		})
 	}, $lib.Classic.turnStart = function(a) {
-		$data.room.game.turn = a.turn, a.seq && ($data.room.game.seq = a.seq), ($data._tid = $data.room.game.seq[a.turn]) && ($data._tid.robot && ($data._tid = $data._tid.id), a.id = $data._tid, $stage.game.display.html($data._char = getCharText(a.char, a.subChar, a.wordLength)), $("#game-user-" + a.id).addClass("game-user-current"), $data._replay || ($stage.game.here.css("display", a.id == $data.id ? "block" : "none"), a.id == $data.id && (mobile ? $stage.game.hereText.val("").focus() : $stage.talk.focus())), $stage.game.items.html($data.mission = a.mission), /*$stage.game.items.html($data.blockWord = a.blockWord),*/ ws.onmessage = _onMessage, clearInterval($data._tTime), clearTrespasses(), $data._chars = [a.char, a.subChar], $data._speed = a.speed, $data._tTime = addInterval(turnGoing, TICK), $data.turnTime = a.turnTime, $data._turnTime = a.turnTime, $data._roundTime = a.roundTime, $data._turnSound = playSound("T" + a.speed), recordEvent("turnStart", {
+		$data.room.game.turn = a.turn
+		a.seq && ($data.room.game.seq = a.seq)
+		if(!($data._tid = $data.room.game.seq[a.turn])) return;
+		if($data._tid.robot) $data._tid = $data._tid.id;
+		
+		a.id = $data._tid
+		$stage.game.display.html($data._char = getCharText(a.char, a.subChar, a.wordLength))
+		$("#game-user-" + a.id).addClass("game-user-current")
+		if(a.id == $data.id && $data.room.opts.item && $data.chain != 0) $("#items").show()
+		else $("#items").hide()
+		$data._replay || ($stage.game.here.css("display", a.id == $data.id ? "block" : "none"), a.id == $data.id && (mobile ? $stage.game.hereText.val("").focus() : $stage.talk.focus()))
+		$stage.game.items.html($data.mission = a.mission)
+		/*$stage.game.items.html($data.blockWord = a.blockWord)*/
+		ws.onmessage = _onMessage
+		clearInterval($data._tTime)
+		clearTrespasses()
+		$data._chars = [a.char, a.subChar]
+		$data._speed = a.speed
+		$data._tTime = addInterval(turnGoing, TICK)
+		$data.turnTime = a.turnTime
+		$data._turnTime = a.turnTime
+		$data._roundTime = a.roundTime
+		$data._turnSound = playSound("T" + a.speed)
+		recordEvent("turnStart", {
 			data: a
-		}))
+		});
 	}, $lib.Classic.turnGoing = function() {
 		$data.room || clearInterval($data._tTime), $data._turnTime -= TICK, $data._roundTime -= TICK, $stage.game.turnBar.width($data._timePercent()).html((.001 * $data._turnTime).toFixed(1) + L.SECOND), $stage.game.roundBar.width($data._roundTime / $data.room.time * .1 + "%").html((.001 * $data._roundTime).toFixed(1) + L.SECOND), $stage.game.roundBar.hasClass("round-extreme") || $data._roundTime <= 5e3 && $stage.game.roundBar.addClass("round-extreme")
 	}, $lib.Classic.turnEnd = function(a, c) {

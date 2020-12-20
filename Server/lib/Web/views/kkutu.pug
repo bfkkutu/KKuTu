@@ -52,7 +52,8 @@ block CSS
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
 	// span#PORT= locals.PORT
-	span#URL= `${locals.PROTOCOL}://${locals.HOST}/g${locals.PORT}/${locals._id}`
+	//span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
+	span#URL= `${locals.PROTOCOL}://ws.bfkkutu.kr/g${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
 	span#RULE= JSON.stringify(locals.RULE)
@@ -712,6 +713,8 @@ block Middle
 		div.game-body
 		div.game-input
 			input#game-input(placeholder=L('yourTurn')+' '+L('inputChat'), readonly)
+		div#items(style="display: flex;")
+			button.item#turnSkip= "턴 넘기기"
 	+Product('Me')
 		div.moremi.my-image
 		div.my-stat

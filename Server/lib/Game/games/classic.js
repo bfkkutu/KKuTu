@@ -296,7 +296,7 @@ exports.turnEnd = function(){
 	});
 	clearTimeout(my.game.robotTimer);
 };
-exports.submit = function(client, text){
+exports.submit = function(client, text, item){
 	var score, l, t;
 	var my = this;
 	var tv = (new Date()).getTime();
@@ -305,6 +305,39 @@ exports.submit = function(client, text){
 	if(!mgt) return;
 	if(!mgt.robot) if(mgt != client.id) return;
 	if(!my.game.char) return;
+	
+	if(item){
+		if(item.id == "turnSkip"){
+			if(my.game.late) return;
+			if(!my.game.chain) return;
+			
+			my.opts.randomMission = my.opts.abcmission;
+			my.game.loading = false;
+			my.game.late = true;
+			clearTimeout(my.game.turnTimer);
+			t = tv - my.game.turnAt;
+			my.game.roundTime -= t;
+			my.game.char = my.game.chain[my.game.chain.length - 1].charAt(my.game.chain[my.game.chain.length - 1].length - 1);
+			my.game.subChar = undefined;
+			client.publish('turnEnd', {
+				ok: true,
+				value: item,
+				score: 0,
+				bonus: 0,
+			}, true);
+			if(my.game.mission === true){
+				if (my.opts.moremission) { // 더 많은 미션이 있으면
+					my.game.mission = getMission(my.rule.lang, 'more');
+				} else if (!my.opts.moremission && my.opts.randomMission) { // 랜덤미션이 있으면
+					my.game.mission = getMission(my.rule.lang, 'random');
+				} else {
+					my.game.mission = getMission(my.rule.lang, 'normal');
+				}
+			}
+			setTimeout(my.turnNext, my.game.turnTime / 6);
+		}
+		return;
+	}
 	
 	if(!isChainable(text, my.mode, my.game.char, my.game.subChar)) return client.chat(text);
 	if(my.game.chain.indexOf(text) != -1 && !my.opts.returns) return client.publish('turnError', { code: 409, value: text }, true);

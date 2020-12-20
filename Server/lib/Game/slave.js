@@ -236,6 +236,17 @@ KKuTu.onClientMessage = function($c, msg){
 				}
 			}
 			break;
+		case 'item':
+			if(!msg.item) return;
+			if(typeof msg != "object") return;
+			
+			if($c.subPlace) temp = $c.pracRoom;
+			else if(!(temp = ROOM[$c.place])) return;
+			
+			if(msg.item.count == 1) return;
+			
+			temp.submit($c, "item", msg.item);
+			break;
 		case 'enter':
 		case 'setRoom':
 			if(!msg.title) stable = false;
