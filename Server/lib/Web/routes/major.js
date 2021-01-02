@@ -349,6 +349,19 @@ Server.post("/report", function(req, res){
 		if (err) return res.send({ error: 404 });
 	});
 });
+Server.post("/inquire", function(req, res){
+	if(!req.body.inquirer) return res.send({ error: 404 });
+	else if(!req.body.sender) return res.send({ error: 404 });
+	else if(!req.body.data) return res.send({ error: 404 });
+	var inquirer = req.body.inquirer;
+	var sender = req.body.sender;
+	var data = req.body.data;
+	var date = moment().format('YYYY_MM_DD_HH_mm');
+	File.writeFileSync(`./lib/Web/inquire/${inquirer}_${date}.json`,`{"inquirer":"${inquirer}","sender":"${sender}","date":"${date}","data":"${data}"}`, 'utf8',(err) => {
+		if (err) return res.send({ error: 404 });
+	});
+	return res.send({ result: 200 });
+});
 Server.post("/warn", function(req, res){
 	if(!req.body.target) return res.send({ error: 404 });
 	else if(!req.body.warn) return res.send({ error: 404 });
@@ -368,7 +381,7 @@ Server.post("/warn", function(req, res){
 		}
 	});
 });
-Server.get("/getWarn", function(req, res){
+Server.get("/getwarn", function(req, res){
 	if(!req.query.target) return res.send({ error: 404 });
 	var target = req.query.target;
 	MainDB.users.findOne([ '_id', target ]).on(function($user){
@@ -424,7 +437,7 @@ Server.get("/shop", function(req, res){
 });
 
 // POST
-Server.post("/updateMe", async function (req, res) {
+Server.post("/updateme", async function (req, res) {
 	var nickname = req.body.nickname ? req.body.nickname : false;
 	var exordial = req.body.exordial ? req.body.exordial : false;
 	var verified;
@@ -588,8 +601,6 @@ Server.post("/cf", function(req, res){
 	var tray = (req.body.tray || "").split('|');
 	var i, o;
 	
-	console.log(req.body.tray)
-	
 	if(tray.length < 1 || tray.length > 6) return res.json({ error: 400 });
 	MainDB.users.findOne([ '_id', uid ]).limit([ 'money', true ], [ 'box', true ]).on(function($user){
 		if(!$user) return res.json({ error: 400 });
@@ -652,6 +663,7 @@ Server.get("/dict/:word", function(req, res){
     });
 });
 
+};
 function getCFRewards(word, level, blend, event){
 	var R = [];
 	var f = {

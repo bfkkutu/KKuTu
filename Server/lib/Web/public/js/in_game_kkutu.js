@@ -195,7 +195,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-		} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.soundLoadCount = 0, $data.nickname = a.nickname, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+		} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.soundLoadCount = 0, $data.nickname = a.nickname, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -614,6 +614,7 @@
 		$(".footer-left").css("z-index", '-1')
 		$(".footer-right").css("z-index", '-1')
 		$("#AlertDiag").css("z-index", 5)
+		$("#PromptDiag").css("z-index", 5)
 		if(!$data.admin){
 			delete window.$Request;
 			
@@ -657,6 +658,14 @@
 		
 		if ($data.honor) $("#alertText").html("BF끄투 초창기부터 기여했던 관리자입니다. 영구적으로 BF끄투에서 1세대 관리자 전용 혜택을 받게 됩니다.");
 		if (jQuery.browser.name == "msedge") $("#alertText").html("더 원할한 플레이를 위해서는 크롬 브라우저 사용을 권장합니다.");
+		if ($data.careful != null && $data.careful != 'null'){
+			$stage.loading.show();
+			promptKKuTu(`귀하께서는 최근 부적절한 활동으로 인해 운영자에게 주의 받았습니다.<p>경고를 받거나 제재된 것은 아니지만, 운영자에게 모니터링 될 수 있습니다.<p>사유: ${$data.careful}<p>내용을 확인하셨다면 '확인했습니다'를 입력해주세요.`, function(val){
+				if(val == '확인했습니다') $stage.loading.hide(), $stage.dialog.promptKKuTu.hide(), send("careful", {
+					value: $data.id
+				});
+			}, 460, 230);
+		}
 		
 		playBGM("lobby"), $("#Intro").animate({
 			opacity: 1
@@ -740,7 +749,7 @@
 		var a = prompt("불건전하거나 잘못된 닉네임을 사용하였으므로 닉네임이 강제로 변경되었습니다. 새로운 닉네임을 입력해 주세요.");
 		var verified = checkNick(a);
 		
-		return (verified ? ($.post("/updateMe", {
+		return (verified ? ($.post("/updateme", {
 			nickname: delBadWords(a)
 		}, function(e){
 			if(e.error) return fail(e.error);
@@ -753,7 +762,7 @@
 		promptKKuTu("BF끄투에서 사용할 닉네임을 입력하세요.<br>닉네임을 설정하면 상기 이용 약관, <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> 및 <a href='http://bfk.kro.kr' target='_blank'>운영 정책</a>에<br>동의하는 것으로 간주합니다.")
 		$stage.dialog.promptKKuTuOK.on("click", function(c) {
 			var verified = checkNick($("#prompt-input").val());
-			return (verified ? ($.post("/updateMe", {
+			return (verified ? ($.post("/updateme", {
 				nickname: delBadWords($("#prompt-input").val())
 			}, function(e){
 				if(e.error) return fail(e.error);
@@ -832,12 +841,14 @@
 		$("#alertText").html(text);
 	}
 	
-	function promptKKuTu(text, callback){
+	function promptKKuTu(text, callback, w, h){
 		$stage.dialog.promptKKuTu.hide();
 		$("#prompt").css("text-align", "center");
-		$("#promptbtn").attr('style', "float: right;").on("click", (e) => {callback($("#promptText").val()), $("#promptText").val("")});
+		$("#promptbtn").attr('style', "float: right;").on("click", (e) => {callback($("#prompt-input").val()), $("#prompt-input").val("")});
 		$("#promptText").html(text);
 		$("#prompt-input").attr('style', "width: 97%;");
+		if(w) $("#PromptDiag").css('width', `${w}px`);
+		if(h) $("#PromptDiag").css('height', `${h}px`);
 		showDialog($stage.dialog.promptKKuTu);
 	}
 	
@@ -1348,7 +1359,7 @@
 	}
 	
 	function getWarn(a){
-		var res = getRes(`/getWarn?target=${a}`);
+		var res = getRes(`/getwarn?target=${a}`);
 		var warn = JSON.parse(res);
 		if(!warn.message) return alert("경고 누적 횟수를 조회하지 못했습니다."+warn.error)
 		else return warn.message
@@ -2161,7 +2172,7 @@
 			group: b,
 			options: {}
 		});
-		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/badge/` + c._id + d : "M" == c.group.charAt(0) ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/` + c.group.slice(1) + "/" + c._id + d : `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/shop/` + c._id + ".png"
+		return c = ($data.shop[a] || b), d = c.options.hasOwnProperty("gif") ? ".gif" : ".png", "BDG" == c.group.slice(0, 3) ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/badge/` + c._id + d : "M" == c.group.charAt(0) ? `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/moremi/` + (c.group.slice(1) != "heco" ? c.group.slice(1) : "head") + "/" + c._id + d : `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/shop/` + c._id + ".png"
 	}
 
 	function iDynImage(a, b) {
@@ -2848,6 +2859,16 @@
 				$("#inquire-text").val("");
 				showDialog($stage.dialog.inquire);
 				$("#inquirer").text($data.id);
+			}), $stage.dialog.inquireSubmit.on("click", function(a) {
+				if($("#inquire-text").val() == "") return alert("문의 내용을 입력해주세요.");
+				$.post("/inquire", {
+					inquirer: $("#inquirer").text(),
+					sender: $data.id,
+					data: $("#inquire-text").val()
+				}, function(e){
+					if(e.result == 200) alert("문의가 접수되었습니다.");
+					else alert("문의 접수에 실패했습니다.");
+				});
 			}), $(".shop-type").on("click", function(a) {
 				var b = $(a.currentTarget),
 					c = b.attr("id").slice(10);
@@ -3091,7 +3112,7 @@
 				if(!verified) return;
 				
 				$(a.currentTarget).attr("disabled", !0);
-				$.post("/updateMe", {
+				$.post("/updateme", {
 					nickname: (nickChanged ? delBadWords($("#dress-nickname").val()) : ""),
 					exordial: delBadWords($("#dress-exordial").val())
 				}, function(e) {
