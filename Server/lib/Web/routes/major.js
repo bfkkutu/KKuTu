@@ -54,6 +54,19 @@ function translateToPromise(query) {
 		query.on((doc) => { res(doc); }, null, (err) => { rej(err); });
 	});
 }
+function getDirectories(path, callback) {
+	/*File.readdir(path, function (err, content) {
+		if (err) return callback(err)
+		callback(false, content)
+	});*/
+	var files = null;
+	try{
+		files = File.readdirSync(path);
+	}catch(e){
+		return callback(e)
+	}
+	return callback(false, files)
+}
 
 exports.run = function(Server, page){
 
@@ -351,16 +364,51 @@ Server.post("/report", function(req, res){
 });
 Server.post("/inquire", function(req, res){
 	if(!req.body.inquirer) return res.send({ error: 404 });
-	else if(!req.body.sender) return res.send({ error: 404 });
-	else if(!req.body.data) return res.send({ error: 404 });
-	var inquirer = req.body.inquirer;
-	var sender = req.body.sender;
-	var data = req.body.data;
+	
 	var date = moment().format('YYYY_MM_DD_HH_mm');
-	File.writeFileSync(`./lib/Web/inquire/${inquirer}_${date}.json`,`{"inquirer":"${inquirer}","sender":"${sender}","date":"${date}","data":"${data}"}`, 'utf8',(err) => {
+	var data = {
+		inquiry: {
+			"submitter": (req.body.inquirer || req.body.sender),
+			"nickname": req.body.nickname,
+			"date": date,
+			"title": req.body.title,
+			"body": req.body.data
+		},
+		answer: {
+			"answered": false,
+			"submitter": "",
+			"nickname": "",
+			"date": "",
+			"body": ""
+		}
+	};
+	
+	File.writeFileSync(`./lib/Web/inquire/${req.body.inquirer}_${date}.json`,JSON.stringify(data), 'utf8',(err) => {
 		if (err) return res.send({ error: 404 });
 	});
 	return res.send({ result: 200 });
+});
+Server.get("/inquire", async function(req, res){
+	var mine = [];
+	var inquiries = [];
+	async function* asyncGenerator(num) {
+		let i = 0;
+		while (i < num) {
+			yield i++;
+		}
+	}
+	await getDirectories('./lib/Web/inquire', async function (err, files) {
+		for await(let i of asyncGenerator(files.length)){
+			if(files[i].includes(req.query.id)){
+				mine.push(files[i]);
+			}else continue;
+		}
+	});
+	for await(let i of asyncGenerator(mine.length)){
+		var inquiry = File.readFileSync(`./lib/Web/inquire/${mine[i]}`, 'utf8');
+		inquiries.push(inquiry);
+	}
+	return res.send(inquiries);
 });
 Server.post("/warn", function(req, res){
 	if(!req.body.target) return res.send({ error: 404 });
@@ -447,9 +495,9 @@ Server.post("/updateme", async function (req, res) {
 		else if(req.body.exordial == "") MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', '' ]).on();
 		
 		if(nickname != ""){
-			verified = await translateToPromise(MainDB.users.findOne([ 'nickname', nickname.slice(0, 10) ]));
+			verified = await translateToPromise(MainDB.users.findOne([ 'nickname', nickname.slice(0, 14) ]));
 			if(verified) return res.send({ error: 600 });
-			else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname.slice(0, 10) ]).on();
+			else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname.slice(0, 14) ]).on();
 		}
 		return res.send({ result: 200 });
     } else return res.send({ error: 400 });

@@ -2424,6 +2424,10 @@
 					settingServer: $("#setting-server"),
 					settingOK: $("#setting-ok"),
 					inquire: $("#InquireDiag"),
+					inquireSubmitDiag: $("#InquireSubmitDiag"),
+					inquireDetailDiag: $("#InquireDetailDiag"),
+					inquireWrite: $("#inquire-write"),
+					inquireLoad: $("#inquire-load"),
 					community: $("#CommunityDiag"),
 					cursing: $("#CursingDiag"),
 					cursingValue: $("#CursingDiag #cursing-value").first(),
@@ -2855,15 +2859,56 @@
 			}), $stage.menu.shop.on("click", function(a) {
 				($data._shop = !$data._shop) ? (loadShop(), $stage.menu.shop.addClass("toggled")) : $stage.menu.shop.removeClass("toggled"), updateUI()
 			}), $stage.menu.inquire.on("click", function(a) {
+				showDialog($stage.dialog.inquire);
+			}), $stage.dialog.inquireWrite.on("click", function(a) {
 				var b = $data.users[$data._profiled];
 				$("#inquire-text").val("");
-				showDialog($stage.dialog.inquire);
+				showDialog($stage.dialog.inquireSubmitDiag);
 				$("#inquirer").text($data.id);
+			}), $stage.dialog.inquireLoad.on("click", function(a) {
+				$stage.loading.show();
+				$.get(`/inquire?id=${$data.id}`, function(inquiries){
+					var table = $("#inquiries tbody").empty();
+					var data;
+					
+					$stage.loading.hide();
+					
+					for(let i in inquiries){
+						inquiry = JSON.parse(inquiries[i]).inquiry;
+						answer = JSON.parse(inquiries[i]).answer;
+						table.append($("<tr>").append($("<td>").text(Number(i)+1)).append($("<td>").text(inquiry.title)).append($("<td>").text(answer.answered ? L.inquire_answered : L.inquire_waiting)).append($("<td>").append($(`<button id="showdetail_${inquiry.submitter}_${inquiry.date}">`).text(L.inquire_showdetail))))
+						$(`#showdetail_${inquiry.submitter}_${inquiry.date}`).click(function(){
+							$stage.loading.show();
+							$("#inquiry-detail-date").val(JSON.parse(inquiries[i]).inquiry.date);
+							$("#inquiry-detail-title").val(JSON.parse(inquiries[i]).inquiry.title);
+							$("#inquiry-detail-body").val(JSON.parse(inquiries[i]).inquiry.body);
+							if(JSON.parse(inquiries[i]).answer.answered){
+								$("#answer-detail-name").show().val(JSON.parse(inquiries[i]).answer.nickname);;
+								$("#answer-detail-date").show().val(JSON.parse(inquiries[i]).answer.date);;
+								$("#answer-detail-body").show().val(JSON.parse(inquiries[i]).answer.body);;
+								$("#inquiry-detail-answerer").show();
+								$("#inquiry-detail-text").show();
+								$("#inquiry-detail-description").text(L.answer_date).css("width", "");
+							}else{
+								$("#answer-detail-name").hide();
+								$("#answer-detail-date").hide();
+								$("#answer-detail-body").hide();
+								$("#inquiry-detail-answerer").hide();
+								$("#inquiry-detail-text").hide();
+								$("#inquiry-detail-description").text("아직 답변되지 않은 문의입니다.").css("width", "100%");
+							}
+							showDialog($stage.dialog.inquireDetailDiag);
+							$stage.loading.hide();
+						});
+					}
+				});
 			}), $stage.dialog.inquireSubmit.on("click", function(a) {
 				if($("#inquire-text").val() == "") return alert("문의 내용을 입력해주세요.");
 				$.post("/inquire", {
 					inquirer: $("#inquirer").text(),
 					sender: $data.id,
+					nickname: $data.nickname,
+					title: $("#inquire-title").val(),
 					data: $("#inquire-text").val()
 				}, function(e){
 					if(e.result == 200) alert("문의가 접수되었습니다.");

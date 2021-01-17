@@ -438,17 +438,45 @@ block Middle
 				input#report-accept(type='checkbox', style='width: 13px; height: 13px; vertical-align: text-top;')
 		div.dialog-bar.tail-button
 			button#report-submit= L('submit')
-	+Dialog('InquireDiag', 400, 225, L('inquire_title'))
+	+Dialog('InquireDiag', 400, 425, L('nfInquire'))
+		div.dialog-bar(style='height: 350px;'): table#inquiries(style='text-align: center;')
+			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
+				td(width=30) #
+				td(width=140)= L('inquire_title')
+				td(width=115)= L('inquire_status')
+				td(width=110)= L('inquire_showdetail')
+			tbody
+		div.dialog-bar.tail-button
+			button#inquire-write= L('inquire_write')
+			button#inquire-load= L('inquire_load')
+	+Dialog('InquireSubmitDiag', 400, 265, L('nfInquire'))
 		div.dialog-bar
 			h4(style='width: 100%;')= L('inquire_warn')
 		div.dialog-bar
 			h4= L('inquirer')
 			h4#inquirer
 		div.dialog-bar
+			h4= L('inquire_title')
+			input#inquire-title(type='textfield', style='width: 288px;')
+		div.dialog-bar
 			h4= L('inquire_text')
 			textarea#inquire-text(type='textfield', style='width: 288px; height: 75px;')
 		div.dialog-bar.tail-button
 			button#inquire-submit= L('submit')
+	+Dialog('InquireDetailDiag', 400, 320, L('nfInquire'))
+		div.dialog-bar
+			h4= L('inquire_date')
+			input#inquiry-detail-date(type='textfield', style='width: 288px;', readonly)
+			h4= L('inquire_title')
+			input#inquiry-detail-title(type='textfield', style='width: 288px;', readonly)
+			h4= L('inquire_text')
+			textarea#inquiry-detail-body(type='textfield', style='width: 288px; height: 75px;', readonly)
+			h4#inquiry-detail-description= L('answer_date')
+			input#answer-detail-date(type='textfield', style='width: 288px;', readonly)
+			h4#inquiry-detail-answerer= L('answerer')
+			input#answer-detail-name(type='textfield', style='width: 288px;', readonly)
+			h4#inquiry-detail-text= L('answer_text')
+			textarea#answer-detail-body(type='textfield', style='width: 288px; height: 75px;', readonly)
 	+Dialog('ManagementDiag', 300, 160, L('management'))
 		div.dialog-bar
 			h4= L('mngID')
@@ -561,7 +589,7 @@ block Middle
 	+Dialog('DressDiag', 650, 320, L('dress'))
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myNickname')
-			input#dress-nickname(type='textfield', placeholder=L('myNicknameX'), style='width: 435px;', maxlength=10)
+			input#dress-nickname(type='textfield', placeholder=L('myNicknameX'), style='width: 435px;', maxlength=14)
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myExordial')
 			input#dress-exordial(type='textfield', placeholder=L('myExordialX'), style='width: 435px;', maxlength=100)
