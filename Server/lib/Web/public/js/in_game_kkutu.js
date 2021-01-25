@@ -735,7 +735,7 @@
 		if(!nick) return alertKKuTu("닉네임을 입력해 주세요.");
 		if(/[(ㄱ-ㅎ)]/gi.test(nick)) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다.");
 		if(!/[(가-힣a-zA-Z)]/gi.test(nick)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
-		if(nick.length > 10) return alertKKuTu("닉네임 길이 제한은 최대 10글자까지입니다.");
+		if(nick.length > 14) return alertKKuTu("닉네임 길이 제한은 최대 10글자까지입니다.");
 		if(nick.match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
@@ -1966,7 +1966,7 @@
 	
 	function badWords(a, sender) {
 		var filter = $("#badwordfilter").val().substr(0, 2);
-		if (OSV.test(a)) a = a.replace(OSV, "[타서버 홍보 방지]");
+		if (OSV.test(a) && $("#hide-otherkkutu").is(":checked")) a = a.replace(OSV, "[타서버 필터링]");
 		if (OSVURL.test(a)) a = a.replace(OSVURL, "[타서버 링크 공유 금지]");
 		if (XSS.test(a) && !sender.admin) a = a.replace(XSS, "-");
 		if (BAD.test(a) && filter != "NO") a = a.replace(BAD, filter)
