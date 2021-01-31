@@ -576,9 +576,11 @@ block Middle
 			h4#myClanID
 			h4#myClanMax
 			h4#myClanActivate
-		div.dialog-bar(style='height: 175px; width: 250px;'): table#clanUserList(style='text-align: center;')
+		div.dialog-bar(style='height: 175px; width: 100%;'): table#clanUserList(style='text-align: center;')
 			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
 				td(width=115)= L('clanUserID')
+				td(width=300)= L('clanUserNickname')
+				td(width=450)= L('clanUserPerm')
 			tbody
 		div.dialog-bar
 			button#deleteClan= L('deleteClan')

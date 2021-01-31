@@ -25,6 +25,8 @@ var Outer    = require("../../sub/outer");
 
 let moment = require('moment'); //moment.js
 
+const sha256 = require('sha256');
+
 function obtain($user, key, value, term, addValue){
 	var now = (new Date()).getTime();
 	
@@ -121,133 +123,236 @@ Server.get("/rpRanking", function(req, res){
 		});
 	}
 });
-Server.get("/clan", function(req, res){
-	var query = req.query;
+/*
+	Clan System
 	
-	if(query.type == "create"){
-		var getClanID = {};
-		getClanID.authNo= function(n) {
-			var value = "";
-			for(var i=0; i<n; i++){
-				value += Outer.random(0,9);
+	System Structure
+	유저 권한: 클랜 마스터 (2), 클랜 부마스터 (1), 클랜원 (0)
+	클랜 마스터 1명: 유저 추방 O, 유저 차단/해제 O, 클랜원을 승급 O, 부마스터를 강등 O, 클랜 해체 O, 최대 인원수 확장 O, 탈퇴 X
+	클랜 부마스터 1명: 유저 추방 O, 유저 차단/해제 O, 클랜원을 승급 X, 부마스터를 강등 X, 클랜 해체 X, 최대 인원수 확장 O, 탈퇴 O
+	클랜원: 유저 추방 X, 유저 차단/해제 X, 클랜원을 승급 X, 부마스터를 강등 X, 클랜 해체 X, 최대 인원수 확장 X, 탈퇴 O
+	
+	DB Structure
+	_id: 클랜 고유 번호 (123456789)
+	name: 클랜명 (abcd)
+	score: 클랜 점수 (에 따라 클랜 레벨 결정) (1234)
+	users: 클랜원 목록 ({"userid":permission,"6355565464":0})
+	max: 최대 인원수
+	blacklist: 차단된 클랜원 목록
+	uname: 클랜원 닉네임
+*/
+Server.post("/clan/create", function(req, res){
+	function generateClanID(){
+		var id = "";
+		for(var i=0; i<9; i++) id += Outer.random(0,9);
+		return id;
+	}
+	
+	var newClanID = generateClanID();
+	
+	MainDB.clans.findOne([ '_id', newClanID ]).on(function($ec){
+		if($ec){
+			newClanID = generateClanID();
+			return;
+		}
+	});
+	
+	MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			var postM = $user.money - 5000;
+			
+			if(postM < 0) return res.send({ message: "MONEYFAIL" });
+			else {
+				MainDB.users.update([ '_id', req.body.me ]).set(
+					[ 'money', postM ]
+				).on(function($fin){
+					JLog.log(`[CLAN PURCHASED] ${req.body.name} by ${req.body.me}`);
+					MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', newClanID ]).on();
+					MainDB.clans.insert([ '_id', newClanID ], [ 'users', JSON.parse(`{"${req.body.me}":2}`) ], [ 'name', req.body.name ], [ 'blacklist', JSON.parse(`{"${req.body.me}":false}`) ], [ 'password', sha256.x2(req.body.password) ], [ 'uname', JSON.parse(`{"${req.body.me}":"${$user.nickname}"}`) ]).on();
+					return res.send({ message: "OK" });
+				});
 			}
-			return value;
-		};
-		var newClanID = getClanID.authNo(9);
-		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			else{
-				var postM = $ec.money - 5000;
-				
+		}
+	});
+});
+Server.post("/clan/remove", function(req, res){
+	MainDB.clans.findOne([ '_id', req.body.id ]).on(function($ec){
+		if(!$ec) return res.send({ message: "FAIL" });
+		else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
+		else{
+			if($ec.users[req.body.me] == 2){
+				MainDB.users.find([ 'clan', req.body.id ]).on(function($res){
+					var i;
+					for(i in $res) MainDB.users.update([ '_id', $res[i]._id ]).set([ 'clan', null ]).on();
+					MainDB.clans.remove([ '_id', req.body.id ]).on();
+				});
+				return res.send({ message: "OK" });
+			}else return res.sendStatus(403);
+		}
+	});
+});
+Server.post("/clan/extend", function(req, res){
+	MainDB.clans.findOne([ '_id', req.body.id ]).on(function($ec){
+		if(!$ec) return res.send({ message: "FAIL" });
+		if($ec.max >= 50) return res.send({ message: "MAX" });
+		if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
+		if($ec.users[req.body.me] == 0) return res.send({ message: "PERMISSIONFAIL" });
+		MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+			if(!$user) return res.send({ message: "FAIL" });
+			else {
+				var postM = $user.money - 5000;
+			
 				if(postM < 0) return res.send({ message: "MONEYFAIL" });
 				else {
-					MainDB.users.update([ '_id', query.id ]).set(
+					MainDB.users.update([ '_id', req.body.me ]).set(
 						[ 'money', postM ]
 					).on(function($fin){
-						JLog.log(`[CLAN PURCHASED] ${query.clanname} by ${query.id}`);
-						MainDB.users.update([ '_id', query.id ]).set([ 'clan', newClanID ]).on();
-						MainDB.clans.insert([ 'clanid', newClanID ], [ 'users', JSON.parse(`{"${query.id}":0}`) ], [ 'clanname', query.clanname ]).on();
+						JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.clanname}`);
+						MainDB.clans.update([ '_id', req.body.id ]).set([ 'max', Number($ec.max) + 10 ]).on();
 						return res.send({ message: "OK" });
 					});
 				}
 			}
 		});
-	}else if(query.type == "delete"){
-		MainDB.clans.findOne([ 'clanid', query.id ]).on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			if(!$ec.clanid) return res.send({ message: "FAIL" });
+	});
+});
+Server.post("/clan/user/add", function(req, res){
+	MainDB.clans.findOne([ '_id', req.body.id ]).on(function($ec){
+		if(!$ec) return res.send({ message: "FAIL" });
+		else{
+			if(Object.keys($ec.users).length == $ec.max) return res.send({ message: "USERLIMITFAIL" });
+			else if($ec.blacklist[req.body.me]) return res.send({ message: "BANNED" });
 			else{
-				MainDB.users.find([ 'clan', query.id ]).on(function($res){
-					var i;
-					for(i in $res){
-						MainDB.users.update([ '_id', $res[i]._id ]).set([ 'clan', null ]).on();
-					}
-					MainDB.clans.remove([ 'clanid', query.id ]).on();
+				$ec.users[`${req.body.me}`] = 0;
+				MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', $ec._id ]).on();
+				MainDB.users.findOne().on(function($user){
+					$ec.uname[req.body.me] = $user.nickname;
+					MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ], [ 'uname', $ec.uname ]).on();
 				});
 				return res.send({ message: "OK" });
 			}
-		});
-	}else if(query.type == "adduser"){
-		MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			if(!$ec.clanid) return res.send({ message: "FAIL" });
-			else{
-				if(Object.keys($ec.users).length >= $ec.max) return res.send({ message: "USERLIMITFAIL" });
+		}
+	});
+});
+Server.post("/clan/user/remove", function(req, res){
+	MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			MainDB.clans.findOne([ '_id', req.body.id ]).on(function($ec){
+				if(!$ec) return res.send({ message: "FAIL" });
+				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
 				else{
-					$ec.users[`${query.userid}`] = parseInt(query.userp); // userp: user permission
-					MainDB.users.update([ '_id', query.userid ]).set([ 'clan', query.clanid ]).on();
-					MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'users', $ec.users ]).on();
-					return res.send({ message: "OK" });
-				}
-			}
-		});
-	}else if(query.type == "removeuser"){
-		MainDB.users.findOne([ '_id', query.userid ]).on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			if($ec.clan !== query.clanid) return res.send({ message: "FAIL" });
-			else{
-				MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($data){
-					delete $data.users[`${query.userid}`]
-					MainDB.users.update([ '_id', query.userid ]).set([ 'clan', null ]).on();
-					MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'users', $data.users ]).on();
-				});
-				return res.send({ message: "OK" });
-			}
-		});
-	}else if(query.type == "getclan"){
-		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
-			if($ec.clan == undefined || $ec.clan == null) return res.send({ name: undefined });
-			else{
-				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($des){
-					if(!$des) return res.send({ name: undefined });
-					return res.send({ name: $des.clanname, id: $des.clanid, users: $des.users, score: $des.clanscore, max: $des.max, perm: $des.users[`${query.id}`] });
-				});
-			}
-		});
-	}else if(query.type == "promote"){
-		MainDB.users.findOne([ '_id', query.id ]).on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			else if(Number(query.perm) > 2) return res.send({ message: "FAIL" });
-			else if(typeof Number(query.perm) != "number") return res.send({ message: "FAIL" });
-			else{
-				MainDB.clans.findOne([ 'clanid', $ec.clan ]).on(function($data){
-					$data.users[`${query.id}`] = Number(query.perm);
-					MainDB.clans.update([ 'clanid', $ec.clan ]).set([ 'users', $data.users ]).on();
-				});
-				return res.send({ message: "OK" });
-			}
-		});
-	}else if(query.type == "extend"){
-		MainDB.clans.findOne([ 'clanid', query.clanid ]).on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			if($ec.max >= 50) return res.send({ message: "MAX" });
-			MainDB.users.findOne([ '_id', query.masterid ]).on(function($user){
-				if(!$user) return res.send({ message: "FAIL" });
-				else if(Number($ec.users[`${query.masterid}`]) != 0) return res.send({ message: "LOWPERM" });
-				else {
-					var postM = $user.money - 5000;
-				
-					if(postM < 0) return res.send({ message: "MONEYFAIL" });
-					else {
-						MainDB.users.update([ '_id', query.masterid ]).set(
-							[ 'money', postM ]
-						).on(function($fin){
-							JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.clanname}`);
-							MainDB.clans.update([ 'clanid', query.clanid ]).set([ 'max', Number($ec.max) + 10 ]).on();
-							return res.send({ message: "OK" });
-						});
-					}
+					delete $ec.users[`${req.body.me}`];
+					delete $ec.uname[`${req.body.me}`];
+					MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', null ]).on();
+					MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ]).on();
 				}
 			});
-		});
-	}else if(query.type == "clanlist"){
-		MainDB.clans.find().on(function($ec){
-			if(!$ec) return res.send({ message: "FAIL" });
-			else{
-				return res.send({ list: $ec });
-			}
-		});
-	}
+			return res.send({ message: "OK" });
+		}
+	});
+});
+Server.post("/clan/user/leave", function(req, res){
+	MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
+				delete $ec.users[`${req.body.me}`];
+				delete $ec.uname[`${req.body.me}`];
+				MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', null ]).on();
+				MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ]).on();
+			});
+			return res.send({ message: "OK" });
+		}
+	});
+});
+Server.post("/clan/user/ban", function(req, res){
+	MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
+				if(!$ec) return res.send({ message: "FAIL" });
+				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
+				else if($ec.users[req.body.me] == 0) return res.send({ message: "PERMISSIONFAIL" });
+				else{
+					$ec.blacklist[req.body.id] = true;
+					MainDB.clans.update([ '_id', $user.clan ]).set([ 'blacklist', $ec.blacklist ]).on();
+				}
+			});
+			return res.send({ message: "OK" });
+		}
+	});
+});
+Server.post("/clan/user/unban", function(req, res){
+	MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
+				if(!$ec) return res.send({ message: "FAIL" });
+				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
+				else if($ec.users[req.body.me] == 0) return res.send({ message: "PERMISSIONFAIL" });
+				else{
+					$ec.blacklist[req.body.id] = false;
+					MainDB.clans.update([ '_id', $user.clan ]).set([ 'blacklist', $ec.blacklist ]).on();
+				}
+			});
+			return res.send({ message: "OK" });
+		}
+	});
+});
+Server.post("/clan/user/promote", function(req, res){
+	MainDB.users.findOne([ '_id', req.body.id ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
+				if(!$ec) return res.send({ message: "FAIL" });
+				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
+				else if($ec.users[req.body.id] != 0) return res.send({ message: "PERMISSIONFAIL" });
+				else{
+					$ec.users[`${req.body.id}`] = 1;
+					MainDB.clans.update([ '_id', $ec._id ]).set([ 'users', $ec.users ]).on();
+				}
+			});
+			return res.send({ message: "OK" });
+		}
+	});
+});
+Server.post("/clan/user/demote", function(req, res){
+	MainDB.users.findOne([ '_id', req.body.id ]).on(function($user){
+		if(!$user) return res.send({ message: "FAIL" });
+		else{
+			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
+				if(!$ec) return res.send({ message: "FAIL" });
+				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
+				else if($ec.users[req.body.id] != 1) return res.send({ message: "PERMISSIONFAIL" });
+				else{
+					$ec.users[`${req.body.id}`] = 0;
+					MainDB.clans.update([ '_id', $ec._id ]).set([ 'users', $ec.users ]).on();
+				}
+			});
+			return res.send({ message: "OK" });
+		}
+	});
+});
+Server.get("/clan/user", function(req, res){ // 유저의 클랜 정보 알아내기
+	MainDB.users.findOne([ '_id', req.query.id ]).on(function($user){
+		if($user.clan == undefined || $user.clan == null) return res.send({ _id: undefined, name: undefined });
+		else{
+			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
+				if(!$ec) return res.send({ _id: undefined, name: undefined });
+				return res.send($ec);
+			});
+		}
+	});
+});
+Server.get("/clan/list", function(req, res){
+	MainDB.clans.find().on(function($ec){
+		if(!$ec) return res.send({ message: "FAIL" });
+		else{
+			return res.send({ list: $ec });
+		}
+	});
 });
 /*Server.post("/clan", function(req, res){
 	var query = req.body;
