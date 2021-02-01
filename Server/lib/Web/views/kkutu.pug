@@ -381,17 +381,17 @@ block Middle
 			div#ri-players(style='width: 100%;')
 		div.dialog-bar.tail-button
 			button#room-info-join= L('join')
-	+Dialog('ProfileDiag', 300, 495)
+	+Dialog('ProfileDiag', 390, 485)
 		div.dialog-bar.profile-head
 		div.dialog-bar#profile-warn
-			h4(style='width: 83px;')= L('WARN')
-			h4#warnRecord
-		div.dialog-bar
-			h4(style='width: 83px;')= L('PRANK')
-			h4#rank
-			h4#rankpoint
+			h4(style='width: 40px;')= L('WARN')
+			h4(style='width: 30px;')#warnRecord
 		div.dialog-bar.profile-rankicon
 			img#rankicon(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/kkutu/rankicon/UNRANKED.png')
+		div.dialog-bar
+			//-h4(style='width: 83px;')= L('PRANK')
+			h4(style='width: 100%;')#rankpoint
+			//-h4(style='width: 30px;')#rank
 		div.dialog-bar
 			h4(style='width: 83px;')= L('place')
 			h4.dialog-bar-value#profile-place

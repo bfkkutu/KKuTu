@@ -638,6 +638,7 @@
 			}
 			
 			$(document).ready(function() {
+				$("#rankicon").tooltip();
 				$(document).on("contextmenu dragstart selectstart", function(e) {
 					return false;
 				});
@@ -1304,7 +1305,7 @@
 		if(!e.robot){
 			var x = e.data.rankPoint < 5000 ? calculateRank(e.data.rankPoint, null, null) : getRank(z);
 			
-			$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png");
+			$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png").attr("title", L[x]);
 			
 			$(".profile-level-progress").show();
 			$(".profile-score-text").show();
@@ -3350,8 +3351,7 @@
 					var cf = confirm(`정말 ${$clan.name} 클랜을 떠나시겠습니까?`);
 					if(cf){
 						$.get("/clan/user/leave", {
-							me: $data.id,
-							id: $clan._id
+							me: $data.id
 						}, function(d){
 							if(d.message == "FAIL") alert("알 수 없는 오류로 인해 클랜 탈퇴에 실패했습니다."), $stage.dialog.viewClanDiag.hide();
 							else alert(`${$clan.name} 클랜을 떠났습니다!`), $clan = {}, $stage.dialog.viewClanDiag.hide();

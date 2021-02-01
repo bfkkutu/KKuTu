@@ -208,7 +208,7 @@ Server.post("/clan/extend", function(req, res){
 					MainDB.users.update([ '_id', req.body.me ]).set(
 						[ 'money', postM ]
 					).on(function($fin){
-						JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.clanname}`);
+						JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.name}`);
 						MainDB.clans.update([ '_id', req.body.id ]).set([ 'max', Number($ec.max) + 10 ]).on();
 						return res.send({ message: "OK" });
 					});
@@ -224,10 +224,10 @@ Server.post("/clan/user/add", function(req, res){
 			if(Object.keys($ec.users).length == $ec.max) return res.send({ message: "USERLIMITFAIL" });
 			else if($ec.blacklist[req.body.me]) return res.send({ message: "BANNED" });
 			else{
-				$ec.users[`${req.body.me}`] = 0;
-				MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', $ec._id ]).on();
-				MainDB.users.findOne().on(function($user){
+				MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
 					$ec.uname[req.body.me] = $user.nickname;
+					$ec.users[`${req.body.me}`] = 0;
+					MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', $ec._id ]).on();
 					MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ], [ 'uname', $ec.uname ]).on();
 				});
 				return res.send({ message: "OK" });
@@ -261,7 +261,7 @@ Server.post("/clan/user/leave", function(req, res){
 				delete $ec.users[`${req.body.me}`];
 				delete $ec.uname[`${req.body.me}`];
 				MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', null ]).on();
-				MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ]).on();
+				MainDB.clans.update([ '_id', $user.clan ]).set([ 'users', $ec.users ]).on();
 			});
 			return res.send({ message: "OK" });
 		}
