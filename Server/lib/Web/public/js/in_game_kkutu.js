@@ -638,7 +638,6 @@
 			}
 			
 			$(document).ready(function() {
-				$("#rankicon").tooltip();
 				$(document).on("contextmenu dragstart selectstart", function(e) {
 					return false;
 				});
@@ -1297,7 +1296,7 @@
 	}
 
 	function requestProfile(a) {
-		var b, c, d, e = $data.users[a] || $data.robots[a],
+		var b, c, d, rankExpl, e = $data.users[a] || $data.robots[a],
 			f = $("#profile-record").empty(),
 			z = $data.users[a],
 			ph = 495; // default size
@@ -1305,7 +1304,7 @@
 		if(!e.robot){
 			var x = e.data.rankPoint < 5000 ? calculateRank(e.data.rankPoint, null, null) : getRank(z);
 			
-			$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png").attr("title", L[x]);
+			//$("#rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/` + x + ".png").attr("title", L[x]);
 			
 			$(".profile-level-progress").show();
 			$(".profile-score-text").show();
@@ -1321,13 +1320,17 @@
 			})
 		}
 		
-		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append($("<div>").append($("<progress>").addClass("profile-level-progress").attr("max",100).attr("value",Math.floor((e.data.score - (EXP[d - 2] || 0)) / ((EXP[d - 1]) - (EXP[d - 2] || 0)) * 100)))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
+		if ($("#ProfileDiag .dialog-title").text((e.profile.title || e.profile.name) + L.sProfile), $(".profile-head").empty().append(b = $("<div>").addClass("moremi profile-moremi")).append($("<div>").addClass("profile-head-item").append(getImage(e.profile.image).addClass("profile-image")).append($("<div>").addClass("profile-title ellipse").text(e.profile.title || e.profile.name).append($("<label>").addClass("profile-tag").html(" #" + e.id.toString().substr(0, 5))))).append($("<div>").addClass("profile-head-item").css("width", "75%").append(getLevelImage(e.data.score).addClass("profile-level")).append($("<div>").addClass("profile-level-text").html(L.LEVEL + " " + (d = getLevel(e.data.score)))).append($("<div>").addClass("profile-score-text").html(commify(e.data.score) + " / " + commify(EXP[d - 1]) + L.PTS))).append($("<div>").css("width", "75%").append($("<progress>").addClass("profile-level-progress").css("width", "100%").attr("max",100).attr("value",Math.floor((e.data.score - (EXP[d - 2] || 0)) / ((EXP[d - 1]) - (EXP[d - 2] || 0)) * 100)))).append(c = $("<div>").addClass("profile-head-item profile-exordial ellipse").css("width", "75%").text(badWords(e.exordial || "")).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
 				width: 300,
 				"font-size": "11px"
 			}).text(e.exordial))), e.robot) $stage.dialog.profileLevel.show(), $stage.dialog.profileLevel.prop("disabled", $data.id != $data.room.master), $("#rank").html(L['UNRANKED']), $("#rankpoint").html(L['0LP']), $("#profile-place").html($data.room.id + L.roomNumber);
 		else {
-			$stage.dialog.profileLevel.hide(), $("#rank").html(L[x]), $("#rankpoint").html(z.data.rankPoint + L['LP']), $("#profile-place").html(e.place ? e.place + L.roomNumber : L.lobby);
+			$stage.dialog.profileLevel.hide(), $("#profile-rank").empty().append(rankExpl = $("<div>").attr("id", "profile-rankicon").append($("<img>").attr("id", "rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/${x}.png`)).append($("<div>").addClass("expl").css({
+				"white-space": "normal",
+				width: 50,
+				"font-size": "11px"
+			}).text(L[x]))), $("#rankpoint").html(z.data.rankPoint + L['LP']), $("#profile-place").html(e.place ? e.place + L.roomNumber : L.lobby);
 			for (d in e.data.record) {
 				var g = e.data.record[d];
 				f.append($("<div>").addClass("profile-record-field").append($("<div>").addClass("profile-field-name").html(L["mode" + d])).append($("<div>").addClass("profile-field-record").html(g[0] + L.P + " " + g[1] + L.W)).append($("<div>").addClass("profile-field-score").html(commify(g[2]) + L.PTS)))
@@ -1344,7 +1347,7 @@
 		else if(e.exordial) ph = 510;
 		$("#ProfileDiag").css("height",`${ph}px`);
 		$("#profile-friendadd").hide(),
-		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != e.id/*e.robot*/ ? $("#profile-warn").hide() : ($("#profile-warn").show(), $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"])), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c)
+		$data._profiled = a, $stage.dialog.profileKick.hide(), $stage.dialog.profileReport.hide(), $stage.dialog.profileShut.hide(), $stage.dialog.profileDress.hide(), $stage.dialog.profileWhisper.hide(), $stage.dialog.profileHandover.hide(), $data.id == a ? $stage.dialog.profileDress.show() : e.robot || ($stage.dialog.profileShut.show(), $stage.dialog.profileReport.show(), $stage.dialog.profileWhisper.show()), $data.room && $data.id != a && $data.id == $data.room.master && ($stage.dialog.profileKick.show(), $stage.dialog.profileHandover.show()), $data.id != e.id/*e.robot*/ ? $("#profile-warn").hide() : ($("#profile-warn").show(), $("#warnRecord").text(getWarn(a)+L["WARNCOUNT"])), showDialog($stage.dialog.profile), $stage.dialog.profile.show(), global.expl(c), global.expl(rankExpl)
 	}
 
 	function requestInvite(a) {

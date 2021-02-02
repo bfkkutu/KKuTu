@@ -231,11 +231,20 @@ iframe{
 		.profile-tag{ font-size: 11px; color: #777; }
 		.profile-level-text{ padding-top: 2px; font-size: 13px; }
 		.profile-score-text{ float: right !important; padding-top: 3px; font-size: 11px; color: #444444; }
-	.profile-rankicon img{ display: table; margin: auto; }
 	.profile-record-field{ margin: 2px 0px; width: 100%; }
 		.profile-field-name{ width: 35%; text-align: center; }
 		.profile-field-record{ width: 32%; text-align: center; }
 		.profile-field-score{ width: 32%; text-align: center; }
+	#profile-rank {
+		text-align: center;
+		margin: 0 auto;
+	}
+	#profile-rankicon {
+		display: inline-block;
+		margin: 0 auto;
+		width: 100%;
+	}
+	#profile-rankicon img{ display: block; margin: 0 auto; }
 #RoomInfoDiag .dialog-body div{ float: left; }
 	.ri-player{ margin: 2px 0px; width: 100%; }
 		.rip-moremi{ margin-right: 3px; width: 40px; height: 40px; }

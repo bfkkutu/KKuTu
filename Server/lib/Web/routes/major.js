@@ -226,7 +226,8 @@ Server.post("/clan/user/add", function(req, res){
 			else{
 				MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
 					$ec.uname[req.body.me] = $user.nickname;
-					$ec.users[`${req.body.me}`] = 0;
+					$ec.users[req.body.me] = 0;
+					$ec.blacklist[req.body.me] = false;
 					MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', $ec._id ]).on();
 					MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ], [ 'uname', $ec.uname ]).on();
 				});
@@ -243,8 +244,8 @@ Server.post("/clan/user/remove", function(req, res){
 				if(!$ec) return res.send({ message: "FAIL" });
 				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
 				else{
-					delete $ec.users[`${req.body.me}`];
-					delete $ec.uname[`${req.body.me}`];
+					delete $ec.users[req.body.me];
+					delete $ec.uname[req.body.me];
 					MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', null ]).on();
 					MainDB.clans.update([ '_id', req.body.id ]).set([ 'users', $ec.users ]).on();
 				}
@@ -258,8 +259,8 @@ Server.post("/clan/user/leave", function(req, res){
 		if(!$user) return res.send({ message: "FAIL" });
 		else{
 			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
-				delete $ec.users[`${req.body.me}`];
-				delete $ec.uname[`${req.body.me}`];
+				delete $ec.users[req.body.me];
+				delete $ec.uname[req.body.me];
 				MainDB.users.update([ '_id', req.body.me ]).set([ 'clan', null ]).on();
 				MainDB.clans.update([ '_id', $user.clan ]).set([ 'users', $ec.users ]).on();
 			});
@@ -310,7 +311,7 @@ Server.post("/clan/user/promote", function(req, res){
 				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
 				else if($ec.users[req.body.id] != 0) return res.send({ message: "PERMISSIONFAIL" });
 				else{
-					$ec.users[`${req.body.id}`] = 1;
+					$ec.users[req.body.id] = 1;
 					MainDB.clans.update([ '_id', $ec._id ]).set([ 'users', $ec.users ]).on();
 				}
 			});
@@ -327,7 +328,7 @@ Server.post("/clan/user/demote", function(req, res){
 				else if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
 				else if($ec.users[req.body.id] != 1) return res.send({ message: "PERMISSIONFAIL" });
 				else{
-					$ec.users[`${req.body.id}`] = 0;
+					$ec.users[req.body.id] = 0;
 					MainDB.clans.update([ '_id', $ec._id ]).set([ 'users', $ec.users ]).on();
 				}
 			});
@@ -341,6 +342,7 @@ Server.get("/clan/user", function(req, res){ // 유저의 클랜 정보 알아�
 		else{
 			MainDB.clans.findOne([ '_id', $user.clan ]).on(function($ec){
 				if(!$ec) return res.send({ _id: undefined, name: undefined });
+				delete $ec.password;
 				return res.send($ec);
 			});
 		}
@@ -350,6 +352,9 @@ Server.get("/clan/list", function(req, res){
 	MainDB.clans.find().on(function($ec){
 		if(!$ec) return res.send({ message: "FAIL" });
 		else{
+			for(let i in $ec){
+				delete $ec[i].password;
+			}
 			return res.send({ list: $ec });
 		}
 	});
