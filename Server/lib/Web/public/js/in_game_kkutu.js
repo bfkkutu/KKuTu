@@ -2658,12 +2658,12 @@
 				c = {
 					value: b.trim()
 				};
-			if(beforeChat == c.value && "/" != c.value[0]){
+			if(!$data._gaming && beforeChat == c.value && "/" != c.value[0]){
 				chatCooldown = true;
 				setTimeout((e) => { chatCooldown = false; beforeChat = ""; }, 1000);
 				return notice(L.error_463);
 			};
-			if(chatCooldown) return notice(L.error_464);
+			if(!$data._gaming && chatCooldown) return notice(L.error_464);
 			beforeChat = c.value;
 			b && ("/" == c.value[0] ? (c.cmd = c.value.split(" "), runCommand(c.cmd)) : (($stage.game.here.is(":visible") || $data._relay) && (c.relay = !0), send("talk", c)), $data._whisper ? ($stage.talk.val("/e " + $data._whisper + " "), !$data.admin ? delete $data._whisper : null) : $stage.talk.val(""), $stage.game.hereText.val(""))
 		}).hotkey($stage.talk, 13).hotkey($stage.game.hereText, 13), $("#cw-q-input").on("keydown", function(a) {
@@ -2891,9 +2891,9 @@
 							$("#inquiry-detail-title").val(JSON.parse(inquiries[i]).inquiry.title);
 							$("#inquiry-detail-body").val(JSON.parse(inquiries[i]).inquiry.body);
 							if(JSON.parse(inquiries[i]).answer.answered){
-								$("#answer-detail-name").show().val(JSON.parse(inquiries[i]).answer.nickname);;
-								$("#answer-detail-date").show().val(JSON.parse(inquiries[i]).answer.date);;
-								$("#answer-detail-body").show().val(JSON.parse(inquiries[i]).answer.body);;
+								$("#answer-detail-name").show().val(JSON.parse(inquiries[i]).answer.nickname);
+								$("#answer-detail-date").show().val(JSON.parse(inquiries[i]).answer.date);
+								$("#answer-detail-body").show().val(JSON.parse(inquiries[i]).answer.body);
 								$("#inquiry-detail-answerer").show();
 								$("#inquiry-detail-text").show();
 								$("#inquiry-detail-description").text(L.answer_date).css("width", "");
