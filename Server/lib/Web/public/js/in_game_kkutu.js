@@ -2284,6 +2284,8 @@
 		XSS = new RegExp(["(&lt;|<)(i|I)(m|M)(g|G)", "(&lt;|<)(s|S)(c|C)(r|R)(i|I)(p|P)(t|T)", "(&lt;|<)(h|H)(1|2|3|4|5|6)","(&lt;|<)(a|A)"].join("|")),
 		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)","(나비|케이니|오메가|투데이)[^가-힣]*(끄투|그투)"].join("|")),
 		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
+		chatCooldown = false,
+		beforeChat = "",
 		ws, rws, $stage, $sound = {},
 		$audio = new Audio(),
 		$_sound = {},
@@ -2656,6 +2658,13 @@
 				c = {
 					value: b.trim()
 				};
+			if(beforeChat == c.value && "/" != c.value[0]){
+				chatCooldown = true;
+				setTimeout((e) => { chatCooldown = false; beforeChat = ""; }, 1000);
+				return notice(L.error_463);
+			};
+			if(chatCooldown) return notice(L.error_464);
+			beforeChat = c.value;
 			b && ("/" == c.value[0] ? (c.cmd = c.value.split(" "), runCommand(c.cmd)) : (($stage.game.here.is(":visible") || $data._relay) && (c.relay = !0), send("talk", c)), $data._whisper ? ($stage.talk.val("/e " + $data._whisper + " "), !$data.admin ? delete $data._whisper : null) : $stage.talk.val(""), $stage.game.hereText.val(""))
 		}).hotkey($stage.talk, 13).hotkey($stage.game.hereText, 13), $("#cw-q-input").on("keydown", function(a) {
 			if (13 == a.keyCode) {
