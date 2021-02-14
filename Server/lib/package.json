@@ -52,7 +52,7 @@
     "passport-twitch": "^1.0.3",
     "passport-twitter": "^1.0.4",
     "passport-youtube": "0.0.6",
-    "pg": "^6.1.2",
+    "pg": "^8.5.1",
     "pg-escape": "^0.2.0",
     "pug": "^2.0.4",
     "referrer-policy": "^1.2.0",
