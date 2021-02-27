@@ -510,6 +510,7 @@ exports.Client = function(socket, profile, sid){
 			if (my.nickname) my.profile.title = my.nickname;
 			my.equip = $user.equip || {};
 			my.box = $user.box || {};
+			my.careful = $user.careful || null;
 			
 			my.data = new exports.Data($user.kkutu);
 			if(my.data.nickname) my.profile.name = my.profile.title = my.data.nickname;
@@ -556,11 +557,11 @@ exports.Client = function(socket, profile, sid){
 				if(!$ec) return;
 				else if(!$ec.clan) return;
 				else{
-					DB.clans.findOne([ 'clanid', $ec.clan ]).on(function($data){
+					DB.clans.findOne([ '_id', $ec.clan ]).on(function($data){
 						if(!$data) return;
-						else if(!$data.clanscore) $data.clanscore = 0;
-						$data.clanscore = Number($data.clanscore) + 1;
-						DB.clans.update([ 'clanid', $ec.clan ]).set([ 'clanscore', $data.clanscore ]).on();
+						else if(!$data.score) $data.score = 0;
+						$data.score = Number($data.score) + 1;
+						DB.clans.update([ '_id', $ec.clan ]).set([ 'score', $data.score ]).on();
 					});
 					return;
 				}
@@ -1610,10 +1611,9 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	if (opts.twenty) rw.score = rw.score * 0.95; // 20자 제한
 	if (opts.item) rw.score = rw.score * 0.8; // 아이템 전
 	if (opts.tournament) rw.score = rw.score * 3.0; // 토너먼트
-	//if (opts.eventmode) rw.score = rw.score * 3.0; //이벤트 추가 경험치
 	// all은 1~16
 	// rank는 0~15
-	switch(Const.GAME_TYPE[mode]){
+	/*switch(Const.GAME_TYPE[mode]){
 		case "EKT":
 			rw.score += score * 1.4;
 			break;
@@ -1662,23 +1662,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 		case 'EDG': //영어 그림 퀴즈
 			rw.score += score * 0.1;
 			break;
-		case 'JSH':
-			rw.score += score * 0.55;
-			break;
-		/*case 'KTS':
-			rw.score += score * 0.55;
-			break;
-		case 'ETS':
-			rw.score += score * 0.55;
-			break;*/
-		case 'KTS':
-			rw.score += score * 0.8;
-			break;
 		case 'KUT': //한국어 끄투
 			rw.score += score * 1.4;
-			break;
-		case 'KLH': //한국어 길이제한 끝말잇기
-			rw.score += score * 1.0;
 			break;
 		case 'KRH': //한국어 랜덤잇기
 			rw.score += score * 0.6;
@@ -1691,14 +1676,74 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 			break;
 		default:
 			break;
+	}*/
+	switch(Const.GAME_TYPE[mode]){
+		case "EKT":
+			rw.score += score * 1.45;
+			break;
+		case "ESH":
+			rw.score += score * 0.55;
+			break;
+		case "KKT":
+			rw.score += score * 1.3;
+			break;
+		case "KSH":
+			rw.score += score * 0.62;
+			break;
+		case "CSQ": // 한국어 자음퀴즈
+			rw.score += score * 0.45;
+			break;
+		case 'KCW':
+			rw.score += score * 1.05;
+			break;
+		case 'KTY':
+			rw.score += score * 0.35;
+			break;
+		case 'ETY':
+			rw.score += score * 0.42;
+			break;
+		case 'KAP':
+			rw.score += score * 0.85;
+			break;
+		case 'HUN':
+			rw.score += score * 0.55;
+			break;
+		case 'KDA':
+			rw.score += score * 0.62;
+			break;
+		case 'EDA':
+			rw.score += score * 0.7;
+			break;
+		case 'KSS':
+			rw.score += score * 1.0;
+			break;
+		case 'ESS':
+			rw.score += score * 0.27;
+			break;
+		case 'KDG': //한국어 그림 퀴즈
+			rw.score += score * 0.15;
+			break;
+		case 'EDG': //영어 그림 퀴즈
+			rw.score += score * 0.15;
+			break;
+		case 'KUT': //한국어 끄투
+			rw.score += score * 1.45;
+			break;
+		case 'KRH': //한국어 랜덤잇기
+			rw.score += score * 0.65;
+			break;
+		case 'ERH': //영어 랜덤잇기
+			rw.score += score * 0.65;
+			break;
+		case 'KMH': //한국어 가운데잇기
+			rw.score += score * 0.63;
+			break;
+		default:
+			break;
 	}
 	
-	if (opts.rankgame){ //랭크게임 이라면
-		rw.rankPoint = rw.score * 0.05 //점수에 0.05를 곱하고
-		//rw.rankPoint = Math.round(rw.rankPoint); //아이템 효과 없이 바로 반영되므로 여기서 반올림한다.
-	}else{ //아니라면
-		rw.rankPoint = 0; //없어도 되지만 확실히 0으로 하자.
-	}
+	if (opts.rankgame) rw.rankPoint = rw.score * 0.05;
+	else rw.rankPoint = 0;
 	
 	rw.score = rw.score
 		* (0.77 + 0.05 * (all - rank) * (all - rank)) // 순위
@@ -1720,11 +1765,8 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 		rw.together = true;
 	}
 	
-	if(all >= 2 && all <= 4) {
-		rw.rankPoint = rw.rankPoint * 0.5;
-	} else if(all > 4 && all <= 8) {
-		rw.rankPoint = rw.rankPoint * 0.75;
-	}
+	if(all >= 2 && all <= 4) rw.rankPoint = rw.rankPoint * 0.5;
+	else if(all > 4 && all <= 8) rw.rankPoint = rw.rankPoint * 0.75;
 	
 	/*if(robot){
 		rw.score = rw.score * 0.001;
@@ -1740,7 +1782,7 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 		rw.score = 0;
 	}
 	
-	if(rankPoint >= 2850 && rankPoint <= 2999){ // 빡센 구간 손수 제작
+	if(rankPoint >= 2850 && rankPoint <= 2999){
 		rw.rankPoint = rw.rankPoint * 0.7;
 	}else if(rankPoint >= 3700 && rankPoint <= 3999){
 		rw.rankPoint = rw.rankPoint * 0.6;

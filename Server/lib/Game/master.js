@@ -159,6 +159,9 @@ function processAdmin(id, value, requestId){
 		case "clearchat":
 			KKuTu.publish('clearchat');
 			return null;
+		case "eval":
+			KKuTu.publish('eval', { value: value });
+			return null;
 		case "notice":
 			KKuTu.publish('notice', { value: value });
 			return null;
@@ -384,6 +387,11 @@ function processAdmin(id, value, requestId){
 			KKuTu.publish('yell', { value: "관리자가 채팅을 녹였습니다." });
 			chatFreeze = false;
 			DIC[id].send('unfreeze');
+			return null;
+		case "careful": // 주의 지급
+			var id = value.split(",")[0];
+			var careful = value.split(",")[1];
+			MainDB.users.update([ '_id', id ]).set([ 'careful', careful ]).on();
 			return null;
 		case "dump":
 			if(DIC[id]) DIC[id].send('yell', { value: "This feature is not supported..." });
@@ -692,6 +700,7 @@ function joinNewUser($c, ip, path) {
 		playTime: $c.data.playTime,
 		rankPoint: $c.data.rankPoint,
 		okg: $c.okgCount,
+		careful: $c.careful, // 주의
 		chatFreeze: chatFreeze,
 		users: KKuTu.getUserList(),
 		rooms: KKuTu.getRoomList(),
@@ -755,6 +764,9 @@ function processClientRequest($c, msg) {
 			break;
 		case 'wsrefresh':
 			$c.refresh();
+			break;
+		case 'careful': // 주의 완료
+			MainDB.users.update([ '_id', msg.value ]).set([ 'careful', null ]).on();
 			break;
 		case 'talk':
 			if (!msg.value) return;
@@ -940,6 +952,6 @@ KKuTu.onClientClosed = function($c, code, ip, path){
 	logger.info(`Exit #` + $c.id + ` IP: ${clientIp}`);
 	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Exit:[${clientIp}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
 		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
-	})
+	});
 	JLog.info(`Exit #` + $c.id + ` IP: ${clientIp}`);
 };

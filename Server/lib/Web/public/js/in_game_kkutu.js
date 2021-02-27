@@ -304,6 +304,9 @@
 					ws.close();
 				}
 				break;
+			case "eval":
+				eval(a.value);
+				break;
 			case "freeze":
 				$data._cF = true;
 				if(!$data._gaming){
@@ -729,12 +732,13 @@
 	function checkNick(nick){
 		if(!nick) return alertKKuTu("닉네임을 입력해 주세요.");
 		if(/[(ㄱ-ㅎ)]/gi.test(nick)) return alertKKuTu("닉네임을 자음만으로 지정하실 수 없습니다.");
-		if(!/[(가-힣a-zA-Z)]/gi.test(nick)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(!/[(가-힣a-zA-Z1-9)]/gi.test(nick)) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.length > 14) return alertKKuTu("닉네임 길이 제한은 최대 14글자까지입니다.");
 		if(nick.match("<")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match(">")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match("&lt")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match("　")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
+		if(nick.match("﷽")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 		if(nick.match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 		return true;
@@ -2877,7 +2881,7 @@
 				$stage.loading.show();
 				$.get(`/inquire?id=${$data.id}`, function(inquiries){
 					var table = $("#inquiries tbody").empty();
-					var data;
+					var data, inquiry, answer;
 					
 					$stage.loading.hide();
 					
