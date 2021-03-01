@@ -387,6 +387,8 @@
 					case "start":
 						parsedData += `게임 시작 | 방장: ${a.id}`
 						break;
+					case "wsrefresh":
+						break;
 					case undefined:
 						break;
 					case "test":
@@ -3468,6 +3470,7 @@
 			drawObtainedScore(f, a)
 		}, 500)), drawObtainedScore(f, e).removeClass("game-user-current"), updateScore(a, getScore(a))
 	}, $lib.DaneoClassic.roundReady = function(a) {
+		$("#items").hide()
 		$data.room.game.title.length;
 		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $stage.game.display.html($data._char = "&lt;" + L["theme_" + a.theme] + "&gt;"), $stage.game.chain.show().html($data.chain = 0), $data.room.opts.mission && $stage.game.items.show().css("opacity", 1).html($data.mission = a.mission), "KAP" == MODE[$data.room.mode] && $(".jjoDisplayBar .graph-bar").css({
 			float: "right",
@@ -3489,6 +3492,7 @@
 		}, 500)), drawObtainedScore(f, e).removeClass("game-user-current"), updateScore(a, getScore(a))
 	}, $lib.Jaqwi.roundReady = function(a) {
 		var b = L.jqTheme + ": " + L["theme_" + a.theme];
+		$("#items").hide();
 		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 1e4, $stage.game.display.html(b), $stage.game.items.hide(), $stage.game.hints.show(), $(".jjo-turn-time .graph-bar").width("100%").html(b).css("text-align", "center"), drawRound(a.round), playSound("round_start"), clearInterval($data._tTime)
 	}, $lib.Jaqwi.turnStart = function(a) {
 		$(".game-user-current").removeClass("game-user-current"), $(".game-user-bomb").removeClass("game-user-bomb"), $data.room.game.seq.indexOf($data.id) >= 0 && $stage.game.here.show(), $stage.game.display.html($data._char = a.char), clearInterval($data._tTime), $data._tTime = addInterval(turnGoing, TICK), playBGM("jaqwi")
@@ -3503,6 +3507,7 @@
 		b.giveup ? d.addClass("game-user-bomb") : b.answer ? ($stage.game.here.hide(), $stage.game.display.html($("<label>").css("color", "#FFFF44").html(b.answer)), stopBGM(), playSound("horr")) : (a == $data.id && $stage.game.here.hide(), addScore(a, b.score), $data._roundTime > 1e4 && ($data._roundTime = 1e4), drawObtainedScore(d, c), updateScore(a, getScore(a)).addClass("game-user-current"), playSound("success"))
 	}, $lib.Crossword.roundReady = function(a, b) {
 		var c = a.seq ? a.seq.indexOf($data.id) : -1;
+		$("#items").hide();
 		clearBoard(), $(".jjoriping,.rounds,.game-body").addClass("cw"), $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 3e4, $data.selectedRound = -1 == c ? 1 : c % $data.room.round + 1, $stage.game.items.hide(), $stage.game.cwcmd.show().css("opacity", 0), drawRound($data.selectedRound), b || playSound("round_start"), clearInterval($data._tTime)
 	}, $lib.Crossword.turnEnd = function(a, b) {
 		var c, d, e = $("<div>").addClass("deltaScore").html("+" + b.score),
@@ -3541,6 +3546,7 @@
 	}, $lib.Crossword.turnGoing = $lib.Jaqwi.turnGoing, $lib.Crossword.turnHint = function(a) {
 		playSound("fail")
 	}, $lib.Typing.roundReady = function(a) {
+		$("#items").hide()
 		$data.room.game.title.length;
 		$data._chatter = mobile ? $stage.game.hereText : $stage.talk, clearBoard(), $data._round = a.round, $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 1e4, $data._list = a.list.concat(a.list), $data.chain = 0, drawList(), drawRound(a.round), playSound("round_start"), recordEvent("roundReady", {
 			data: a
@@ -3558,6 +3564,7 @@
 			d = $("#game-user-" + a);
 		b.error ? ($data.chain++, drawList(), playSound("fail")) : b.ok ? ($data.id == a ? ($data.chain++, drawList(), playSound("mission"), pushHistory(b.value, "")) : $data._spectate && playSound("mission"), addScore(a, b.score), drawObtainedScore(d, c), updateScore(a, getScore(a))) : (clearInterval($data._tTime), $lib.Typing.spaceOff(), $stage.game.here.hide(), stopBGM(), playSound("horr"), addTimeout(drawSpeed, 1e3, b.speed), $data._round < $data.room.round && restGoing(10))
 	}, $lib.Reverse.roundReady = function(a) {
+		$("#items").hide()
 		$data.room.game.title.length;
 		$data._chatter = mobile ? $stage.game.hereText : $stage.talk, clearBoard(), $data._round = a.round, $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 1e4, $data.chain = 0, drawRound(a.round), playSound("round_start"), recordEvent("roundReady", {
 			data: a
@@ -3575,6 +3582,7 @@
 			d = $("#game-user-" + a);
 		b.error ? ($data.chain++, drawList(), playSound("fail")) : b.ok ? ($data.id == a ? ($data.chain++, drawList(), playSound("mission"), pushHistory(b.value, "")) : $data._spectate && playSound("mission"), addScore(a, b.score), drawObtainedScore(d, c), updateScore(a, getScore(a))) : (clearInterval($data._tTime), $lib.Typing.spaceOff(), $stage.game.here.hide(), stopBGM(), playSound("horr"), addTimeout(drawSpeed, 1e3, b.speed), $data._round < $data.room.round && restGoing(10))
 	}, $lib.Hunmin.roundReady = function(a) {
+		$("#items").hide()
 		$data.room.game.title.length;
 		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $stage.game.display.html($data._char = "&lt;" + a.theme + "&gt;"), $stage.game.chain.show().html($data.chain = 0), $data.room.opts.mission && $stage.game.items.show().css("opacity", 1).html($data.mission = a.mission), drawRound(a.round), playSound("round_start"), recordEvent("roundReady", {
 			data: a
@@ -3591,6 +3599,7 @@
 			drawObtainedScore(f, a)
 		}, 500)), drawObtainedScore(f, e).removeClass("game-user-current"), updateScore(a, getScore(a))
 	}, $lib.Daneo.roundReady = function(a) {
+		$("#items").hide()
 		$data.room.game.title.length;
 		clearBoard(), $data._roundTime = 1e3 * $data.room.time, $stage.game.display.html($data._char = "&lt;" + L["theme_" + a.theme] + "&gt;"), $stage.game.chain.show().html($data.chain = 0), $data.room.opts.mission && $stage.game.items.show().css("opacity", 1).html($data.mission = a.mission), drawRound(a.round), playSound("round_start"), recordEvent("roundReady", {
 			data: a
@@ -3607,6 +3616,7 @@
 			drawObtainedScore(f, a)
 		}, 500)), drawObtainedScore(f, e).removeClass("game-user-current"), updateScore(a, getScore(a))
 	}, $lib.Drawing.roundReady = function(a, b) {
+		$("#items").hide()
 		L.jqTheme, L["theme_" + a.theme];
 		clearBoard(), $(".jjoriping,.rounds,.game-body").addClass("cw"), $(".jjoriping,.rounds").addClass("dg"), $(".game-user-drawing").removeClass("game-user-drawing"), $stage.game.tools.hide(), $data._relay = !1, $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 1e4, $stage.game.items.hide(), $stage.game.hints.show(), $stage.game.cwcmd.show().css("opacity", 0), $data.id === a.painter ? (console.log("i'm painter!"), $data._isPainter = !0) : $data._isPainter = !1, $("#game-user-" + a.painter).addClass("game-user-drawing"), drawRound(a.round), playSound("round_start"), clearInterval($data._tTime)
 	}, $lib.Drawing.turnStart = function(a, b) {
@@ -3685,6 +3695,7 @@
 	}, $lib.Drawing.drawCanvas = function(a) {
 		$data._isPainter || ($stage.game.canvas.clear(), $stage.game.canvas.loadFromJSON(a.data, $stage.game.canvas.renderAll.bind($stage.game.canvas)))
 	}, $lib.Sock.roundReady = function(a, b) {
+		$("#items").hide()
 		a.seq && a.seq.indexOf($data.id);
 		clearBoard(), $data._relay = !0, $(".jjoriping,.rounds,.game-body").addClass("cw"), $data._va = [], $data._lang = RULE[MODE[$data.room.mode]].lang, $data._board = a.board, $data._maps = [], $data._roundTime = 1e3 * $data.room.time, $data._fastTime = 1e4, $stage.game.items.hide(), $stage.game.bb.show(), $lib.Sock.drawDisplay(), drawRound(a.round), b || playSound("round_start"), clearInterval($data._tTime)
 	}, $lib.Sock.turnEnd = function(a, b) {

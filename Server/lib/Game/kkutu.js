@@ -939,7 +939,7 @@ exports.Room = function(room, channel){
 				if(JSON.stringify(GLOBAL.ADMINS).indexOf(o.id) != -1){
 					my.adminRoom = true;
 					break;
-				}else continue;
+				}else my.adminRoom = false;
 			}
 		}
 		return {
