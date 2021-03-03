@@ -54,7 +54,7 @@
     "passport-youtube": "0.0.6",
     "pg": "^6.4.2",
     "pg-escape": "^0.2.0",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "referrer-policy": "^1.2.0",
     "request": "^2.88.2",
     "sha256": "^0.2.0",
