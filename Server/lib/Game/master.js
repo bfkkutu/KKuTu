@@ -153,89 +153,130 @@ function processAdmin(id, value, requestId){
 		return p2;
 	});
 	switch(cmd){
-		case "yell":
+		case "yell": {
 			KKuTu.publish('yell', { value: value });
-			return null;
-		case "clearchat":
+			break;
+		}
+		case "clearchat": {
 			KKuTu.publish('clearchat');
-			return null;
-		case "eval":
+			break;
+		}
+		case "eval": {
 			KKuTu.publish('eval', { value: value });
-			return null;
-		case "notice":
+			break;
+		}
+		case "notice": {
 			KKuTu.publish('notice', { value: value });
-			return null;
-		case "roomsize":
+			break;
+		}
+		case "roomsize": {
 			KKuTu.publish('roomsize', { value: value });
-			return null;
-		case "gamesize":
+			break;
+		}
+		case "gamesize": {
 			KKuTu.publish('gamesize', { value: value });
-			return null;
-		case "loadimage":
+			break;
+		}
+		case "loadimage": {
 			KKuTu.publish('loadimage', { imgLoc: value.split(",")[0], imgW: value.split(",")[1], imgH: value.split(",")[2] });
-			return null;
-		case "loadsound":
+			break;
+		}
+		case "loadsound": {
 			KKuTu.publish('loadsound', { soundLoc: value.split(",")[0] });
-			return null;
-		case "playmedia":
+			break;
+		}
+		case "playmedia": {
 			KKuTu.publish('playmedia', { value: value });
-			return null;
-		case "ban":
-			if(value.match(/,/g).length != 2) return null;
-			var target = value.split(",")[0],
-				reason = value.split(",")[1],
-				enddate = value.split(",")[2];
-			if(enddate <= moment().format("YYYYMMDDHHmmss")) return null;
-			MainDB.users.findOne([ '_id', target ]).on(function($user){
-				MainDB.users.update([ '_id', target ]).set([ 'bandate', enddate == "영구" ? 99999999999999 : enddate ], [ 'black', reason ]).on();
+			break;
+		}
+		case "ban": {
+			if(value.match(/,/g).length != 2) return;
+			
+			let target = value.split(",")[0];
+			let reason = value.split(",")[1];
+			let bannedUntil = String(value.split(",")[2]);
+			let now = moment().format("YYYYMMDDHH");
+			let ban = JSON.stringify({"isBanned":true,"reason":reason,"bannedAt":String(now),"bannedUntil":bannedUntil});
+			
+			if(bannedUntil <= now) return;
+			
+			MainDB.users.findOne([ '_id', target ]).on((data) => {
+				if(!data) return;
+				MainDB.users.update([ '_id', target ]).set([ 'ban', ban ]).on();
 			});
-			KKuTu.publish('yell', { value: DIC[target].nickname + "님이 차단되었습니다." });
-			Bot.ban(DIC[target], id, reason, enddate)
-			if(DIC[target]) DIC[target].send('banned', { id : target, reason: reason, enddate: enddate });
-			return null;
-		case "forcenick":
+			KKuTu.publish('notice', { value: DIC[target].nickname + "님이 차단되었습니다." });
+			Bot.ban(DIC[target], id, reason, bannedUntil);
+			if(DIC[target]) DIC[target].send('banned', { id: target, reason: reason, bannedUntil: bannedUntil });
+			break;
+		}
+		case "forcenick": {
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'nickname', value.split(",")[1] ]).on();
 			if(temp = DIC[value.split(",")[0]]){
 				temp.socket.send('{"type":"error","code":457}');
 				temp.socket.close();
 			}
-			return null;
-		case "forceexor":
+			break;
+		}
+		case "forceexor": {
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'exordial', value.split(",")[1] ]).on();
 			if(temp = DIC[value.split(",")[0]]){
 				temp.socket.send('{"type":"error","code":458}');
 				temp.socket.close();
 			}
-			return null;
-		case "alert":
+			break;
+		}
+		case "alert": {
 			var target = value.split(",")[0];
 			value = value.split(",")[1];
 			DIC[target].send('alert', { id : target, value: value });
-			return null;
-		case "sweetalert":
+			break;
+		}
+		case "sweetalert": {
 			value = value.split(",");
 			var target = value[0];
 			var title = value[1];
 			var comment = value[2];
 			var kind = value[3];
 			DIC[target].send('sweetalert', { id : target, title: title, comment: comment, kind: kind });
-			return null;
-		case "yellto":
+			break;
+		}
+		case "yellto": {
 			var target = value.split(",")[0];
 			value = value.split(",")[1];
 			DIC[target].send('yellto', { id : target, value: value });
-			return null;
-		case "unban":
-			MainDB.users.update([ '_id', value ]).set([ 'black', null ]).on();
-			MainDB.users.findOne([ '_id', value ]).on(function($user){
-				MainDB.users.update([ '_id', value ]).set([ 'bandate', Number(null) ]).on();
+			break;
+		}
+		case "unban": {
+			MainDB.users.findOne([ '_id', value ]).on(function(data){
+				if(!data) return;
+				MainDB.users.update([ '_id', value ]).set([ 'ban', JSON.stringify({"isBanned":false,"reason":"","bannedAt":"","bannedUntil":""}) ]).on();
 			});
-			KKuTu.publish('notice', { value: value + "님이 차단 해제되었습니다." });
-			return null;
-		case "chatban":
-			MainDB.users.update([ '_id', value ]).set([ 'black', "chat" ]).on();
-			return null;
-		case "kick": // 유저 킥
+			KKuTu.publish('notice', { value: DIC[value].nickname + "님이 차단 해제되었습니다." });
+			break;
+		}
+		case "chatban": {
+			if(value.match(/,/g).length != 2) return;
+			
+			let target = value.split(",")[0];
+			let reason = value.split(",")[1];
+			let bannedUntil = String(value.split(",")[2]);
+			let now = moment().format("YYYYMMDDHH");
+			let chatban = JSON.stringify({"isBanned":true,"reason":reason,"bannedAt":String(now),"bannedUntil":bannedUntil});
+			
+			if(bannedUntil <= now) return;
+			
+			MainDB.users.findOne([ '_id', target ]).on((data) => {
+				if(!data) return;
+				MainDB.users.update([ '_id', target ]).set([ 'chatban', chatban ]).on();
+			});
+			KKuTu.publish('notice', { value: DIC[target].nickname + "님이 채팅 금지 조치되었습니다." });
+			Bot.chatban(DIC[target], id, reason, bannedUntil);
+			
+			if(DIC[target]) DIC[target].send('chatbanned', { id: target, reason: reason, bannedUntil: bannedUntil });
+			
+			break;
+		}
+		case "kick": { // 유저 킥
 			if(temp = DIC[value]){
 				var clientId = temp.id;
 				var clientIp = getClientIp(temp);
@@ -244,8 +285,9 @@ function processAdmin(id, value, requestId){
 				temp.socket.send('{"type":"error","code":410}');
 				temp.socket.close();
 			}
-			return null;
-		case "ipban":
+			break;
+		}
+		case "ipban": {
 			if(temp = DIC[value]){
 				var clientId = temp.id;
 				var clientIp = getClientIp(temp);
@@ -264,9 +306,10 @@ function processAdmin(id, value, requestId){
 					})
 				}
 			}
-			return null;
+			break;
+		}
 		case "unipban":
-		case "ipunban":
+		case "ipunban": {
 			if(DIC[id]) DIC[id].send('yell', { value: "해당 기능은 현재 지원하지 않습니다." });
 			/*if(temp = DIC[value]){
 				var clientId = temp.id;
@@ -286,80 +329,102 @@ function processAdmin(id, value, requestId){
 					})
 				}
 			}*/
-			return null;
-		case "warn":
-			if(value.match(/,/g).length != 1) return null;
-			var target = value.split(",")[0],
-				warn = Number(value.split(",")[1]);
-			MainDB.users.findOne([ '_id', target ]).on(function($user){
-				if(!$user) return null;
-				var newwarn = Number($user.warn) + warn;
-				if(newwarn >= 4){
-					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ], [ 'black', "경고 누적" ], [ 'bandate', 99999999999999 ]).on();
-					Bot.ban({id: $user._id, nickname: $user.nickname}, id, `경고 누적 (${newwarn}회)`, "영구")
+			break;
+		}
+		case "warn": {
+			if(value.match(/,/g).length != 1) return;
+			
+			let target = value.split(",")[0];
+			let newWarn = Number(value.split(",")[1]);
+			
+			MainDB.users.findOne([ '_id', target ]).on((data) => {
+				if(!data) return;
+				let warn = Number(data.warn) + newWarn;
+				if(warn >= 4){
+					let now = moment().format("YYYYMMDDHH");
+
+					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ], [ 'ban', JSON.stringify({"isBanned":true,"reason":"경고 누적","bannedAt":String(now),"bannedUntil":"permanent"}) ]).on();
+					Bot.ban({id: data._id, nickname: data.nickname}, id, `경고 누적 (${warn}회)`, "영구")
+					
 					if(DIC[target]){
 						KKuTu.publish('notice', { value: `${target}님의 경고가 4회 이상 누적되어 계정이 영구 정지되었습니다.` });
-						DIC[target].send('banned', { id: target, enddate: "영구", reason: "경고 누적" });
+						DIC[target].send('banned', { id: target, bannedAt: now, bannedUntil: "영구", reason: "경고 누적" });
 					}
 				}else{
-					MainDB.users.update([ '_id', target ]).set([ 'warn', newwarn ]).on();
-					Bot.warn($user, id, warn, newwarn)
+					MainDB.users.update([ '_id', target ]).set([ 'warn', warn ]).on();
+					Bot.warn(data, id, newWarn, warn)
 					if(DIC[target]){
-						DIC[target].send('yellto', { id : target, value: `경고 ${warn}회가 부여되었습니다. 현재 경고: ${newwarn}` });
+						DIC[target].send('yellto', { id : target, value: `경고 ${newWarn}회가 부여되었습니다. 현재 경고: ${warn}회` });
 					}
-					KKuTu.publish('notice', { value: `${target}님에게 경고 ${warn}회가 부여되었습니다.` });
+					KKuTu.publish('notice', { value: `${target}님에게 경고 ${newWarn}회가 부여되었습니다.` });
 				}
 			});
-			return null;
-		case "setwarn":
-			if(value.match(/,/g).length != 1) return null;
-			var target = value.split(",")[0];
-			var warn = Number(value.split(",")[1]);
+			break;
+		}
+		case "setwarn": {
+			if(value.match(/,/g).length != 1) return;
+			
+			let target = value.split(",")[0];
+			let warn = Number(value.split(",")[1]);
+			
 			KKuTu.publish('notice', { value: `${target}님에게 경고 ${warn}회가 설정되었습니다.` });
-			MainDB.users.findOne([ '_id', target ]).on(function($user){
-				if(!$user) return null;
+			MainDB.users.findOne([ '_id', target ]).on((data) => {
+				if(!data) return;
 				else if(warn >= 4){
-					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ], [ 'black', "경고 누적" ], [ 'bandate', 99999999999999 ]).on();
-					if(DIC[target]) DIC[target].send('alert', { id : target, value: "경고가 4회 이상 누적되어 계정이 영구 정지되었습니다. 관리자에게 문의하세요." });
+					let now = moment().format("YYYYMMDDHH");
+					
+					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ], [ 'ban', JSON.stringify({"isBanned":true,"reason":"경고 누적","bannedAt":String(now),"bannedUntil":"permanent"}) ]).on();
+					
+					if(DIC[target]){
+						KKuTu.publish('notice', { value: `${target}님의 경고가 4회 이상 누적되어 계정이 영구 정지되었습니다.` });
+						DIC[target].send('banned', { id: target, bannedAt: now, bannedUntil: "영구", reason: "경고 누적" });
+					}
 				}else MainDB.users.update([ '_id', target ]).set([ 'warn', warn ]).on();
 			});
-			return null;
-		case "breakroom":
+			break;
+		}
+		case "breakroom": {
 			for(var i in ROOM[value].players){
 				var $c = ROOM[value].players[i];
-				if(!DIC) return null;
-				if(!$c) return null;
+				if(!DIC) return;
+				if(!$c) return;
 				DIC[$c].send('forceleave', { id : $c });
 				DIC[$c].place = null;
 			}
 			KKuTu.publish('breakroom', value);
 			delete ROOM[value];
 			KKuTu.publish('notice', { value: `방 ${value}이 삭제되었습니다.` });
-			return null;
-		case "roomtitle":
+			break;
+		}
+		case "roomtitle": {
 			var target = value.split(",")[0];
 			var newtitle = value.split(",")[1];
 			ROOM[target].title = newtitle;
 			KKuTu.publish('roomtitle', value);
 			KKuTu.publish('notice', { value: `방 ${target}의 제목이 변경되었습니다.` });
-			return null;
-		case "update":
+			break;
+		}
+		case "update": {
 			for(var i in DIC){
 				DIC[i].send('update');
 			}
-			return null;
-		case "forceready":
+			break;
+		}
+		case "forceready": {
 			KKuTu.publish('forceready', value);
 			DIC[value].send('forceready', { id : value });
-			return null;
-		case "forcespectate":
+			break;
+		}
+		case "forcespectate": {
 			KKuTu.publish('forcespectate', value);
 			DIC[value].send('forcespectate', { id : value });
-			return null;
-		case "opentail":
+			break;
+		}
+		case "opentail": {
 			DIC[id].send('opentail');
-			return null;
-		case "tailroom":
+			break;
+		}
+		case "tailroom": {
 			if(temp = ROOM[value]){
 				if(T_ROOM[value] == id){
 					i = true;
@@ -367,8 +432,9 @@ function processAdmin(id, value, requestId){
 				}else T_ROOM[value] = id;
 				if(DIC[id]) DIC[id].send('tail', { a: i ? "trX" : "tr", rid: temp.id, id: id, msg: { pw: temp.password, players: temp.players } });
 			}
-			return null;
-		case "tailuser":
+			break;
+		}
+		case "tailuser": {
 			if(temp = DIC[value]){
 				if(T_USER[value] == id){
 					i = true;
@@ -377,23 +443,27 @@ function processAdmin(id, value, requestId){
 				temp.send('test');
 				if(DIC[id]) DIC[id].send('tail', { a: i ? "tuX" : "tu", rid: temp.id, id: id, msg: temp.getData() });
 			}
-			return null;
-		case "freeze":
+			break;
+		}
+		case "freeze": {
 			KKuTu.publish('yell', { value: "관리자가 채팅을 얼렸습니다." });
 			chatFreeze = true;
 			DIC[id].send('freeze');
-			return null;
-		case "unfreeze":
+			break;
+		}
+		case "unfreeze": {
 			KKuTu.publish('yell', { value: "관리자가 채팅을 녹였습니다." });
 			chatFreeze = false;
 			DIC[id].send('unfreeze');
-			return null;
-		case "careful": // 주의 지급
+			break;
+		}
+		case "careful": { // 주의 지급
 			var id = value.split(",")[0];
 			var careful = value.split(",")[1];
 			MainDB.users.update([ '_id', id ]).set([ 'careful', careful ]).on();
-			return null;
-		case "dump":
+			break;
+		}
+		case "dump": {
 			if(DIC[id]) DIC[id].send('yell', { value: "This feature is not supported..." });
 			/*Heapdump.writeSnapshot("/home/kkutu_memdump_" + Date.now() + ".heapsnapshot", function(err){
 				if(err){
@@ -403,7 +473,8 @@ function processAdmin(id, value, requestId){
 				if(DIC[id]) DIC[id].send('yell', { value: "DUMP OK" });
 				JLog.success("Dumping success.");
 			});*/
-			return null;
+			break;
+		}
 	}
 	return value;
 }
@@ -634,7 +705,7 @@ exports.init = function(_SID, CHAN){
 					$c.socket.close();
 					return;
 				}
-				$c.refresh().then(function(ref){
+				$c.refresh().then((ref) => {
 					if(ref.result == 200){
 						DIC[$c.id] = $c;
 						try{
@@ -653,9 +724,9 @@ exports.init = function(_SID, CHAN){
 							joinNewUser($c);
 						}
 					} else if(ref.result == 444) {
-						if(ref.black){
+						if(ref.isBanned){
 							$c.send('error', {
-								code: ref.result, reason: ref.black, enddate: (ref.enddate == 99999999999999 ? "영구" : ref.enddate)
+								code: ref.result, reason: ref.reason, bannedAt: ref.bannedAt, bannedUntil: ref.bannedUntil
 							});
 							$c._error = ref.result;
 							$c.socket.close();
@@ -668,7 +739,7 @@ exports.init = function(_SID, CHAN){
 						}
 					} else {
 						$c.send('error', {
-							code: ref.result, message: ref.black
+							code: ref.result, message: ref.isBanned
 						});
 						$c._error = ref.result;
 						$c.socket.close();
@@ -682,6 +753,9 @@ exports.init = function(_SID, CHAN){
 			if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
 				JLog.warn("Error on ws: " + ec);
 			}
+		});
+		MainDB.statistics.findOne([ 'url', 'every' ]).on(function($data){
+			MainDB.statistics.update([ 'url', 'every' ]).set([ 'kkutu', Number($data.kkutu)+1 ]).on();
 		});
 		KKuTu.init(MainDB, DIC, ROOM, GUEST_PERMISSION, CHAN);
 	};
@@ -767,6 +841,11 @@ function processClientRequest($c, msg) {
 			break;
 		case 'careful': // 주의 완료
 			MainDB.users.update([ '_id', msg.value ]).set([ 'careful', null ]).on();
+			break;
+		case 'ad': // 광고 클릭수 집계
+			MainDB.users.findOne([ '_id', msg.id ]).on(function($user){
+				if($user) MainDB.users.update([ '_id', $user._id ]).set([ 'ad', String(Number($user.ad)+1) ]).on();
+			});
 			break;
 		case 'talk':
 			if (!msg.value) return;

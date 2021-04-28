@@ -479,15 +479,13 @@ exports.Client = function(socket, profile, sid){
 			my.friends = {};
 			
 			R.go({ result: 200 });
-		}else DB.users.findOne([ '_id', my.id ]).on(function($user){
-			var first = !$user;
-			var black = first ? "" : $user.black;
-			var bandate = first ? 0 : $user.bandate;
+		}else DB.users.findOne([ '_id', my.id ]).on(($user) => {
+			let first = !$user;
+			let ban = first ? {"isBanned":false,"reason":"","bannedAt":"","bannedUntil":""} : $user.ban;
+			let chatban = first ? {"isBanned":false,"reason":"","bannedAt":"","bannedUntil":""} : $user.chatban;
 			
 			if(first) $user = { money: 0 };
-			if(black == "null") black = false;
-			if(black == "chat"){
-				black = false;
+			if(chatban.isBanned){
 				my.noChat = true;
 			}
 			/* 망할 셧다운제
@@ -522,17 +520,32 @@ exports.Client = function(socket, profile, sid){
 				my.checkExpire();
 				my.okgCount = Math.floor((my.data.playTime || 0) / PER_OKG);
 			}
-			if(black){
-				var now = moment().format("YYYYMMDDHHmmss");
-				if(now >= bandate){
-					DB.users.update([ '_id', my.id ]).set([ 'black', null ]).on();
-					DB.users.update([ '_id', my.id ]).set([ 'bandate', Number(null) ]).on();
-					R.go({ result: 444, black: false });
-				}else{
-					R.go({ result: 444, black: black, enddate: bandate });
+			if(chatban.isBanned){
+				let now = moment().format("YYYYMMDDHH");
+				
+				if(now >= Number(chatban.bannedUntil)){
+					chatban.isBanned = false;
+					chatban.reason = "";
+					chatban.bannedAt = "";
+					chatban.bannedUntil = "";
+					DB.users.update([ '_id', my.id ]).set([ 'chatban', JSON.stringify(chatban) ]).on();
 				}
 			}
-			else if(Cluster.isMaster && $user.server) R.go({ result: 409, black: $user.server });
+			if(ban.isBanned){
+				let now = moment().format("YYYYMMDDHH");
+				
+				if(now >= Number(ban.bannedUntil)){
+					ban.isBanned = false;
+					ban.reason = "";
+					ban.bannedAt = "";
+					ban.bannedUntil = "";
+					DB.users.update([ '_id', my.id ]).set([ 'ban', JSON.stringify(ban) ]).on();
+					R.go({ result: 444, isBanned: false });
+				}else{
+					R.go({ result: 444, isBanned: ban.isBanned, reason: ban.reason, bannedAt: ban.bannedAt, bannedUntil: ban.bannedUntil });
+				}
+			}
+			else if(Cluster.isMaster && $user.server) R.go({ result: 409, isBanned: $user.server });
 			else if(exports.NIGHT && my.isAjae === false) R.go({ result: 440 });
 			else R.go({ result: 200 });
 		});

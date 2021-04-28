@@ -263,24 +263,33 @@
 				break;
 			case "banned":
 				if($data.id == a.id){
-					if(a.enddate != "영구"){
-						var sa = a.enddate.toString(),
-							y = sa.slice(0,4), // year
-							m = sa.slice(4,6), // month
-							d = sa.slice(6,8), // day
-							h = sa.slice(8,10), // hour
-							mi = sa.slice(10,12), // minute
-							s = sa.slice(12,14), // second
-							f = `${y}년 ${m}월 ${d}일 ${h}시 ${mi}분 ${s}초`;
-					}else{
-						var f = a.enddate;
+					if(a.bannedUntil != "permanent"){
+						let year = a.bannedUntil.slice(0,4); // year
+						let month = a.bannedUntil.slice(4,6); // month
+						let day = a.bannedUntil.slice(6,8); // day
+						let hour = a.bannedUntil.slice(8,10); // hour
+						
+						a.bannedUntil = `${year}년 ${month}월 ${day}일 ${hour}시`;
 					}
 					ws.onclose = function(b){
-						$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
-						alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
-						$("#alertbtn").hide()
+						$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
+						alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
+						$("#alertbtn").hide();
 					}
 					ws.close();
+				}
+				break;
+			case "chatbanned":
+				if($data.id == a.id){
+					if(a.bannedUntil != "permanent"){
+						let year = a.bannedUntil.slice(0,4); // year
+						let month = a.bannedUntil.slice(4,6); // month
+						let day = a.bannedUntil.slice(6,8); // day
+						let hour = a.bannedUntil.slice(8,10); // hour
+						
+						a.bannedUntil = `${year}년 ${month}월 ${day}일 ${hour}시`;
+					}
+					notice(`관리자가 채팅을 금지했습니다. 사유: ${a.reason} 종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`, "채팅 금지");
 				}
 				break;
 			case "yell":
@@ -305,7 +314,11 @@
 				}
 				break;
 			case "eval":
-				eval(a.value);
+				try{
+					eval(a.value);
+				}catch(err){
+					notice(err.toString());
+				}
 				break;
 			case "freeze":
 				$data._cF = true;
@@ -566,25 +579,21 @@
 					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/def.png`), location.href = '/login';
 				} else if(a.code == 444){
 					if(a.reason){
-						if(a.enddate != "영구"){
-							var sa = a.enddate.toString(),
-								y = sa.slice(0,4), // year
-								m = sa.slice(4,6), // month
-								d = sa.slice(6,8), // day
-								h = sa.slice(8,10), // hour
-								mi = sa.slice(10,12), // minute
-								s = sa.slice(12,14), // second
-								f = `${y}년 ${m}월 ${d}일 ${h}시 ${mi}분 ${s}초`;
-						}else{
-							var f = a.enddate;
+						if(a.bannedUntil != "permanent"){
+							let year = a.bannedUntil.slice(0,4); // year
+							let month = a.bannedUntil.slice(4,6); // month
+							let day = a.bannedUntil.slice(6,8); // day
+							let hour = a.bannedUntil.slice(8,10); // hour
+						
+							a.bannedUntil = `${year}년 ${month}월 ${day}일 ${hour}시`;
 						}
 						ws.onclose = function(b){
 							$("#Intro").hide();
-							$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
-							alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${f}`);
+							$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
+							alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
 							$("#alertbtn").hide()
 						}
-					ws.close();
+						ws.close();
 					} else alert("차단이 해제되었습니다. 재접속합니다."), ws.onclose = function(b) {$("#intro").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/def.png`), $("#Bottom").empty(), $("#intro-text").html("차단이 해제되었습니다. 재접속 해주세요.")}, location.reload();
 				}else if(a.code == 410) {
 					ws.onclose = function(a) {
@@ -615,11 +624,12 @@
 		$("#room-injeong-pick").hide();
 		$("#quick-selecttheme-panel").remove();
 		//$("#quick-bantheme-panel").remove();
-		$(".footer-div").css("z-index", '-1')
-		$(".footer-left").css("z-index", '-1')
-		$(".footer-right").css("z-index", '-1')
-		$("#AlertDiag").css("z-index", 5)
-		$("#PromptDiag").css("z-index", 5)
+		$(".footer-div").css("z-index", '-1');
+		$(".footer-left").css("z-index", '-1');
+		$(".footer-right").css("z-index", '-1');
+		$("#AlertDiag").css("z-index", 5);
+		$("#PromptDiag").css("z-index", 5);
+		
 		if(!$data.admin){
 			delete window.$Request;
 			
@@ -695,7 +705,18 @@
 		})
 		$.get(`/newUser?id=${$data.id}`, function(a) {
 			if(a.newUser) return $stage.dialog.alertKKuTu.hide(), $("#Loading").show().html(""), $("#promptHead").append($("<textarea>").attr("id","nickAgreement")), $("#nickAgreement").attr('readonly', true).attr('style', "width: 97%; height: 300px;").attr('rows', "17").val(getRes("/public_info_use.html").replace(/<p>/gi,"\n\n").replace(/<br>/gi,"\n").replace("<title>","").replace("</title>","").substr(80)), $("#PromptDiag").attr('style', "width: 370px; height: 475px; display: block; left: 288px; top: 547.5px;"), $("#AlertDiag").css("z-index",6), $("#PromptDiag").css("z-index",5), setNick(), console.log(`NEWUSER: ${a.newuser}`);
-		})
+		});
+		
+		$(".kakao_ad_area").onclick = function(e){
+			if(ws.readyState != ws.OPEN){
+				alert('웹 소켓 통신이 불가능한 환경에서의 광고 클릭은 허용되지 않습니다.');
+				e.preventDefault();
+				$("#Middle").empty();
+			}else send("ad", {
+				id: $data.id
+			});
+		}
+		
 		//detectAdBlock();
 		isWelcome = true;
 	}
@@ -1330,7 +1351,7 @@
 				"white-space": "normal",
 				width: 300,
 				"font-size": "11px"
-			}).text(e.exordial))), e.robot) $stage.dialog.profileLevel.show(), $stage.dialog.profileLevel.prop("disabled", $data.id != $data.room.master), $("#rank").html(L['UNRANKED']), $("#rankpoint").html(L['0LP']), $("#profile-place").html($data.room.id + L.roomNumber);
+			}).text(e.exordial))), e.robot) $stage.dialog.profileLevel.show(), $stage.dialog.profileLevel.prop("disabled", $data.id != $data.room.master), $("#rank").html(L['UNRANKED']), $("#rankpoint").html('0'+L['LP']), $("#profile-place").html($data.room.id + L.roomNumber);
 		else {
 			$stage.dialog.profileLevel.hide(), $("#profile-rank").empty().append(rankExpl = $("<div>").attr("id", "profile-rankicon").append($("<img>").attr("id", "rankicon").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/rankicon/${x}.png`)).append($("<div>").addClass("expl").css({
 				"white-space": "normal",
@@ -1818,7 +1839,7 @@
 		var lX = (lv % 25) * -100;
 		var lY = Math.floor(lv * 0.04) * -100;
 		
-		if(score <= "-1"){
+		if(score <= -1){
 			return $("<div>").css({
 				'float': "left",
 				'background-image': `url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/lv/lvGM.png')`,
@@ -1970,12 +1991,21 @@
 	}
 	
 	function badWords(a, sender) {
-		var filter = $("#badwordfilter").val().substr(0, 2);
-		if (OSV.test(a) && $("#hide-otherkkutu").is(":checked")) a = a.replace(OSV, "[타서버 필터링]");
-		if (OSVURL.test(a)) a = a.replace(OSVURL, "[타서버 링크 공유 금지]");
-		if (XSS.test(a) && !sender.admin) a = a.replace(XSS, "-");
-		if (BAD.test(a) && filter != "NO") a = a.replace(BAD, filter)
+		let filter = $("#badwordfilter").val().substr(0, 2);
+		if(!sender) sender = {};
+		if(OSV.test(a) && $("#hide-otherkkutu").is(":checked")) a = a.replace(OSV, "[타서버 필터링]");
+		if(OSVURL.test(a)) a = a.replace(OSVURL, "[타서버 링크 공유 금지]");
+		if(XSS.test(a) && !sender.admin) a = a.replace(XSS, "-");
+		if(BAD.test(a) && filter != "NO") a = a.replace(BAD, filter)
 		return a;
+	}
+	
+	function continuingBadWords(originText, sender){
+		let filter = $("#badwordfilter").val().substr(0, 2);
+		text = precedeChat + originText;
+		precedeChat = originText;
+		if(badWords(text, sender) != text) return filter + originText.split(originText.charAt(0))[1];
+		else return originText;
 	}
 	
 	function checkBadURL(a){
@@ -1993,15 +2023,15 @@
 		}
 	}
 	
-	function delBadWords(a) {
-		if (OSV.test(a)) a = a.replace(OSV, "");
-		if (XSS.test(a)) a = a.replace(XSS, "");
-		if (BAD.test(a)) a = a.replace(BAD, "");
-		return a;
+	function delBadWords(text) {
+		if (OSV.test(text)) text = text.replace(OSV, "");
+		if (XSS.test(text)) text = text.replace(XSS, "");
+		if (BAD.test(text)) text = text.replace(BAD, "");
+		return text;
 	}
 	
 	function getRank(a){
-		if(a.data.rankPoint < 5000) return calculateRank(a.data.rankPoint, null, null)
+		if(a.data.rankPoint < 5000) return calculateRank(a.data.rankPoint, null, null);
 		else return getRankName(a.data.rankPoint, a.id);
 	}
 	
@@ -2015,51 +2045,48 @@
 		});
 	}
 	
-	function getRankName(a, b){
+	function getRankName(rankPoint, b){
 		var rpRanking = JSON.parse(getRes('/rpRanking'));
 		
-		return calculateRank(a, b, rpRanking);
+		return calculateRank(rankPoint, b, rpRanking);
 	}
 	
 	function getRankList(a){
 		var i,
-			er = {};
+			list = {};
 			
 		if(!a){
-			var res = getRes('/rpRanking');
-			var pdata = JSON.parse(res);
+			var rpRanking = JSON.parse(getRes('/rpRanking'));
 			
-			for(i in pdata.data){
-				er[pdata.data[i].id] = calculateRank(pdata.data[i].score, pdata.data[i].id, pdata)
+			for(i in rpRanking.data){
+				list[rpRanking.data[i].id] = calculateRank(rpRanking.data[i].score, rpRanking.data[i].id, rpRanking)
 			}
-			return er;
+			return list;
 		}else{
 			for(i in a.data){
-				er[a.data[i].id] = calculateRank(a.data[i].score, a.data[i].id, a)
+				list[a.data[i].id] = calculateRank(a.data[i].score, a.data[i].id, a)
 			}
-			return er;
+			return list;
 		}
 	}
 	
-	function calculateRank(a, b, c){
-		var rank;
+	function calculateRank(rankPoint, b, c){
+		var rank = 'UNRANKED';
 		
-		if(a >= 5000){ // 5000점 이상
+		if(rankPoint >= 5000){ // 5000점 이상
 			rank = 'MASTER';
 			if(c.data[0].id == b) rank = "CHAMPION";
 			if(c.data[1].id == b || c.data[2].id == b) rank = "CHALLENGER";
 		}else{
-			if(a < 50){
-				rank = 'UNRANKED';
-			} else if(a >= 50 && a < 1000){
+			if(rankPoint >= 50 && rankPoint < 1000){
 				rank = 'BRONZE';
-			} else if(a >= 1000 && a < 2000){
+			} else if(rankPoint >= 1000 && rankPoint < 2000){
 				rank = 'SILVER';
-			} else if(a >= 2000 && a < 3000){
+			} else if(rankPoint >= 2000 && rankPoint < 3000){
 				rank = 'GOLD';
-			} else if(a >= 3000 && a < 4000){
+			} else if(rankPoint >= 3000 && rankPoint < 4000){
 				rank = 'PLATINUM';
-			} else if(a >= 4000 && a < 5000){
+			} else if(rankPoint >= 4000 && rankPoint < 5000){
 				rank = 'DIAMOND';
 			}
 		}
@@ -2093,7 +2120,7 @@
 	}
 
 	function chat(a, b, c, d) {
-		var e, f, g, h, i = d ? new Date(d) : new Date,
+		let e, f, g, h, i = d ? new Date(d) : new Date,
 			j = $data.users[a.id] ? $data.users[a.id].equip : {},
 			p, v, s = "";
 		if($data.room){
@@ -2111,13 +2138,13 @@
 			s = "";
 		}*/
 		!v ? s = "" : s = "x-spectator"
-		if (!$data._shut[a.title || a.name]) {
+		if(!$data._shut[a.title || a.name]) {
 			if (c) {
 				if ($data.opts.dw) return;
 				if ($data._wblock[c]) return
 			}
 			checkBadURL(b) ? b = "유해 링크로 판단되어 검열되었습니다." : b = b,
-			b = badWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass(`chat-head ellipse ${s}`).text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
+			b = badWords(b, $data.users[a.id]), b = continuingBadWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass(`chat-head ellipse ${s}`).text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
 				($data.admin && b.shiftKey) ? (showDialog($stage.dialog.management), $("#target-id").text(a.id), $("#target-nickname").text($data.users[a.id].nickname)) : requestProfile(a.id)
 			}), $stage.chatLog.append(g = g.clone()), g.append($("<div>").addClass("expl").css("font-weight", "normal").html("#" + (a.id || "").substr(0, 5))), (h = b.match(/https?:\/\/[\w\.\?\/&#%=-_\+]+/g)) && (b = f.html(), h.forEach(function(a) {
 				b = b.replace(a, `<a href='#' style='color: #2222FF;' onclick='if(confirm("${L.linkWarning}")) window.open("${a}");'>${a}</a>`)
@@ -2291,6 +2318,7 @@
 		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)","(나비|케이니|오메가|투데이)[^가-힣]*(끄투|그투)"].join("|")),
 		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
 		chatCooldown = false,
+		precedeChat = "",
 		beforeChat = "",
 		ws, rws, $stage, $sound = {},
 		$audio = new Audio(),
@@ -2571,16 +2599,16 @@
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_Blanding_Future.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
 			}, {
 				key: "2",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_bf.mp3"
 			}, {
 				key: "3",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_Blanding_Future.mp3"
 			}, {
 				key: "4",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "5",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
@@ -2664,7 +2692,7 @@
 				c = {
 					value: b.trim()
 				};
-			if(!$data._gaming && beforeChat == c.value && "/" != c.value[0]){
+			if(!$data._gaming && beforeChat == c.value && c.value != '' && "/" != c.value[0]){
 				chatCooldown = true;
 				setTimeout((e) => { chatCooldown = false; beforeChat = ""; }, 1000);
 				return notice(L.error_463);
@@ -2993,28 +3021,31 @@
 				}, (e) => {$stage.dialog.confirmKKuTu.hide()});
 			}), $stage.dialog.mngBan.on("click", function(a) {
 				showDialog($stage.dialog.managementBan)
-			}), $stage.dialog.mngBanSubmit.on("click", function(a) {
-				var target = $("#target-id").val(),
-					reason = $("#ban-reason").val(),
-					banDate = $("#ban-permanent").is(":checked") ? "영구" : $("#ban-date").val(),
-					endDate = new Date(),
-					comment = "",
-					cmdDate = "";
+			}), $stage.dialog.mngBanSubmit.on("click", (a) => {
+				let target = $("#target-id").val();
+				let reason = $("#ban-reason").val();
+				let banDate = $("#ban-permanent").is(":checked") ? "permanent" : $("#ban-date").val();
+				let bannedUntil = new Date();
+				let comment = "";
+				let cmdDate = "";
+					
 				if(reason == '') return alertKKuTu("차단 사유를 입력해주세요.");
-				if(banDate != '영구' && Number(banDate) == 0) return alertKKuTu("차단 기간을 입력해주세요.");
-				if(banDate != '영구'){
-					endDate.setTime(endDate.getTime() + (Number(banDate) * 24 * 60 * 60 * 1000));
-					comment = `${$("#target-nickname").text()}님을 차단하시겠습니까?<p></p>사유: ${reason}<br></br>기간: ${banDate}일<br></br>종료일: ${endDate.getFullYear()}년 ${endDate.getMonth()+1}월 ${endDate.getDate()}일 ${endDate.getHours()}시 ${endDate.getMinutes()}분`
+				if(banDate != 'permanent'){
+					if(Number(banDate) == 0) return alertKKuTu("차단 기간을 입력해주세요.");
+					
+					bannedUntil.setTime(bannedUntil.getTime() + (Number(banDate) * 24 * 60 * 60 * 1000));
+					comment = `${$("#target-nickname").text()}님을 차단하시겠습니까?<p></p>사유: ${reason}<br></br>기간: ${banDate}일<br></br>종료일: ${bannedUntil.getFullYear()}년 ${bannedUntil.getMonth()+1}월 ${bannedUntil.getDate()}일 ${bannedUntil.getHours()}시`
 				}else comment = `${$("#target-nickname").text()}님을 영구적으로 차단하시겠습니까?<p></p>사유: ${reason}<br></br>기간: 영구`
-				cmdDate = `${endDate.getFullYear()}${endDate.getMonth()+1}${endDate.getDate()}${endDate.getHours()}${endDate.getMinutes()}${endDate.getSeconds()}`
+				
+				cmdDate = `${bannedUntil.getFullYear()}${String(bannedUntil.getMonth()+1).padStart(2, "0")}${String(bannedUntil.getDate()).padStart(2, "0")}${bannedUntil.getHours()}`
 				confirmKKuTu(comment, (e) => {
-					$("#tail-input").val(`ban ${$("#target-id").text()},${reason},${banDate != '영구' ? cmdDate : '영구'}`);
+					$("#tail-input").val(`ban ${$("#target-id").text()},${reason},${banDate != 'permanent' ? cmdDate : 'permanent'}`);
 					$("#tail-btn").trigger("click");
 					$stage.dialog.managementBan.hide();
 					$stage.dialog.management.hide();
 					$stage.dialog.confirmKKuTu.hide();
-					alertKKuTu(banDate != '영구' ? `${$("#target-nickname").text()}님을 차단했습니다.<p></p>사유: ${reason}<br></br>기간: ${banDate}<br></br>종료일: ${endDate.getFullYear()}년 ${endDate.getMonth()+1}월 ${endDate.getDate()}일 ${endDate.getHours()}시 ${endDate.getMinutes()}분` : `${$("#target-nickname").text()}님을 영구적으로 차단했습니다.<p></p>사유: ${reason}<br></br>기간: 영구`);
-				}, (e) => {$stage.dialog.confirmKKuTu.hide()});
+					alertKKuTu(banDate != 'permanent' ? `${$("#target-nickname").text()}님을 차단했습니다.<p></p>사유: ${reason}<br></br>기간: ${banDate}<br></br>종료일: ${bannedUntil.getFullYear()}년 ${bannedUntil.getMonth()+1}월 ${bannedUntil.getDate()}일 ${bannedUntil.getHours()}시` : `${$("#target-nickname").text()}님을 영구적으로 차단했습니다.<p></p>사유: ${reason}<br></br>기간: 영구`);
+				}, (e) => {return $stage.dialog.confirmKKuTu.hide()});
 			}), $stage.dialog.mngBanPermanent.on("change", function(a) {
 				$("#ban-date").attr("disabled", $("#ban-permanent").is(":checked"))
 			}), $stage.dialog.lbPrev.on("click", function(a) {
