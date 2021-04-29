@@ -263,14 +263,7 @@
 				break;
 			case "banned":
 				if($data.id == a.id){
-					if(a.bannedUntil != "permanent"){
-						let year = a.bannedUntil.slice(0,4); // year
-						let month = a.bannedUntil.slice(4,6); // month
-						let day = a.bannedUntil.slice(6,8); // day
-						let hour = a.bannedUntil.slice(8,10); // hour
-						
-						a.bannedUntil = `${year}년 ${month}월 ${day}일 ${hour}시`;
-					}
+					a.bannedUntil = parseDate(a.bannedUntil);
 					ws.onclose = function(b){
 						$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
 						alertKKuTu(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
@@ -281,15 +274,8 @@
 				break;
 			case "chatbanned":
 				if($data.id == a.id){
-					if(a.bannedUntil != "permanent"){
-						let year = a.bannedUntil.slice(0,4); // year
-						let month = a.bannedUntil.slice(4,6); // month
-						let day = a.bannedUntil.slice(6,8); // day
-						let hour = a.bannedUntil.slice(8,10); // hour
-						
-						a.bannedUntil = `${year}년 ${month}월 ${day}일 ${hour}시`;
-					}
-					notice(`관리자가 채팅을 금지했습니다. 사유: ${a.reason} 종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`, "채팅 금지");
+					a.bannedUntil = parseDate(a.bannedUntil);
+					notice(`관리자가 채팅을 금지했습니다. 사유: ${a.reason} 종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`, L.notice);
 				}
 				break;
 			case "yell":
@@ -579,14 +565,7 @@
 					ws.onclose = function(){alert("보안을 위해 비로그인 유저의 접근을 제한합니다.\n로그인 페이지로 이동합니다.")}, $("#intro-text").html("보안을 위해 비로그인 유저의 접근을 제한합니다."), $("#intro").attr("src", `https://cdn.jsdelivr.net/npm/bfkkutudelivr@${L.cdn_version}/img/kkutu/def.png`), location.href = '/login';
 				} else if(a.code == 444){
 					if(a.reason){
-						if(a.bannedUntil != "permanent"){
-							let year = a.bannedUntil.slice(0,4); // year
-							let month = a.bannedUntil.slice(4,6); // month
-							let day = a.bannedUntil.slice(6,8); // day
-							let hour = a.bannedUntil.slice(8,10); // hour
-						
-							a.bannedUntil = `${year}년 ${month}월 ${day}일 ${hour}시`;
-						}
+						a.bannedUntil = parseDate(a.bannedUntil);
 						ws.onclose = function(b){
 							$("#Intro").hide();
 							$stage.loading.show().html(`차단되었습니다. 관리자에게 문의하세요.<p>사유: ${a.reason}<br>종료일: ${a.bannedUntil == 'permanent' ? '영구' : a.bannedUntil}`);
@@ -1389,6 +1368,17 @@
 		var warn = JSON.parse(res);
 		if(!warn.message) return alert("경고 누적 횟수를 조회하지 못했습니다."+warn.error)
 		else return warn.message
+	}
+	
+	function parseDate(number){
+		if(typeof number != "number") return number;
+			
+		let year = number.slice(0,4);
+		let month = number.slice(4,6);
+		let day = number.slice(6,8);
+		let hour = number.slice(8,10);
+		
+		return `${year}년 ${month}월 ${day}일 ${hour}시`;
 	}
 
 	function checkFailCombo(a) {
@@ -3773,5 +3763,10 @@
 		isHacker = true,
 		isWelcome = false;
 	const allowCountry = ['KR'];
+	
+	$(window).on('beforeunload', () => {
+		if(ws) ws.close();
+		if(rws) rws.close();
+	});
 	
 })();
