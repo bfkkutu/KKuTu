@@ -595,48 +595,27 @@ Server.get("/shop", function(req, res){
 });
 
 // POST
-Server.post("/updateme", async function (req, res) {
-	var nickname = req.body.nickname ? req.body.nickname : false;
-	var exordial = req.body.exordial ? req.body.exordial : false;
-	var verified;
+Server.post("/updateme", (req, res) => {
+	let nickname = req.body.nickname === 'true' ? false : req.body.nickname;
+	let exordial = req.body.exordial === 'true' ? false : req.body.exordial;
 	
-	if (req.session.profile) {
-		if(exordial) MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial.slice(0, 100) ]).on();
-		else if(req.body.exordial == "") MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', '' ]).on();
+	if(req.session.profile){
+		if(exordial || exordial == ""){
+			if(exordial.length > 100) exordial = exordial.slice(0, 100);
+			MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial ]).on();
+		}
 		
-		if(nickname != ""){
-			verified = await translateToPromise(MainDB.users.findOne([ 'nickname', nickname.slice(0, 14) ]));
-			if(verified) return res.send({ error: 600 });
-			else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname.slice(0, 14) ]).on();
+		if(nickname){
+			if(nickname.length > 14) nickname = nickname.slice(0, 14);
+			MainDB.users.findOne([ 'nickname', nickname ]).on((data) => {
+				if(data) return res.send({ error: 600 });
+				else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname ]).on();
+			});
 		}
 		return res.send({ result: 200 });
-    } else return res.send({ error: 400 });
+	}else return res.send({ error: 400 });
 });
-/*Server.post("/exordial", function(req, res){
-var text = req.body.data || "";
 
-if(req.session.profile){
-				text = text.slice(0, 100);
-MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', text ]).on(function($res){
-res.send({ text: text });
-				});
-		}else res.send({ error: 400 });
-});
-Server.post("/nickname", function (req, res) {
-	var text = req.body.data || "";
-
-	if (req.session.profile) {
-		text = text.slice(0, 10);
-		MainDB.users.findOne([ 'nickname', text ]).on(function($user){
-			if($user) return res.send({ error: 600 });
-			else{ 
-				MainDB.users.update(['_id', req.session.profile.id]).set(['nickname', text]).on(function ($res) {
-					return res.send({ text: text });
-				});
-			}
-		});
-    } else return res.send({ error: 400 });
-});*/
 Server.post("/buy/:id", function(req, res){
 	if(req.session.profile){
 		var uid = req.session.profile.id;
