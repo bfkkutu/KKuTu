@@ -51,9 +51,9 @@ block CSS
 	
 block Jungle
 	span#PUBLIC= PUBLIC ? "true" : undefined
-	// span#PORT= locals.PORT
-	//span#URL= `${locals.PROTOCOL}://${locals.HOST}:${locals.PORT}/${locals._id}`
-	span#URL= `${locals.PROTOCOL}://ws.bfkkutu.kr/g${locals.PORT}/${locals._id}`
+	span#PORT= locals.PORT
+	span#URL= `${locals.PROTOCOL}://${locals.HOST}/g${locals.PORT}/${locals._id}`
+	span#ALTERNATIVE_URL= `${locals.PROTOCOL}://${locals.ALTERNATIVE_HOST}/g${locals.PORT}/${locals._id}`
 	span#MOREMI_PART= locals.MOREMI_PART.join(',')
 	span#AVAIL_EQUIP= locals.AVAIL_EQUIP.join(',')
 	span#RULE= JSON.stringify(locals.RULE)
@@ -463,20 +463,20 @@ block Middle
 			textarea#inquire-text(type='textfield', style='width: 288px; height: 75px;')
 		div.dialog-bar.tail-button
 			button#inquire-submit= L('submit')
-	+Dialog('InquireDetailDiag', 400, 320, L('nfInquire'))
+	+Dialog('InquireDetailDiag', 400, 380, L('nfInquire'))
 		div.dialog-bar
 			h4= L('inquire_date')
 			input#inquiry-detail-date(type='textfield', style='width: 288px;', readonly)
 			h4= L('inquire_title')
 			input#inquiry-detail-title(type='textfield', style='width: 288px;', readonly)
 			h4= L('inquire_text')
-			textarea#inquiry-detail-body(type='textfield', style='width: 288px; height: 75px;', readonly)
+			textarea#inquiry-detail-body(type='textfield', style='width: 288px; height: 105px;', readonly)
 			h4#inquiry-detail-description= L('answer_date')
 			input#answer-detail-date(type='textfield', style='width: 288px;', readonly)
 			h4#inquiry-detail-answerer= L('answerer')
 			input#answer-detail-name(type='textfield', style='width: 288px;', readonly)
 			h4#inquiry-detail-text= L('answer_text')
-			textarea#answer-detail-body(type='textfield', style='width: 288px; height: 75px;', readonly)
+			textarea#answer-detail-body(type='textfield', style='width: 288px; height: 105px;', readonly)
 	+Dialog('ManagementDiag', 300, 160, L('management'))
 		div.dialog-bar
 			h4= L('mngID')
@@ -767,7 +767,8 @@ block Middle
 		div#Chat
 		input#Talk(style="display: none;")
 		button#ChatBtn(style="display: none;")
-		input#chatinput(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
+		input#chatinput(maxlength=200, style="display: none;", onchange="alert('비인가 프로그램 사용이 감지되어 접속이 종료됩니다.'), document.getElementById('Middle').style.display = 'none';")
+		input#chatinput_(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
 	+Advertisement('AD')
 		

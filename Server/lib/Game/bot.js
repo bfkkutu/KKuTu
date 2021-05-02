@@ -2,8 +2,10 @@
 	BFKKuTu Discord Bot 4.9.6
 */
 
-var GLOBAL = require("../sub/global.json");
-var JLog = require('../sub/jjlog');
+let GLOBAL = require("../sub/global.json");
+
+const JLog = require('../sub/jjlog');
+const Outer = require('../sub/outer');
 
 const Discord = require('discord.js');
 const Bot = new Discord.Client();
@@ -22,7 +24,7 @@ exports.ban = function(target, judge, reason, bannedUntil){
 			{ name: "제재 대상자", value: `${target.id} (${target.nickname})` },
 			{ name: "제재 사유", value: reason },
 			{ name: "처리자", value: judge || "알 수 없음" },
-			{ name: "처리 결과", value: `계정 정지 (${bannedUntil == 'permanent' ? '영구' : bannedUntil})` }
+			{ name: "처리 결과", value: `계정 정지 (${bannedUntil == 'permanent' ? '영구' : Outer.parseDate(bannedUntil)})` }
 		)
 	if(GLOBAL.BOT_OPTIONS.ENABLED) Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.BAN).send(message);
 }
@@ -34,7 +36,7 @@ exports.chatban = function(target, judge, reason, bannedUntil){
 			{ name: "제재 대상자", value: `${target.id} (${target.nickname})` },
 			{ name: "제재 사유", value: reason },
 			{ name: "처리자", value: judge || "알 수 없음" },
-			{ name: "처리 결과", value: `채팅 금지 (${bannedUntil == 'permanent' ? '영구' : bannedUntil})` }
+			{ name: "처리 결과", value: `채팅 금지 (${bannedUntil == 'permanent' ? '영구' : Outer.parseDate(bannedUntil)})` }
 		)
 	if(GLOBAL.BOT_OPTIONS.ENABLED) Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.BAN).send(message);
 }

@@ -16,7 +16,8 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 const JLog	 = require("../sub/jjlog");
-const Server = require('http').createServer();
+const http = require('http');
+const Server = http.createServer();
 const url = require('url');
 const proxy = require('http2-proxy');
 

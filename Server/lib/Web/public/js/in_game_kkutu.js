@@ -2384,6 +2384,7 @@
 
 		function h() {
 			ws = new _WebSocket($data.URL), ws.onopen = function(a) {
+				if($data.URL == $data.ALTERNATIVE_URL) console.log("Connected to an alternative WAF service because the primary WAF service did not respond properly.");
 				loading()
 			}, ws.onmessage = _onMessage = function(a) {
 				onMessage(JSON.parse(a.data))
@@ -2394,6 +2395,8 @@
 					isWelcome = false;
 				})
 			}, ws.onerror = function(a) {
+				if($data.URL == $("#URL").html()) $data.URL = $data.ALTERNATIVE_URL, h();
+				else alert("웹 소켓 WAF 서비스에 문제가 발생해 조치 중입니다.\n이용에 불편을 드려 죄송합니다.");
 				console.warn(L.error, a)
 			}
 		}
@@ -2404,7 +2407,7 @@
 			}
 		}, 18000);
 		var i;
-		for ($data.PUBLIC = "true" == $("#PUBLIC").html(), $data.URL = $("#URL").html(), $data.version = $("#version").html(), $data.server = location.href.match(/\?.*server=(\d+)/)[1], $data.shop = {}, $data._okg = 0, $data._playTime = 0, $data._kd = "", $data._timers = [], $data._obtain = [], $data._wblock = {}, $data._shut = {}, $data.usersR = {}, EXP.push(getRequiredScore(1)), i = 2; i < MAX_LEVEL; i++) EXP.push(EXP[i - 2] + getRequiredScore(i));
+		for ($data.PUBLIC = "true" == $("#PUBLIC").html(), $data.URL = $("#URL").html(), $data.ALTERNATIVE_URL = $("#ALTERNATIVE_URL").html(), $data.version = $("#version").html(), $data.server = location.href.match(/\?.*server=(\d+)/)[1], $data.shop = {}, $data._okg = 0, $data._playTime = 0, $data._kd = "", $data._timers = [], $data._obtain = [], $data._wblock = {}, $data._shut = {}, $data.usersR = {}, EXP.push(getRequiredScore(1)), i = 2; i < MAX_LEVEL; i++) EXP.push(EXP[i - 2] + getRequiredScore(i));
 		if (EXP[MAX_LEVEL - 1] = 1 / 0, EXP.push(1 / 0), $stage = {
 				loading: $("#Loading"),
 				lobby: {

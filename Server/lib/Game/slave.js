@@ -112,10 +112,7 @@ Server.on('connection', function(socket, info){
 	var $c;
 	
 	socket.on('error', function(err){
-		var ec = err.toString();
-		if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
-			JLog.warn("Error on #" + key + " on ws: " + ec);
-		}
+		JLog.warn("Error on #" + key + " on ws: " + ec);
 	});
 	if(CHAN != Number(chunk[1])){
 		JLog.warn(`Wrong channel value ${chunk[1]} on @${CHAN}`);

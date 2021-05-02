@@ -484,7 +484,7 @@ exports.Client = function(socket, profile, sid){
 			let ban = first ? {"isBanned":false,"reason":"","bannedAt":"","bannedUntil":""} : $user.ban;
 			let chatban = first ? {"isBanned":false,"reason":"","bannedAt":"","bannedUntil":""} : $user.chatban;
 			
-			if(first) $user = { money: 0 };
+			if(first) $user = { nickname: my.profile.title || my.profile.name || "닉네임 없음", money: 0 };
 			if(chatban.isBanned){
 				my.noChat = true;
 			}

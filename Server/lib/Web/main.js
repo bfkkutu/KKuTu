@@ -214,7 +214,7 @@ DB.ready = function(){
 	webServer.get('*', function(req, res) {
 		res.status(hsc.StatusCodes.FORBIDDEN).send(`<h1>403 Forbidden</h1>`);
 	});
-	if(Const.IS_SECURED || Const.WS) {
+	if(Const.IS_SECURED || Const.WS.ENABLED) {
 		const options = Secure();
 		https.createServer(options, webServer).listen(443);
 	}else webServer.listen(80);
@@ -223,10 +223,12 @@ DB.ready = function(){
 Const.MAIN_PORTS.forEach(function(v, i){
 	var KEY = process.env['WS_KEY'];
 	var protocol;
-	if(!Const.WS){
+	
+	if(!Const.WS.ENABLED){
 		if(Const.IS_SECURED) protocol = 'wss';
 		else protocol = 'ws';
 	}else protocol = 'ws';
+	
 	gameServers[i] = new GameClient(KEY, `${protocol}://${GLOBAL.GAME_SERVER_HOST}:${v}/${KEY}`);
 });
 function GameClient(id, url){
@@ -309,45 +311,9 @@ Server.use(referrerPolicy({ policy: 'unsafe-url' }));
 Server.use(referrerPolicy());
 // Referrer-Policy: no-referrer
 
-/*Server.use(csp({
-	// Specify directives as normal.
-	directives: {
-		defaultSrc: ["'self'", 'https://bfk.opg.kr'],
-		scriptSrc: ["'self'", "https://bfk.opg.kr/js", "'unsafe-inline'"],
-		styleSrc: ["'self'", 'https://bfk.opg.kr/css', "'unsafe-inline'"],
-		fontSrc: ["'self'", 'https://bfk.opg.kr/media'],
-		imgSrc: ["'self'", 'https://bfk.opg.kr/img', 'data:'],
-		sandbox: ['allow-forms', 'allow-scripts'],
-		reportUri: '/report-violation',
-		objectSrc: ["'none'"],
-		upgradeInsecureRequests: true,
-		workerSrc: false  // This is not set.
-	},
-	
-	// This module will detect common mistakes in your directives and throw errors
-	// if it finds any. To disable this, enable "loose mode".
-	loose: false,
-	
-	// Set to true if you only want browsers to report errors, not block them.
-	// You may also set this to a function(req, res) in order to decide dynamically
-	// whether to use reportOnly mode, e.g., to allow for a dynamic kill switch.
-	reportOnly: false,
-	
-	// Set to true if you want to blindly set all headers: Content-Security-Policy,
-	// X-WebKit-CSP, and X-Content-Security-Policy.
-	setAllHeaders: false,
-	
-	// Set to true if you want to disable CSP on Android where it can be buggy.
-	disableAndroid: false,
-	
-	// Set to false if you want to completely disable any user-agent sniffing.
-	// This may make the headers less compatible but it will be much faster.
-	// This defaults to `true`.
-	browserSniff: true
-}));*/
-
 Server.get("/", cors(), function(req, res){
 	var server = req.query.server;
+	let loc = Const.MAIN_PORTS[server] ? 'kkutu' : 'portal';
 	
 	res.get('X-Frame-Options') // === 'Deny'
 	
@@ -366,7 +332,7 @@ Server.get("/", cors(), function(req, res){
 		var id = req.session.id;
 		var ptc = 'ws';
 		
-		if(Const.IS_SECURED || Const.WS) ptc = 'wss';
+		if(Const.IS_SECURED || Const.WS.ENABLED) ptc = 'wss';
 
 		if($doc){
 			req.session.profile = $doc.profile;
@@ -375,11 +341,12 @@ Server.get("/", cors(), function(req, res){
 			delete req.session.profile;
 		}
 		if(!maintenance){
-			page(req, res, Const.MAIN_PORTS[server] ? "kkutu" : "portal", {
+			page(req, res, loc, {
 				'_page': "kkutu",
 				'_id': id,
 				'PORT': Const.MAIN_PORTS[server],
-				'HOST': req.hostname,
+				'HOST': Const.WS.ENABLED ? Const.WS.URI : req.hostname,
+				'ALTERNATIVE_HOST': Const.WS.ALTERNATIVE_URI,
 				'PROTOCOL': ptc,
 				'TEST': req.query.test,
 				'MOREMI_PART': Const.MOREMI_PART,
@@ -486,7 +453,7 @@ Server.get("/portal_old", function(req, res){
 		var id = req.session.id;
 		var ptc = 'ws';
 		
-		if(Const.IS_SECURED || Const.CF) ptc = 'wss'
+		if(Const.IS_SECURED || Const.WS.ENABLED) ptc = 'wss'
 
 		if($doc){
 			req.session.profile = $doc.profile;

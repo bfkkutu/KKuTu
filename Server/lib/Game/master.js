@@ -206,7 +206,9 @@ function processAdmin(id, value, requestId){
 			});
 			KKuTu.publish('notice', { value: DIC[target].nickname + "님이 차단되었습니다." });
 			Bot.ban(DIC[target], id, reason, bannedUntil);
+			
 			if(DIC[target]) DIC[target].send('banned', { id: target, reason: reason, bannedUntil: bannedUntil });
+			
 			break;
 		}
 		case "forcenick": {
@@ -650,10 +652,7 @@ exports.init = function(_SID, CHAN){
 			var $c;
 			
 			socket.on('error', function(err){
-				var ec = err.toString();
-				if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
-					JLog.warn("Error on #" + key + " on ws: " + ec);
-				}
+				JLog.warn("Error on #" + key + " on ws: " + ec);
 			});
 			// 웹 서버
 			if(info.headers.host.match(/^127\.0\.0\.2:/)){
