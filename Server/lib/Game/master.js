@@ -652,7 +652,7 @@ exports.init = function(_SID, CHAN){
 			var $c;
 			
 			socket.on('error', function(err){
-				JLog.warn("Error on #" + key + " on ws: " + ec);
+				JLog.warn("Error on #" + key + " on ws: " + err.toString());
 			});
 			// 웹 서버
 			if(info.headers.host.match(/^127\.0\.0\.2:/)){
@@ -748,10 +748,7 @@ exports.init = function(_SID, CHAN){
 			});
 		});
 		Server.on('error', function (err) {
-			var ec = err.toString();
-			if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
-				JLog.warn("Error on ws: " + ec);
-			}
+			JLog.warn("Error on ws: " + err.toString());
 		});
 		MainDB.statistics.findOne([ 'url', 'every' ]).on(function($data){
 			MainDB.statistics.update([ 'url', 'every' ]).set([ 'kkutu', Number($data.kkutu)+1 ]).on();
@@ -770,6 +767,7 @@ function joinNewUser($c, ip, path) {
 		guest: $c.guest,
 		box: $c.box,
 		nickname: $c.nickname,
+		exordial: $c.exordial,
 		playTime: $c.data.playTime,
 		rankPoint: $c.data.rankPoint,
 		okg: $c.okgCount,
@@ -837,6 +835,26 @@ function processClientRequest($c, msg) {
 			break;
 		case 'wsrefresh':
 			$c.refresh();
+			break;
+		case 'datarefresh':
+			$c.send('datarefresh', {
+				id: $c.id,
+				guest: $c.guest,
+				box: $c.box,
+				nickname: $c.nickname,
+				exordial: $c.exordial,
+				playTime: $c.data.playTime,
+				rankPoint: $c.data.rankPoint,
+				okg: $c.okgCount,
+				careful: $c.careful, // 주의
+				chatFreeze: chatFreeze,
+				users: KKuTu.getUserList(),
+				rooms: KKuTu.getRoomList(),
+				friends: $c.friends,
+				admin: $c.admin,
+				test: global.test,
+				caj: $c._checkAjae ? true : false
+			});
 			break;
 		case 'careful': // 주의 완료
 			MainDB.users.update([ '_id', msg.value ]).set([ 'careful', null ]).on();

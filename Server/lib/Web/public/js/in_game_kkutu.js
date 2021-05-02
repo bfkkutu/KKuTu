@@ -195,7 +195,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-		} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.soundLoadCount = 0, $data.nickname = a.nickname, $data.exordial = a.exordial, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+				} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.soundLoadCount = 0, $data.nickname = a.nickname, $data.exordial = a.exordial, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -325,6 +325,9 @@
 				break;
 			case "dying":
 				yell(L.dying), notice(L.dying, L.yell);
+				break;
+			case "datarefresh":
+				$data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.nickname = a.nickname, $data.exordial = a.exordial, $data.users = a.users, $data.rooms = a.rooms, $data.friends = a.friends, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, updateUI(void 0, !0), updateCommunity();
 				break;
 			case "opentail":
 				showDialog($stage.dialog.tail);
@@ -2403,6 +2406,7 @@
 		_setInterval(function() {
 			if (isWelcome) {
 				send('wsrefresh');
+				if (!$data.room && !$data._gaming) send('datarefresh');
 				if ($data.room) send('wsrefresh', undefined, true);
 			}
 		}, 18000);
@@ -2958,8 +2962,10 @@
 			}), $stage.menu.wordPlus.on("click", function(a) {
 				showDialog($stage.dialog.wordPlus)
 			}), $stage.menu.reloadRoom.on("click", function(a) {
-				$("#roomlist-loading").show(),
-				updateRoomList(true), updateUserList(true);
+				$("#roomlist-loading").show();
+				send('datarefresh');
+				updateRoomList(true);
+				updateUserList(true);
 			}), $stage.menu.Clan.on("click",function(a){
 				if(!$clan) getClan($data.id)
 				showDialog($stage.dialog.clanDiag);
