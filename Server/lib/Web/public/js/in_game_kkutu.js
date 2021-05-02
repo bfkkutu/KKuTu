@@ -195,7 +195,7 @@
 			case "welcome":
 				if (a.guest) {
 					return ws.close();
-		} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.soundLoadCount = 0, $data.nickname = a.nickname, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
+		} else $data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.soundLoadCount = 0, $data.nickname = a.nickname, $data.exordial = a.exordial, $data.users = a.users, $data.robots = {}, $data.rooms = a.rooms, $data.place = 0, $data.friends = a.friends, $data._friends = {}, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data._gaming = !1, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, a.test && alert(L.welcomeTestServer), location.hash[1] && tryJoin(location.hash.slice(1)), updateUI(void 0, !0), welcome(), a.caj && checkAge(), updateCommunity();
 				break;
 			case "conn":
 				$data.setUser(a.user.id, a.user), updateUserList();
@@ -3188,25 +3188,34 @@
 					$data.box = a, drawMyDress()
 				}))
 			}), $stage.dialog.dressOK.on("click", function(a) {
-				var nickChanged = $("#dress-nickname").val() != $data.nickname;
-				//var exorChanged = $("#dress-exordial").val() != $data.nickname;
-				var verified = checkNick($("#dress-nickname").val());
+				let nickChanged = $("#dress-nickname").val() != $data.nickname;
+				let exorChanged = $("#dress-exordial").val() != $data.exordial;
 				
-				if(!verified) return;
-				
-				$(a.currentTarget).attr("disabled", !0);
-				$.post("/updateme", {
-					nickname: (nickChanged ? delBadWords($("#dress-nickname").val()) : ""),
-					exordial: delBadWords($("#dress-exordial").val())
-				}, function(e) {
-					if(e.error) return fail(e.error);
-					else{
-						if(nickChanged) $data.users[$data.id].nickname = delBadWords($("#dress-nickname").val()), $data.nickname = delBadWords($("#dress-nickname").val()), send("updatedMe", { id: $data.id, nickname: $data.nickname, exordial: $data.users[$data.id].exordial }), alert(`닉네임이 ${$data.nickname}(으)로 변경되었습니다.`), updateUserList(true)
-						$data.users[$data.id].exordial = delBadWords($("#dress-exordial").val())
-					}
-					$stage.dialog.dressOK.attr("disabled", false);
-					$stage.dialog.dress.hide();
-				});
+				if(nickChanged || exorChanged){
+					let newNickname = !nickChanged || delBadWords($("#dress-nickname").val());
+					let newExordial = !exorChanged || delBadWords($("#dress-exordial").val());
+					let verified = checkNick($("#dress-nickname").val());
+					
+					if(!verified) return;
+					
+					$(a.currentTarget).attr("disabled", true);
+					
+					$.post("/updateme", {
+						nickname: newNickname,
+						exordial: newExordial
+					}, (data) => {
+						if(data.error) return fail(data.error);
+						else{
+							if(nickChanged) $data.users[$data.id].nickname = $data.nickname = newNickname;
+							if(exorChanged) $data.users[$data.id].exordial = $data.exordial = newExordial;
+							send("updatedMe", { id: $data.id, nickname: $data.nickname, exordial: $data.exordial });
+							alert(`${nickChanged ? (exorChanged ? "닉네임이 " + $data.nickname + "(으)로, 소개말이 " + $data.exordial + "으(로) 변경되었습니다." : "닉네임이 " + $data.nickname + "(으)로 변경되었습니다.") : "소개말이 " + $data.exordial + "(으)로 변경되었습니다."}`);
+							updateUserList(true);
+						}
+						$stage.dialog.dressOK.attr("disabled", false);
+						$stage.dialog.dress.hide();
+					});
+				}
 			}), $("#DressDiag .dress-type").on("click", function(a) {
 				var b = $(a.currentTarget),
 					c = b.attr("id").slice(11);
