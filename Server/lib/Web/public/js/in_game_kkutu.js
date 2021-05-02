@@ -3213,9 +3213,9 @@
 							updateUserList(true);
 						}
 						$stage.dialog.dressOK.attr("disabled", false);
-						$stage.dialog.dress.hide();
 					});
 				}
+				$stage.dialog.dress.hide();
 			}), $("#DressDiag .dress-type").on("click", function(a) {
 				var b = $(a.currentTarget),
 					c = b.attr("id").slice(11);

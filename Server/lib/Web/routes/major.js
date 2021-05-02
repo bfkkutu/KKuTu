@@ -600,7 +600,7 @@ Server.post("/updateme", (req, res) => {
 	let exordial = req.body.exordial === 'true' ? false : req.body.exordial;
 	
 	if(req.session.profile){
-		if(exordial || exordial == ""){
+		if(exordial || exordial === ""){
 			if(exordial.length > 100) exordial = exordial.slice(0, 100);
 			MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'exordial', exordial ]).on();
 		}
@@ -609,7 +609,10 @@ Server.post("/updateme", (req, res) => {
 			if(nickname.length > 14) nickname = nickname.slice(0, 14);
 			MainDB.users.findOne([ 'nickname', nickname ]).on((data) => {
 				if(data) return res.send({ error: 600 });
-				else MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname ]).on();
+				else{
+					MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname ]).on();
+					return res.send({ result: 200 });
+				}
 			});
 		}
 		return res.send({ result: 200 });
