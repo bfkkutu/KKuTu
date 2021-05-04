@@ -155,39 +155,39 @@ function processAdmin(id, value, requestId){
 	switch(cmd){
 		case "yell": {
 			KKuTu.publish('yell', { value: value });
-			break;
+			return null;
 		}
 		case "clearchat": {
 			KKuTu.publish('clearchat');
-			break;
+			return null;
 		}
 		case "eval": {
 			KKuTu.publish('eval', { value: value });
-			break;
+			return null;
 		}
 		case "notice": {
 			KKuTu.publish('notice', { value: value });
-			break;
+			return null;
 		}
 		case "roomsize": {
 			KKuTu.publish('roomsize', { value: value });
-			break;
+			return null;
 		}
 		case "gamesize": {
 			KKuTu.publish('gamesize', { value: value });
-			break;
+			return null;
 		}
 		case "loadimage": {
 			KKuTu.publish('loadimage', { imgLoc: value.split(",")[0], imgW: value.split(",")[1], imgH: value.split(",")[2] });
-			break;
+			return null;
 		}
 		case "loadsound": {
 			KKuTu.publish('loadsound', { soundLoc: value.split(",")[0] });
-			break;
+			return null;
 		}
 		case "playmedia": {
 			KKuTu.publish('playmedia', { value: value });
-			break;
+			return null;
 		}
 		case "ban": {
 			if(value.match(/,/g).length != 2) return;
@@ -209,7 +209,7 @@ function processAdmin(id, value, requestId){
 			
 			if(DIC[target]) DIC[target].send('banned', { id: target, reason: reason, bannedUntil: bannedUntil });
 			
-			break;
+			return null;
 		}
 		case "forcenick": {
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'nickname', value.split(",")[1] ]).on();
@@ -217,7 +217,7 @@ function processAdmin(id, value, requestId){
 				temp.socket.send('{"type":"error","code":457}');
 				temp.socket.close();
 			}
-			break;
+			return null;
 		}
 		case "forceexor": {
 			MainDB.users.update([ '_id', value.split(",")[0] ]).set([ 'exordial', value.split(",")[1] ]).on();
@@ -225,13 +225,13 @@ function processAdmin(id, value, requestId){
 				temp.socket.send('{"type":"error","code":458}');
 				temp.socket.close();
 			}
-			break;
+			return null;
 		}
 		case "alert": {
 			var target = value.split(",")[0];
 			value = value.split(",")[1];
 			DIC[target].send('alert', { id : target, value: value });
-			break;
+			return null;
 		}
 		case "sweetalert": {
 			value = value.split(",");
@@ -240,13 +240,13 @@ function processAdmin(id, value, requestId){
 			var comment = value[2];
 			var kind = value[3];
 			DIC[target].send('sweetalert', { id : target, title: title, comment: comment, kind: kind });
-			break;
+			return null;
 		}
 		case "yellto": {
 			var target = value.split(",")[0];
 			value = value.split(",")[1];
 			DIC[target].send('yellto', { id : target, value: value });
-			break;
+			return null;
 		}
 		case "unban": {
 			MainDB.users.findOne([ '_id', value ]).on(function(data){
@@ -254,7 +254,7 @@ function processAdmin(id, value, requestId){
 				MainDB.users.update([ '_id', value ]).set([ 'ban', JSON.stringify({"isBanned":false,"reason":"","bannedAt":"","bannedUntil":""}) ]).on();
 			});
 			KKuTu.publish('notice', { value: DIC[value].nickname + "님이 차단 해제되었습니다." });
-			break;
+			return null;
 		}
 		case "chatban": {
 			if(value.match(/,/g).length != 2) return;
@@ -276,7 +276,7 @@ function processAdmin(id, value, requestId){
 			
 			if(DIC[target]) DIC[target].send('chatbanned', { id: target, reason: reason, bannedUntil: bannedUntil });
 			
-			break;
+			return null;
 		}
 		case "kick": { // 유저 킥
 			if(temp = DIC[value]){
@@ -287,7 +287,7 @@ function processAdmin(id, value, requestId){
 				temp.socket.send('{"type":"error","code":410}');
 				temp.socket.close();
 			}
-			break;
+			return null;
 		}
 		case "ipban": {
 			if(temp = DIC[value]){
@@ -308,7 +308,7 @@ function processAdmin(id, value, requestId){
 					})
 				}
 			}
-			break;
+			return null;
 		}
 		case "unipban":
 		case "ipunban": {
@@ -331,7 +331,7 @@ function processAdmin(id, value, requestId){
 					})
 				}
 			}*/
-			break;
+			return null;
 		}
 		case "warn": {
 			if(value.match(/,/g).length != 1) return;
@@ -361,7 +361,7 @@ function processAdmin(id, value, requestId){
 					KKuTu.publish('notice', { value: `${target}님에게 경고 ${newWarn}회가 부여되었습니다.` });
 				}
 			});
-			break;
+			return null;
 		}
 		case "setwarn": {
 			if(value.match(/,/g).length != 1) return;
@@ -376,14 +376,18 @@ function processAdmin(id, value, requestId){
 					let now = moment().format("YYYYMMDDHH");
 					
 					MainDB.users.update([ '_id', target ]).set([ 'warn', 0 ], [ 'ban', JSON.stringify({"isBanned":true,"reason":"경고 누적","bannedAt":String(now),"bannedUntil":"permanent"}) ]).on();
+					Bot.ban({id: data._id, nickname: data.nickname}, id, `경고 누적 (${warn}회)`, "영구");
 					
 					if(DIC[target]){
 						KKuTu.publish('notice', { value: `${target}님의 경고가 4회 이상 누적되어 계정이 영구 정지되었습니다.` });
 						DIC[target].send('banned', { id: target, bannedAt: now, bannedUntil: "영구", reason: "경고 누적" });
 					}
-				}else MainDB.users.update([ '_id', target ]).set([ 'warn', warn ]).on();
+				}else{
+					Bot.warn(data, id, warn - data.warn, warn);
+					MainDB.users.update([ '_id', target ]).set([ 'warn', warn ]).on();
+				}
 			});
-			break;
+			return null;
 		}
 		case "breakroom": {
 			for(var i in ROOM[value].players){
@@ -396,7 +400,7 @@ function processAdmin(id, value, requestId){
 			KKuTu.publish('breakroom', value);
 			delete ROOM[value];
 			KKuTu.publish('notice', { value: `방 ${value}이 삭제되었습니다.` });
-			break;
+			return null;
 		}
 		case "roomtitle": {
 			var target = value.split(",")[0];
@@ -404,27 +408,27 @@ function processAdmin(id, value, requestId){
 			ROOM[target].title = newtitle;
 			KKuTu.publish('roomtitle', value);
 			KKuTu.publish('notice', { value: `방 ${target}의 제목이 변경되었습니다.` });
-			break;
+			return null;
 		}
 		case "update": {
 			for(var i in DIC){
 				DIC[i].send('update');
 			}
-			break;
+			return null;
 		}
 		case "forceready": {
 			KKuTu.publish('forceready', value);
 			DIC[value].send('forceready', { id : value });
-			break;
+			return null;
 		}
 		case "forcespectate": {
 			KKuTu.publish('forcespectate', value);
 			DIC[value].send('forcespectate', { id : value });
-			break;
+			return null;
 		}
 		case "opentail": {
 			DIC[id].send('opentail');
-			break;
+			return null;
 		}
 		case "tailroom": {
 			if(temp = ROOM[value]){
@@ -434,7 +438,7 @@ function processAdmin(id, value, requestId){
 				}else T_ROOM[value] = id;
 				if(DIC[id]) DIC[id].send('tail', { a: i ? "trX" : "tr", rid: temp.id, id: id, msg: { pw: temp.password, players: temp.players } });
 			}
-			break;
+			return null;
 		}
 		case "tailuser": {
 			if(temp = DIC[value]){
@@ -445,25 +449,25 @@ function processAdmin(id, value, requestId){
 				temp.send('test');
 				if(DIC[id]) DIC[id].send('tail', { a: i ? "tuX" : "tu", rid: temp.id, id: id, msg: temp.getData() });
 			}
-			break;
+			return null;
 		}
 		case "freeze": {
 			KKuTu.publish('yell', { value: "관리자가 채팅을 얼렸습니다." });
 			chatFreeze = true;
 			DIC[id].send('freeze');
-			break;
+			return null;
 		}
 		case "unfreeze": {
 			KKuTu.publish('yell', { value: "관리자가 채팅을 녹였습니다." });
 			chatFreeze = false;
 			DIC[id].send('unfreeze');
-			break;
+			return null;
 		}
 		case "careful": { // 주의 지급
 			var id = value.split(",")[0];
 			var careful = value.split(",")[1];
 			MainDB.users.update([ '_id', id ]).set([ 'careful', careful ]).on();
-			break;
+			return null;
 		}
 		case "dump": {
 			if(DIC[id]) DIC[id].send('yell', { value: "This feature is not supported..." });
@@ -475,7 +479,7 @@ function processAdmin(id, value, requestId){
 				if(DIC[id]) DIC[id].send('yell', { value: "DUMP OK" });
 				JLog.success("Dumping success.");
 			});*/
-			break;
+			return null;
 		}
 	}
 	return value;

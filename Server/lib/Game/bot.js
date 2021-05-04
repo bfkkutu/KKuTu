@@ -44,7 +44,7 @@ exports.warn = function(target, judge, warn, newWarn, reason){
 	if(warn == 0) return;
 	let kind = warn > 0 ? "제재" : "차감";
 	let message = new Discord.MessageEmbed()
-		.setTitle(`경고 ${warn > 0 ? "" : "차감"}`)
+		.setTitle(`경고 ${warn > 0 ? "" : "차감"} | BFKKuTu`)
 		.setColor(warn > 0 ? "FFFF00" : "00FF00")
 		.addFields(
 			{ name: `${kind} 대상자`, value: `${target._id} (${target.nickname})` },
