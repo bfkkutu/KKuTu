@@ -23,29 +23,30 @@ const passport = require('passport');
 const glob = require('glob-promise');
 const GLOBAL	 = require("../../sub/global.json");
 const config = require('../../sub/auth.json');
-const path = require('path')
+const path = require('path');
 
 //const HttpsProxyAgent = require('https-proxy-agent');
 //const agent = new HttpsProxyAgent(process.env.HTTP_PROXY || "http://172.30.0.12:999");
 
 function strategyProcess(req, accessToken, MainDB, $p, done) {
-    $p.token = accessToken;
-    $p.sid = req.session.id;
-
-    let now = Date.now();
-    $p.sid = req.session.id;
-    req.session.admin = GLOBAL.ADMIN.includes($p.id);
-    req.session.authType = $p.authType;
-    MainDB.session.upsert([ '_id', req.session.id ]).set({
-        'profile': $p,
-        'createdAt': now
-    }).on();
-    MainDB.users.findOne([ '_id', $p.id ]).on(($body) => {
-        req.session.profile = $p;
-        MainDB.users.update([ '_id', $p.id ]).set([ 'lastLogin', now ]).on();
+	$p.token = accessToken;
+	$p.sid = req.session.id;
+	req.session.authType = $p.authType;
+	
+	let now = Date.now();
+	req.session.admin = GLOBAL.ADMIN.includes($p.id);
+	req.session.authType = $p.authType;
+	
+	MainDB.users.findOne([ '_id', $p.id ]).on(($body) => {
+		req.session.profile = $p;
+		if($body.nickname != null) $p.title = $p.name = $body.nickname;
+		MainDB.session.upsert([ '_id', req.session.id ]).set({
+			'profile': $p,
+			'createdAt': now
+		}).on();
+		MainDB.users.update([ '_id', $p.id ]).set([ 'lastLogin', now ]).on();
 		done(null, $p);
-    });
-
+	});
 }
 
 exports.run = (Server, page) => {
@@ -59,7 +60,7 @@ exports.run = (Server, page) => {
     });
 
     const strategyList = {};
-    
+	
 	for (let i in config) {
 		try {
 			let auth = require(path.resolve(__dirname, '..', 'auth', 'auth_' + i + '.js'))

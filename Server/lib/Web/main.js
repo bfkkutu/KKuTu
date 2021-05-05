@@ -76,7 +76,7 @@ const cors = require('cors');
 const Router = Express.Router();
 
 const hsc = require('http-status-codes');
-	
+
 var maintenance; // boolean
 
 WebInit.MOBILE_AVAILABLE = [
@@ -336,6 +336,7 @@ Server.get("/", cors(), function(req, res){
 
 		if($doc){
 			req.session.profile = $doc.profile;
+			if($doc.nickname != null) req.session.profile.title = req.session.profile.name = $doc.nickname;
 			id = $doc.profile.sid;
 		}else{
 			delete req.session.profile;
@@ -393,7 +394,7 @@ Server.get("/", cors(), function(req, res){
 
 Server.get("/servers", function(req, res){
 	var list = [];
-
+	
 	gameServers.forEach(function(v, i){
 		list[i] = v.seek;
 	});
