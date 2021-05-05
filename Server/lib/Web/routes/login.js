@@ -39,7 +39,7 @@ function strategyProcess(req, accessToken, MainDB, $p, done) {
 	
 	MainDB.users.findOne([ '_id', $p.id ]).on(($body) => {
 		req.session.profile = $p;
-		if($body.nickname != null) $p.title = $p.name = $body.nickname;
+		if($body.nickname) $p.title = $p.name = $body.nickname;
 		MainDB.session.upsert([ '_id', req.session.id ]).set({
 			'profile': $p,
 			'createdAt': now
