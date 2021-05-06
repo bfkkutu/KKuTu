@@ -58,6 +58,19 @@ function validate(list, item){
 	else list = (list == item ? "" : list)
 	return list
 }
+function getDirectories(path, callback) {
+	/*File.readdir(path, function (err, content) {
+		if (err) return callback(err)
+		callback(false, content)
+	});*/
+	var files = null;
+	try{
+		files = File.readdirSync(path);
+	}catch(e){
+		return callback(e)
+	}
+	return callback(false, files)
+}
 
 exports.run = function(Server, page){
 
@@ -389,8 +402,8 @@ function onKKuTuDB(req, res){
 	
 	if(list) list = list.split(/[,\r\n]+/);
 	else return res.sendStatus(400);
-	if(!TABLE) res.sendStatus(400);
-	if(!TABLE.insert) res.sendStatus(400);
+	if(!TABLE) return res.sendStatus(400);
+	if(!TABLE.insert) return res.sendStatus(400);
 	
 	(async () => {
 		await Promise.all(list.map(async item => {
@@ -407,9 +420,10 @@ function onKKuTuDB(req, res){
 				$doc.theme += "," + theme;
 				$doc.mean += `＂${len+1}＂`;
 				await translateToPromise(TABLE.update([ '_id', item ]).set([ 'type', $doc.type ], [ 'theme', $doc.theme ], [ 'mean', $doc.mean ]));
+				//itemLog(item, req, theme, list.length);
 			}else{
 				JLog.warn(`Word '${item}' already has the theme '${theme}'!`);
-				validatedList = validate(validatedList, item);
+				validatedList = await validate(validatedList, item);
 			}
 			itemLog(item, req, theme, list.length);
 		}));
@@ -442,9 +456,9 @@ function onKKuTuDDB(req, res){
 	if(!checkAdmin(req, res, 'WORDS')) return;
 	if(req.body.pw != GLOBAL.PASS) return res.sendStatus(400);
 	
-	var theme = req.body.theme;
-	var list = req.body.list;
-	var TABLE = MainDB.kkutu[req.body.lang];
+	let theme = req.body.theme;
+	let list = req.body.list;
+	let TABLE = MainDB.kkutu[req.body.lang];
 	
 	Bot.word("삭제", theme, list);
 	
@@ -461,7 +475,7 @@ function onKKuTuDDB(req, res){
 				JLog.warn(`Word '${item}' already hasn't the theme '${theme}'!`)
 				return;
 			}
-			var themes = $doc.theme.split(",")
+			let themes = $doc.theme.split(",");
 			
 			if(themes.length == 0) TABLE.remove([ '_id', item ]).on();
 			if(themes.indexOf(theme) == -1){ // 존재하지 않으면
@@ -469,32 +483,33 @@ function onKKuTuDDB(req, res){
 			}else{ // 존재하면
 				if(themes.length == 1) TABLE.remove([ '_id', item ]).on();
 				else{
-					var i, n, ii, fmean = ""
-					var types = $doc.type.split(",")
-					var means = $doc.mean.split("＂")
-					var produced = `{`
-					for(n in means){
+					let fmean = "";
+					let types = $doc.type.split(",");
+					let means = $doc.mean.split("＂");
+					let produced = "{";
+					
+					for(let n in means){
 						if(n != 0){
 							produced += ((n/2).toString().includes(".") ? `"${means[Number(n)]}":` : ` "${means[Number(n)]}",`)
 						}else continue;
 					}
-					means = produced.slice(0,-1)
-					means += `}`
-					means = JSON.parse(means)
-					for(i in themes){
+					
+					means = JSON.parse(produced.slice(0,-1) + "}");
+					
+					for(let i in themes){
 						if(themes[i] == theme){
-							var thidx = themes.indexOf(theme)
-							var tyidx = types.indexOf(types[i])
-							themes.splice(thidx, 1)
-							types.splice(tyidx, 1)
-							delete means[i]
-							for(ii in JSON.stringify(means).split(",")){
+							let thidx = themes.indexOf(theme);
+							let tyidx = types.indexOf(types[i]);
+							
+							themes.splice(thidx, 1);
+							types.splice(tyidx, 1);
+							
+							delete means[i];
+							
+							for(let ii in JSON.stringify(means).split(",")){
 								fmean += JSON.stringify(means).replace(/[\{\}\[\]]/gi,"").split(",")[ii].replace('"',"＂").replace('"',"＂").replace(':',"").replace('"',"").replace('"',"")
 							}
-							TABLE.update([ '_id', item ]).set([ 'theme', themes.toString() ]).on();
-							TABLE.update([ '_id', item ]).set([ 'type', types.toString() ]).on();
-							//TABLE.update([ '_id', item ]).set([ 'flag', Number($doc.flag)-1 ]).on();
-							TABLE.update([ '_id', item ]).set([ 'mean', fmean ]).on();
+							TABLE.update([ '_id', item ]).set([ 'theme', themes.toString() ], [ 'type', types.toString() ], [ 'mean', fmean ]).on();
 							break;
 						} else continue;
 					}
@@ -723,6 +738,57 @@ Server.post("/gwalli/shopGIIL", function(req, res){ // shop give item id list
 	res.send({ result: "success" });
 });
 
+Server.get("/gwalli/inquire", async function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(req.query.pw != GLOBAL.MPASS) return res.send({ error: 500 });
+	
+	var inquiries = [];
+	var inquiry = {};
+	async function* asyncGenerator(num) {
+		let i = 0;
+		while (i < num) {
+			yield i++;
+		}
+	}
+	await getDirectories('./lib/Web/inquire', async function (err, files) {
+		for await(let i of asyncGenerator(files.length)){
+			inquiry = JSON.parse(File.readFileSync(`./lib/Web/inquire/${files[i]}`, 'utf8'));
+			if(!inquiry.answer.answered) inquiries.push(inquiry);
+			else continue;
+		}
+	});
+	return res.send(inquiries);
+});
+
+Server.post("/gwalli/inquire/answer", function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(req.query.pw != GLOBAL.MPASS) return res.send({ error: 500 });
+	
+	var inquiry = JSON.parse(File.readFileSync(`./lib/Web/inquire/${req.body.inquiry.id}_${req.body.inquiry.date}.json`, 'utf8'));
+	
+	inquiry.answer = req.body.answer;
+	
+	File.writeFileSync(`./lib/Web/inquire/${req.body.inquiry.id}_${req.body.inquiry.date}.json`,JSON.stringify(inquiry), 'utf8',(err) => {
+		if (err) return res.send({ error: 404 });
+	});
+	return res.sendStatus(200);
+});
+
+Server.get("/gwalli/migratebandata", function(req, res){
+	if(!checkAdmin(req, res, 'USERS')) return;
+	if(req.query.pw != GLOBAL.MPASS) return res.send({ error: 500 });
+	
+	MainDB.users.find().on(function(data){
+		let newData;
+		for(let i in data){
+			if(String(data[i].bandate).includes("99999999")) data[i].bandate = 'permanent'
+			newData = `{"isBanned":${data[i].black == "null" ? false : data[i].black != null},"reason":${(data[i].black == null || data[i].black == "null") ? '""' : '"' + data[i].black + '"'},"bannedAt":"","bannedUntil":${data[i].black != null ? (String(data[i].bandate).substring(0,10) == null ? '""' : '"' + String(data[i].bandate).substring(0,10) + '"') : '""'}}`;
+			MainDB.users.update([ '_id', data[i]._id ]).set([ 'ban', newData ]).on(() => {});
+		}
+	})
+	return res.sendStatus(200);
+});
+
 };
 
 function noticeAdmin(req, ...args){
@@ -756,24 +822,25 @@ function itemLog(item, req, ...args){
 	else JLog.info(`[ADMIN]: ${req.originalUrl} Added Word ${item} ${req.ip} | ${args.join(' | ')}`);
 }
 function checkAdmin(req, res, type){
+	req.ip = req.headers['x-forwarded-for'] || "";
 	if(global.isPublic){
 		if(req.session.profile){
 			if(GLOBAL.ADMINS['MANAGER'].indexOf(req.session.profile.id) != -1) return true;
-			if(req.connection.remoteAddress === "::ffff:172.30.1.254") return true;
+			if(req.ip === "::ffff:") return true;
 			
 			if(GLOBAL.ADMINS[type].indexOf(req.session.profile.id) == -1){
 				req.session.admin = false;
-				JLog.warn(`권한이 없는 회원이 관리자 페이지에 접근을 시도했습니다.　\n시용자(ID | IP): [${req.session.profile.id}] | [${req.connection.remoteAddress}]`);
+				JLog.warn(`권한이 없는 회원이 관리자 페이지에 접근을 시도했습니다.　\n시용자(ID | IP): [${req.session.profile.id}] | [${req.ip}]`);
 				return res.send(`<title>BF끄투 - 500</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>500 Access Denied</h2><div>이 곳에 접근할 권한이 없습니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없습니다.</li><li>접속한 페이지가 자신의 부서와 맞는지 확인해 보세요.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>권한 부여가 아직 되지 않았을 수 있습니다. 총관리자에게 식별 번호를 알려주세요.</li></ul>`), false;
 			}
 		}else{
 			req.session.admin = false;
-			JLog.warn(`권한이 없는 비회원이 관리자 페이지에 접근을 시도했습니다.　\n사용자(IP): [${req.connection.remoteAddress}]`);
+			JLog.warn(`권한이 없는 비회원이 관리자 페이지에 접근을 시도했습니다.　\n사용자(IP): [${req.ip}]`);
 			return res.send(`<title>BF끄투 - 500</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>500 Access Denied</h2><div>이 곳에 접근할 권한이 없습니다.</div><br/><ul> <li>해당 페이지에 접근할 권한이 없습니다.</li><li>정상적인 방법으로 접근한 것인지 확인해 보세요.</li><li>관리자 계정으로 로그인 후에 다시 시도해 보세요.</li></ul>`), false;
 		}
 	}else{
 		req.session.admin = false;
-			JLog.warn(`잘못된 요청입니다.　\n사용자(IP): [${req.connection.remoteAddress}]`);
+			JLog.warn(`잘못된 요청입니다.　\n사용자(IP): [${req.ip}]`);
 			return res.send(`<title>BF끄투 - 400</title><style>body{font-family: 나눔바른고딕, 맑은 고딕, 돋움;}</style></title><h2>400 Bad Request</h2><div>잘못된 요청입니다.</div><br/><ul> <li>서버에 문제가 발생했을 수 있습니다.</li></ul>`), false;
 	}
 	return true;

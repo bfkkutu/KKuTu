@@ -25,9 +25,6 @@ const GLOBAL	 = require("../../sub/global.json");
 const config = require('../../sub/auth.json');
 const path = require('path');
 
-//const HttpsProxyAgent = require('https-proxy-agent');
-//const agent = new HttpsProxyAgent(process.env.HTTP_PROXY || "http://172.30.0.12:999");
-
 function strategyProcess(req, accessToken, MainDB, $p, done) {
 	$p.token = accessToken;
 	$p.sid = req.session.id;
@@ -39,7 +36,9 @@ function strategyProcess(req, accessToken, MainDB, $p, done) {
 	
 	MainDB.users.findOne([ '_id', $p.id ]).on(($body) => {
 		req.session.profile = $p;
-		if($body.nickname) $p.title = $p.name = $body.nickname;
+		if($body){
+			if($body.nickname && $body.nickname != null) $p.title = $p.name = $body.nickname;
+		};
 		MainDB.session.upsert([ '_id', req.session.id ]).set({
 			'profile': $p,
 			'createdAt': now

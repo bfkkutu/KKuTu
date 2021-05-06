@@ -47,7 +47,8 @@ block Middle
 						td 별명
 						td 접속된 서버
 						td 최근 로그인
-						td 밴 사유
+						td 차단 정보
+						td 채팅 금지 정보
 						td 경고 누적
 					tbody#user-data
 			button#user-apply 변경사항 적용
@@ -122,6 +123,36 @@ block Middle
 				input#monthly-ping(placeholder='핑')
 				textarea#monthly-idlist(rows=15, cols=30)
 				button#monthly-ok 지급
+		fieldset
+			legend 문의 조회 및 답변 작성 (BETA, 총괄 권한 요구)
+			fieldset
+				legend 문의 조회하기
+				div
+					table
+						thead: tr
+							td 문의자 ID
+							td 문의자 닉네임
+							td 제목
+							td 문의 일시
+							td 　
+						tbody#inquiry-data
+				button#inquiry-load 불러오기
+			fieldset
+				legend 문의 답변하기
+				div
+					legend 문의 내용
+					input#inquiry-date(placeholder='문의 일시', readonly)
+					input#inquiry-id(placeholder='문의자 식별번호', readonly)
+					input#inquiry-nickname(placeholder='문의자 닉네임', readonly)
+					textarea#inquiry-body(rows=15, cols=30, readonly)
+					p
+				div
+					legend 답변 작성
+					input#answer-date(placeholder='답변 일시', readonly)
+					input#answer-id(placeholder='답변자 식별번호')
+					input#answer-nickname(placeholder='답변자 닉네임')
+					textarea#answer-body(rows=15, cols=30)
+				button#answer-submit 답변 등록
 		fieldset
 			legend 랭크 포인트 초기화 (총괄 권한 요구)
 			div

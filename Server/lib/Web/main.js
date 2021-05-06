@@ -336,7 +336,9 @@ Server.get("/", cors(), function(req, res){
 
 		if($doc){
 			req.session.profile = $doc.profile;
-			if($doc.nickname) req.session.profile.title = req.session.profile.name = $doc.nickname;
+			if($doc){
+				if($doc.nickname && $doc.nickname != null) req.session.profile.title = req.session.profile.name = $doc.nickname;
+			};
 			id = $doc.profile.sid;
 		}else{
 			delete req.session.profile;
