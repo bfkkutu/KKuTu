@@ -198,23 +198,25 @@ Server.post("/clan/extend", function(req, res){
 		if($ec.max >= 50) return res.send({ message: "MAX" });
 		if($ec.password != sha256.x2(req.body.password)) return res.send({ message: "PASSWORDFAIL" });
 		if($ec.users[req.body.me] == 0) return res.send({ message: "PERMISSIONFAIL" });
-		MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
-			if(!$user) return res.send({ message: "FAIL" });
-			else {
-				var postM = $user.money - 5000;
-			
-				if(postM < 0) return res.send({ message: "MONEYFAIL" });
+		else{
+			MainDB.users.findOne([ '_id', req.body.me ]).on(function($user){
+				if(!$user) return res.send({ message: "FAIL" });
 				else {
-					MainDB.users.update([ '_id', req.body.me ]).set(
-						[ 'money', postM ]
-					).on(function($fin){
-						JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.name}`);
-						MainDB.clans.update([ '_id', req.body.id ]).set([ 'max', Number($ec.max) + 10 ]).on();
-						return res.send({ message: "OK" });
-					});
+					var postM = $user.money - 5000;
+				
+					if(postM < 0) return res.send({ message: "MONEYFAIL" });
+					else {
+						MainDB.users.update([ '_id', req.body.me ]).set(
+							[ 'money', postM ]
+						).on(function($fin){
+							JLog.log(`[CLAN EXTEND PURCHASED] New Max ${Number($ec.max)+10} for ${$ec.name}`);
+							MainDB.clans.update([ '_id', req.body.id ]).set([ 'max', Number($ec.max) + 10 ]).on();
+							return res.send({ message: "OK" });
+						});
+					}
 				}
-			}
-		});
+			});
+		}
 	});
 });
 Server.post("/clan/user/add", function(req, res){
@@ -595,9 +597,9 @@ Server.get("/shop", function(req, res){
 });
 
 // POST
-Server.post("/updateme", (req, res) => {
-	let nickname = req.body.nickname === 'true' ? false : req.body.nickname;
-	let exordial = req.body.exordial === 'true' ? false : req.body.exordial;
+Server.post("/profile", (req, res) => {
+	let nickname = req.body.nickname;
+	let exordial = req.body.exordial;
 	
 	if(req.session.profile){
 		if(exordial || exordial === ""){
@@ -608,14 +610,16 @@ Server.post("/updateme", (req, res) => {
 		if(nickname){
 			if(nickname.length > 14) nickname = nickname.slice(0, 14);
 			MainDB.users.findOne([ 'nickname', nickname ]).on((data) => {
-				if(data) return res.send({ error: 600 });
+				if(data) return res.send({ error: 465 });
 				else{
 					MainDB.users.update([ '_id', req.session.profile.id ]).set([ 'nickname', nickname ]).on();
+					MainDB.session.update([ '_id', req.session.id ]).set([ 'nickname', nickname ]).on();
 					return res.send({ result: 200 });
 				}
 			});
 		}
-		return res.send({ result: 200 });
+		
+		if(!nickname) return res.send({ result: 200 });
 	}else return res.send({ error: 400 });
 });
 

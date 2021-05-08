@@ -831,17 +831,13 @@ function processClientRequest($c, msg) {
 
 			$c.publish('yell', {value: msg.value});
 			break;
-		case 'updatedMe':
-			$c.publish('updateUser', msg);
-			break;
-		case 'refresh':
-			$c.refresh();
-			break;
-		case 'wsrefresh':
-			$c.refresh();
-			break;
-		case 'datarefresh':
-			$c.send('datarefresh', {
+		case 'updateProfile':
+			$c.nickname = msg.nickname;
+			$c.exordial = msg.exordial;
+			KKuTu.publish('updateProfile', msg);
+			$c.updateProfile(msg.nickname, msg.exordial);
+		case 'updateData':
+			$c.send('updateData', {
 				id: $c.id,
 				guest: $c.guest,
 				box: $c.box,
@@ -859,6 +855,11 @@ function processClientRequest($c, msg) {
 				test: global.test,
 				caj: $c._checkAjae ? true : false
 			});
+		case 'refresh':
+			$c.refresh();
+			break;
+		case 'wsrefresh':
+			$c.refresh();
 			break;
 		case 'careful': // 주의 완료
 			MainDB.users.update([ '_id', msg.value ]).set([ 'careful', null ]).on();

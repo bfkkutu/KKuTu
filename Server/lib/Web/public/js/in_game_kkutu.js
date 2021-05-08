@@ -256,10 +256,9 @@
 				clearChat();
 				notice("채팅이 관리자에 의해 청소되었습니다.", "채팅")
 				break;
-			case "updateUser":
+			case "updateProfile":
 				$data.users[a.id].nickname = a.nickname;
 				$data.users[a.id].exordial = a.exordial;
-				updateUserList(true);
 				break;
 			case "banned":
 				if($data.id == a.id){
@@ -326,7 +325,7 @@
 			case "dying":
 				yell(L.dying), notice(L.dying, L.yell);
 				break;
-			case "datarefresh":
+			case "updateData":
 				$data.id = a.id, $data.guest = a.guest, $data.admin = a.admin, $data.careful = a.careful, $data.nickname = a.nickname, $data.exordial = a.exordial, $data.users = a.users, $data.rooms = a.rooms, $data.friends = a.friends, $data._playTime = a.playTime, /*$data._rankPoint = a.rankPoint,*/ $data._okg = a.okg, $data._cF = a.chatFreeze, $data.honor = $data.users[$data.id].equip.BDG==="b9_honor", $data.box = a.box, updateUI(void 0, !0), updateCommunity();
 				break;
 			case "opentail":
@@ -746,14 +745,14 @@
 		if(nick.match("﷽")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 		if(nick.match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
-		return true;
+		return nick;
 	}
 	
 	function resetNick(){
 		var a = prompt("불건전하거나 잘못된 닉네임을 사용하였으므로 닉네임이 강제로 변경되었습니다. 새로운 닉네임을 입력해 주세요.");
 		var verified = checkNick(a);
 		
-		return (verified ? ($.post("/updateme", {
+		return (verified ? ($.post("/profile", {
 			nickname: delBadWords(a)
 		}, function(e){
 			if(e.error) return fail(e.error);
@@ -766,7 +765,7 @@
 		promptKKuTu("BF끄투에서 사용할 닉네임을 입력하세요.<br>닉네임을 설정하면 상기 이용 약관, <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> 및 <a href='http://bfk.kro.kr' target='_blank'>운영 정책</a>에<br>동의하는 것으로 간주합니다.")
 		$stage.dialog.promptKKuTuOK.on("click", function(c) {
 			var verified = checkNick($("#prompt-input").val());
-			return (verified ? ($.post("/updateme", {
+			return (verified ? ($.post("/profile", {
 				nickname: delBadWords($("#prompt-input").val())
 			}, function(e){
 				if(e.error) return fail(e.error);
@@ -2406,7 +2405,7 @@
 		_setInterval(function() {
 			if (isWelcome) {
 				send('wsrefresh');
-				if (!$data.room && !$data._gaming) send('datarefresh');
+				if (!$data.room && !$data._gaming) send('updateData');
 				if ($data.room) send('wsrefresh', undefined, true);
 			}
 		}, 18000);
@@ -2963,7 +2962,7 @@
 				showDialog($stage.dialog.wordPlus)
 			}), $stage.menu.reloadRoom.on("click", function(a) {
 				$("#roomlist-loading").show();
-				send('datarefresh');
+				send('updateData');
 				updateRoomList(true);
 				updateUserList(true);
 			}), $stage.menu.Clan.on("click",function(a){
@@ -3193,34 +3192,26 @@
 					if (a.error) return fail(a.error);
 					$data.box = a, drawMyDress()
 				}))
-			}), $stage.dialog.dressOK.on("click", function(a) {
-				let nickChanged = $("#dress-nickname").val() != $data.nickname;
-				let exorChanged = $("#dress-exordial").val() != $data.exordial;
+			}), $stage.dialog.dressOK.on("click", (a) => {
+				let data = {};
 				
-				if(nickChanged || exorChanged){
-					let newNickname = !nickChanged || delBadWords($("#dress-nickname").val());
-					let newExordial = !exorChanged || delBadWords($("#dress-exordial").val());
-					let verified = checkNick($("#dress-nickname").val());
-					
-					if(!verified) return;
-					
-					$(a.currentTarget).attr("disabled", true);
-					
-					$.post("/updateme", {
-						nickname: newNickname,
-						exordial: newExordial
-					}, (data) => {
-						if(data.error) return fail(data.error);
-						else{
-							if(nickChanged) $data.users[$data.id].nickname = $data.nickname = newNickname;
-							if(exorChanged) $data.users[$data.id].exordial = $data.exordial = newExordial;
-							send("updatedMe", { id: $data.id, nickname: $data.nickname, exordial: $data.exordial });
-							alert(`${nickChanged ? (exorChanged ? "닉네임이 " + $data.nickname + "(으)로, 소개말이 " + $data.exordial + "으(로) 변경되었습니다." : "닉네임이 " + $data.nickname + "(으)로 변경되었습니다.") : "소개말이 " + $data.exordial + "(으)로 변경되었습니다."}`);
-							updateUserList(true);
+				if($("#dress-nickname").val() !== $data.nickname) data.nickname = checkNick($("#dress-nickname").val());
+				if($("#dress-exordial").val() !== $data.exordial) data.exordial = $("#dress-exordial").val();
+				
+				if(data.nickname || data.exordial) $.post("/profile", data, (res) => {
+					if(res.error) return fail(res.error);
+					else{
+						if(data.nickname){
+							$data.users[$data.id].nickname = $data.nickname = data.nickname;
+							$("#account-info").text(data.nickname);
 						}
-						$stage.dialog.dressOK.attr("disabled", false);
-					});
-				}
+						if(data.exordial || data.exordial === "") $data.users[$data.id].exordial = $data.exordial = data.exordial;
+						
+						send("updateProfile", { id: $data.id, nickname: $data.nickname, exordial: $data.exordial });
+						alert(`${data.nickname ? (data.exordial || data.exordial === "" ? "별명이 " + $data.nickname + "(으)로, 소개말이 " + $data.exordial + "으(로) 변경되었습니다." : "별명이 " + $data.nickname + "(으)로 변경되었습니다.") : "소개말이 " + $data.exordial + "(으)로 변경되었습니다."}`);
+					}
+					$stage.dialog.dressOK.attr("disabled", false);
+				});
 				$stage.dialog.dress.hide();
 			}), $("#DressDiag .dress-type").on("click", function(a) {
 				var b = $(a.currentTarget),

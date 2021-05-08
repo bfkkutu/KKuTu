@@ -112,7 +112,7 @@ Server.on('connection', function(socket, info){
 	var $c;
 	
 	socket.on('error', function(err){
-		JLog.warn("Error on #" + key + " on ws: " + ec);
+		JLog.warn("Error on #" + key + " on ws: " + err.toString());
 	});
 	if(CHAN != Number(chunk[1])){
 		JLog.warn(`Wrong channel value ${chunk[1]} on @${CHAN}`);
@@ -168,10 +168,7 @@ Server.on('connection', function(socket, info){
 	});
 });
 Server.on('error', function(err){
-	var ec = err.toString();
-	if(ec!=="Error: read ECONNRESET"){ //ws의 문제에 의한 불필요한 에러 로깅을 막기 위함.
-		JLog.warn("Error on ws: " + ec);
-	}
+	JLog.warn("Error on ws: " + err.toString());
 });
 KKuTu.onClientMessage = function($c, msg){
 	var stable = true;
@@ -188,6 +185,50 @@ KKuTu.onClientMessage = function($c, msg){
 			if(!$c.admin) return;
 			
 			$c.publish('yell', { value: msg.value });
+			break;
+		case 'updateProfile':
+			$c.nickname = msg.nickname;
+			$c.exordial = msg.exordial;
+			KKuTu.publish('updateProfile', msg);
+			$c.updateProfile(msg.nickname, msg.exordial);
+			$c.send('updateData', {
+				id: $c.id,
+				guest: $c.guest,
+				box: $c.box,
+				nickname: $c.nickname,
+				exordial: $c.exordial,
+				playTime: $c.data.playTime,
+				rankPoint: $c.data.rankPoint,
+				okg: $c.okgCount,
+				careful: $c.careful, // 주의
+				chatFreeze: chatFreeze,
+				users: KKuTu.getUserList(),
+				rooms: KKuTu.getRoomList(),
+				friends: $c.friends,
+				admin: $c.admin,
+				test: global.test,
+				caj: $c._checkAjae ? true : false
+			});
+			break;
+		case 'updateData':
+			$c.send('updateData', {
+				id: $c.id,
+				guest: $c.guest,
+				box: $c.box,
+				nickname: $c.nickname,
+				exordial: $c.exordial,
+				playTime: $c.data.playTime,
+				rankPoint: $c.data.rankPoint,
+				okg: $c.okgCount,
+				careful: $c.careful, // 주의
+				chatFreeze: chatFreeze,
+				users: KKuTu.getUserList(),
+				rooms: KKuTu.getRoomList(),
+				friends: $c.friends,
+				admin: $c.admin,
+				test: global.test,
+				caj: $c._checkAjae ? true : false
+			});
 			break;
 		case 'refresh':
 			$c.refresh();
