@@ -98,6 +98,8 @@ mixin separator(len)
 	div(style="float: left; width: 100%; margin: "+len+"px 0px;")
 	
 mixin PageHead(min)
+	- locals.page = locals.page.replace(".pug", "")
+	
 	if !min
 		link(rel='stylesheet', href=(locals.mobile && !locals.as_pc) ? '/css/m_style.css' : '/css/style.css')
 		link(rel='stylesheet', href='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/css/fa.css')
@@ -139,12 +141,27 @@ mixin Product(id)
 			else
 				h4= id
 				
-mixin Advertisement(id)
-	div(class=id+'Box Product', style='display: block;')
-		h5.product-title!= L('AD')
-		div.product-body
-			ins.kakao_ad_area(style='display:none;', data-ad-unit='DAN-1iepf06p13c52', data-ad-width='728', data-ad-height='90')
-			script(type='text/javascript', src='//t1.daumcdn.net/kas/static/ba.min.js', async='')
+mixin KakaoAdvertisement(id)
+	- if(locals.mobile)
+		div(class='ADBox Product', style='display: block;')
+	- else
+		div(class=id+'Box Product', style='display: block;')
+			h5.product-title!= L('AD')
+			div.product-body
+				
+
+mixin GoogleAdvertisement(kind)
+	- if(locals.mobile)
+		div(class='ADBox Product', style='display: block;')
+	- else if(kind == "portal")
+		div(class='ADBox Product', style='display: block; width: 728px; height: 90px;')
+			h5.product-title!= L('AD')
+			div.product-body
+
+	- else
+		div(class='ADBox Product', style='display: block;')
+			h5.product-title!= L('AD')
+			div.product-body
 
 mixin GraphBar(c, min, val, max, bgc)
 	div(class='graph '+c)
@@ -153,7 +170,6 @@ mixin GraphBar(c, min, val, max, bgc)
 mixin ChartBar(c, data)
 	-
 		var i, sum = 0, total = 100;
-		
 		for(i in data) sum += data[i].value;
 		data[data.length - 1].last = true;
 	

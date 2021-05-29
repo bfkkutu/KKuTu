@@ -65,7 +65,7 @@ exports.OPTIONS = {
 	'mman': { name: "MidManner" },
 	'item': { name: "Item" }
 };
-exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'lhand', 'rhand', 'front' ];
+exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'heco', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
 exports.AVAIL_EQUIP = [
 	"NIK", "BDG1", "BDG2", "BDG3", "BDG4",
@@ -304,11 +304,11 @@ exports.RULE = {
 		big: false,
 		ewq: true
 	},
-	'RVS': { lang: "ko", // 한국어 거꾸로
-		rule: "Reverse",
-		opts: [  ],
+	'MSH': { lang: "mo", // 모렘어 끝말잇기
+		rule: "Classic",
+		opts: [ ],
 		time: 1,
-		ai: true,
+		ai: false,
 		big: false,
 		ewq: true
 	}
@@ -316,12 +316,14 @@ exports.RULE = {
 exports.GAME_TYPE = Object.keys(exports.RULE);
 exports.EXAMPLE_TITLE = {
 	'ko': "가나다라마바사아자차",
-	'en': "abcdefghij"
+	'en': "abcdefghij",
+	'mo': ""
 };
 exports.INIT_SOUNDS = [ "ㄱ", "ㄲ", "ㄴ", "ㄷ", "ㄸ", "ㄹ", "ㅁ", "ㅂ", "ㅃ", "ㅅ", "ㅆ", "ㅇ", "ㅈ", "ㅉ", "ㅊ", "ㅋ", "ㅌ", "ㅍ", "ㅎ", "○" ];
 exports.MISSION_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하" ];
 exports.MISSION_ko_more = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 exports.MISSION_en = [ "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z" ];
+exports.MISSION_mo = [ "", "", "", "", "", "", "", "", "", "" ];
 exports.RANDOMWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호", "그", "느", "드", "르", "브", "스", "으", "즈", "츠", "크", "트", "프", "흐", "게", "네", "데", "레", "메", "베", "세", "에", "제", "체", "케", "테", "페", "헤", "개", "내", "대", "래", "매", "배", "새", "애", "재", "채", "캐", "태", "패", "해", "낮", "높", "닥", "단", "당", "되", "뒤", "만", "맞", "목", "밤", "상", "선", "샌", "센", "악", "안", "언", "옆", "올", "장", "죽", "전", "첫", "한", "핸", "요", "좋", "꽃", "극", "헬", "거", "너", "더", "러", "머", "버", "서", "어", "저", "처", "커", "터", "퍼", "허", "걷", "겨", "꿈", "백", "붉", "붕", "흰" ];
 exports.BLOCKWORD_ko = [ "가", "나", "다", "라", "마", "바", "사", "아", "자", "차", "카", "타", "파", "하", "기", "니", "디", "리", "미", "비", "시", "이", "지", "치", "키", "티", "피", "히", "구", "누", "두", "루", "무", "부", "수", "우", "주", "추", "쿠", "투", "드", "후", "고", "노", "도", "로", "모", "보", "소", "오", "조", "초", "코", "토", "포", "호" ];
 
@@ -344,6 +346,7 @@ exports.KO_EVENT = [
 exports.EN_INJEONG = [
 	"LOL", "LVL", "ENANI", "POP"
 ];
+exports.MO_INJEONG = [];
 exports.KO_THEME = [
 	"30", "40", "60", "80", "90",
 	"140", "150", "160", "170", "190",
@@ -356,11 +359,13 @@ exports.EN_THEME = [
 	"e05", "e08", "e12", "e13", "e15",
 	"e18", "e20", "e43", "530", "NEX"
 ];
+exports.MO_THEME = [];
 exports.IJP_EXCEPT = [
 	"OIJ"
 ];
 exports.KO_IJP = exports.KO_INJEONG.concat(exports.KO_THEME).filter(function(item){ return !exports.IJP_EXCEPT.includes(item); });
 exports.EN_IJP = exports.EN_INJEONG.concat(exports.EN_THEME).filter(function(item){ return !exports.IJP_EXCEPT.includes(item); });
+exports.MO_IJP = exports.MO_INJEONG.concat(exports.MO_THEME).filter(function(item){ return !exports.IJP_EXCEPT.includes(item); });
 exports.REGION = {
 	'en': "en",
 	'ko': "kr"

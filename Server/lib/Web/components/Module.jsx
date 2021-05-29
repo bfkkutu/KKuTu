@@ -1,0 +1,126 @@
+const React = require("react");
+const _L = require("./Language");
+
+const _redirect = (document, loc) => {
+  let script = document.createElement("script");
+  script.textContent = `location.href = "${loc}";`;
+  document.querySelector("head").appendChild(script);
+};
+
+const MENU = [
+  { key: "HOME", href: "/" },
+  {
+    key: "FEAT",
+    sub: [
+      { key: "PLAYTS", href: "https://opg.kr/" },
+      { key: "KKTDN", href: "https://kkutu.xyz/" },
+      { key: "OURKKT", href: "/" },
+      {
+        key: "IWANT",
+        onclick: () => {
+          alert(
+            "제휴 관련 문의는 디스코드 베프#4867 또는 BF끄투 디스코드로 문의해 주세요."
+          );
+        },
+      },
+    ],
+  },
+  {
+    key: "DALDALSO",
+    sub: [
+      { key: "DALDALSO_MAIN", href: "https://daldal.so/" },
+      { key: "DALDALSO_LIST", href: "https://kkutu.kr/" },
+    ],
+  },
+];
+
+const Menu = (_props) => {
+  let menuList = [];
+  let props = _props.props;
+  let document = _props.document;
+  let redirect = (loc) => {
+    return _redirect(document, loc);
+  };
+  let L = (e) => {
+    return _L(props, e);
+  };
+
+  for (let i in MENU) {
+    if (MENU[i].href)
+      menuList.push(
+        <button
+          id={`menu-item-${MENU[i].key}`}
+          className="menu-btn"
+          onClick={() => {
+            redirect(MENU[i].href);
+          }}
+        >
+          {L(MENU[i].key)}
+        </button>
+      );
+    else if (MENU[i].onclick)
+      menuList.push(
+        <button
+          id={`menu-item-${MENU[i].key}`}
+          className="menu-btn"
+          onClick={MENU[i].onclick}
+        >
+          {L(MENU[i].key)}
+        </button>
+      );
+    else if (MENU[i].sub) {
+      let subMenuList = [];
+      for (let j in MENU[i].sub) {
+        if (MENU[i].sub[j].onclick)
+          subMenuList.push(
+            <div className="menu-sub-btn" onClick={MENU[i].sub[j].onclick}>
+              {L(MENU[i].sub[j].key)}
+            </div>
+          );
+        else
+          subMenuList.push(
+            <div
+              className="menu-sub-btn"
+              onClick={() => {
+                redirect(MENU[i].sub[j].href);
+              }}
+            >
+              {L(MENU[i].sub[j].key)}
+            </div>
+          );
+      }
+      menuList.push(
+        <div id={`menu-item-${MENU[i].key}`} className="menu-btn">
+          {L(MENU[i].key)}
+          <div className="menu-sub-separator">{subMenuList}</div>
+        </div>
+      );
+    }
+  }
+  return (
+    <div className="Menu">
+      {menuList}
+      <div id="account">
+        <span id="profile">
+          {props.session.profile ? JSON.stringify(props.session.profile) : "{}"}
+        </span>
+        <div id="account-info" />
+      </div>
+    </div>
+  );
+};
+
+const Expl = (text, width) => {
+  if (!text) return <div></div>;
+  return (
+    <div className="expl" style={{ width: width ? width + "px" : "initial" }}>
+      <h5>{text}</h5>
+    </div>
+  );
+};
+
+const FA = (id) => {
+  return <i className={`fa fa-${id}`} />;
+};
+
+module.exports = { Menu, Expl, FA };

@@ -4,9 +4,11 @@ const config = require('../../sub/auth.json');
 module.exports.config = {
 	strategy: require('passport-google-oauth2').Strategy,
 	color: '#FFFFFF',
+	image: '',
 	fontColor: '#000000',
 	vendor: 'google',
-	displayName: 'withGoogle'
+	displayName: 'withGoogle',
+	useOAuthButtons: true
 	//authImage: '/img/auth/google.png'
 }
 module.exports.strategyConfig = {

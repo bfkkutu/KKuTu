@@ -177,7 +177,7 @@ exports.Robot = function(target, place, level){
 	my.send = function(){};
 	my.obtain = function(){};
 	my.invokeWordPiece = function(text, coef){};
-	my.publish = function(type, data, noBlock){
+	my.publish = function(type, data){
 		var i;
 		
 		if(my.target == null){
@@ -341,7 +341,7 @@ exports.Client = function(socket, profile, sid){
 		if(!my.id) return;
 		//if(!JSON.parse(msg)) return;
 		
-		if(JSON.parse(msg).type != 'wsrefresh' && JSON.parse(msg).type != 'updateData') JLog.log(`Chan @${channel} Msg #${my.id}: ${msg}`);
+		if(JSON.parse(msg).type != 'wsrefresh' && JSON.parse(msg).type != 'reloadData') JLog.log(`Chan @${channel} Msg #${my.id}: ${msg}`);
 		try{ data = JSON.parse(msg); }catch(e){ data = { error: 400 }; }
 		if(Cluster.isWorker) process.send({ type: "tail-report", id: my.id, chan: channel, place: my.place, msg: data.error ? msg : data });
 		
@@ -902,10 +902,6 @@ exports.Client = function(socket, profile, sid){
 		delete my.friends[id];
 		my.flush(false, false, true);
 		my.send('friendEdit', { friends: my.friends });
-	};
-	my.updateProfile = (nickname, exordial) => {
-		my.nickname = nickname;
-		my.exordial = exordial;
 	};
 };
 exports.Room = function(room, channel){
@@ -1700,64 +1696,64 @@ function getRewards(rankPoint, mode, score, bonus, rank, all, ss, srp, opts, nsc
 	}*/
 	switch(Const.GAME_TYPE[mode]){
 		case "EKT":
-			rw.score += score * 1.45;
+			rw.score += score * 1.5;
 			break;
 		case "ESH":
-			rw.score += score * 0.55;
+			rw.score += score * 0.6;
 			break;
 		case "KKT":
-			rw.score += score * 1.3;
+			rw.score += score * 1.35;
 			break;
 		case "KSH":
-			rw.score += score * 0.62;
+			rw.score += score * 0.67;
 			break;
 		case "CSQ": // 한국어 자음퀴즈
-			rw.score += score * 0.45;
+			rw.score += score * 0.5;
 			break;
 		case 'KCW':
-			rw.score += score * 1.05;
+			rw.score += score * 1.1;
 			break;
 		case 'KTY':
-			rw.score += score * 0.35;
+			rw.score += score * 0.4;
 			break;
 		case 'ETY':
-			rw.score += score * 0.42;
+			rw.score += score * 0.47;
 			break;
 		case 'KAP':
-			rw.score += score * 0.85;
+			rw.score += score * 0.9;
 			break;
 		case 'HUN':
-			rw.score += score * 0.55;
+			rw.score += score * 0.6;
 			break;
 		case 'KDA':
-			rw.score += score * 0.62;
+			rw.score += score * 0.67;
 			break;
 		case 'EDA':
-			rw.score += score * 0.7;
+			rw.score += score * 0.75;
 			break;
 		case 'KSS':
-			rw.score += score * 1.0;
+			rw.score += score * 1.05;
 			break;
 		case 'ESS':
-			rw.score += score * 0.27;
+			rw.score += score * 0.32;
 			break;
 		case 'KDG': //한국어 그림 퀴즈
-			rw.score += score * 0.15;
+			rw.score += score * 0.2;
 			break;
 		case 'EDG': //영어 그림 퀴즈
-			rw.score += score * 0.15;
+			rw.score += score * 0.2;
 			break;
 		case 'KUT': //한국어 끄투
-			rw.score += score * 1.45;
+			rw.score += score * 1.5;
 			break;
 		case 'KRH': //한국어 랜덤잇기
-			rw.score += score * 0.65;
+			rw.score += score * 0.7;
 			break;
 		case 'ERH': //영어 랜덤잇기
-			rw.score += score * 0.65;
+			rw.score += score * 0.7;
 			break;
 		case 'KMH': //한국어 가운데잇기
-			rw.score += score * 0.63;
+			rw.score += score * 0.68;
 			break;
 		default:
 			break;

@@ -1,11 +1,13 @@
 const config = require('../../sub/auth.json');
 
 module.exports.config = {
-    strategy: require('passport-daldalso'), // 임시
+    strategy: require('passport-daldalso').Strategy,
     color: '#0F132F',
+	image: 'https://daldal.so/media/images/oauth-button.png',
     fontColor: '#FFFFFF',
     vendor: 'daldalso',
-    displayName: 'withDaldalso'
+    displayName: 'withDaldalso',
+	useOAuthButtons: true
 }
 module.exports.strategyConfig = {
     clientID: config.daldalso.clientID, // 보안을 위해서입니다.
@@ -14,9 +16,19 @@ module.exports.strategyConfig = {
     passReqToCallback: true
 }
 
-module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
-    return (req, accessToken, refreshToken, profile, done) => {
-        const $p = {};
+module.exports.strategy = (strategyProcess, MainDB/*Ajae*/) => {
+    return (req, accessToken, refreshToken, o, done) => {
+		const $p = {};
 		
+		$p.authType = "daldalso";
+		$p.id = o.id;
+		$p.name = o.name;
+		$p.title = o.name;
+		$p.image = o.profile.image || 'https://daldal.so/anonymous.png';
+		$p.exordial = o.profile.text || '';
+		
+		console.log(o)
+		
+		strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }

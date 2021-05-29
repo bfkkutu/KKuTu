@@ -16,9 +16,9 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const LANG = [ "ko", "en" ];
+const LANG = [ "ko", "en", "mo" ];
+const PgPool = require("pg").Pool;
 
-var PgPool	 = require("pg").Pool;
 var GLOBAL	 = require("../sub/global.json");
 var JLog	 = require("../sub/jjlog");
 var Collection = require("../sub/collection");
@@ -89,8 +89,11 @@ Pub.ready = function(isPub){
 			DB.kkutu_shop_desc = new mainAgent.Table("kkutu_shop_desc");
 			
 			DB.session = new mainAgent.Table("session");
+			DB.localUsers = new mainAgent.Table("localusers");
 			DB.users = new mainAgent.Table("users");
-			DB.clans = new mainAgent.Table("clans");
+			DB.clans = new mainAgent.Table("clan");
+			
+			DB.statistics = new mainAgent.Table("statistics");
 			
 			if(exports.ready) exports.ready(Redis, Pg);
 			else JLog.warn("DB.onReady was not defined yet.");

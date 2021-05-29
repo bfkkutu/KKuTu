@@ -5,7 +5,8 @@ module.exports.config = {
     color: '#7289DA',
     fontColor: '#FFFFFF',
     vendor: 'discord',
-    displayName: 'withDiscord'
+    displayName: 'withDiscord',
+	useOAuthButtons: true
 	//authImage: '/img/auth/discord.png'
 }
 module.exports.strategyConfig = {
@@ -25,7 +26,7 @@ module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
 		$p.id = $p.authType+"-"+profile.id;
 		$p.name = profile.username;
 		$p.title = profile.username;
-		$p.image = profile.avatar;
+		$p.image = `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}`;
         strategyProcess(req, accessToken, MainDB, $p, done);
     }
 }

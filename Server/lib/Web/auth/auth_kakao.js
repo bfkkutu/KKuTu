@@ -3,9 +3,11 @@ const config = require('../../sub/auth.json');
 module.exports.config = {
     strategy: require('passport-kakao').Strategy,
     color: '#FFDE00',
+	image: '',
     fontColor: '#3C1E1E',
     vendor: 'kakao',
-    displayName: 'withKakao'
+    displayName: 'withKakao',
+	useOAuthButtons: true
 	//authImage: '/img/auth/kakao.png'
 }
 module.exports.strategyConfig = {
@@ -20,8 +22,8 @@ module.exports.strategy = (strategyProcess, MainDB, Ajae) => {
         const $p = {};
 
         $p.authType = "kakao";
-        $p.id = profile.id.toString();
-        $p.name = +profile.username;
+        $p.id = $p.authType + profile.id.toString();
+        $p.name = profile.username;
         $p.title = profile.displayName;
         $p.image = profile._json.properties.profile_image;
         strategyProcess(req, accessToken, MainDB, $p, done);

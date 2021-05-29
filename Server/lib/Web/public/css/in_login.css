@@ -22,16 +22,21 @@ body{
 button{
 	border: none;
 	margin: 8px auto;
-	width: 230px;
+	width: 200px;
 	height: 30px;
 	cursor: pointer;
 	box-shadow: 0px 2px 2px #141414;
 }
 #with-google span{ display: block; }
-#daldalso {
+/*#daldalso {
 	background: url('https://daldal.so/media/images/oauth-button.png');
 	width: 230px;
 	height: 50px;
+}*/
+#portal {
+	background: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/short_logo_x.png');
+	width: 165px;
+	height: 75px;
 }
 .bfkkutu{
 	background: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/short_logo.png');
@@ -48,3 +53,14 @@ button{
 	text-align: center;
 }
 .login-legal a{ color: #DDDDDD; }
+
+.lbtn {
+	height: 48px !important;
+}
+.lbtn .label {
+	font-size: 18px !important;
+}
+
+.lbtn .logo {
+	width: 48px !important;
+}

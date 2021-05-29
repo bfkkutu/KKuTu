@@ -28,32 +28,40 @@ let Config = require("./lib/sub/config.json");
 let def_Server = false;
 const SCRIPTS = {
 	'server-on-all':()=> {
-		startServer(def_Server, true)
-		def_Server = true;
+		startServer()
 	},
 	'server-off-all':()=> {
-		stopServer(true)
+		stopServer()
 	},
 	'webServer-on':()=> {
-		startWeb(def_Server, false)
-		def_Server = true;
+		startWeb()
 	},
 	'webServer-off':()=> {
-		stopWeb(false)
+		stopWeb()
 	},
 	'gameServer-on':()=> {
-		startGame(def_Server, false)
-		def_Server = true;
+		startGame()
 	},
 	'gameServer-off':()=> {
-		stopGame(false)
+		stopGame()
 	},
 	'webSocket-on':()=> {
-		startWebSocket(def_Server, false)
-		def_Server = true;
+		startWebSocket()
 	},
 	'webSocket-off':()=> {
-		stopWebSocket(false)
+		stopWebSocket()
+	},
+	'sorrydlBot-on':()=> {
+		startSorrydlBot()
+	},
+	'sorrydlBot-off':()=> {
+		stopSorrydlBot()
+	},
+	'private-on':()=> {
+		startPrivate()
+	},
+	'private-off':()=> {
+		stopPrivate()
 	},
 	'program-info': () => {
 		exports.send('alert', [
@@ -166,6 +174,22 @@ exports.MAIN_MENU = [
 			{
 				label: LANG['menu-webSocket-off'],
 				click: () => exports.run("webSocket-off")
+			},
+			{
+				label: LANG['menu-sorrydlBot-on'],
+				click: () => exports.run("sorrydlBot-on")
+			},
+			{
+				label: LANG['menu-sorrydlBot-off'],
+				click: () => exports.run("sorrydlBot-off")
+			},
+			{
+				label: LANG['menu-private-on'],
+				click: () => exports.run("private-on")
+			},
+			{
+				label: LANG['menu-private-off'],
+				click: () => exports.run("private-off")
 			}
 		]
 	},
@@ -236,10 +260,10 @@ class ChildProcess{
 		if(this.process) this.process.kill(sig || 'SIGINT');
 	}
 }
-let webServer, gameServers, webSocket;
+let webServer, gameServers, webSocket, sorrydlBot, privateServer;
 
 function startServer(){
-	stopServer(false);
+	stopServer();
 	if(SETTINGS['server-name']) process.env['KKT_SV_NAME'] = SETTINGS['server-name'];
 	if(SETTINGS.web.enabled) webServer = new ChildProcess('W', "node", `${__dirname}/lib/Web/cluster.js`, SETTINGS.web.cpu);
 	if(SETTINGS.game.enabled) {
@@ -249,27 +273,31 @@ function startServer(){
 		}
 	}
 	if(SETTINGS.ws.enabled) webSocket = new ChildProcess('H', "node", `${__dirname}/lib/Handler/cluster.js`, SETTINGS.ws.cpu);
+	if(SETTINGS.sdb.enabled) sorrydlBot = new ChildProcess('S', "node", `${__dirname}/lib/Sorrydl/cluster.js`, SETTINGS.sdb.cpu);
+	if(SETTINGS.pvt.enabled) privateServer = new ChildProcess('P', "node", `${__dirname}/lib/Private/cluster.js`, SETTINGS.pvt.cpu);
 	exports.send('server-status', getServerStatus());
 	//ServerChecker.sendNotice(":white_check_mark: 열림", 3066993)
 }
-function stopServer(notice){
+function stopServer(){
 	if(webServer) webServer.kill();
 	if(gameServers) gameServers.forEach(v => v.kill());
 	if(webSocket) webSocket.kill();
+	if(sorrydlBot) sorrydlBot.kill();
+	if(privateServer) privateServer.kill();
 	//if(notice) ServerChecker.sendNotice(":negative_squared_cross_mark: 닫힘*(수동)*", 10038562)
 }
 
 function startWeb(){
-	stopWeb(false);
+	stopWeb();
 	if(SETTINGS.web.enabled) webServer = new ChildProcess('W', "node", `${__dirname}/lib/Web/cluster.js`, SETTINGS.web.cpu);
 	exports.send('server-status', getServerStatus());
 }
-function stopWeb(notice){
+function stopWeb(){
 	if(webServer) webServer.kill();
 }
 
 function startGame(){
-	stopGame(false);
+	stopGame();
 	if(SETTINGS.game.enabled) {
 		gameServers = [];	
 		for(let i=0; i<SETTINGS.game.inst; i++){
@@ -278,17 +306,35 @@ function startGame(){
 	}
 	exports.send('server-status', getServerStatus());
 }
-function stopGame(notice){
+function stopGame(){
 	if(gameServers) gameServers.forEach(v => v.kill());
 }
 
 function startWebSocket(){
-	stopWebSocket(false);
+	stopWebSocket();
 	if(SETTINGS.ws.enabled) webSocket = new ChildProcess('H', "node", `${__dirname}/lib/Handler/cluster.js`, SETTINGS.ws.cpu);
 	exports.send('server-status', getServerStatus());
 }
-function stopWebSocket(notice){
+function stopWebSocket(){
 	if(webSocket) webSocket.kill();
+}
+
+function startSorrydlBot(){
+	stopSorrydlBot();
+	if(SETTINGS.sdb.enabled) sorrydlBot = new ChildProcess('S', "node", `${__dirname}/lib/Sorrydl/cluster.js`, SETTINGS.sdb.cpu);
+	exports.send('server-status', getServerStatus());
+}
+function stopSorrydlBot(){
+	if(sorrydlBot) sorrydlBot.kill();
+}
+
+function startPrivate(){
+	stopPrivate();
+	if(SETTINGS.pvt.enabled) privateServer = new ChildProcess('P', "node", `${__dirname}/lib/Private/cluster.js`, SETTINGS.pvt.cpu);
+	exports.send('server-status', getServerStatus());
+}
+function stopPrivate(){
+	if(privateServer) privateServer.kill();
 }
 
 function getServerStatus(){

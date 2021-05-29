@@ -1,6 +1,7 @@
 {
   "GLOBAL": {
     "GPL": "<div style='color: #666;'><br>이 프로그램은 제품에 대한 어떠한 형태의 보증도 제공되지 않습니다.<br>이 프로그램은 자유 소프트웨어이며 배포 규정을 만족시키는 조건 아래 자유롭게 재배포할 수 있습니다.<br>이에 대한 자세한 사항은 본 프로그램의 구현을 담은 다음 레포지토리에서 확인하십시오: <a target='_blank' href='https://github.com/bfkkutu/KKuTu'>https://github.com/bfkkutu/KKuTu</a><p></p></div>",
+	"copyright": "새로운 끄투의 시작, BF끄투 Copyright (C) 2018 이승훈(<a target='_blank' href='mailto:op@bf2.xyz'>op@bf2.xyz</a> / <a target='_blank' href='mailto:op@bfkkutu.kr'>op@bfkkutu.kr</a>)",
 
     "CREATOR": "개발자 블로그",
     "HOME": "FA{home}",
@@ -149,6 +150,7 @@
 	"withSpotify": "Spotify 계정으로 로그인",
 	"withDaldalso": "달달소 송수신체로 연결",
 	"withOnly_Admin": "관리자 로그인",
+	"withLocal": "Local",
     "login_kkutu": "글자로 놀자! 끄투 온라인을 이용하시려면 로그인을 해 주세요.",
     "loginLegal": "로그인이 이루어지면 BFKKuTu가 공지하는 <a href='http://agreement.bfkkutu.ze.am' target='_blank'>서비스 이용 약관</a> 및 <a href='http://privacy.bfkkutu.ze.am' target='_blank'>개인정보 취급 방침</a>에 동의하는 것으로 간주 합니다."
   },
@@ -160,7 +162,7 @@
   "kkutu": {
     "title": "새로운 끄투의 시작, BF끄투!",
     "title_none": " ",
-    "version": "5.9.0 User",
+    "version": "5.9.1 User",
 	"cdn_version": "latest",
 	"textver123": "버전:",
 	"textversec": "보안 패치 버전: ",
@@ -201,7 +203,7 @@
     "etcSupport": "도움:<a href='https://sdbx.dev/' target='_blank'>샌드박스 :: SDBX</a>",
 	"MEANSUPPORT": "단어 뜻 제공: <a href='https://creativecommons.org/licenses/by-nc-sa/2.0/kr/' target='_blank'>위키백과 (위키피디아), 나무위키</a>, 네이버 사전, 윅셔너리",
 	"madewith": "BFKKuTu는 BFSoft에서 제작하여 BFKKuTu와 PlayTS에서 공동 서비스하는 웹 게임입니다.",
-	"copyright": "새로운 끄투의 시작, BF끄투 Copyright (C) 2018 이승훈(<a target='_blank' href='mailto:op@bf2.xyz'>op@bf2.xyz</a> / <a target='_blank' href='mailto:admin@bfkkutu.kr'>admin@bfkkutu.kr</a>)",
+	"copyright": "새로운 끄투의 시작, BF끄투 Copyright (C) 2018 이승훈(<a target='_blank' href='mailto:op@bf2.xyz'>op@bf2.xyz</a> / <a target='_blank' href='mailto:op@bfkkutu.kr'>op@bfkkutu.kr</a>)",
 	"welcome": "환영합니다.",
     "welcomeTestServer": "테스트 서버에 오신 것을 환영합니다.",
     "loadRemain": "불러오는 중... 앞으로 ",

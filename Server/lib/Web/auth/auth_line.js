@@ -3,9 +3,11 @@ const config = require('../../sub/auth.json');
 module.exports.config = {
     strategy: require('passport-line').Strategy,
     color: '#1EC800',
+	image: '',
     fontColor: '#FFFFFF',
     vendor: 'line',
-    displayName: 'withLine'
+    displayName: 'withLine',
+	useOAuthButtons: false
 	//authImage: '/img/auth/line.png'
 }
 

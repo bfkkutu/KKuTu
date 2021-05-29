@@ -51,6 +51,9 @@ ipcRenderer.on('log', (ev, level, msg) => {
 		logs--;
 		$(".log-item:first").remove();
 	}
+	if(typeof msg == 'object'){
+		msg = new TextDecoder().decode(msg);
+	}
 	msg = msg.toString()
 		.replace(/</g, "&lt;")
 		.replace(/&/g, "&amp;")

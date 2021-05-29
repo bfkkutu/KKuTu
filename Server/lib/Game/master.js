@@ -708,6 +708,7 @@ exports.init = function(_SID, CHAN){
 					$c.socket.close();
 					return;
 				}
+				
 				$c.refresh().then((ref) => {
 					if(ref.result == 200){
 						DIC[$c.id] = $c;
@@ -787,6 +788,24 @@ function joinNewUser($c, ip, path) {
 	narrateFriends($c.id, $c.friends, "on");
 	KKuTu.publish('conn', {user: $c.getData()});
 	
+	setInterval(() => {
+		$c.send('reloadData', {
+			id: $c.id,
+			box: $c.box,
+			nickname: $c.nickname,
+			exordial: $c.exordial,
+			playTime: $c.data.playTime,
+			rankPoint: $c.data.rankPoint,
+			okg: $c.okgCount,
+			careful: $c.careful, // 주의
+			chatFreeze: chatFreeze,
+			users: KKuTu.getUserList(),
+			rooms: KKuTu.getRoomList(),
+			friends: $c.friends,
+			admin: $c.admin
+		});
+	}, 18000);
+	
 	logger.info(`New user #` + $c.id + ` IP: ${$c.remoteAddress}`);
 	fs.appendFileSync(`../IP-Log/Join_Exit.txt`,`\n#Join:[${$c.remoteAddress}|${$c.id}]     (${thisDate})`, 'utf8',(err, ip, path) => { //기록하고
 		if (err) return logger.error(`IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`)
@@ -831,15 +850,9 @@ function processClientRequest($c, msg) {
 
 			$c.publish('yell', {value: msg.value});
 			break;
-		case 'updateProfile':
-			$c.nickname = msg.nickname;
-			$c.exordial = msg.exordial;
-			KKuTu.publish('updateProfile', msg);
-			$c.updateProfile(msg.nickname, msg.exordial);
-		case 'updateData':
-			$c.send('updateData', {
+		case 'reloadData':
+			$c.send('reloadData', {
 				id: $c.id,
-				guest: $c.guest,
 				box: $c.box,
 				nickname: $c.nickname,
 				exordial: $c.exordial,
@@ -851,15 +864,16 @@ function processClientRequest($c, msg) {
 				users: KKuTu.getUserList(),
 				rooms: KKuTu.getRoomList(),
 				friends: $c.friends,
-				admin: $c.admin,
-				test: global.test,
-				caj: $c._checkAjae ? true : false
+				admin: $c.admin
 			});
 		case 'refresh':
 			$c.refresh();
 			break;
 		case 'wsrefresh':
 			$c.refresh();
+			break;
+		case 'bulkRefresh':
+			for(let i in DIC) DIC[i].refresh();
 			break;
 		case 'careful': // 주의 완료
 			MainDB.users.update([ '_id', msg.value ]).set([ 'careful', null ]).on();

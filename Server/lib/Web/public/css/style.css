@@ -148,7 +148,7 @@ span{
 #account-info:hover{ color: #EEEEEE; }
 #global-notice{
 	padding: 3px 0px;
-	margin-top: 30px;
+	/*margin-top: 30px;*/
 	color: #111111;
 	text-align: center;
 	font-weight: bold;
@@ -250,6 +250,8 @@ span{
 	height: 100%;
 	pointer-events: none;
 	z-index: -1;
+	background-image: url(/img/kkutu/gamebg.png);
+	background-size: 200px 200px;
 }
 
 /* 자동완성 */
@@ -292,9 +294,17 @@ span{
 }
 #Footer{
 	float: left;
-	width: 1000px;
-	color: #444444;
+	width: 100%;
 	font-size: 11px;
+	padding-top: 10px;
+	color: #CCCCCC;
+    background-color: #304a58;
+    display: flex;
+    justify-content: space-between;
+	position: absolute;
+	bottom: 0;
+	height: 85px;
+	z-index: 0;
 	text-align: center;
 }
 .bottom-legal{
@@ -372,18 +382,23 @@ code{
 	bottom: 0;
 	height: 85px;
 	width: 100%;
+	z-index: 0;
 }
 
 .footer-left{
+	text-align: left;
     padding-left: 10%;
 	float: left;
 	width: 40%;
+	z-index: -1;
 }
 
 .footer-right{
+	text-align: right;
     padding-right: 10%;
 	float: left;
 	width: 40%;
+	z-index: -1;
 }
 
 .in-iframe{

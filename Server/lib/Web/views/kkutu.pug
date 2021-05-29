@@ -70,8 +70,7 @@ block Jungle
 
 block Middle
 	- var VERSION = L('version')
-	- var SECVER = L('security_version')
-	- var nick = SESSION.profile ? (SESSION.profile.title || SESSION.profile.name) : null;
+	- var nick = SESSION.nickname;
 	div#Intro
 		img#intro(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/kkutu/intro.png')
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
@@ -106,7 +105,7 @@ block Middle
 		//button#AchievementBtn.for-lobby.for-master.for-normal(style='display: none; background-color: #fff200;')= L('Achievement')
 		button#ReloadRoom.tiny-menu.for-lobby(style='display: none; background-color: #7DB7FF;')!= L('reload')
 		div#facebook-menu.fb-like.for-lobby.for-master.for-normal.for-gaming(data-href='http://kkutu.kr', data-width='300', data-layout='button_count', data-action='like', data-show-faces='true', data-share='true')
-	+Dialog('SettingDiag', 320, 340, L('settingsText'))
+	+Dialog('SettingDiag', 320, 350, L('settingsText'))
 		div.dialog-bar
 			h4= L('BGMVOL')
 			input#bgmvol(type='range' min='0' max='1' value='0.5' step='0.01' style='width:50%;')
@@ -216,7 +215,7 @@ block Middle
 			h4(style='width: 100%; height: 20px;')#quick-queue
 		div.dialog-bar.tail-button
 			button#quick-ok= L('OK')
-	+Dialog('RoomDiag', 400, 520)
+	+Dialog('RoomDiag', 400, 440)
 		div.dialog-bar
 			h4= L('roomTitle')
 			input#room-title(placeholder=(nick || L('guest'))+L('roomDefault'), maxlength=20)
@@ -284,7 +283,7 @@ block Middle
 				option(value=200, style='color: #3E7AF9')
 				option(value=300, style='color: #0933EF')
 				option(value=9999999, style='color: #0933EF')
-		div.dialog-bar(style='height: 200px;')
+		div.dialog-bar(style='height: 125px;')
 			h4(style='height: 140px;')= L('misc')
 			- for(var i in locals.OPTIONS)
 				+GameOption(i, 'room')
@@ -588,7 +587,7 @@ block Middle
 			input#kickTarget(type='textfield', placeholder=L('kickTarget'), style='width: 100px;')
 			button#kickUser= L('kickUser')
 			button#extendMax= L('extendMax')
-	+Dialog('DressDiag', 650, 320, L('dress'))
+	+Dialog('DressDiag', 650, 310, L('dress'))
 		div.dialog-bar
 			h4(style='width: 150px;')= L('myNickname')
 			input#dress-nickname(type='textfield', placeholder=L('myNicknameX'), style='width: 435px;', maxlength=14)
@@ -769,7 +768,7 @@ block Middle
 		button#ChatBtn(style="display: none;")
 		input#chatinput(maxlength=200, style="float: left; border-right: none; border-top-right-radius: 0px; border-bottom-right-radius: 0px; margin-top: 5px; width: calc(100% - 82px); height: 20px;")
 		button(style="float: left; border-left: none; border-top-left-radius: 0px; border-bottom-left-radius: 0px; margin-top: 5px; width: 60px; height: 20px;")= L('send')
-	+Advertisement('AD')
+	+KakaoAdvertisement('AD')
 		
 block Bottom
 	div
