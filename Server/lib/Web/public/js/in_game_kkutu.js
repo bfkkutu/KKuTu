@@ -543,11 +543,31 @@
 					}
 				} else if (409 == a.code) c = L["server_" + c];
 				else {
-					if (416 == a.code) return void(confirm(L["error_" + a.code]) && (stopBGM(), $data._spectate = !0, $data._gaming = !0, send("enter", {
-						id: a.target,
-						password: $data._pw,
-						spectate: !0
-					}, !0)));
+					if (416 == a.code){
+						if(confirm(L["error_416"])){
+							stopBGM();
+							$data._spectate = true;
+							$data._gaming = true;
+							return send("enter", {
+								id: a.target,
+								password: $data._pw,
+								spectate: true,
+								joinWhileGaming: false
+							}, true);
+						}
+					}else if(a.code == 466){
+						if(confirm(L["error_466"])){
+							stopBGM();
+							$data._spectate = false;
+							$data._gaming = true;
+							return send("enter", {
+								id: a.target,
+								password: $data._pw,
+								spectate: false,
+								joinWhileGaming: true
+							}, true);
+						}
+					}
 					if (413 == a.code) $stage.dialog.room.hide(), $stage.menu.setRoom.trigger("click");
 					else if (429 == a.code) playBGM("lobby");
 					else if (430 == a.code) {
@@ -909,7 +929,7 @@
 		var b, c, d, e;
 		if (a.myRoom = $data.place == a.room.id || a.target == $data.id, a.myRoom) {
 			if ($target = $data.users[a.target], a.kickVote && (notice(getKickText($target.profile, a.kickVote)), $target.id == a.id && alert(L.hasKicked)), -1 == a.room.players.indexOf($data.id)) $data.room && $data.room.gaming && (stopAllSounds(), $data.practicing = !1, $data._gaming = !1, $data.room.opts.tournament ? $stage.box.room.height(460) : $stage.box.room.height(360), playBGM("lobby")), $data.users[$data.id].game.ready = !1, $data.users[$data.id].game.team = 0, $data.users[$data.id].game.form = "J", $stage.menu.spectate.removeClass("toggled"), $stage.menu.ready.removeClass("toggled"), $data.room = null, $data.resulting = !1, $data._players = null, $data._master = null, $data.place = 0, a.room.practice && (!$data.admin ? delete $data.users[0] : null, $data.room = $data._room, $data.place = $data._place, $data.master = $data.__master, $data._players = $data.__players, !$data.admin ? delete $data._room : null);
-			else if (a.room.practice && !$data.practicing && ($data.practicing = !0, $data._room = $data.room, $data._place = $data.place, $data.__master = $data.master, $data.__players = $data._players), $data.room && ($data._players = $data.room.players.toString(), $data._master = $data.room.master, $data._rTitle = $data.room.title, $data._rMode = getOptions($data.room.mode, $data.room.opts, !0), $data._rLimit = $data.room.limit, $data._rRound = $data.room.round, $data._rTime = $data.room.time), $data.room = a.room, $data.place = $data.room.id, $data.master = $data.room.master == $data.id, a.spec && a.target == $data.id) {
+			else if (a.room.practice && !$data.practicing && ($data.practicing = !0, $data._room = $data.room, $data._place = $data.place, $data.__master = $data.master, $data.__players = $data._players), $data.room && ($data._players = $data.room.players.toString(), $data._master = $data.room.master, $data._rTitle = $data.room.title, $data._rMode = getOptions($data.room.mode, $data.room.opts, !0), $data._rLimit = $data.room.limit, $data._rRound = $data.room.round, $data._rTime = $data.room.time), $data.room = a.room, $data.place = $data.room.id, $data.master = $data.room.master == $data.id, a.spectate && a.target == $data.id) {
 				if ($data._spectate || ($data._spectate = !0, clearBoard(), drawRound()), a.boards) {
 					$data.selectedRound = 1;
 					for (b in a.prisoners) {
@@ -922,7 +942,7 @@
 					}
 					$lib.Crossword.roundReady(a, !0), $lib.Crossword.turnStart(a, !0)
 				}
-				for (b in a.spec) $data.users[b].game.score = a.spec[b]
+				for (b in a.spectate) $data.users[b].game.score = a.spectate[b]
 			}
 			a.modify || a.target != $data.id || forkChat()
 		}

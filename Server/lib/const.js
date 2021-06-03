@@ -63,7 +63,8 @@ exports.OPTIONS = {
 	'twt': { name: "Twenty" },
 	'bdb': { name: "BanDouble" },
 	'mman': { name: "MidManner" },
-	'item': { name: "Item" }
+	'item': { name: "Item" },
+	'jwg': { name: "JoinWhileGaming" }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'heco', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -134,7 +135,7 @@ exports.RULE = {
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
 		opts: [ /*"ijp", */"man", "ext", "mis", "rms"/*, "loa", "str"*/,
-		/*"nrt", */"leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow", "twt", "item", "tmnt"/*, "selth", "btm"*/ ],
+		/*"nrt", */"leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow", "twt", "item", "jwg", "tmnt"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
 		big: false,

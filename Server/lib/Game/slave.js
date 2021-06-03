@@ -86,7 +86,8 @@ process.on('message', function(msg){
 			}else RESERVED[msg.session] = {
 				profile: msg.profile,
 				room: msg.room,
-				spec: msg.spec,
+				spectate: msg.spectate,
+				joinWhileGaming: msg.joinWhileGaming,
 				pass: msg.pass,
 				_expiration: setTimeout(function(tg, create){
 					process.send({ type: "room-expired", id: msg.room.id, create: create });
@@ -150,7 +151,7 @@ Server.on('connection', function(socket, info){
 				DIC[$c.id] = $c;
 				DNAME[($c.profile.title || $c.profile.name).replace(/\s/g, "")] = $c.id;
 				
-				$c.enter(room, reserve.spec, reserve.pass);
+				$c.enter(room, reserve.pass, reserve.spectate, reserve.joinWhileGaming);
 				if($c.place == room.id){
 					$c.publish('connRoom', { user: $c.getData() });
 				}else{ // 입장 실패
@@ -207,7 +208,7 @@ KKuTu.onClientMessage = function($c, msg){
 				friends: $c.friends,
 				admin: $c.admin,
 				test: global.test,
-				caj: $c._checkAjae ? true : false
+				caj: $c._checkAjae
 			});
 			break;
 		case 'updateData':
@@ -227,7 +228,7 @@ KKuTu.onClientMessage = function($c, msg){
 				friends: $c.friends,
 				admin: $c.admin,
 				test: global.test,
-				caj: $c._checkAjae ? true : false
+				caj: $c._checkAjae
 			});
 			break;
 		case 'refresh':
@@ -275,8 +276,8 @@ KKuTu.onClientMessage = function($c, msg){
 			}
 			break;
 		case 'item':
-			if(!msg.item) return;
 			if(typeof msg != "object") return;
+			if(!msg.item) return;
 			
 			if($c.subPlace) temp = $c.pracRoom;
 			else if(!(temp = ROOM[$c.place])) return;
@@ -327,7 +328,7 @@ KKuTu.onClientMessage = function($c, msg){
 				if(ENABLE_ROUND_TIME.indexOf(msg.time) == -1) stable = false;
 			}
 			if(msg.type == 'enter'){
-				if(msg.id || stable) $c.enter(msg, msg.spectate);
+				if(msg.id || stable) $c.enter(msg, msg.password, msg.spectate, msg.joinWhileGaming);
 				else $c.sendError(msg.code || 431);
 			}else if(msg.type == 'setRoom'){
 				if(stable) $c.setRoom(msg);
@@ -379,7 +380,7 @@ KKuTu.onClientMessage = function($c, msg){
 			if(!(temp = ROOM[msg.from])) return;
 			if(!GUEST_PERMISSION.inviteRes) if($c.guest) return;
 			if(msg.res){
-				$c.enter({ id: msg.from }, false, true);
+				$c.enter({ id: msg.from }, true, false, false);
 			}else{
 				if(DIC[temp.master]) DIC[temp.master].send('inviteNo', { target: $c.id });
 			}
