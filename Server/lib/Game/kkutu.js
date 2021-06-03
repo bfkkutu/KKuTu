@@ -46,6 +46,369 @@ fs.watchFile("./lib/sub/global.json", () => {
   JLog.info("global.json is Auto-Updated at {lib/Game/kkutu.js}");
 });
 
+const getFreeChannel = () => {
+  const list = {};
+
+  if (Cluster.isMaster) {
+    var mk = 1;
+
+    for (let i in CHAN) {
+      // if(CHAN[i].isDead()) continue;
+      list[i] = 0;
+    }
+    for (let i in ROOM) {
+      // if(!list.hasOwnProperty(i)) continue;
+      mk = ROOM[i].channel;
+      list[mk]++;
+    }
+    for (let i in list) {
+      if (list[i] < list[mk]) mk = i;
+    }
+    return Number(mk);
+  } else {
+    return channel || 0;
+  }
+};
+const getGuestName = (sid) => {
+  const len = sid.length;
+  let res = 0;
+
+  for (let i = 0; i < len; i++) {
+    res += sid.charCodeAt(i) * (i + 1);
+  }
+  return "GUEST" + (1000 + (res % 9000));
+};
+const shuffle = (arr) => {
+  const r = [];
+
+  for (let i in arr) r.push(arr[i]);
+  r.sort((a, b) => {
+    return Math.random() - 0.5;
+  });
+
+  return r;
+};
+const getRewards = (
+  rankPoint,
+  mode,
+  score,
+  bonus,
+  rank,
+  all,
+  ss,
+  srp,
+  opts,
+  nscore
+) => {
+  if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 }; // 언노운워드는 보상이 없다.
+  if (Const.GAME_TYPE[mode] == "ADL")
+    return { score: 0, money: 0, rankPoint: 0 }; // 노운워드는 보상이 없다.
+
+  //score 점수, rw.score 획득 점수, rankPoint 랭크 포인트, rw.rankPoint 획득 랭크 포인트
+
+  const rw = { score: 0, money: 0, rankPoint: 0 };
+  const sr = score / ss;
+  const rr = rankPoint / srp;
+  /*
+	if (opts.manner) rw.score = rw.score * 0.9; // 매너
+	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
+	if (opts.mission) { // 미션
+		if (!opts.randommission) rw.score = rw.score * 0.8; // 랜덤 미션
+		if (!opts.abcmission) rw.score = rw.score * 0.8; //가나다 미션
+		else rw.score = rw.score * 0.7;
+	};
+	if (opts.proverb) rw.score = rw.score * 1.3; // 속담
+	if (opts.loanword) rw.score = rw.score * 1.2; // 우리말
+	if (opts.strict) rw.score = rw.score * 1.3; // 깐깐
+	if (opts.sami) rw.score = rw.score * 1.5; // 3232
+	if (opts.no2) rw.score = rw.score * 1.5; // 2글자 금지
+
+	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
+	if (opts.randomturn) rw.score = rw.score * 1.3; // 랜덤 턴
+	if (opts.noreturn) rw.score = rw.score * 0.9; // 도돌이 금지
+	if (opts.ignoreinitial) rw.score = rw.score * 1.6; // 두음 법칙 파괴
+	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
+	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
+	*/
+  if (opts.manner) rw.score = rw.score * 0.95; // 매너
+  if (opts.midmanner) rw.score = rw.score * 0.95; // 미들킬 금지
+  if (opts.injeong) rw.score = rw.score * 0.8; // 어인정
+  if (opts.mission) {
+    // 미션
+    if (!opts.randommission) {
+      rw.score = rw.score * 0.95;
+    } else {
+      rw.score = rw.score * 0.9;
+    }
+    if (opts.moremission) {
+      rw.score = rw.score * 1.25;
+    } else {
+      rw.score = rw.score * 0.9;
+    }
+  }
+  if (opts.proverb) rw.score = rw.score * 1.4; // 속담
+  if (opts.loanword) rw.score = rw.score * 1.3; // 우리말
+  if (opts.strict) rw.score = rw.score * 1.4; // 깐깐
+  if (opts.sami) rw.score = rw.score * 1.6; // 3232
+  if (opts.no2) rw.score = rw.score * 1.6; // 2글자 금지
+
+  if (opts.returns) rw.score = rw.score * 0.25; // 리턴
+  if (opts.randomturn) rw.score = rw.score * 1.4; // 랜덤 턴
+  if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
+  if (opts.ignoreinitial) rw.score = rw.score * 2.1; // 두음 법칙 파괴
+  if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
+  if (opts.ogow) rw.score = rw.score * 1.1; // 한번만
+  if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
+  if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 금지 (한국어 끝말잇기)
+  if (opts.middletoss) rw.score = rw.score * 1.2; // 미들 토스
+  if (opts.twenty) rw.score = rw.score * 0.95; // 20자 제한
+  if (opts.item) rw.score = rw.score * 0.8; // 아이템 전
+  if (opts.tournament) rw.score = rw.score * 3.0; // 토너먼트
+  // all은 1~16
+  // rank는 0~15
+  /*switch(Const.GAME_TYPE[mode]){
+		case "EKT":
+			rw.score += score * 1.4;
+			break;
+		case "ESH":
+			rw.score += score * 0.5;
+			break;
+		case "KKT":
+			rw.score += score * 1.25;
+			break;
+		case "KSH":
+			rw.score += score * 0.57;
+			break;
+		case "CSQ": // 한국어 자음퀴즈
+			rw.score += score * 0.4;
+			break;
+		case 'KCW':
+			rw.score += score * 1.0;
+			break;
+		case 'KTY':
+			rw.score += score * 0.3;
+			break;
+		case 'ETY':
+			rw.score += score * 0.37;
+			break;
+		case 'KAP':
+			rw.score += score * 0.8;
+			break;
+		case 'HUN':
+			rw.score += score * 0.5;
+			break;
+		case 'KDA':
+			rw.score += score * 0.57;
+			break;
+		case 'EDA':
+			rw.score += score * 0.65;
+			break;
+		case 'KSS':
+			rw.score += score * 0.5;
+			break;
+		case 'ESS':
+			rw.score += score * 0.22;
+			break;
+		case 'KDG': //한국어 그림 퀴즈
+			rw.score += score * 0.1;
+			break;
+		case 'EDG': //영어 그림 퀴즈
+			rw.score += score * 0.1;
+			break;
+		case 'KUT': //한국어 끄투
+			rw.score += score * 1.4;
+			break;
+		case 'KRH': //한국어 랜덤잇기
+			rw.score += score * 0.6;
+			break;
+		case 'ERH': //영어 랜덤잇기
+			rw.score += score * 0.6;
+			break;
+		case 'KMH': //한국어 가운데잇기
+			rw.score += score * 0.58;
+			break;
+		default:
+			break;
+	}*/
+  switch (Const.GAME_TYPE[mode]) {
+    case "EKT":
+      rw.score += score * 1.5;
+      break;
+    case "ESH":
+      rw.score += score * 0.6;
+      break;
+    case "KKT":
+      rw.score += score * 1.35;
+      break;
+    case "KSH":
+      rw.score += score * 0.67;
+      break;
+    case "CSQ": // 한국어 자음퀴즈
+      rw.score += score * 0.5;
+      break;
+    case "KCW":
+      rw.score += score * 1.1;
+      break;
+    case "KTY":
+      rw.score += score * 0.4;
+      break;
+    case "ETY":
+      rw.score += score * 0.47;
+      break;
+    case "KAP":
+      rw.score += score * 0.9;
+      break;
+    case "HUN":
+      rw.score += score * 0.6;
+      break;
+    case "KDA":
+      rw.score += score * 0.67;
+      break;
+    case "EDA":
+      rw.score += score * 0.75;
+      break;
+    case "KSS":
+      rw.score += score * 1.05;
+      break;
+    case "ESS":
+      rw.score += score * 0.32;
+      break;
+    case "KDG": //한국어 그림 퀴즈
+      rw.score += score * 0.2;
+      break;
+    case "EDG": //영어 그림 퀴즈
+      rw.score += score * 0.2;
+      break;
+    case "KUT": //한국어 끄투
+      rw.score += score * 1.5;
+      break;
+    case "KRH": //한국어 랜덤잇기
+      rw.score += score * 0.7;
+      break;
+    case "ERH": //영어 랜덤잇기
+      rw.score += score * 0.7;
+      break;
+    case "KMH": //한국어 가운데잇기
+      rw.score += score * 0.68;
+      break;
+    default:
+      break;
+  }
+
+  if (opts.rankgame) rw.rankPoint = rw.score * 0.05;
+  else rw.rankPoint = 0;
+
+  rw.score =
+    (rw.score *
+      (0.77 + 0.05 * (all - rank) * (all - rank)) * // 순위
+      1.25) /
+    (1 + 1.25 * sr * sr); // 점차비(양학했을 수록 ↓)
+
+  // TODO: 랭크 포인트 획득 알고리즘 개선하기
+  rw.rankPoint =
+    (rw.rankPoint *
+      (0.77 + 0.05 * (all - rank) * (all - rank)) * // 순위
+      1.25) /
+    (1 + 1.25 * rr * rr); // 점차비(양학했을 수록 ↓)
+
+  rw.money = 1 + rw.score * 0.01;
+  if (all < 2) {
+    rw.score = rw.score * 0.05;
+    rw.money = rw.money * 0.05;
+    rw.rankPoint = 0;
+  } else {
+    rw.together = true;
+  }
+
+  if (all >= 2 && all <= 4) rw.rankPoint = rw.rankPoint * 0.5;
+  else if (all > 4 && all <= 8) rw.rankPoint = rw.rankPoint * 0.75;
+
+  /*if(robot){
+		rw.score = rw.score * 0.001;
+		rw.money = rw.money * 0.001;
+		rw.rankPoint = 0;
+	}*/
+  rw.score += bonus;
+  rw.score = rw.score || 0;
+  rw.money = rw.money || 0;
+  rw.rankPoint = rw.rankPoint || 0;
+
+  if (nscore <= "-1") {
+    rw.score = 0;
+  }
+
+  if (rankPoint >= 2850 && rankPoint <= 2999) {
+    rw.rankPoint = rw.rankPoint * 0.7;
+  } else if (rankPoint >= 3700 && rankPoint <= 3999) {
+    rw.rankPoint = rw.rankPoint * 0.6;
+  } else if (rankPoint >= 4500 && rankPoint <= 4999) {
+    rw.rankPoint = rw.rankPoint * 0.5;
+  }
+
+  //rw.rankPoint = rw.rankPoint * 0.65;
+
+  // 크리스마스 이벤트
+  /*rw.score = rw.score * 2;
+	rw.money = rw.money * 2;
+	rw.rankPoint = rw.rankPoint * 2;*/
+
+  // applyEquipOptions에서 반올림한다.
+
+  //rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
+
+  //rw.score = rw.score * 1.5; // 새시즌 시작 기념 이벤트
+  //rw.rankPoint = rw.rankPoint * 1.5; // 새시즌 시작 기념 이벤트
+
+  /*if (rankPoint >= 5000){
+		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
+	}*/
+
+  if (rankPoint >= 5000) {
+    // 마스터 이상 구간에서 하위 티어가 상위 티어를 따라잡기 더 쉽게 하기 위함.
+    if (rankPoint <= 5999) {
+      rw.rankPoint = rw.rankPoint * 0.99;
+    } else if (rankPoint >= 6000 && rankPoint <= 6999) {
+      rw.rankPoint = rw.rankPoint * 0.98;
+    } else if (rankPoint >= 7000 && rankPoint <= 7999) {
+      rw.rankPoint = rw.rankPoint * 0.97;
+    } else if (rankPoint >= 8000 && rankPoint <= 8999) {
+      rw.rankPoint = rw.rankPoint * 0.96;
+    } else if (rankPoint >= 9000 && rankPoint <= 9999) {
+      rw.rankPoint = rw.rankPoint * 0.95;
+    } else if (rankPoint >= 10000 && rankPoint <= 10999) {
+      rw.rankPoint = rw.rankPoint * 0.94;
+    } else if (rankPoint >= 11000 && rankPoint <= 11999) {
+      rw.rankPoint = rw.rankPoint * 0.93;
+    } else if (rankPoint >= 12000 && rankPoint <= 12999) {
+      rw.rankPoint = rw.rankPoint * 0.92;
+    } else if (rankPoint >= 13000 && rankPoint <= 13999) {
+      rw.rankPoint = rw.rankPoint * 0.91;
+    } else if (rankPoint >= 14000 && rankPoint <= 14999) {
+      rw.rankPoint = rw.rankPoint * 0.9;
+    } else if (rankPoint >= 15000 && rankPoint <= 15999) {
+      rw.rankPoint = rw.rankPoint * 0.89;
+    } else if (rankPoint >= 16000 && rankPoint <= 16999) {
+      rw.rankPoint = rw.rankPoint * 0.88;
+    } else if (rankPoint >= 17000 && rankPoint <= 17999) {
+      rw.rankPoint = rw.rankPoint * 0.87;
+    } else if (rankPoint >= 18000 && rankPoint <= 18999) {
+      rw.rankPoint = rw.rankPoint * 0.86;
+    } else if (rankPoint >= 19000 && rankPoint <= 19999) {
+      rw.rankPoint = rw.rankPoint * 0.85;
+    }
+  }
+
+  if (opts.randomturn && all <= 3)
+    rw.rankPoint = rw.rankPoint - rw.rankPoint * 0.7; // 랜덤 턴
+  if (opts.returns) rw.rankPoint = 0; // 리턴
+
+  return rw;
+};
+const filterRobot = (item) => {
+  if (!item) return {};
+  return item.robot && item.getData ? item.getData() : item;
+};
+
 exports.NIGHT = false;
 exports.init = function (_DB, _DIC, _ROOM, _GUEST_PERMISSION, _CHAN) {
   DB = _DB;
@@ -1412,12 +1775,12 @@ exports.Room = function (room, channel) {
 
     for (let i in res) {
       const o = DIC[res[i].id];
+      const pv = res[i].score;
       if (pv == res[i].score) {
         res[i].rank = res[Number(i) - 1].rank;
       } else {
         res[i].rank = Number(i);
       }
-      const pv = res[i].score;
       const rw = getRewards(
         o.data.rankPoint,
         my.mode,
@@ -1585,7 +1948,7 @@ exports.Room = function (room, channel) {
     if (!(cf = my.checkRoute(func))) return;
     return cf.apply(my, args);
   };
-  my.checkRoute = function (func) {
+  my.checkRoute = (func) => {
     let c;
 
     if (!my.rule) return JLog.warn("Unknown mode: " + my.mode), false;
@@ -1595,366 +1958,4 @@ exports.Room = function (room, channel) {
     return c[func];
   };
   my.set(room);
-};
-function getFreeChannel() {
-  const list = {};
-
-  if (Cluster.isMaster) {
-    var mk = 1;
-
-    for (let i in CHAN) {
-      // if(CHAN[i].isDead()) continue;
-      list[i] = 0;
-    }
-    for (let i in ROOM) {
-      // if(!list.hasOwnProperty(i)) continue;
-      mk = ROOM[i].channel;
-      list[mk]++;
-    }
-    for (let i in list) {
-      if (list[i] < list[mk]) mk = i;
-    }
-    return Number(mk);
-  } else {
-    return channel || 0;
-  }
-}
-const getGuestName = (sid) => {
-  const len = sid.length;
-  let res = 0;
-
-  for (let i = 0; i < len; i++) {
-    res += sid.charCodeAt(i) * (i + 1);
-  }
-  return "GUEST" + (1000 + (res % 9000));
-};
-const shuffle = (arr) => {
-  const r = [];
-
-  for (let i in arr) r.push(arr[i]);
-  r.sort((a, b) => {
-    return Math.random() - 0.5;
-  });
-
-  return r;
-};
-const getRewards = (
-  rankPoint,
-  mode,
-  score,
-  bonus,
-  rank,
-  all,
-  ss,
-  srp,
-  opts,
-  nscore
-) => {
-  if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 }; // 언노운워드는 보상이 없다.
-  if (Const.GAME_TYPE[mode] == "ADL")
-    return { score: 0, money: 0, rankPoint: 0 }; // 노운워드는 보상이 없다.
-
-  //score 점수, rw.score 획득 점수, rankPoint 랭크 포인트, rw.rankPoint 획득 랭크 포인트
-
-  const rw = { score: 0, money: 0, rankPoint: 0 };
-  const sr = score / ss;
-  const rr = rankPoint / srp;
-  /*
-	if (opts.manner) rw.score = rw.score * 0.9; // 매너
-	if (opts.injeong) rw.score = rw.score * 0.75; // 어인정
-	if (opts.mission) { // 미션
-		if (!opts.randommission) rw.score = rw.score * 0.8; // 랜덤 미션
-		if (!opts.abcmission) rw.score = rw.score * 0.8; //가나다 미션
-		else rw.score = rw.score * 0.7;
-	};
-	if (opts.proverb) rw.score = rw.score * 1.3; // 속담
-	if (opts.loanword) rw.score = rw.score * 1.2; // 우리말
-	if (opts.strict) rw.score = rw.score * 1.3; // 깐깐
-	if (opts.sami) rw.score = rw.score * 1.5; // 3232
-	if (opts.no2) rw.score = rw.score * 1.5; // 2글자 금지
-
-	if (opts.returns) rw.score = rw.score * 0.25 // 리턴
-	if (opts.randomturn) rw.score = rw.score * 1.3; // 랜덤 턴
-	if (opts.noreturn) rw.score = rw.score * 0.9; // 도돌이 금지
-	if (opts.ignoreinitial) rw.score = rw.score * 1.6; // 두음 법칙 파괴
-	// if (opts.unknownplayer) rw.score = rw.score * 3; // 언노운 플레이어
-	// if (opts.leng) rw.score = rw.score * 1.3; // 길이제한
-	*/
-  if (opts.manner) rw.score = rw.score * 0.95; // 매너
-  if (opts.midmanner) rw.score = rw.score * 0.95; // 미들킬 금지
-  if (opts.injeong) rw.score = rw.score * 0.8; // 어인정
-  if (opts.mission) {
-    // 미션
-    if (!opts.randommission) {
-      rw.score = rw.score * 0.95;
-    } else {
-      rw.score = rw.score * 0.9;
-    }
-    if (opts.moremission) {
-      rw.score = rw.score * 1.25;
-    } else {
-      rw.score = rw.score * 0.9;
-    }
-  }
-  if (opts.proverb) rw.score = rw.score * 1.4; // 속담
-  if (opts.loanword) rw.score = rw.score * 1.3; // 우리말
-  if (opts.strict) rw.score = rw.score * 1.4; // 깐깐
-  if (opts.sami) rw.score = rw.score * 1.6; // 3232
-  if (opts.no2) rw.score = rw.score * 1.6; // 2글자 금지
-
-  if (opts.returns) rw.score = rw.score * 0.25; // 리턴
-  if (opts.randomturn) rw.score = rw.score * 1.4; // 랜덤 턴
-  if (opts.noreturn) rw.score = rw.score * 1.1; // 도돌이 금지
-  if (opts.ignoreinitial) rw.score = rw.score * 2.1; // 두음 법칙 파괴
-  if (opts.blockWord) rw.score = rw.score * 1.0; // 단어 금지
-  if (opts.ogow) rw.score = rw.score * 1.1; // 한번만
-  if (opts.selecttheme) rw.score = rw.score * 1.2; // 주제 선택 (한국어 끝말잇기)
-  if (opts.bantheme) rw.score = rw.score * 1.0; // 주제 금지 (한국어 끝말잇기)
-  if (opts.middletoss) rw.score = rw.score * 1.2; // 미들 토스
-  if (opts.twenty) rw.score = rw.score * 0.95; // 20자 제한
-  if (opts.item) rw.score = rw.score * 0.8; // 아이템 전
-  if (opts.tournament) rw.score = rw.score * 3.0; // 토너먼트
-  // all은 1~16
-  // rank는 0~15
-  /*switch(Const.GAME_TYPE[mode]){
-		case "EKT":
-			rw.score += score * 1.4;
-			break;
-		case "ESH":
-			rw.score += score * 0.5;
-			break;
-		case "KKT":
-			rw.score += score * 1.25;
-			break;
-		case "KSH":
-			rw.score += score * 0.57;
-			break;
-		case "CSQ": // 한국어 자음퀴즈
-			rw.score += score * 0.4;
-			break;
-		case 'KCW':
-			rw.score += score * 1.0;
-			break;
-		case 'KTY':
-			rw.score += score * 0.3;
-			break;
-		case 'ETY':
-			rw.score += score * 0.37;
-			break;
-		case 'KAP':
-			rw.score += score * 0.8;
-			break;
-		case 'HUN':
-			rw.score += score * 0.5;
-			break;
-		case 'KDA':
-			rw.score += score * 0.57;
-			break;
-		case 'EDA':
-			rw.score += score * 0.65;
-			break;
-		case 'KSS':
-			rw.score += score * 0.5;
-			break;
-		case 'ESS':
-			rw.score += score * 0.22;
-			break;
-		case 'KDG': //한국어 그림 퀴즈
-			rw.score += score * 0.1;
-			break;
-		case 'EDG': //영어 그림 퀴즈
-			rw.score += score * 0.1;
-			break;
-		case 'KUT': //한국어 끄투
-			rw.score += score * 1.4;
-			break;
-		case 'KRH': //한국어 랜덤잇기
-			rw.score += score * 0.6;
-			break;
-		case 'ERH': //영어 랜덤잇기
-			rw.score += score * 0.6;
-			break;
-		case 'KMH': //한국어 가운데잇기
-			rw.score += score * 0.58;
-			break;
-		default:
-			break;
-	}*/
-  switch (Const.GAME_TYPE[mode]) {
-    case "EKT":
-      rw.score += score * 1.5;
-      break;
-    case "ESH":
-      rw.score += score * 0.6;
-      break;
-    case "KKT":
-      rw.score += score * 1.35;
-      break;
-    case "KSH":
-      rw.score += score * 0.67;
-      break;
-    case "CSQ": // 한국어 자음퀴즈
-      rw.score += score * 0.5;
-      break;
-    case "KCW":
-      rw.score += score * 1.1;
-      break;
-    case "KTY":
-      rw.score += score * 0.4;
-      break;
-    case "ETY":
-      rw.score += score * 0.47;
-      break;
-    case "KAP":
-      rw.score += score * 0.9;
-      break;
-    case "HUN":
-      rw.score += score * 0.6;
-      break;
-    case "KDA":
-      rw.score += score * 0.67;
-      break;
-    case "EDA":
-      rw.score += score * 0.75;
-      break;
-    case "KSS":
-      rw.score += score * 1.05;
-      break;
-    case "ESS":
-      rw.score += score * 0.32;
-      break;
-    case "KDG": //한국어 그림 퀴즈
-      rw.score += score * 0.2;
-      break;
-    case "EDG": //영어 그림 퀴즈
-      rw.score += score * 0.2;
-      break;
-    case "KUT": //한국어 끄투
-      rw.score += score * 1.5;
-      break;
-    case "KRH": //한국어 랜덤잇기
-      rw.score += score * 0.7;
-      break;
-    case "ERH": //영어 랜덤잇기
-      rw.score += score * 0.7;
-      break;
-    case "KMH": //한국어 가운데잇기
-      rw.score += score * 0.68;
-      break;
-    default:
-      break;
-  }
-
-  if (opts.rankgame) rw.rankPoint = rw.score * 0.05;
-  else rw.rankPoint = 0;
-
-  rw.score =
-    (rw.score *
-      (0.77 + 0.05 * (all - rank) * (all - rank)) * // 순위
-      1.25) /
-    (1 + 1.25 * sr * sr); // 점차비(양학했을 수록 ↓)
-
-  // TODO: 랭크 포인트 획득 알고리즘 개선하기
-  rw.rankPoint =
-    (rw.rankPoint *
-      (0.77 + 0.05 * (all - rank) * (all - rank)) * // 순위
-      1.25) /
-    (1 + 1.25 * rr * rr); // 점차비(양학했을 수록 ↓)
-
-  rw.money = 1 + rw.score * 0.01;
-  if (all < 2) {
-    rw.score = rw.score * 0.05;
-    rw.money = rw.money * 0.05;
-    rw.rankPoint = 0;
-  } else {
-    rw.together = true;
-  }
-
-  if (all >= 2 && all <= 4) rw.rankPoint = rw.rankPoint * 0.5;
-  else if (all > 4 && all <= 8) rw.rankPoint = rw.rankPoint * 0.75;
-
-  /*if(robot){
-		rw.score = rw.score * 0.001;
-		rw.money = rw.money * 0.001;
-		rw.rankPoint = 0;
-	}*/
-  rw.score += bonus;
-  rw.score = rw.score || 0;
-  rw.money = rw.money || 0;
-  rw.rankPoint = rw.rankPoint || 0;
-
-  if (nscore <= "-1") {
-    rw.score = 0;
-  }
-
-  if (rankPoint >= 2850 && rankPoint <= 2999) {
-    rw.rankPoint = rw.rankPoint * 0.7;
-  } else if (rankPoint >= 3700 && rankPoint <= 3999) {
-    rw.rankPoint = rw.rankPoint * 0.6;
-  } else if (rankPoint >= 4500 && rankPoint <= 4999) {
-    rw.rankPoint = rw.rankPoint * 0.5;
-  }
-
-  //rw.rankPoint = rw.rankPoint * 0.65;
-
-  // 크리스마스 이벤트
-  /*rw.score = rw.score * 2;
-	rw.money = rw.money * 2;
-	rw.rankPoint = rw.rankPoint * 2;*/
-
-  // applyEquipOptions에서 반올림한다.
-
-  //rw.rankPoint = rw.rankPoint * 2; //1시즌 시작 기념 이벤트
-
-  //rw.score = rw.score * 1.5; // 새시즌 시작 기념 이벤트
-  //rw.rankPoint = rw.rankPoint * 1.5; // 새시즌 시작 기념 이벤트
-
-  /*if (rankPoint >= 5000){
-		rw.rankPoint = 0; //마스터 달성 시 추가 랭크 포인트 획득 제한
-	}*/
-
-  if (rankPoint >= 5000) {
-    // 마스터 이상 구간에서 하위 티어가 상위 티어를 따라잡기 더 쉽게 하기 위함.
-    if (rankPoint <= 5999) {
-      rw.rankPoint = rw.rankPoint * 0.99;
-    } else if (rankPoint >= 6000 && rankPoint <= 6999) {
-      rw.rankPoint = rw.rankPoint * 0.98;
-    } else if (rankPoint >= 7000 && rankPoint <= 7999) {
-      rw.rankPoint = rw.rankPoint * 0.97;
-    } else if (rankPoint >= 8000 && rankPoint <= 8999) {
-      rw.rankPoint = rw.rankPoint * 0.96;
-    } else if (rankPoint >= 9000 && rankPoint <= 9999) {
-      rw.rankPoint = rw.rankPoint * 0.95;
-    } else if (rankPoint >= 10000 && rankPoint <= 10999) {
-      rw.rankPoint = rw.rankPoint * 0.94;
-    } else if (rankPoint >= 11000 && rankPoint <= 11999) {
-      rw.rankPoint = rw.rankPoint * 0.93;
-    } else if (rankPoint >= 12000 && rankPoint <= 12999) {
-      rw.rankPoint = rw.rankPoint * 0.92;
-    } else if (rankPoint >= 13000 && rankPoint <= 13999) {
-      rw.rankPoint = rw.rankPoint * 0.91;
-    } else if (rankPoint >= 14000 && rankPoint <= 14999) {
-      rw.rankPoint = rw.rankPoint * 0.9;
-    } else if (rankPoint >= 15000 && rankPoint <= 15999) {
-      rw.rankPoint = rw.rankPoint * 0.89;
-    } else if (rankPoint >= 16000 && rankPoint <= 16999) {
-      rw.rankPoint = rw.rankPoint * 0.88;
-    } else if (rankPoint >= 17000 && rankPoint <= 17999) {
-      rw.rankPoint = rw.rankPoint * 0.87;
-    } else if (rankPoint >= 18000 && rankPoint <= 18999) {
-      rw.rankPoint = rw.rankPoint * 0.86;
-    } else if (rankPoint >= 19000 && rankPoint <= 19999) {
-      rw.rankPoint = rw.rankPoint * 0.85;
-    }
-  }
-
-  if (opts.randomturn && all <= 3)
-    rw.rankPoint = rw.rankPoint - rw.rankPoint * 0.7; // 랜덤 턴
-  if (opts.returns) rw.rankPoint = 0; // 리턴
-
-  return rw;
-};
-const filterRobot = (item) => {
-  if (!item) return {};
-  return item.robot && item.getData ? item.getData() : item;
 };
