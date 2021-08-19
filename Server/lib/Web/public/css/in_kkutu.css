@@ -90,6 +90,15 @@ iframe{
 #ReadyBtn:hover, #ReadyBtn.toggled{
 	animation: none;
 }
+#optDiff1{
+	color: green;
+}
+#optDiff2{
+	color: orange;
+}
+#optDiff3{
+	color: red;
+}
 .product-body{ font-size: 12px; }
 .deltaScore{
 	width: 100%;

@@ -141,28 +141,6 @@ mixin Product(id)
 			else
 				h4= id
 				
-mixin KakaoAdvertisement(id)
-	- if(locals.mobile)
-		div(class='ADBox Product', style='display: block;')
-	- else
-		div(class=id+'Box Product', style='display: block;')
-			h5.product-title!= L('AD')
-			div.product-body
-				
-
-mixin GoogleAdvertisement(kind)
-	- if(locals.mobile)
-		div(class='ADBox Product', style='display: block;')
-	- else if(kind == "portal")
-		div(class='ADBox Product', style='display: block; width: 728px; height: 90px;')
-			h5.product-title!= L('AD')
-			div.product-body
-
-	- else
-		div(class='ADBox Product', style='display: block;')
-			h5.product-title!= L('AD')
-			div.product-body
-
 mixin GraphBar(c, min, val, max, bgc)
 	div(class='graph '+c)
 		div.graph-bar(style='width: '+((val-min) / (max-min) * 100)+'%;'+(bgc ? (' background-color: '+bgc+';') : ''))
@@ -170,6 +148,7 @@ mixin GraphBar(c, min, val, max, bgc)
 mixin ChartBar(c, data)
 	-
 		var i, sum = 0, total = 100;
+		
 		for(i in data) sum += data[i].value;
 		data[data.length - 1].last = true;
 	

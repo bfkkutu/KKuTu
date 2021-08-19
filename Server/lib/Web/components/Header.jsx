@@ -24,13 +24,21 @@ const Header = (props) => {
         content="끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
       />
       <script
-        src="https://unpkg.com/react@17/umd/react.development.js"
-        crossOrigin="true"
-      ></script>
+        type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/jquery@latest"
+      />
       <script
-        src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"
+        type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/jquery.browser@latest/dist/jquery.browser.min.js"
+      />
+      <script
+        src="https://unpkg.com/react@17/umd/react.production.min.js"
         crossOrigin="true"
-      ></script>
+      />
+      <script
+        src="https://unpkg.com/react-dom@17/umd/react-dom.production.min.js"
+        crossOrigin="true"
+      />
       <script
         type="text/javascript"
         src="https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/js/checkBrowser.js"
@@ -46,12 +54,16 @@ const Header = (props) => {
       />
       <link rel="stylesheet" href="/css/in_game_kkutu.css" />
       <link rel="stylesheet" href={`/css/in_${props.kind}.css`} />
-      {props.kind == "login" ? (
-        <link rel="stylesheet" href="/css/oauth-buttons.min.css" />
-      ) : (
-        ""
-      )}
-      {props.kind == "login" ? <script src="/js/oauth-buttons.min.js" /> : ""}
+      <script src={`/js/global.min.js`} />
+      <script src={`/js/_react.js`} />
+      <script src={`/js/in_${props.kind}.min.js`} />
+      <script type="text/javascript" src={`/language/${props.kind}/ko_KR`} />
+      {props.kind == "login"
+        ? [
+            <link rel="stylesheet" href="/css/oauth-buttons.min.css" />,
+            <script src="/js/oauth-buttons.min.js" />,
+          ]
+        : ""}
       <span id="explSize" />
       <title>{props.title}</title>
     </head>

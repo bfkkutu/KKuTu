@@ -154,6 +154,17 @@ block Middle
 					textarea#answer-body(rows=15, cols=30)
 				button#answer-submit 답변 등록
 		fieldset
+			legend [실험 중인 기능] 관리자 페이지에서 인게임 관리자 명령어 실행하기
+			fieldset
+				legend 인게임 웹소켓과 연결하기
+				label 현재 상태: 
+				label#socket-status 연결 안 됨
+				button#socket-go 연결
+			fieldset
+				legend 명령어 실행하기
+				input#socket-command(placeholder='명령어', disabled)
+				button#socket-run(disabled) 실행
+		fieldset
 			legend 랭크 포인트 초기화 (총괄 권한 요구)
 			div
 				button#reset-rankpoint 실행

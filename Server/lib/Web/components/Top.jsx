@@ -14,21 +14,15 @@ const Notice = {
 };
 
 const Top = (_props) => {
-  let props = _props.props;
-  let document = _props.document;
+  const props = _props.props;
   return (
     <div id="Top">
-      <Menu props={props} document={document} />
-      <div
-        id="global-notice"
-        onClick={(e) => {
-          document.getElementById(e.currentTarget).style.display = "none";
-        }}
-      >
+      <Menu props={props} />
+      <div id="global-notice">
         <div id="gn-content">
           {_props.kind == "portal" ? Notice.portal : Notice.global}
         </div>
-        <div>{Expl("클릭하여 닫기")}</div>
+        {Expl("클릭하여 닫기")}
       </div>
     </div>
   );

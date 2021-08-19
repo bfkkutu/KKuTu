@@ -4,7 +4,7 @@ const Header = require("../components/Header");
 const _L = require("../components/Language");
 
 const Login = (props) => {
-  let L = (e) => {
+  const L = (e) => {
     return _L(props, e);
   };
   let loginBtns = [];

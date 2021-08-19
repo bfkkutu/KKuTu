@@ -33,38 +33,38 @@ exports.TESTER = GLOBAL.ADMIN.concat([
 exports.IS_SECURED = GLOBAL.IS_SECURED;
 exports.SSL_OPTIONS = GLOBAL.SSL_OPTIONS;
 exports.WS = GLOBAL.WS;
-exports.OPTIONS = {
-	'man': { name: "Manner" },
-	'ext': { name: "Injeong" },
-	'mis': { name: "Mission" },
+exports.OPTIONS = { // name: 이름, diff: 난이도(0: 미분류, 1: 초보, 2: 숙련자, 3: 고수)
+	'man': { name: "Manner", diff: 1 },
+	'ext': { name: "Injeong", diff: 1 },
+	'mis': { name: "Mission", diff: 1 },
 	//'loa': { name: "Loanword" },
-	'prv': { name: "Proverb" },
+	'prv': { name: "Proverb", diff: 2 },
 	//'str': { name: "Strict" },
-	'k32': { name: "Sami" },
-	'no2': { name: "No2" },
-	'ulm': { name: "Unlimited" },
-	'sht': { name: "Short" },
+	'k32': { name: "Sami", diff: 1 },
+	'no2': { name: "No2", diff: 2 },
+	'ulm': { name: "Unlimited", diff: 2 },
+	'sht': { name: "Short", diff: 1 },
 	//'rms': { name: "RandomMission" },
 	//'nrt': { name: "NoReturn" },
-	'rtu': { name: "RandomTurn" },
-	'uwd': { name: "UnknownWord" },
-	'rtn': { name: "Returns" },
-	'rms': { name: "AbcMission" },
-	'igin': { name: "IgnoreInitial" },
-	'blw': { name: "BlockWord" },
-	'eve': { name: "EventMode" },
-	'mms': { name: "MoreMission" },
-	'rank': { name: "RankGame" },
-	'ogow': { name: "Ogow" },
-	'selth': { name: "SelectTheme" },
-	'btm': { name: "BanTheme" },
-	'mdt': { name: "MiddleToss" },
-	'tmnt': { name: "Tournament" },
-	'twt': { name: "Twenty" },
-	'bdb': { name: "BanDouble" },
-	'mman': { name: "MidManner" },
-	'item': { name: "Item" },
-	'jwg': { name: "JoinWhileGaming" }
+	'rtu': { name: "RandomTurn", diff: 2 },
+	'uwd': { name: "UnknownWord", diff: 0 },
+	'rtn': { name: "Returns", diff: 1 },
+	'rms': { name: "AbcMission", diff: 2 },
+	'igin': { name: "IgnoreInitial", diff: 3 },
+	'blw': { name: "BlockWord", diff: 2 },
+	'eve': { name: "EventMode", diff: 0 },
+	'mms': { name: "MoreMission", diff: 2 },
+	'rank': { name: "RankGame", diff: 0 },
+	'ogow': { name: "Ogow", diff: 2 },
+	'selth': { name: "SelectTheme", diff: 3 },
+	'btm': { name: "BanTheme", diff: 2 },
+	'mdt': { name: "MiddleToss", diff: 2 },
+	'tmnt': { name: "Tournament", diff: 0 },
+	'twt': { name: "Twenty", diff: 1 },
+	'bdb': { name: "BanDouble", diff: 2 },
+	'mman': { name: "MidManner", diff: 1 },
+	'item': { name: "Item", diff: 1 },
+	'jwg': { name: "JoinWhileGaming", diff: 0 }
 };
 exports.MOREMI_PART = [ 'back', 'eye', 'mouth', 'shoes', 'clothes', 'head', 'heco', 'lhand', 'rhand', 'front' ];
 exports.CATEGORIES = [ "all", "spec", "skin", "badge", "head", "eye", "mouth", "clothes", "hs", "back", "MSKIN" ];
@@ -100,7 +100,7 @@ exports.RULE = {
 	'EKT': { lang: "en", // 영어 끄투
 		rule: "Classic",
 		opts: [ "ext", "mis", "rms", "rtu",
-		/*"nrt", */"upl", "rtn" ],
+		/*"nrt", */ "upl", "rtn" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -125,7 +125,7 @@ exports.RULE = {
 	},*/
 	'KKT': { lang: "ko", // 쿵쿵따
 		rule: "Classic",
-		opts: [ /*"ijp",*/ "man", "ext", "mis", "mdt", "rms"/*, "loa", "str"*/,
+		opts: [ /*"ijp",*/ "man", "rms", "ext", "mis", "mdt"/*, "loa", "str"*/,
 		/*"nrt", */"rtu", "upl", "rank", "ogow", "mman", "item"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
@@ -134,8 +134,8 @@ exports.RULE = {
 	},
 	'KSH': { lang: "ko", // 한국어 끝말잇기
 		rule: "Classic",
-		opts: [ /*"ijp", */"man", "ext", "mis", "rms"/*, "loa", "str"*/,
-		/*"nrt", */"leg", "rtu", "upl", "rtn", "igin", "mms", "rank", "ogow", "twt", "item", "jwg", "tmnt"/*, "selth", "btm"*/ ],
+		opts: [ /*"ijp", */"man", "ext", "mis", "rms", "mms"/*, "loa", "str"*/,
+		/*"nrt", */"rtu", "upl", "rtn", "igin", "rank", "ogow", "twt", "item", "jwg", "tmnt"/*, "selth", "btm"*/ ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -179,7 +179,7 @@ exports.RULE = {
 	'KAP': { lang: "ko", // 한국어 앞말잇기
 		rule: "Classic",
 		opts: [ "man", "ext", "mis", "rms"/*, "loa", "str"*/,
-		/*"nrt", */"leg", "rtu", "upl", "rtn", "ogow" ],
+		/*"nrt", */"rtu", "upl", "rtn", "ogow" ],
 		time: 1,
 		ai: true,
 		big: false,
@@ -247,16 +247,6 @@ exports.RULE = {
 		ewq: true,
 		ijr: true // 인정픽 필수 여부
 	},
-	/*'EAP': { lang: "en", // 영어 앞말잇기 임시 비활성화
-		rule: "Classic",
-		opts: [ "ext", "mis", "rms", "nrt", "rtu",
-		"upl" ],
-		time: 1,
-		ai: true,
-		big: false,
-		_back: true,
-		ewq: true
-	}*/
 	/*'KTS': { lang: "ko", // 한국어 주제 끝말잇기
 		rule: "DaneoClassic",
 		opts: [ "man", "ext", "ijp", "rank" ],
@@ -303,6 +293,15 @@ exports.RULE = {
 		time: 1,
 		ai: true,
 		big: false,
+		ewq: true
+	},
+	'EAP': { lang: "en", // 영어 앞말잇기
+		rule: "Classic",
+		opts: [ "ext", "mis", "rms", "nrt", "rtu" ],
+		time: 1,
+		ai: true,
+		big: false,
+		_back: true,
 		ewq: true
 	},
 	'MSH': { lang: "mo", // 모렘어 끝말잇기

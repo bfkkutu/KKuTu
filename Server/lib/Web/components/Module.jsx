@@ -1,12 +1,6 @@
 const React = require("react");
 const _L = require("./Language");
 
-const _redirect = (document, loc) => {
-  let script = document.createElement("script");
-  script.textContent = `location.href = "${loc}";`;
-  document.querySelector("head").appendChild(script);
-};
-
 const MENU = [
   { key: "HOME", href: "/" },
   {
@@ -17,11 +11,10 @@ const MENU = [
       { key: "OURKKT", href: "/" },
       {
         key: "IWANT",
-        onclick: () => {
+        onclick: `
           alert(
             "제휴 관련 문의는 디스코드 베프#4867 또는 BF끄투 디스코드로 문의해 주세요."
-          );
-        },
+          );`,
       },
     ],
   },
@@ -35,13 +28,9 @@ const MENU = [
 ];
 
 const Menu = (_props) => {
-  let menuList = [];
-  let props = _props.props;
-  let document = _props.document;
-  let redirect = (loc) => {
-    return _redirect(document, loc);
-  };
-  let L = (e) => {
+  const menuList = [];
+  const props = _props.props;
+  const L = (e) => {
     return _L(props, e);
   };
 
@@ -50,10 +39,8 @@ const Menu = (_props) => {
       menuList.push(
         <button
           id={`menu-item-${MENU[i].key}`}
-          className="menu-btn"
-          onClick={() => {
-            redirect(MENU[i].href);
-          }}
+          className="menu-btn passiveBtn"
+          href={MENU[i].href}
         >
           {L(MENU[i].key)}
         </button>
@@ -62,8 +49,8 @@ const Menu = (_props) => {
       menuList.push(
         <button
           id={`menu-item-${MENU[i].key}`}
-          className="menu-btn"
-          onClick={MENU[i].onclick}
+          className="menu-btn passiveBtn"
+          click={MENU[i].onclick}
         >
           {L(MENU[i].key)}
         </button>
@@ -73,24 +60,22 @@ const Menu = (_props) => {
       for (let j in MENU[i].sub) {
         if (MENU[i].sub[j].onclick)
           subMenuList.push(
-            <div className="menu-sub-btn" onClick={MENU[i].sub[j].onclick}>
+            <div
+              className="menu-sub-btn passiveBtn"
+              click={MENU[i].sub[j].onclick}
+            >
               {L(MENU[i].sub[j].key)}
             </div>
           );
         else
           subMenuList.push(
-            <div
-              className="menu-sub-btn"
-              onClick={() => {
-                redirect(MENU[i].sub[j].href);
-              }}
-            >
+            <div className="menu-sub-btn passiveBtn" href={MENU[i].sub[j].href}>
               {L(MENU[i].sub[j].key)}
             </div>
           );
       }
       menuList.push(
-        <div id={`menu-item-${MENU[i].key}`} className="menu-btn">
+        <div id={`menu-item-${MENU[i].key}`} className="menu-btn passiveBtn">
           {L(MENU[i].key)}
           <div className="menu-sub-separator">{subMenuList}</div>
         </div>

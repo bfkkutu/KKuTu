@@ -33,6 +33,7 @@
 	}*/
 
 	function send(a, b, c) {
+		console.log(a)
 		var d, e = {
 				type: a
 			},
@@ -42,7 +43,7 @@
 			if (++spamWarning >= 3) return f.close();
 			spamCount = 5
 		}
-		f.send(JSON.stringify(e))
+		f.send(JSON.stringify(e));
 	}
 
 	function loading(a) {
@@ -323,7 +324,7 @@
 				break;
 			case "reloadData":
 				$data.id = a.id, $data.admin = a.admin, $data.careful = a.careful, $data.nickname = a.nickname, $data.exordial = a.exordial;
-				if(!$data._gaming) $data.users = a.users;
+				if(!$data.room) $data.users = a.users;
 				$data.rooms = a.rooms, $data.friends = a.friends, $data._playTime = a.playTime, $data._okg = a.okg, $data._cF = a.chatFreeze, $data.box = a.box;
 				updateUserList(true);
 				updateRoomList(true);
@@ -411,7 +412,7 @@
 					if(!$data._cF){
 						chat(a.profile || {
 							title: L.robot
-						}, /*(a.origin ? a.origin : */a.value/*)*/, a.from, a.timestamp);
+						}, a.value, a.from, a.timestamp);
 					}else{
 						$("#chatinput").attr('readonly', true), $("#chatinput").attr('placeholder', '관리자 전용 채팅');
 						alert("채팅이 얼었습니다. 관리자만 채팅할 수 있습니다.");
@@ -419,7 +420,7 @@
 				}else{
 					a.notice ? notice(L["error_" + a.code]) : chat(a.profile || {
 						title: L.robot
-					}, /*(a.origin ? a.origin : */a.value/*)*/, a.from, a.timestamp);
+					}, a.value, a.from, a.timestamp);
 				}
 				break;
 			case "drawCanvas":
@@ -769,6 +770,7 @@
 		if(nick.match("﷽")) return alertKKuTu("닉네임에 잘못된 문자가 포함되어 있습니다.");
 		if(nick.match("불건전닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
 		if(nick.match("잘못된닉네임")) return alertKKuTu("이 닉네임은 닉네임으로 지정할 수 없습니다.");
+		if(BAD.test(nick)) return alertKKuTu("욕설 등 비속어가 포함된 닉네임은 사용할 수 없습니다.");
 		return nick;
 	}
 	
@@ -2169,25 +2171,16 @@
 		let e, f, g, h, i = d ? new Date(d) : new Date,
 			j = $data.users[a.id] ? $data.users[a.id].equip : {},
 			p, v, s = "";
-		if($data.room){
+		if($data.room && !c){
 			p = $(".room-users")[0].children[`room-user-${a.id}`];
 			if(!p) updateRoom(!1), p = $(".room-users")[0].children[`room-user-${a.id}`], v = p.innerText.includes(L.stat_spectate);
 			else v = p.innerText.includes(L.stat_spectate);
+			!v ? s = "" : s = "x-spectator"
 		}
-		/*if(v == undefined){
-			s = "";
-		}else if(v){
-			if(v == undefined) s = "";
-			else if(v) s = "x-spectator";
-			else s = "";
-		}else{
-			s = "";
-		}*/
-		!v ? s = "" : s = "x-spectator"
 		if(!$data._shut[a.title || a.name]) {
 			if (c) {
 				if ($data.opts.dw) return;
-				if ($data._wblock[c]) return
+				if ($data._wblock[c]) return;
 			}
 			checkBadURL(b) ? b = "유해 링크로 판단되어 검열되었습니다." : b = b,
 			b = badWords(b, $data.users[a.id]), b = continuingBadWords(b, $data.users[a.id]), playSound("k"), stackChat(), !mobile && $data.room && (e = ($data.room.gaming ? 2 : 0) + ($(".jjoriping").hasClass("cw") ? 1 : 0), chatBalloon(b, a.id, e)), $stage.chat.append(g = $("<div>").addClass("chat-item").append(e = $("<div>").addClass(`chat-head ellipse ${s}`).text(a.title || a.name)).append(f = /*$data.equip["BDG"]==="b6_develop"||$data.equip["BDG"]==="b9_bf"*/false?$("<div>").addClass("chat-body").html(b):$("<div>").addClass("chat-body").html(b)).append($("<div>").addClass("chat-stamp").text(i.toLocaleTimeString()))), d && e.prepend($("<i>").addClass("fa fa-video-camera")), e.on("click", function(b) {
@@ -2360,12 +2353,12 @@
 		EXP = [],
 		BAD = new RegExp(["(시|싀|쉬|슈|씨|쒸|씌|쓔|쑤|시이{1,}|싀이{1,}|쉬이{1,}|씨이{1,}|쒸이{1,}|씌이{1,}|찌이{1,}|스|쓰|쯔|스으{1,}|쓰으{1,}|쯔으{1,}|수우{1,}|쑤우{1,}|십|싑|쉽|슙|씹|쓉|씝|쓥|씁|싶|싚|슆|슾|앂|씦|쓒|씊|쑾|ㅅ|ㅆ|ㅅㅣ{1,}|ㅅ이{1,}|ㅆ이{1,}|c|c이{1,}|C|C이{1,}|Ⓒ|Ⓒ이{1,}|^^ㅣ|^^I|^^l)[^가-힣]*(바|발|팔|빠|빨|불|벌|벨|밸|빠|ㅂ|ㅃ|ㅍ)","(뷩|병|뱡|뱅|뱡|빙|븅|븽|뷰웅|비잉|볭|뱽|뼝|뺑|쁑|삥|삉|뺭|뼈엉|쀼웅|ㅂ)[^가-힣]*(쉰|신|싄|슨|씬|씐|진|즨|ㅅ|딱|시인|시나)","(샛|섓|쌧|썠|쌨|샜|섔|쌨|썠|새|섀|세|셰|썌|쎼)[^가-힣]*(기|끼|끠|애끼|에끼)","(저새|저색|저샛|저쉑|저샛|저셋|저섀|저셰|저쌔|저쎄|저썌|저쎼)[^가-힣]*(기|애{1,}기|에{1,}기|)","(개|게|걔|깨|께|꼐|꺠)[^가-힣]*(같|새|샛|세|섀|셰)","(니|닝|느|노|늬|너|쟤|걔|ㄴ)[^가-힣]*(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄{1,}마|검{1,}마|검|금|앰|앱|애{1,}비|애{1,}미|에{1,}미|에{1,}비|애{1,}믜|애{1,}븨|아{1,}빠|엄{1,}빠|의미|의비|븨|믜)","(ㄱㅁ|ㄱㅃ|ㅇㅁ|ㅇㅂ|엄마|검마|앰|아빠|엄빠)[^가-힣]*(죽|뒤|돌|없)","(앰|엠|얨|옘|앱|엡|옙|얩)[^가-힣]*(창|챵|촹|생|섕|셍|솅|쉥)","(세|섹|색|쉑|쇡|세엑{1,}크|세액{1,}크|세크|새크|새에{1,}크|새애{1,}크|셍|셱|섁|세그|세엑|세액|세에{1,}엑|세애{1,}액|쎅|쎽|쎆|쎾|셲)[^가-힣]*(ㅅ|스|슥|슨|슫|슷|승|로스)","(ㅈ|젓|젔|젇|젖|좟|좠|좓|좢)[^가-힣]*(뒏|됟|됫|됬|됏|됐|됃|같|갇|까|가|까)","(자|쥬|자아{1,}|잠|좌|좌아{1,}|잗|잣|쟈|쟈아{1,}|보|뷰|보오{1,}|볻|봇|뵤)[^가-힣]*(지|짓|짇|즤|즫|즷|즹|빨)","(질|입|안|밖)[^가-힣]*(싸)","(후|훚|훗|훋)[^가-힣]*(장|쟝|좡)","(꼬|보|딸|똘|빡)[^가-힣]*(추)","(미친|잡|쓰레기|거지|그지|똥|ㅣ발)[^가-힣]*(녀석|놈|충|자식|냐|냔|세|네|것)","미친","(버|벅|뻐|뻑|퍼|퍽)[^가-힣]*(큐|뀨)","(호)[^가-힣]*(로|모|구)","(스|수|쓰|쑤|쓔|스으{1,}|수우{1,}|슈우{1,}|쓰우{1,}|쑤으{1,}|쓔으{1,})[^가-힣]*(랙|렉|럑|롁|랚|렊|럒|롂)","(지|즤|디|G|ㅣ|치|찌|지이|지이{1,}|즤이{1,}|G이{1,}|즤|G이)[^가-힣]*(랄|라알)","(딸)[^가-힣]*(딸|치|쳐|쳤|침)","발[^가-힣]*기","풀[^가-힣]*발","딸[^가-힣]*딸","강[^가-힣]*간","자[^가-힣]*위","부[^가-힣]*랄","불[^가-힣]*알","오[^가-힣]*르[^가-힣]*가[^가-힣]*즘","처[^가-힣]*녀[^가-힣]*막","질[^가-힣]*내","질[^가-힣]*외","정[^가-힣]*액","자[^가-힣]*궁","생[^가-힣]*리","월[^가-힣]*경","페[^가-힣]*도","또[^가-힣]*라[^가-힣]*이","장[^가-힣]*애","종[^가-힣]*간","쓰[^가-힣]*레[^가-힣]*기","무[^가-힣]*뇌","학[^가-힣]*식[^가-힣]*충","급[^가-힣]*식[^가-힣]*충","버[^가-힣]*러[^가-힣]*지","찌[^가-힣]*꺼[^가-힣]*기","삐[^가-힣]*꾸","닥[^가-힣]*쳐","꺼[^가-힣]*져","애[^가-힣]*자","찌[^가-힣]*그[^가-힣]*레[^가-힣]*기","대[^가-힣]*가[^가-힣]*리","면[^가-힣]*상","와[^가-힣]*꾸","시[^가-힣]*빠[^가-힣]*빠","파[^가-힣]*오[^가-힣]*후","사[^가-힣]*까[^가-힣]*시","씹[^가-힣]*덕","애[^가-힣]*미","엿[^가-힣]*먹","애[^가-힣]*비","새[^가-힣]*끼","줬[^가-힣]*까","(뒤)[^가-힣]*(져|진|졌|질|짐)","살[^가-힣]*지[^가-힣]*마","자[^가-힣]*살[^가-힣]*(해|하|헤)","자[^가-힣]*살","살[^가-힣]*해","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|조오{1,}|조옷{1,}|조옺{1,})","(좆|좃|좄|졷|줫|줮|줟|죶|죳|죴|죧|존|조오{1,}|조옷{1,}|조옺{1,})[^가-힣]*나","씹|씹","봊|봊","잦|잦","(섹|섻)","썅|썅","ㅗ{1,}","ㅄ|ㅄ","ㄲㅈ|ㄲㅈ","(ㅈ)[^가-힣]*(ㅂㅅ|ㄲ|ㄹ|ㄴ)","조[^가-힣]*건[^가-힣]*만[^가-힣]*남","(f|F)[^A-Za-z]*(u|U)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(d|D)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(m|M)","(m|M)[^A-Za-z]*(o|O)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)[^A-Za-z]*(h|H)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(d|D)[^A-Za-z]*(a|A)[^A-Za-z]*(m|M)[^A-Za-z]*(n|N)","(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(b|B)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(c|C)[^A-Za-z]*(h|H)","(d|D)[^A-Za-z]*(i|I)[^A-Za-z]*(c|C)[^A-Za-z]*(k|K)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*x","(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(c|C)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(t|T)","(p|P)[^A-Za-z]*(u|U)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(y|Y)","(f|F)[^A-Za-z]*(a|A)[^A-Za-z]*(g|G)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(e|E)[^A-Za-z]*(r|R)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(g|G)[^A-Za-z]*(a|A)","(n|N)[^A-Za-z]*(i|I)[^A-Za-z]*(g|G)[^A-Za-z]*(r|R)[^A-Za-z]*(o|O)","(j|J)[^A-Za-z]*(u|U)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(m|M)[^A-Za-z]*(u|U)[^A-Za-z]*(f|F)[^A-Za-z]*(f|F)","(p|P)[^A-Za-z]*(i|I)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)","(r|R)[^A-Za-z]*(e|E)[^A-Za-z]*(t|T)[^A-Za-z]*(a|A)[^A-Za-z]*(r|R)[^A-Za-z]*(d|D)","(s|S)[^A-Za-z]*(l|L)[^A-Za-z]*(u|U)[^A-Za-z]*(t|T)","(t|T)[^A-Za-z]*(i|I)[^A-Za-z]*(t|T)[^A-Za-z]*(s|S)","(t|T)[^A-Za-z]*(r|R)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)","(t|T)[^A-Za-z]*(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(t|T)","(w|W)[^A-Za-z]*(a|A)[^A-Za-z]*(n|N)[^A-Za-z]*(k|K)","(w|W)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(r|R)[^A-Za-z]*(e|E)","(s|S)[^A-Za-z]*(i|I)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","(g|G)[^A-Za-z]*(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(a|A)[^A-Za-z]*(k|K)[^A-Za-z]*(i|I)","(a|A)[^A-Za-z]*(s|S)[^A-Za-z]*(s|S)[^A-Za-z]*(h|H)[^A-Za-z]*(o|O)[^A-Za-z]*(l|L)[^A-Za-z]*(e|E)","(t|T)[^A-Za-z]*(l|L)[^A-Za-z]*q[^A-Za-z]*(k|K)[^A-Za-z]*(f|F)","(t|T)[^A-Za-z]*(p|P)[^A-Za-z]*(r|R)[^A-Za-z]*(t|T)[^A-Za-z]*(m|M)","(s|S)[^A-Za-z]*(e|E)[^A-Za-z]*(e|E)[^A-Za-z]*(b|B)[^A-Za-z]*(a|A)[^A-Za-z]*(l|L)","PORN"].join("|")),
 		XSS = new RegExp(["(&lt;|<)(i|I)(m|M)(g|G)", "(&lt;|<)(s|S)(c|C)(r|R)(i|I)(p|P)(t|T)", "(&lt;|<)(h|H)(1|2|3|4|5|6)","(&lt;|<)(a|A)"].join("|")),
-		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷)[^가-힣]*(컴)","(끄)[^가-힣]*(닷)","(끄투)[^가-힣]*(리오)","(끄투)[^가-힣]*(한국)","(끄)[^가-힣]*(리)","(끄)[^가-힣]*(한)","(태풍)[^가-힣]*(끄튬|끄툼|끄투)","(분홍|핑크|핑크빛)[^가-힣]*(끄투)","(투데이)[^가-힣]*(끄투)","(이름)[^가-힣]*(없는)[^가-힣]*(끄투)","(김)[^가-힣]*(대|머)[^가-힣]*(운)","(리)[^가-힣]*(오)","(행)[^가-힣]*(끄|끄투)","(끄투|끄)[^가-힣]*(플러스|플)","(뜨|뚜)[^가-힣]*(투|트)","(나비|케이니|오메가|투데이)[^가-힣]*(끄투|그투)"].join("|")),
-		OSVURL = new RegExp(["kkutu.co.kr","kkutu.club","kkutu.io","typhoonkkuteum.kro.kr","kkutu.pinkflower.kro.kr","kkutu.today","kkutu.org","edutu.kro.kr","kkutu.pw"].join("|")),
+		OSV = new RegExp(["(끄투|끄)[^가-힣]*(코리아|코)","(끄투|끄)[^가-힣]*(닷|닷플|닷플러스)","(행|행성)[^가-힣]*(끄|끄투)","(분홍|분|핑|핑크|핑크빛|분홍꽃)[^가-힣]*(끄|끄투)","(지|지빵)[^가-힣]*(끄|끄투)","(이름|이름없는)[^가-힣]*(끄|끄투)","(Vel|vel|벨)[^가-힣]*(Tu|tu|투)","(kkutu|KKuTu|끄투)[^가-힣]*(plus|Plus|플러스)","(레전드|레|레전|전설)[^가-힣]*(끄|끄투)","(트|투)[^가-힣]*(꾸)","(끄|끄투)[^가-힣]*(리오|리|io|rio)","(투데이|오늘)[^가-힣]*(끄|끄투)","(리)[^가-힣]*(오)","(디보이)[^가-힣]*(끄|끄투)","(끄투|끄|kkutu|KKuTu)[^가-힣]*(어스|us|Us)","(저런)[^가-힣]*(닷컴|끄투)","(Blue|blue|블루|블)[^가-힣]*(끄투|끄|KKuTu|kkutu)"].join("|")),
+		OSVURL = new RegExp(["kkutu.co.kr","randomstudio.kro.kr","kkutu.romanhue.xyz","kimustory.kro.kr","kkutu.plus","dboikkutu.kro.kr","kkutu.us","legendkkutu.kro.kr","kkutu.org","kkutu.blue","kkutuplus.ml","jgkkutu.kr","kkutu.today","kkutu.top","planetkt.kr","kkutu.io","veltu.kro.kr","kkutu.pw","bluekkutu.com"].join("|")),
 		chatCooldown = false,
 		precedeChat = "",
 		beforeChat = "",
-		ws, rws, $stage, $sound = {},
+		ws, wsRetryInterval, rws, $stage, $sound = {},
 		$audio = new Audio(),
 		$_sound = {},
 		$data = {},
@@ -2401,8 +2394,19 @@
 		}
 
 		function c(a, b) {
-			var c, d;
-			for (c in OPTIONS) d = OPTIONS[c].name.toLowerCase(), -1 == a.indexOf(c) ? $("#" + b + "-" + d + "-panel").hide() : $("#" + b + "-" + d + "-panel").show()
+			let available = [ 0, 0, 0, 0 ];
+			for (let c in OPTIONS){
+				let d = OPTIONS[c].name.toLowerCase();
+				if(a.indexOf(c) == -1){
+					$("#" + b + "-" + d + "-panel").hide()
+				}else{
+					available[OPTIONS[c].diff]++;
+					$("#" + b + "-" + d + "-panel").show()
+				}
+			}
+			for(let i in available){
+				if(i != 0) $(`#optBlank${i}`).width(`${available[i-1]%3 == 0 ? 0 : (3-(available[i-1]%3))*100}px`);
+			}
 		}
 
 		function d(a) {
@@ -2437,7 +2441,7 @@
 			$stage.dialog.replayView.attr("disabled", !0)
 		}
 
-		function h() {
+		function h(isRetry) {
 			ws = new _WebSocket($data.URL), ws.onopen = function(a) {
 				if($data.URL == $data.ALTERNATIVE_URL) console.log("Connected to an alternative WAF service because the primary WAF service did not respond properly.");
 				loading()
@@ -2445,10 +2449,21 @@
 				onMessage(JSON.parse(a.data))
 			}, ws.onclose = function(a) {
 				var b = L.closed + " (#" + a.code + ")";
-				rws && rws.close(), stopAllSounds(), alertKKuTu(b), $.get("/kkutu_notice.html", function(a) {
-					loading(a)
+				rws && rws.close(), stopAllSounds(), alertKKuTu(a.code == 1006 ? b+"<p></p>재접속을 시도합니다." : b), $.get("/kkutu_notice.html", function(a) {
+					loading(a);
 					isWelcome = false;
 				})
+				if(a.code == 1006) {
+					if(isRetry) _setTimeout(() => {
+							h(true);
+						}, 2000);
+					else wsRetryInterval = _setInterval(() => {
+							if(ws.readyState != 2 && ws.readyState != 3){
+								clearInterval(wsRetryInterval);
+								delete wsRetryInterval;
+							}else h(true);
+						}, 5000);
+				}
 			}, ws.onerror = function(a) {
 				if($data.URL == $("#URL").html()) $data.URL = $data.ALTERNATIVE_URL, h();
 				else alert("웹 소켓 WAF 서비스에 문제가 발생해 조치 중입니다.\n이용에 불편을 드려 죄송합니다.");
@@ -2527,7 +2542,7 @@
 					practice: $("#PracticeDiag"),
 					practiceOK: $("#practice-ok"),
 					dict: $("#DictionaryDiag"),
-					dictInjeong: $("#dict-injeong"),
+					dictReq: $("#dict-request"),
 					dictSearch: $("#dict-search"),
 					wordPlus: $("#WordPlusDiag"),
 					wordPlusOK: $("#wp-ok"),
@@ -2542,6 +2557,8 @@
 					leaveClan: $("#leaveClan"),
 					joinClan: $("#joinClan"),
 					deleteClan: $("#deleteClan"),
+					wordReq: $("#WordReqDiag"),
+					wordReqSubmit: $("#wordReq-submit"),
 					tail: $("#TailDiag"),
 					invite: $("#InviteDiag"),
 					inviteList: $(".invite-board"),
@@ -2648,21 +2665,24 @@
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "1",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_Broad_Flight.mp3"
 			}, {
 				key: "2",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_bf.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newstart.mp3"
 			}, {
 				key: "3",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_Blanding_Future.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_bf.mp3"
 			}, {
 				key: "4",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_Blanding_Future.mp3"
 			}, {
 				key: "5",
-				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_newbfkkutu.mp3"
 			}, {
 				key: "6",
+				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_tlok.mp3"
+			}, {
+				key: "7",
 				value: "https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/media/kkutu/LB_original.mp3"
 			}, {
 				key: "jaqwi",
@@ -2784,6 +2804,9 @@
 			var b = $(a.currentTarget),
 				c = b.val();
 			c < 2 || c > 9 ? b.css("color", "#FF4444") : b.css("color", "")
+		}), $("#room-mission").on("change", function(a) {
+			$("#room-moremission").attr("disabled", !$("#room-mission").is(":checked")).prop("checked", false);
+			$("#room-abcmission").attr("disabled", !$("#room-mission").is(":checked")).prop("checked", false);
 		}), $stage.game.here.on("click", function(a) {
 			mobile || $stage.talk.focus()
 		}), $stage.talk.on("keyup", function(a) {
@@ -3195,14 +3218,8 @@
 				$("#Jungle").append(f), f[0].click()
 				loading();
 				alertKKuTu("리플레이를 저장했습니다.");
-			}), $stage.dialog.dictInjeong.on("click", function(a) {
-				var b = $(a.currentTarget);
-				b.is(":disabled") || $("#dict-theme").val() && (b.prop("disabled", !0), $("#dict-output").html(L.searching), $.get("/injeong/" + $("#dict-input").val() + "?theme=" + $("#dict-theme").val(), function(a) {
-					if (addTimeout(function() {
-							b.prop("disabled", !1)
-						}, 2e3), a.error) return $("#dict-output").html(a.error + ": " + L["wpFail_" + a.error]);
-					$("#dict-output").html(L.wpSuccess + "(" + a.message + ")")
-				}))
+			}), $stage.dialog.dictReq.on("click", function(a) {
+				showDialog($stage.dialog.wordReq);
 			}), $stage.dialog.dictSearch.on("click", function(a) {
 				var b = $(a.currentTarget);
 				b.is(":disabled") || (b.prop("disabled", !0), $("#dict-output").html(L.searching), tryDict($("#dict-input").val(), function(a) {
@@ -3216,7 +3233,16 @@
 				$stage.dialog.wordPlusOK.hasClass("searching") || (b = $("#wp-input").val()) && (b = b.replace(/[^a-z가-힣]/g, ""), b.length < 2 || ($("#wp-input").val(""), $(a.currentTarget).addClass("searching").html("<i class='fa fa-spin fa-spinner'></i>"), send("wp", {
 					value: b
 				})))
-			}).hotkey($("#wp-input"), 13), $stage.dialog.inviteRobot.on("click", function(a) {
+			}).hotkey($("#wp-input"), 13), $stage.dialog.wordReqSubmit.on("click", () => {
+				if(!$("#wordReq-theme").val()) return alertKKuTu("주제를 선택하세요.");
+				if(!$("#wordReq-list").val()) return alertKKuTu("추가 요청할 단어들을 입력해주세요.");
+				$.post("/request/word", { submitter: $data.id, theme: $("#wordReq-theme").val(), list: $("#wordReq-list").val() }).then(() => {
+					alertKKuTu("추가 요청이 완료되었습니다.");
+					$stage.dialog.wordReq.hide();
+				}, () => {
+					alertKKuTu("추가 요청에 실패했습니다.");
+				});
+			}), $stage.dialog.inviteRobot.on("click", function(a) {
 				requestInvite("AI")
 			}), $stage.box.me.on("click", function(a) {
 				requestProfile($data.id)

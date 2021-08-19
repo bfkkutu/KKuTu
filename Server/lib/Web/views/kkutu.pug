@@ -215,7 +215,7 @@ block Middle
 			h4(style='width: 100%; height: 20px;')#quick-queue
 		div.dialog-bar.tail-button
 			button#quick-ok= L('OK')
-	+Dialog('RoomDiag', 400, 440)
+	+Dialog('RoomDiag', 400, 550)
 		div.dialog-bar
 			h4= L('roomTitle')
 			input#room-title(placeholder=(nick || L('guest'))+L('roomDefault'), maxlength=20)
@@ -254,12 +254,12 @@ block Middle
 					option(value=0)= L('modeEKT')
 					option(value=18)= L('modeERH')
 					//option(value=17)= L('modeEAP')
+					option(value=20)= L('modeEAP')
 					option(value=7)= L('modeETY')
 					option(value=11)= L('modeEDA')
 					option(value=13)= L('modeESS')
 					option(value=15)= L('modeEDG')
 				optgroup(label=L('mcTesting'))
-					//option(value=20)= L('modeRVS')
 					//option(value=99)= L('modeETS')
 		div.dialog-bar(style='margin-top: -5px; height: 50px;')
 			h4
@@ -283,12 +283,18 @@ block Middle
 				option(value=200, style='color: #3E7AF9')
 				option(value=300, style='color: #0933EF')
 				option(value=9999999, style='color: #0933EF')
-		div.dialog-bar(style='height: 125px;')
-			h4(style='height: 140px;')= L('misc')
-			- for(var i in locals.OPTIONS)
-				+GameOption(i, 'room')
+		div.dialog-bar(style='height: 235px;')
+			h4(style='height: 250px;')= L('misc')
 			div.dialog-opt#room-injpick-panel
 				button#room-injeong-pick(style='font-size: 11px;')= L('pickInjeong')
+			- for(var i=0; i<=3; i++)
+				div.dialog-opt(id='optBlank'+i, style='height: 22px; width: 0px;')
+				- if(i != 0)
+					h3(id='optDiff'+i)= L('optDiff'+i)
+					br
+				- for(var j in locals.OPTIONS)
+					- if(locals.OPTIONS[j].diff == i)
+						+GameOption(j, 'room')
 		div.dialog-bar.tail-button
 			button#room-ok= L('OK')
 	+Dialog('InjPickDiag', 200, 400, L('pickInjeong'))
@@ -360,7 +366,7 @@ block Middle
 					option(value=item)= L('theme_' + item)
 				- });
 			button#dict-search= L('SEARCH')
-			button#dict-injeong= L('injeongReq')
+			button#dict-request= L('word-request')
 	+Dialog('InviteDiag', 300, 420, L('invite'))
 		div.invite-board(style='height: 355px; overflow-y: scroll;')
 		div.dialog-bar.tail-button
@@ -499,6 +505,21 @@ block Middle
 				input#ban-permanent(type='checkbox')
 		div.dialog-bar.tail-button
 			button#ban-submit= L('mngBan')
+	+Dialog('WordReqDiag', 500, 220, L('word-request'))
+		div.dialog-bar
+			div!= L('wordReqWarning')
+		div.dialog-bar
+			h4= L('wordReqTheme')
+			select#wordReq-theme
+				option(value="")= L('pickInjeong')
+				- locals.KO_INJEONG.forEach(function(item){
+					option(value=item)= L('theme_' + item)
+				- });
+		div.dialog-bar
+			h4= L('wordReqList')
+			textarea#wordReq-list(type='textfield', style='width: 288px;')
+		div.dialog-bar.tail-button
+			button#wordReq-submit= L('wordReqSubmit')
 	+Dialog('KickVoteDiag', 300, 160, L('kickVote'))
 		div.dialog-bar#kick-vote-text(style='text-align: center;')
 		div.dialog-bar(style='text-align: center;')= L('kickVoteNotice')

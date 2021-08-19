@@ -20,16 +20,16 @@ const Cluster = require("cluster");
 const CPU = Number(process.argv[2]);
 
 if (isNaN(CPU)) {
-  console.log(`Invalid CPU Number ${CPU}`);
-  return;
+    console.log(`Invalid CPU Number ${CPU}`);
+    return;
 }
 if (Cluster.isMaster) {
-  for (var i = 0; i < CPU; i++) {
-    Cluster.fork({ SERVER_NO_FORK: true, WS_KEY: i + 1 });
-  }
-  Cluster.on("exit", (w) => {
-    console.log(`Worker ${w.process.pid} died`);
-  });
+    for (var i = 0; i < CPU; i++) {
+        Cluster.fork({ SERVER_NO_FORK: true, WS_KEY: i + 1 });
+    }
+    Cluster.on("exit", (w) => {
+        console.log(`Worker ${w.process.pid} died`);
+    });
 } else {
-  require("./main.js");
+    require("./main.js");
 }

@@ -22,6 +22,7 @@ var Language = {
 	'ko_KR': require("../Web/lang/ko_KR.json"),
 	'en_US': require("../Web/lang/en_US.json")
 };
+var File = require("fs");
 
 function updateLanguage(){
 	var i, src;
@@ -45,8 +46,8 @@ function getLanguage(locale, page, shop){
 	
 	return R;
 }
-function page(req, res, file, data){
-	if(data == undefined)	data = {};
+async function page(req, res, file, data){
+	if(!data) data = {};
 	if(req.session.createdAt){
 		if(new Date() - req.session.createdAt > 3600000){
 			delete req.session.profile;
@@ -55,7 +56,7 @@ function page(req, res, file, data){
 		req.session.createdAt = new Date();
 	}
 	//var addr = req.ip || "";
-	var addr = req.headers['x-forwarded-for'] || "";
+	var addr = req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for'] || req.connection.remoteAddress;
 	var sid = req.session.id || "";
 	
 	if(typeof addr == "string" && addr.includes(",")) addr = addr.split(",")[0]
@@ -85,8 +86,9 @@ function page(req, res, file, data){
 	}else{
 		data.page = file;
 	}
+	data.initPage = File.existsSync(`./lib/Web/views/${data.page}.jsx`) ? `${data.page}.jsx` : `${data.page}.pug`;
 	if(data.page != "notfound") JLog.log(`${addr}@${sid.slice(0, 10)} ${data.page}, ${JSON.stringify(req.params)}`);
-	res.render(data.page, data, function(err, html){
+	res.render(data.initPage, data, function(err, html){
 		if(err) res.send(err.toString());
 		else res.send(html);
 	});
