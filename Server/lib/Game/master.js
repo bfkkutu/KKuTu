@@ -672,9 +672,9 @@ const narrateFriends = (id, friends, stat) => {
         });
 };
 const processGwalliRequest = (msg) => {
-	if(typeof msg == "string") msg = JSON.parse(msg);
+    if (typeof msg == "string") msg = JSON.parse(msg);
     processAdmin("gwalli", msg.value, null);
-}
+};
 const processClientRequest = ($c, msg) => {
     let temp;
 
@@ -1066,7 +1066,7 @@ Cluster.on("message", (worker, msg) => {
 });
 exports.init = (_SID, CHAN, _Bot) => {
     SID = _SID;
-	Bot = _Bot;
+    Bot = _Bot;
     MainDB = require("../Web/db");
     MainDB.ready = () => {
         JLog.success("Master DB is ready.");
@@ -1093,16 +1093,16 @@ exports.init = (_SID, CHAN, _Bot) => {
 
         Server.on("connection", (socket, info) => {
             const key = info.url.slice(1);
-			
-			if(key.includes("gwalli")){
-				if(key.substring(6) != GLOBAL.PASS) return;
-				const $c = new KKuTu.Gwalli(socket);
-				$c.admin = true;
-				$c.remoteAddress =
-					info.headers["x-forwarded-for"] ||
-					info.connection.remoteAddress;
-				return;
-			}
+
+            if (key.includes("gwalli")) {
+                if (key.substring(6) != GLOBAL.PASS) return;
+                const $c = new KKuTu.Gwalli(socket);
+                $c.admin = true;
+                $c.remoteAddress =
+                    info.headers["x-forwarded-for"] ||
+                    info.connection.remoteAddress;
+                return;
+            }
 
             socket.on("error", (err) => {
                 JLog.warn("Error on #" + key + " on ws: " + err.toString());
@@ -1167,15 +1167,13 @@ exports.init = (_SID, CHAN, _Bot) => {
                     $c.refresh().then((ref) => {
                         if (ref.result == 200) {
                             DIC[$c.id] = $c;
-                            try {
-                                DNAME[
-                                    (
-                                        $c.profile.title || $c.profile.name
-                                    ).replace(/\s/g, "")
-                                ] = $c.id;
-                            } catch (e) {
-                                console.log(e);
-                            }
+                            DNAME[
+                                (
+                                    $c.profile.title ||
+                                    $c.profile.name ||
+                                    ""
+                                ).replace(/\s/g, "")
+                            ] = $c.id;
                             MainDB.users
                                 .update(["_id", $c.id])
                                 .set(["server", SID])

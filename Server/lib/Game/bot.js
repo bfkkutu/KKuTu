@@ -1,14 +1,18 @@
 /*
-	BFKKuTu Discord Bot 4.9.6
+	BFKKuTu Discord Bot 5.9.3
 */
 
 let GLOBAL = require("../sub/global.json");
 
 const JLog = require("../sub/jjlog");
 const Outer = require("../sub/outer");
+const Lang = require("../Web/lang/ko_KR.json").kkutu;
 
 const Discord = require("discord.js");
 const Bot = new Discord.Client();
+const L = ($) => {
+	return Lang[`theme_${$}`];
+};
 let guild;
 
 Bot.on("ready", () => {
@@ -102,7 +106,7 @@ exports.word = (type, theme, list) => {
         else
             message = new Discord.MessageEmbed()
                 .setTitle("BF끄투 단어")
-                .setDescription(`단어 ${type}/주제: ${theme}\n\n${list}`);
+                .setDescription(`단어 ${type}/주제: ${L(theme)}\n\n${list}`);
         Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.WORD).send(message);
     }
 };
@@ -111,7 +115,7 @@ exports.wordReq = (submitter, theme, list) => {
     if (GLOBAL.BOT_OPTIONS.ENABLED) {
 		message = new Discord.MessageEmbed()
 			.setTitle("BF끄투 단어 추가 요청")
-			.setDescription(`주제: ${theme}\n\n${list}`);
+			.setDescription(`요청자: ${submitter}\n주제: ${L(theme)}(${theme})\n\n${list}`);
         Bot.channels.cache.get(GLOBAL.BOT_OPTIONS.CHANNELS.WORDREQ).send(message);
     }
 };

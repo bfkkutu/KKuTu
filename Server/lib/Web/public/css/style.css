@@ -154,7 +154,7 @@ span{
 	font-weight: bold;
 	background-color: #EEBB33;
 	cursor: pointer;
-	z-index: 5;
+	z-index: 6;
 }
 .searching{
 	color: #EEEEEE;
@@ -164,7 +164,7 @@ span{
 	display: none;
 	float: left;
 	color: #EEEEEE;
-	z-index: 1;
+	z-index: 2;
 }
 .expl-active{
 	display: block;
@@ -266,7 +266,7 @@ span{
 	font-size: 13px;
 	background-color: #232323;
 	background-color: rgba(0, 0, 0, 0.7);
-	z-index: 1;
+	z-index: 2;
 }
 .auto-item{ margin: 2px 0px; cursor: pointer; }
 .auto-item:hover{ background-color: #333; }
@@ -278,12 +278,13 @@ span{
 	height: 30px;
 	box-shadow: 0px 2px 2px #111111;
 	background-image: url('https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/topbg.png');
-	z-index: 5;
+	z-index: 6;
 }
 #Middle{
 	float: left;
 	margin-top: 50px;
 	width: 1010px;
+	z-index: 1;
 }
 #Bottom{
 	float: left;
@@ -298,7 +299,7 @@ span{
 	font-size: 11px;
 	padding-top: 10px;
 	color: #CCCCCC;
-    background-color: #304a58;
+	background-color: #304a58;
     display: flex;
     justify-content: space-between;
 	position: absolute;
@@ -329,7 +330,7 @@ span{
 	pointer-events: none;
 	background-color: #222222;
 	background-color: rgba(0, 0, 0, 0.7);
-	z-index: 2;
+	z-index: 3;
 }
 #ExplBox expl{
 	display: block;
@@ -375,7 +376,6 @@ code{
 .footer-div{
 	padding-top: 10px;
 	color: #CCCCCC;
-    background-color: #304a58;
     display: flex;
     justify-content: space-between;
 	position: absolute;

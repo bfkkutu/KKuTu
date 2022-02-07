@@ -7,7 +7,6 @@ const MENU = [
     key: "FEAT",
     sub: [
       { key: "PLAYTS", href: "https://opg.kr/" },
-      { key: "KKTDN", href: "https://kkutu.xyz/" },
       { key: "OURKKT", href: "/" },
       {
         key: "IWANT",
@@ -95,7 +94,7 @@ const Menu = (_props) => {
   );
 };
 
-const Expl = (text, width) => {
+const Expl = ({ text, width }) => {
   if (!text) return <div></div>;
   return (
     <div className="expl" style={{ width: width ? width + "px" : "initial" }}>
@@ -104,8 +103,25 @@ const Expl = (text, width) => {
   );
 };
 
-const FA = (id) => {
+const FA = ({ id }) => {
   return <i className={`fa fa-${id}`} />;
 };
 
-module.exports = { Menu, Expl, FA };
+const GoogleAdvertisement = ({ props }) => {
+  const L = (e) => {
+    return _L(props, e);
+  };
+  if (props.mobile)
+    return <div className="ADBox Product" style={{ display: "block" }} />;
+  else
+    return (
+      <div
+        className="ADBox Product"
+        style={{ display: "block", width: "728px", height: "90px" }}
+      >
+        <h5 className="product-title">{L("AD")}</h5>
+      </div>
+    );
+};
+
+module.exports = { Menu, Expl, FA, GoogleAdvertisement };

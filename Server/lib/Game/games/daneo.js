@@ -52,7 +52,9 @@ exports.roundReady = function(){
 	if(my.game.round <= my.round){
 		if(gamemode == "ADL") my.game.theme = "KWW";
 		else my.game.theme = my.opts.injpick[Math.floor(Math.random() * ijl)];
-		my.game.chain = [];
+		
+		if(!my.opts.ogow) my.game.chain = [];
+		
 		if(my.opts.mission) {
 			if (my.opts.moremission) { // 더 많은 미션이 있으면
 				my.game.mission = getMission(my.rule.lang, 'more');

@@ -77,7 +77,7 @@ const getDirectories = (path, callback) => {
     return callback(false, files);
 };
 const noticeAdmin = (req, ...args) => {
-    req.ip = req.headers["x-forwarded-for"] || "";
+    req.ip = (req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for']) === undefined ? 'client' : (req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for']);
     if (typeof req.ip == "string" && req.ip.includes(","))
         req.ip = req.ip.split(",")[0];
 
@@ -118,7 +118,7 @@ const noticeAdmin = (req, ...args) => {
     }
 };
 const itemLog = (item, req, ...args) => {
-    req.ip = req.headers["x-forwarded-for"] || "";
+    req.ip = (req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for']) === undefined ? 'client' : (req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for']);
     if (typeof req.ip == "string" && req.ip.includes(","))
         req.ip = req.ip.split(",")[0];
 
@@ -159,7 +159,7 @@ const itemLog = (item, req, ...args) => {
         );
 };
 const checkAdmin = (req, res, type) => {
-    req.ip = req.headers["x-forwarded-for"] || "";
+    req.ip = (req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for']) === undefined ? 'client' : (req.headers['x-forwarded-for'] || req.headers['x-hw-forwarded-for']);
     if (global.isPublic) {
         if (req.session.profile) {
             if (GLOBAL.ADMINS["MANAGER"].indexOf(req.session.profile.id) != -1)

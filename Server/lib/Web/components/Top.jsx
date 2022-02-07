@@ -22,7 +22,7 @@ const Top = (_props) => {
         <div id="gn-content">
           {_props.kind == "portal" ? Notice.portal : Notice.global}
         </div>
-        {Expl("클릭하여 닫기")}
+        <Expl text="클릭하여 닫기" />
       </div>
     </div>
   );

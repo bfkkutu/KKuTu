@@ -15,7 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
-
+ 
+ 
 const WS = require("ws");
 const Express = require("express");
 const Exession = require("express-session");
@@ -38,7 +39,6 @@ const helmet = require("helmet");
 const cors = require("cors");
 const hsc = require("http-status-codes");
 const renderer = require("react-engine");
-const Bot = require("../Game/bot");
 
 const hpkp_DIS = 15768000;
 const Router = Express.Router();
@@ -60,6 +60,7 @@ const Engine = renderer.server.create();
 WebInit.MOBILE_AVAILABLE = ["portal", "main", "kkutu"];
 
 require("../sub/checkpub");
+require("../Game/bot");
 JLog.info("<< KKuTu Web >>");
 fs.watchFile("./lib/Web/filters/User.json", (res) => {
     IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
@@ -260,14 +261,15 @@ Const.MAIN_PORTS.forEach((v, i) => {
 });
 
 ROUTES.forEach((v) => {
-    v.run(Server, WebInit.page, Bot);
+    v.run(Server, WebInit.page, require.cache[require.resolve("../Game/bot")].exports);
 });
 
 Server.listen(3000);
 
 Server.use(helmet());
 Server.use(helmet.xssFilter());
-Server.use(helmet.frameguard({ action: "SAMEORIGIN" }));
+//Server.use(helmet.frameguard({ action: "SAMEORIGIN" }));
+Server.use(helmet.frameguard());
 
 Server.use(
     helmet.hsts({
@@ -280,8 +282,7 @@ Server.use(
 Server.use(
     hpkp({
         maxAge: hpkp_DIS,
-        sha256s: [
-        ],
+        sha256s: [],
 
         setIf: (req, res) => {
             return req.secure;
@@ -299,7 +300,11 @@ Server.get("/", cors(), (req, res) => {
     let server = req.query.server;
     let loc = Const.MAIN_PORTS[server] ? "kkutu" : "portal";
 
-    res.get("X-Frame-Options");
+	res.setHeader("X-Frame-Options", "deny");
+	
+	res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	res.setHeader("Pragma", "no-cache");
+	res.setHeader("Expires", "0");
 
     //볕뉘 수정 구문삭제(220~229, 240)
     DB.session.findOne(["_id", req.session.id]).on(($ses) => {

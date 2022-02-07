@@ -12,7 +12,7 @@ const Portal = (props) => {
     return _L(props, e);
   };
   return (
-    <html>
+    <html lang="ko_KR">
       <head>
         <noscript>
           <h1>You can't play BFKKuTu without JavaScript.</h1>
@@ -32,6 +32,7 @@ const Portal = (props) => {
             <img
               id="logo"
               src="https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/short_logo.png"
+              alt="Logo"
             />
             <div id="start-button">
               <button id="game-start" disabled>
@@ -68,8 +69,8 @@ const Portal = (props) => {
                 <h3 className="server-list-title">
                   <div id="server-list-refresh-container">
                     <a id="server-refresh">
-                      {FA("refresh")}
-                      {Expl("serverRefresh")}
+                      <FA id="refresh" />
+                      <Expl text={L("serverRefresh")} />
                     </a>
                     <label className="inline-flex">{L("serverList")}</label>
                   </div>
@@ -83,7 +84,9 @@ const Portal = (props) => {
             <iframe id="kkutu-bulletin" src="/kkutu_bulletin.html" />
           </div>
         </article>
-        <div id="Bottom">{GoogleAdvertisement(props)}</div>
+        <div id="Bottom">
+          <GoogleAdvertisement props={props} />
+        </div>
         <Footer props={props} />
       </body>
     </html>

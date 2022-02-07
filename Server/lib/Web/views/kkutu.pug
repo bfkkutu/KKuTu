@@ -67,12 +67,12 @@ block Jungle
 			<h5>${locals.KO_INJEONG.map(function(item){ return L('theme_' + item); })}</h5>\
 			<h5 style='margin-top: 2px; border-top: 1px dashed #444444; padding-top: 2px; color: #BBBBBB;'>${L('explInjeongListTitle')} (${L('modeEKT')}, ${L('modeESH')})</h5>\
 			<h5>${locals.EN_INJEONG.map(function(item){ return L('theme_' + item); })}</h5>`;
-
+			
 block Middle
 	- var VERSION = L('version')
 	- var nick = SESSION.nickname;
 	div#Intro
-		img#intro(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/kkutu/intro.png')
+		img#intro(alt="Intro" src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/kkutu/intro.png')
 		// img#intro-start(src='/img/kkutu/intro_start.gif')
 		div#version= VERSION
 		div#intro-text= L('LOADING')
@@ -353,7 +353,6 @@ block Middle
 			div.expl.result-me-expl
 		div.dialog-bar.tail-button
 			button#result-ok= L('OK')
-			button#result-save= L('saveReplay')
 	+Dialog('DictionaryDiag', 400, 300, L('dict'))
 		div.dialog-bar
 			h4= L('wpHere')
@@ -549,7 +548,15 @@ block Middle
 			button#purchase-no= L('NO')
 			button#purchase-ok= L('OK')
 	+Dialog('ReplayDiag', 300, 300, L('replay'))
-		input#replay-file(type='file', style='width: 288px;', accept=".bkr")
+		div.dialog-bar(style='text-align: center;')
+			h4(style='width: 100%;')= L('replayAlert')
+		div.dialog-bar(style='height: 350px;'): table#replay-list(style='text-align: center;')
+			thead(style='font-weight: bold; background-color: #DDDDDD;'): tr
+				td(width=30) #
+				td(width=200)= L('replayDate')
+				td(width=100)= L('replayDetail')
+			tbody
+	+Dialog('ReplayDetailDiag', 300, 300, L('replay'))
 		div.dialog-bar
 			h4= L('replayDate')
 			h4.dialog-bar-value#replay-date -
@@ -591,7 +598,7 @@ block Middle
 			button#makeClan= L('newClan')
 	+Dialog('ViewClanDiag', 450, 280, L('viewClan'))
 		div.dialog-bar
-			img#myClanLevel
+			img#myClanLevel(alt="ClanLevel")
 			h4#myClanName
 			h4#myClanID
 			h4#myClanMax
@@ -644,7 +651,7 @@ block Middle
 	+Dialog('ChatLogDiag', 350, 500, L('chatLog'))
 		div#chat-log-board(style='height: 475px; font-size: 11px; overflow-y: scroll;')
 	+Dialog('AlertDiag', 370, 140, L('Alert'))
-		div#alert(style="height: 70px;")
+		div#alert
 			h3#alertText
 		div.dialog-bar.tail-button#alertbtn
 			button#alert-ok= L('OK')
@@ -664,7 +671,7 @@ block Middle
 			button#prompt-ok= L('OK')
 	+Dialog('PopupDiag', 430, 120, L('Popup'))
 		div#popup1
-			img#popup-img
+			img#popup-img(alt="PopupImage")
 		div#popup2
 			h3#popup-text
 		div.dialog-bar.tail-button#confirmbtn
@@ -749,9 +756,9 @@ block Middle
 				div.cw-q-body
 			div.b-left.bb(style='display: none;')
 			div.jjoriping
-				img.jjoObj.jjoEyeL(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjoeyeL.png')
-				img.jjoObj.jjoNose(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjonose.png')
-				img.jjoObj.jjoEyeR(src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjoeyeR.png')
+				img.jjoObj.jjoEyeL(alt="JJoripingPart" src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjoeyeL.png')
+				img.jjoObj.jjoNose(alt="JJoripingPart" src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjonose.png')
+				img.jjoObj.jjoEyeR(alt="JJoripingPart" src='https://cdn.jsdelivr.net/npm/bfkkutudelivr@'+L('cdn_version')+'/img/jjoeyeR.png')
 				div.jjoDisplayBar
 					div.jjo-display.ellipse
 					+GraphBar('jjo-turn-time')
