@@ -40,6 +40,7 @@ const NUM_SLAVES = 4;
 const GUEST_IMAGE = "/img/kkutu/guest.png";
 const MAX_OKG = 18;
 const PER_OKG = 600000;
+const L = require("../Web/lang/ko_KR.json");
 
 fs.watchFile("./lib/sub/global.json", () => {
   GLOBAL = require("../sub/global.json");
@@ -165,6 +166,7 @@ const getRewards = (
   if (opts.item) rw.score *= 0.8; // 아이템 전
   if (opts.tournament) rw.score *= 3.0; // 토너먼트
   if (opts.endwords) rw.score *= 1.1; // 데자뷔 금지
+  if (opts.history) rw.score *= 0.6; // 히스토리
   // all은 1~16
   // rank는 0~15
   /*switch(Const.GAME_TYPE[mode]){
@@ -499,12 +501,34 @@ exports.Robot = function (target, place, level) {
   my.obtain = () => {};
   my.invokeWordPiece = (text, coef) => {};
   my.publish = (type, data) => {
+    const $room = ROOM[my.place];
+    const target = $room.game.seq
+      ? DIC[$room.game.seq[$room.game.turn]] || $room.game.seq[$room.game.turn]
+      : {};
+
     if (my.target == null) {
       for (let i in DIC) {
         if (DIC[i].place == place) DIC[i].send(type, data);
       }
-    } else if (DIC[my.target]) {
-      DIC[my.target].send(type, data);
+    } else if (DIC[my.target]) DIC[my.target].send(type, data);
+
+    if (
+      $room &&
+      $room.gaming &&
+      $room.mode != 14 &&
+      $room.mode != 15 &&
+      !$room.practice
+    ) {
+      if (data.hint) data.hint = data.hint._id;
+      $room.rec.events.push({
+        data: {
+          ...data,
+          profile: { id: target.id, title: target.nickname },
+          type,
+          id: target.id,
+        },
+        time: new Date().getTime() - $room.rec.time,
+      });
     }
   };
   my.chat = (msg, code) => {
@@ -766,6 +790,10 @@ exports.Client = function (socket, profile, sid) {
   my.publish = (type, data, noBlock) => {
     const now = new Date();
     const st = now - my._pub;
+    const $room = ROOM[my.place];
+    const target = $room.game.seq
+      ? DIC[$room.game.seq[$room.game.turn]] || $room.game.seq[$room.game.turn]
+      : {};
 
     if (st <= Const.SPAM_ADD_DELAY) my.spam++;
     else if (st >= Const.SPAM_CLEAR_DELAY) my.spam = 0;
@@ -792,7 +820,26 @@ exports.Client = function (socket, profile, sid) {
         if (DIC[i].place == my.place) DIC[i].send(type, data);
       }
     if (Cluster.isWorker && type == "user")
-      process.send({ type: "user-publish", data: data });
+      process.send({ type: "user-publish", data });
+
+    if (
+      $room &&
+      $room.gaming &&
+      $room.mode != 14 &&
+      $room.mode != 15 &&
+      !$room.practice
+    ) {
+      if (data.hint) data.hint = data.hint._id;
+      $room.rec.events.push({
+        data: {
+          ...data,
+          profile: { id: target.id, title: target.nickname },
+          type,
+          id: target.id,
+        },
+        time: new Date().getTime() - $room.rec.time,
+      });
+    }
   };
   my.chat = (msg, code /*, origin*/) => {
     const date = moment().format("MM월-DD일|HH시-mm분");
@@ -1668,6 +1715,11 @@ exports.Room = function (room, channel) {
     let all = true;
     let len = 0;
 
+    my.rec = {
+      version: L.kkutu.version,
+      events: [],
+      time: new Date().getTime(),
+    };
     for (i in my.players) {
       if (my.players[i].robot) {
         len++;
@@ -1778,11 +1830,54 @@ exports.Room = function (room, channel) {
     const suv = [];
     const teams = [null, [], [], [], []];
     const now = new Date().getTime();
+    const temp = my.rec.time;
     let sumScore = 0;
     let sumRankPoint = 0;
     let pv = -1;
 
     my.interrupt();
+    Object.assign(my.rec, my.getData());
+    for (let i in my.rec.players) {
+      let user = DIC[my.rec.players[i]] || my.rec.players[i];
+      let player = {
+        id: user.id,
+        score: 0,
+      };
+
+      if (user.robot) {
+        player.id = user.id;
+        player.robot = true;
+        player.data = { score: 0 };
+        user = {
+          profile: {
+            title: L[`aiLevel${user.level}`] + " " + L.robot,
+            image: `https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/robot.png`,
+          },
+        };
+      } else {
+        player.data = user.data;
+        player.equip = user.equip;
+      }
+      player.title = player.nickname = `#${user.id}`;
+      my.rec.players[i] = player;
+    }
+    if (my.mode != 14 && my.mode != 15 && !my.practice)
+      DB.record
+        .insert(
+          ["version", my.rec.version],
+          ["players", JSON.stringify(my.rec.players)],
+          ["events", JSON.stringify(my.rec.events)],
+          ["title", my.rec.title],
+          ["roundTime", Number(my.rec.time)],
+          ["round", Number(my.rec.round)],
+          ["mode", Number(my.rec.mode)],
+          ["limit", Number(my.rec.limit)],
+          ["game", JSON.stringify(my.rec.game)],
+          ["opts", JSON.stringify(my.rec.opts)],
+          ["readies", JSON.stringify(my.rec.readies)],
+          ["time", Number(temp)]
+        )
+        .on();
     for (let i in my.players) {
       const o = DIC[my.players[i]];
       if (!o) continue;
@@ -1905,11 +2000,7 @@ exports.Room = function (room, channel) {
 
           o[ranks[i].target].list = ranks[i].data;
         }
-        my.byMaster(
-          "roundEnd",
-          { result: res, users: users, ranks: o, data: data },
-          true
-        );
+        my.byMaster("roundEnd", { result: res, users, ranks: o, data }, true);
       });
     });
     my.gaming = false;

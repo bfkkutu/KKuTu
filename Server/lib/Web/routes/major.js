@@ -1005,34 +1005,11 @@ exports.run = (Server, page, Bot) => {
     if (!req.query.me) return res.send({ error: 404 });
 
     MainDB.record
-      .find(["me", req.query.me])
-      .limit(10)
+      .find(["players", new RegExp(`(${req.query.me})`)])
+      .limit(7)
+      .sort(["time", 0])
       .on(($records) => {
         return res.send($records);
-      });
-  });
-  Server.post("/record", (req, res) => {
-    if (!req.body.rec) return res.send({ error: 400 });
-
-    const rec = JSON.parse(req.body.rec);
-    MainDB.record
-      .insert(
-        ["version", rec.version],
-        ["me", rec.me],
-        ["players", JSON.stringify(rec.players)],
-        ["events", JSON.stringify(rec.events)],
-        ["title", rec.title],
-        ["roundTime", Number(rec.roundTime)],
-        ["round", Number(rec.round)],
-        ["mode", Number(rec.mode)],
-        ["limit", Number(rec.limit)],
-        ["game", JSON.stringify(rec.game)],
-        ["opts", JSON.stringify(rec.opts)],
-        ["readies", JSON.stringify(rec.readies)],
-        ["time", Number(rec.time)]
-      )
-      .on(() => {
-        return res.send({ result: 200 });
       });
   });
 };

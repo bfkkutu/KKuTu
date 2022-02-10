@@ -65,6 +65,7 @@ exports.OPTIONS = {
   item: { name: "Item", diff: 1 },
   jwg: { name: "JoinWhileGaming", diff: 0 },
   ew: { name: "EndWords", diff: 1 },
+  his: { name: "History", diff: 2 },
 };
 exports.MOREMI_PART = [
   "back",
@@ -186,6 +187,7 @@ exports.RULE = {
       "igin" /*, "selth", "btm"*/,
       /*"ew",
       "k32",*/
+      "his",
     ],
     time: 1,
     ai: true,

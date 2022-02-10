@@ -160,6 +160,7 @@ exports.roundReady = function () {
   if (!my.game.title) return;
 
   my.game.robotChain = [];
+  my.game.history = {};
 
   clearTimeout(my.game.turnTimer);
   my.game.round++;
@@ -396,7 +397,7 @@ exports.submit = function (client, text, item) {
 
   if (!isChainable(text, my.mode, my.game.char, my.game.subChar))
     return client.chat(text);
-  if (my.game.chain.indexOf(text) != -1 && !my.opts.returns)
+  if (my.game.chain.indexOf(text) != -1 && !my.opts.returns && !my.opts.history)
     return client.publish("turnError", { code: 409, value: text }, true);
   if (my.opts.twenty && text.length > 20)
     return client.publish("turnError", { code: 415, value: text }, true);
@@ -433,6 +434,7 @@ exports.submit = function (client, text, item) {
         my.game.roundTime -= t;
         my.game.char = preChar;
         my.game.subChar = preSubChar;
+        my.game.history[text] = my.game.chain.length;
         client.game.score += score;
         client.publish(
           "turnEnd",
@@ -450,13 +452,11 @@ exports.submit = function (client, text, item) {
           true
         );
         if (my.game.mission) {
-          if (my.opts.moremission) {
+          if (my.opts.moremission)
             my.game.mission = getMission(my.rule.lang, "more");
-          } else if (!my.opts.moremission && my.opts.randomMission) {
+          else if (!my.opts.moremission && my.opts.randomMission)
             my.game.mission = getMission(my.rule.lang, "random");
-          } else {
-            my.game.mission = getMission(my.rule.lang, "normal");
-          }
+          else my.game.mission = getMission(my.rule.lang, "normal");
         }
 
         if (my.opts.blockword) my.game.blockWord = getBlockWord(my.rule.lang);
@@ -475,8 +475,14 @@ exports.submit = function (client, text, item) {
       if (Const.GAME_TYPE[my.mode] == "KKT" && my.opts.middletoss) {
         if (firstMove || my.opts.manner || my.opts.midmanner) {
           getAuto
-            .call(my, my.game.theme, my.opts.sami ? text[1] : text[2], preSubChar, 1)
-            .then(function (w) {
+            .call(
+              my,
+              my.game.theme,
+              my.opts.sami ? text[1] : text[2],
+              preSubChar,
+              1
+            )
+            .then((w) => {
               // manner
               if (!w && my.opts.manner) {
                 my.game.loading = false;
@@ -492,7 +498,7 @@ exports.submit = function (client, text, item) {
               } else if (my.opts.midmanner) {
                 getAuto
                   .call(my, my.game.theme, text[1], preSubChar, 1)
-                  .then(function (q) {
+                  .then((q) => {
                     if (!q) {
                       my.game.loading = false;
                       client.publish(
@@ -511,23 +517,21 @@ exports.submit = function (client, text, item) {
             });
         }
       } else if (!my.opts.unknownword && (firstMove || my.opts.manner))
-        getAuto
-          .call(my, my.game.theme, preChar, preSubChar, 1)
-          .then(function (w) {
-            if (w) approved();
-            else {
-              my.game.loading = false;
-              client.publish(
-                "turnError",
-                { code: firstMove ? 402 : 403, value: text },
-                true
-              );
-              if (client.robot) {
-                //client._done = [];
-                my.readyRobot(client);
-              }
+        getAuto.call(my, my.game.theme, preChar, preSubChar, 1).then((w) => {
+          if (w) approved();
+          else {
+            my.game.loading = false;
+            client.publish(
+              "turnError",
+              { code: firstMove ? 402 : 403, value: text },
+              true
+            );
+            if (client.robot) {
+              //client._done = [];
+              my.readyRobot(client);
             }
-          });
+          }
+        });
       else approved();
     }
     function denied(code) {
@@ -546,6 +550,9 @@ exports.submit = function (client, text, item) {
       if (my.opts.blockword && my.opts.mission) return denied();
       if (my.opts.blockword && text.match(my.game.blockWord))
         return denied(415);
+      if (my.opts.history && my.game.chain.length - my.game.history[text] < 5)
+        return denied(420);
+      else preApproved();
       if (my.opts.endwords && my.game.endWords.includes(text))
         return denied(419);
       /*if(my.opts.selecttheme){

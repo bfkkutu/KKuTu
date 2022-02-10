@@ -943,7 +943,6 @@
           };
         } else await alert("[#" + a.code + "] " + L["error_" + a.code] + c);
     }
-    $data._record && recordEvent(a);
   }
 
   function checkIp(callback) {
@@ -1614,9 +1613,7 @@
       }
       $data._gaming != $data.room.gaming &&
         ($data.room.gaming
-          ? (gameReady(),
-            ($data._replay = !1),
-            startRecord($data.room.game.title))
+          ? (gameReady(), ($data._replay = false))
           : ($data._spectate
               ? (($data._spectate = !1), playBGM("lobby"))
               : ($data.resulting = !0),
@@ -2929,7 +2926,7 @@
   function replayReady() {
     var a;
     replayStop(),
-      ($data._replay = !0),
+      ($data._replay = true),
       ($data.room = {
         title: $rec.title,
         players: [],
@@ -3050,83 +3047,6 @@
     clearTimeout($data._rt);
     updateUI();
     playBGM("lobby");
-  }
-
-  function startRecord() {
-    var b, c;
-    $rec = {
-      version: $data.version,
-      me: $data.id,
-      players: [],
-      events: [],
-      title: $data.room.title,
-      roundTime: $data.room.time,
-      round: $data.room.round,
-      mode: $data.room.mode,
-      limit: $data.room.limit,
-      game: $data.room.game,
-      opts: $data.room.opts,
-      readies: $data.room.readies,
-      time: new Date().getTime(),
-    };
-    for (b in $data.room.players) {
-      var d;
-      (c = $data.users[$data.room.players[b]] || $data.room.players[b]),
-        (d = {
-          id: c.id,
-          score: 0,
-        }),
-        c.robot
-          ? ((d.id = c.id),
-            (d.robot = !0),
-            (d.data = {
-              score: 0,
-            }),
-            (c = {
-              profile: getAIProfile(c.level),
-            }))
-          : ((d.data = c.data), (d.equip = c.equip)),
-        (d.title = "#" + c.id),
-        $rec.players.push(d);
-    }
-    $data._record = !0;
-  }
-
-  function stopRecord() {
-    $data._record = false;
-    $.post("/record", { rec: JSON.stringify($rec) });
-  }
-
-  function recordEvent(a) {
-    if (!$data._replay && $rec) {
-      var b,
-        c = a;
-      if (a.hasOwnProperty("type") && "room" != a.type && "obtain" != a.type) {
-        a = {};
-        for (b in c) a[b] = c[b];
-        a.profile &&
-          (a.profile = {
-            id: a.profile.id,
-            title: "#" + a.profile.id,
-          }),
-          a.user &&
-            (a.user = {
-              id: a.user.profile.id,
-              profile: {
-                id: a.user.profile.id,
-                title: "#" + a.user.profile.id,
-              },
-              data: {
-                score: 0,
-              },
-              equip: {},
-            }),
-          $rec.events.push({
-            data: a,
-            time: new Date().getTime() - $rec.time,
-          });
-      }
-    }
   }
 
   function clearBoard() {
@@ -3433,8 +3353,7 @@
         addTimeout(() => {
           $data._coef = 0.05;
         }, 500);
-      }, 2000),
-      stopRecord();
+      }, 2000);
     $data.room.opts.tournament
       ? $stage.box.room.height(460)
       : $stage.box.room.height(360),
@@ -6069,7 +5988,8 @@
           $stage.dialog.replay.is(":visible")
             ? $stage.dialog.replay.hide()
             : $.get("/record", { me: $data.id }, (rec) => {
-                drawReplayList(rec), showDialog($stage.dialog.replay);
+                drawReplayList(rec);
+                showDialog($stage.dialog.replay);
               });
         }) /*, $stage.menu.findUser.on("click", function(a) {
 				showDialog($stage.dialog.findUser)
@@ -6880,10 +6800,7 @@
             "text-align": "left",
           }),
         drawRound(a.round),
-        playSound("round_start"),
-        recordEvent("roundReady", {
-          data: a,
-        });
+        playSound("round_start");
     }),
     ($lib.Classic.turnStart = function (a) {
       $data.room.game.turn = a.turn;
@@ -6917,9 +6834,6 @@
       $data._turnTime = a.turnTime;
       $data._roundTime = a.roundTime;
       $data._turnSound = playSound("T" + a.speed);
-      recordEvent("turnStart", {
-        data: a,
-      });
     }),
     ($lib.Classic.turnGoing = function () {
       $data.room || clearInterval($data._tTime),
@@ -7051,10 +6965,7 @@
             "text-align": "left",
           }),
         drawRound(a.round),
-        playSound("round_start"),
-        recordEvent("roundReady", {
-          data: a,
-        });
+        playSound("round_start");
     }),
     ($lib.DaneoClassic.turnStart = function (a) {
       ($data.room.game.turn = a.turn),
@@ -7085,10 +6996,7 @@
           ($data.turnTime = a.turnTime),
           ($data._turnTime = a.turnTime),
           ($data._roundTime = a.roundTime),
-          ($data._turnSound = playSound("T" + a.speed)),
-          recordEvent("turnStart", {
-            data: a,
-          }));
+          ($data._turnSound = playSound("T" + a.speed)));
     }),
     ($lib.DaneoClassic.turnGoing = $lib.Classic.turnGoing),
     ($lib.DaneoClassic.turnEnd = function (a, c) {
@@ -7358,10 +7266,7 @@
         ($data.chain = 0),
         drawList(),
         drawRound(a.round),
-        playSound("round_start"),
-        recordEvent("roundReady", {
-          data: a,
-        });
+        playSound("round_start");
     }),
     ($lib.Typing.spaceOn = function () {
       $data.room.opts.proverb ||
@@ -7384,10 +7289,7 @@
         clearTrespasses(),
         ($data._tTime = addInterval(turnGoing, TICK)),
         ($data._roundTime = a.roundTime),
-        playBGM("jaqwi"),
-        recordEvent("turnStart", {
-          data: a,
-        });
+        playBGM("jaqwi");
     }),
     ($lib.Typing.turnGoing = $lib.Jaqwi.turnGoing),
     ($lib.Typing.turnEnd = function (a, b) {
@@ -7425,10 +7327,7 @@
         ($data._fastTime = 1e4),
         ($data.chain = 0),
         drawRound(a.round),
-        playSound("round_start"),
-        recordEvent("roundReady", {
-          data: a,
-        });
+        playSound("round_start");
     }),
     ($lib.Reverse.turnStart = function (a) {
       $data._spectate ||
@@ -7442,10 +7341,7 @@
         clearTrespasses(),
         ($data._tTime = addInterval(turnGoing, TICK)),
         ($data._roundTime = a.roundTime),
-        playBGM("jaqwi"),
-        recordEvent("turnStart", {
-          data: a,
-        });
+        playBGM("jaqwi");
       $stage.game.display.html(
         $("<label>")
           .css("color", "#FFFF44")
@@ -7507,10 +7403,7 @@
             .css("opacity", 1)
             .html(($data.mission = a.mission)),
         drawRound(a.round),
-        playSound("round_start"),
-        recordEvent("roundReady", {
-          data: a,
-        });
+        playSound("round_start");
     }),
     ($lib.Hunmin.turnStart = function (a) {
       ($data.room.game.turn = a.turn),
@@ -7536,10 +7429,7 @@
         ($data.turnTime = a.turnTime),
         ($data._turnTime = a.turnTime),
         ($data._roundTime = a.roundTime),
-        ($data._turnSound = playSound("T" + a.speed)),
-        recordEvent("turnStart", {
-          data: a,
-        });
+        ($data._turnSound = playSound("T" + a.speed));
     }),
     ($lib.Hunmin.turnGoing = $lib.Classic.turnGoing),
     ($lib.Hunmin.turnEnd = function (a, c) {
@@ -7599,10 +7489,7 @@
             .css("opacity", 1)
             .html(($data.mission = a.mission)),
         drawRound(a.round),
-        playSound("round_start"),
-        recordEvent("roundReady", {
-          data: a,
-        });
+        playSound("round_start");
     }),
     ($lib.Daneo.turnStart = function (a) {
       ($data.room.game.turn = a.turn),
@@ -7628,10 +7515,7 @@
         ($data.turnTime = a.turnTime),
         ($data._turnTime = a.turnTime),
         ($data._roundTime = a.roundTime),
-        ($data._turnSound = playSound("T" + a.speed)),
-        recordEvent("turnStart", {
-          data: a,
-        });
+        ($data._turnSound = playSound("T" + a.speed));
     }),
     ($lib.Daneo.turnGoing = $lib.Classic.turnGoing),
     ($lib.Daneo.turnEnd = function (a, c) {
