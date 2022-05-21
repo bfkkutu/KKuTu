@@ -1733,6 +1733,9 @@ iframe {
 .ChatBox {
   width: 1000px;
 }
+.ChatBox.item-enabled {
+  height: 230px;
+}
 .chat-balloon {
   position: absolute;
   width: 123px;
@@ -1779,6 +1782,9 @@ iframe {
 #Chat {
   width: 100%;
   overflow-y: scroll;
+}
+#Chat.item-enabled {
+  height: 130px;
 }
 #Talk {
   float: left;

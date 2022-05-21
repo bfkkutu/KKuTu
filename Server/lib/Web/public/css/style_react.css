@@ -22,7 +22,21 @@
     format("woff");
 }
 
-body {
+#loading {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#loading-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+#stage {
   color: #eeeeee;
   padding: 0px;
   margin: 0px;
@@ -84,7 +98,6 @@ span {
   text-align: center;
   color: #47330d;
   background-image: url("https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/topbg.png");
-  background-color: #deaf56;
   transition: all 200ms ease;
 }
 .Menu .menu-btn:hover {
@@ -92,11 +105,9 @@ span {
   height: auto;
   box-shadow: 0px 2px 2px #141414;
   background-image: none;
-  background-color: #efc067;
 }
 .Menu .menu-btn:active {
   color: #ffffff;
-  background-color: #cd9e45;
 }
 .Menu .menu-btn .menu-sub-separator {
   display: none;
@@ -325,7 +336,7 @@ span {
   background-color: #3b3b3b;
 }
 
-#Top {
+header {
   position: fixed;
   width: 100%;
   height: 30px;
@@ -335,7 +346,7 @@ span {
 }
 #Middle {
   float: left;
-  margin-top: 50px;
+  margin-top: 80px;
   width: 1010px;
   z-index: 1;
 }
@@ -346,10 +357,10 @@ span {
   font-size: 11px;
   text-align: center;
 }
-#Footer.portal {
+footer.portal {
   z-index: 3;
 }
-#Footer {
+footer {
   float: left;
   width: 100%;
   font-size: 11px;

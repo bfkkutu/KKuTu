@@ -15,8 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
- 
- 
+
 const WS = require("ws");
 const Express = require("express");
 const Exession = require("express-session");
@@ -38,24 +37,41 @@ const referrerPolicy = require("referrer-policy");
 const helmet = require("helmet");
 const cors = require("cors");
 const hsc = require("http-status-codes");
-const renderer = require("react-engine");
+const PACKAGE = require("../package.json");
 
 const hpkp_DIS = 15768000;
 const Router = Express.Router();
 const page = WebInit.page;
-const ROUTES = ["major", "consume", "admin", "login"];
+const ROUTES = { major: {}, consume: {}, admin: {}, login: {} };
 const gameServers = [];
 
 let Language = {
-    ko_KR: require("./lang/ko_KR.json"),
-    en_US: require("./lang/en_US.json"),
+  ko_KR: require("./lang/ko_KR.json"),
+  en_US: require("./lang/en_US.json"),
 };
 let IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
 let GLOBAL = require("../sub/global.json");
 
-require("node-jsx").install({ extension: ".jsx", harmony: true });
+const HTML_TEMPLATE = fs.readFileSync(
+  "./lib/Web/front/templates/template.html",
+  "utf8"
+);
+const LOADING_TEMPLATE = fs.readFileSync(
+  "./lib/Web/front/templates/loading.html",
+  "utf8"
+);
+function Engine(path, $, callback) {
+  const REACT_SUFFIX = "production.min";
+  const CLIENT_SETTINGS = {};
 
-const Engine = renderer.server.create();
+  $.title = $.locale.title;
+  $.version = PACKAGE["version"];
+  const HTML = HTML_TEMPLATE.replace(
+    new RegExp(`("?)/\\* %%SSR%% \\*/\\1`, "g"),
+    LOADING_TEMPLATE
+  ).replace(/("?)\/\*\{(.+?)\}\*\/\1/g, (v, p1, p2) => String(eval(p2)));
+  callback(null, HTML);
+}
 
 WebInit.MOBILE_AVAILABLE = ["portal", "main", "kkutu"];
 
@@ -63,208 +79,196 @@ require("../sub/checkpub");
 require("../Game/bot");
 JLog.info("<< KKuTu Web >>");
 fs.watchFile("./lib/Web/filters/User.json", (res) => {
-    IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
-    JLog.info("IP-Ban Data is Auto-Updated at {lib/Web/main.js}");
+  IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
+  JLog.info("IP-Ban Data is Auto-Updated at {lib/Web/main.js}");
 });
 fs.watchFile("./lib/sub/global.json", () => {
-    GLOBAL = require("../sub/global.json");
-    JLog.info("global.json is Auto-Updated at {lib/Web/main.js}");
+  GLOBAL = require("../sub/global.json");
+  JLog.info("global.json is Auto-Updated at {lib/Web/main.js}");
 });
 
 const getClientIp = (req, res) => {
-    let clientIp =
-        req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-    if (typeof clientIp == "string" && clientIp.includes(","))
-        clientIp = clientIp.split(",")[0];
-    if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
+  let clientIp = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
+  if (typeof clientIp == "string" && clientIp.includes(","))
+    clientIp = clientIp.split(",")[0];
+  if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
 
-    return clientIp;
+  return clientIp;
 };
 class GameClient {
-    constructor(id, url) {
-        let override = url.match(/127\.0\.0\.\d{1,3}/);
+  constructor(id, url) {
+    let override = url.match(/127\.0\.0\.\d{1,3}/);
 
-        this.id = id;
-        this.tryConnect = 0;
-        this.connected = false;
-        this.socket = new WS(url, {
+    this.id = id;
+    this.tryConnect = 0;
+    this.connected = false;
+    this.socket = new WS(url, {
+      perMessageDeflate: false,
+      rejectUnauthorized: !override,
+    });
+
+    const onOpen = () => {
+      this.connected = true;
+      JLog.info(`Game server #${this.id} connected`);
+    };
+    const onError = (err) => {
+      this.connected = true;
+      if (GLOBAL.GAME_SERVER_RETRY > 0) this.tryConnect++;
+      JLog.warn(
+        `Game server #${this.id} has an error: ${err.toString()} | ${err.code}`
+      );
+    };
+    const onClose = (code) => {
+      this.connected = false;
+      JLog.error(`Game server #${this.id} closed: ${code}`);
+      this.socket.removeAllListeners();
+      delete this.socket;
+
+      if (this.tryConnect <= GLOBAL.GAME_SERVER_RETRY) {
+        JLog.info(
+          `Retry connect ..` +
+            (GLOBAL.GAME_SERVER_RETRY > 0 ? `, try: ${this.tryConnect}` : "")
+        );
+        setTimeout(() => {
+          this.socket = new WS(url, {
             perMessageDeflate: false,
-            rejectUnauthorized: !override,
-        });
+            rejectUnauthorized: override,
+            handshakeTimeout: 2000,
+          });
+          this.socket.on("open", onOpen);
+          this.socket.on("error", onError);
+          this.socket.on("close", onClose);
+          this.socket.on("message", onMessage);
+        }, 5000);
+      } else {
+        JLog.info("Connect fail.");
+      }
+    };
+    const onMessage = (data) => {
+      data = JSON.parse(data);
 
-        const onOpen = () => {
-            this.connected = true;
-            JLog.info(`Game server #${this.id} connected`);
-        };
-        const onError = (err) => {
-            this.connected = true;
-            if (GLOBAL.GAME_SERVER_RETRY > 0) this.tryConnect++;
-            JLog.warn(
-                `Game server #${this.id} has an error: ${err.toString()} | ${
-                    err.code
-                }`
-            );
-        };
-        const onClose = (code) => {
-            this.connected = false;
-            JLog.error(`Game server #${this.id} closed: ${code}`);
-            this.socket.removeAllListeners();
-            delete this.socket;
+      switch (data.type) {
+        case "seek":
+          this.seek = data.value;
+          break;
+        case "narrate-friend":
+          for (let i in data.list) {
+            gameServers[i].send("narrate-friend", {
+              id: data.id,
+              s: data.s,
+              stat: data.stat,
+              list: data.list[i],
+            });
+          }
+          break;
+        default:
+      }
+    };
 
-            if (this.tryConnect <= GLOBAL.GAME_SERVER_RETRY) {
-                JLog.info(
-                    `Retry connect ..` +
-                        (GLOBAL.GAME_SERVER_RETRY > 0
-                            ? `, try: ${this.tryConnect}`
-                            : "")
-                );
-                setTimeout(() => {
-                    this.socket = new WS(url, {
-                        perMessageDeflate: false,
-                        rejectUnauthorized: override,
-                        handshakeTimeout: 2000,
-                    });
-                    this.socket.on("open", onOpen);
-                    this.socket.on("error", onError);
-                    this.socket.on("close", onClose);
-                    this.socket.on("message", onMessage);
-                }, 5000);
-            } else {
-                JLog.info("Connect fail.");
-            }
-        };
-        const onMessage = (data) => {
-            data = JSON.parse(data);
+    this.socket.on("open", onOpen);
+    this.socket.on("error", onError);
+    this.socket.on("close", onClose);
+    this.socket.on("message", onMessage);
+  }
+  send(type, data) {
+    if (!data) data = {};
+    data.type = type;
 
-            switch (data.type) {
-                case "seek":
-                    this.seek = data.value;
-                    break;
-                case "narrate-friend":
-                    for (let i in data.list) {
-                        gameServers[i].send("narrate-friend", {
-                            id: data.id,
-                            s: data.s,
-                            stat: data.stat,
-                            list: data.list[i],
-                        });
-                    }
-                    break;
-                default:
-            }
-        };
-
-        this.socket.on("open", onOpen);
-        this.socket.on("error", onError);
-        this.socket.on("close", onClose);
-        this.socket.on("message", onMessage);
-    }
-    send(type, data) {
-        if (!data) data = {};
-        data.type = type;
-
-        this.socket.send(JSON.stringify(data));
-    }
+    this.socket.send(JSON.stringify(data));
+  }
 }
 Server.use((req, res, _next) => {
-    let clientIp = getClientIp(req, res);
+  let clientIp = getClientIp(req, res);
 
-    if (IpFilters.ips.indexOf(clientIp) == -1) _next();
-    else
-        res.send(
-            `<head><title>BF끄투 - 406</title><style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><center><h1>406 Not Acceptable</h1><div>서버가 요청을 거절했습니다.</div><br/>서버에서 받아들일 수 없는 요청이거나 서버에서 차단한 요청입니다.</body></center>`
-        );
+  if (IpFilters.ips.indexOf(clientIp) == -1) _next();
+  else
+    res.send(
+      `<head><title>BF끄투 - 406</title><style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><center><h1>406 Not Acceptable</h1><div>서버가 요청을 거절했습니다.</div><br/>서버에서 받아들일 수 없는 요청이거나 서버에서 차단한 요청입니다.</body></center>`
+    );
 });
 Server.set("views", __dirname + "/views");
-Server.engine("jsx", Engine);
+Server.engine("tsx", Engine);
 Server.set("view engine", "pug");
-Server.set("view engine", "jsx");
+Server.set("view engine", "tsx");
 Server.use(Express.static(__dirname + "/public"));
 Server.use(Express.urlencoded({ extended: true }));
 Server.use(
-    Exession({
-        store: new Redission({
-            client: Redis.createClient(),
-            ttl: 3600 * 12,
-        }),
-        secret: "kkutu",
-        resave: false,
-        saveUninitialized: true,
-    })
+  Exession({
+    store: new Redission({
+      client: Redis.createClient(),
+      ttl: 3600 * 12,
+    }),
+    secret: "kkutu",
+    resave: false,
+    saveUninitialized: true,
+  })
 );
 //볕뉘 수정
 Server.use(passport.initialize());
 Server.use(passport.session());
 Server.use((req, res, next) => {
-    if (req.session.passport) {
-        delete req.session.passport;
-    }
-    next();
+  if (req.session.passport) {
+    delete req.session.passport;
+  }
+  next();
 });
 Server.use((req, res, next) => {
-    if (Const.HTTPS_ONLY) {
-        if (req.protocol == "http") {
-            let url = "https://" + req.get("host") + req.path;
-            res.status(302).redirect(url);
-        } else {
-            next();
-        }
-    } else {
-        next();
-    }
+  if (Const.HTTPS_ONLY) {
+    if (req.protocol == "http") {
+      let url = "https://" + req.get("host") + req.path;
+      res.status(302).redirect(url);
+    } else next();
+  } else next();
 });
 WebInit.init(Server, true);
-ROUTES.forEach((v) => {
-    ROUTES[ROUTES.indexOf(v)] = require(`./routes/${v}`);
+Object.keys(ROUTES).forEach((v) => {
+  ROUTES[v] = require(`./routes/${v}`);
 });
 
 DB.ready = () => {
-    setInterval(() => {
-        const q = ["createdAt", { $lte: Date.now() - 3600000 * 12 }];
+  setInterval(() => {
+    const q = ["createdAt", { $lte: Date.now() - 3600000 * 12 }];
 
-        DB.session.remove(q).on();
-    }, 600000);
-    setInterval(() => {
-        gameServers.forEach((v) => {
-            if (v.socket && v.connected) v.socket.send(`{"type":"seek"}`);
-            else v.seek = undefined;
-        });
-    }, 4000);
-    JLog.success("DB is ready.");
-
-	ROUTES[2].flushShop();
-
-    webServer.use(vHost("bfkkutu.kr", Server));
-    webServer.use(
-        vHost("bfpriv.kro.kr", (req, res) => {
-            if (req.url == "/") return res.sendStatus(403);
-            else return Server(req, res);
-        })
-    );
-    webServer.get("*", (req, res) => {
-        res.status(hsc.StatusCodes.FORBIDDEN).send(`<h1>403 Forbidden</h1>`);
+    DB.session.remove(q).on();
+  }, 600000);
+  setInterval(() => {
+    gameServers.forEach((v) => {
+      if (v.socket && v.connected) v.socket.send(`{"type":"seek"}`);
+      else v.seek = undefined;
     });
-    if (Const.IS_SECURED || Const.WS.ENABLED) {
-        const options = Secure();
-        https.createServer(options, webServer).listen(443);
-    }
-    if (!Const.WS.ENABLED) webServer.listen(80);
+  }, 4000);
+  JLog.success("DB is ready.");
+
+  ROUTES.admin.flushShop();
+
+  webServer.use(vHost("bfkkutu.kr", Server));
+  webServer.get("*", (req, res) => {
+    res.status(hsc.StatusCodes.FORBIDDEN).send(`<h1>403 Forbidden</h1>`);
+  });
+  if (Const.IS_SECURED || Const.WS.ENABLED) {
+    const options = Secure();
+    https.createServer(options, webServer).listen(443);
+  }
+  if (!Const.WS.ENABLED) webServer.listen(80);
 };
 Const.MAIN_PORTS.forEach((v, i) => {
-    let KEY = process.env["WS_KEY"];
-    let protocol = Const.WS.ENABLED ? "ws" : Const.IS_SECURED ? "wss" : "ws";
+  let KEY = process.env["WS_KEY"];
+  let protocol = Const.WS.ENABLED ? "ws" : Const.IS_SECURED ? "wss" : "ws";
 
-    gameServers[i] = new GameClient(
-        KEY,
-        `${protocol}://${GLOBAL.GAME_SERVER_HOST}:${v}/${KEY}`
-    );
+  gameServers[i] = new GameClient(
+    KEY,
+    `${protocol}://${GLOBAL.GAME_SERVER_HOST}:${v}/${KEY}`
+  );
 });
 
-ROUTES.forEach((v) => {
-    v.run(Server, WebInit.page, require.cache[require.resolve("../Game/bot")].exports);
-});
+for (let i of Object.values(ROUTES))
+  i.run(
+    Server,
+    WebInit.page,
+    require.cache[require.resolve("../Game/bot")].exports
+  );
 
-Server.listen(3000);
+//Server.listen(3000);
 
 Server.use(helmet());
 Server.use(helmet.xssFilter());
@@ -272,22 +276,22 @@ Server.use(helmet.xssFilter());
 Server.use(helmet.frameguard());
 
 Server.use(
-    helmet.hsts({
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: true,
-    })
+  helmet.hsts({
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true,
+  })
 );
 
 Server.use(
-    hpkp({
-        maxAge: hpkp_DIS,
-        sha256s: [],
+  hpkp({
+    maxAge: hpkp_DIS,
+    sha256s: [],
 
-        setIf: (req, res) => {
-            return req.secure;
-        },
-    })
+    setIf: (req, res) => {
+      return req.secure;
+    },
+  })
 );
 
 Server.use(referrerPolicy({ policy: "same-origin" }));
@@ -297,169 +301,122 @@ Server.use(referrerPolicy({ policy: "unsafe-url" }));
 Server.use(referrerPolicy());
 
 Server.get("/", cors(), (req, res) => {
-    let server = req.query.server;
-    let loc = Const.MAIN_PORTS[server] ? "kkutu" : "portal";
+  let server = req.query.server;
+  let loc = Const.MAIN_PORTS[server] ? "Kkutu" : "Portal";
 
-	res.setHeader("X-Frame-Options", "deny");
-	
-	res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	res.setHeader("Pragma", "no-cache");
-	res.setHeader("Expires", "0");
+  res.setHeader("X-Frame-Options", "deny");
 
-    //볕뉘 수정 구문삭제(220~229, 240)
-    DB.session.findOne(["_id", req.session.id]).on(($ses) => {
-        if (global.isPublic) {
-            onFinish($ses);
-            // DB.jjo_session.findOne([ '_id', sid ]).limit([ 'profile', true ]).on(onFinish);
-        } else {
-            if ($ses) $ses.profile.sid = $ses._id;
-            onFinish($ses);
-        }
-    });
-    if (!getClientIp(req, res).includes("211.224.188.58"))
-        DB.statistics.findOne(["url", "every"]).on(($data) => {
-            DB.statistics
-                .update(["url", "every"])
-                .set([loc, Number($data[loc]) + 1])
-                .on();
-        });
-    function onFinish($doc) {
-        let id = req.session.id;
-        let ptc = "ws";
+  res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+  res.setHeader("Pragma", "no-cache");
+  res.setHeader("Expires", "0");
 
-        if (Const.IS_SECURED || Const.WS.ENABLED) ptc = "wss";
-
-        if ($doc) {
-            req.session.profile = $doc.profile;
-            id = $doc.profile.sid;
-        } else delete req.session.profile;
-
-        page(req, res, loc, {
-            _page: "kkutu",
-            _id: id,
-            PORT: Const.MAIN_PORTS[server],
-            HOST: Const.WS.ENABLED ? Const.WS.URI : req.hostname,
-            ALTERNATIVE_HOST: Const.WS.ALTERNATIVE_URI,
-            PROTOCOL: ptc,
-            TEST: req.query.test,
-            MOREMI_PART: Const.MOREMI_PART,
-            AVAIL_EQUIP: Const.AVAIL_EQUIP,
-            CATEGORIES: Const.CATEGORIES,
-            GROUPS: Const.GROUPS,
-            MODE: Const.GAME_TYPE,
-            RULE: Const.RULE,
-            OPTIONS: Const.OPTIONS,
-            KO_INJEONG: Const.KO_INJEONG,
-            KO_EVENT: Const.KO_EVENT,
-            EN_INJEONG: Const.EN_INJEONG,
-            KO_THEME: Const.KO_THEME,
-            EN_THEME: Const.EN_THEME,
-            IJP_EXCEPT: Const.IJP_EXCEPT,
-            ogImage: "https://bfkkutu.kr/img/kkutu/logo.png",
-            ogURL: "https://bfkkutu.kr/",
-            ogTitle: "새로운 끄투의 시작, BF끄투!",
-            ogDescription: "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!",
-        });
+  //볕뉘 수정 구문삭제(220~229, 240)
+  DB.session.findOne(["_id", req.session.id]).on(($ses) => {
+    if (global.isPublic) {
+      onFinish($ses);
+      // DB.jjo_session.findOne([ '_id', sid ]).limit([ 'profile', true ]).on(onFinish);
+    } else {
+      if ($ses) $ses.profile.sid = $ses._id;
+      onFinish($ses);
     }
+  });
+  function onFinish($doc) {
+    let id = req.session.id;
+    let ptc = "ws";
+
+    if (Const.IS_SECURED || Const.WS.ENABLED) ptc = "wss";
+
+    if ($doc) {
+      req.session.profile = $doc.profile;
+      id = $doc.profile.sid;
+    } else delete req.session.profile;
+
+    page(req, res, loc, {
+      _page: "Kkutu",
+      _id: id,
+      PORT: Const.MAIN_PORTS[server],
+      HOST: Const.WS.ENABLED ? Const.WS.URI : req.hostname,
+      ALTERNATIVE_HOST: Const.WS.ALTERNATIVE_URI,
+      PROTOCOL: ptc,
+      TEST: req.query.test,
+      MOREMI_PART: Const.MOREMI_PART,
+      AVAIL_EQUIP: Const.AVAIL_EQUIP,
+      CATEGORIES: Const.CATEGORIES,
+      GROUPS: Const.GROUPS,
+      MODE: Const.GAME_TYPE,
+      RULE: Const.RULE,
+      OPTIONS: Const.OPTIONS,
+      KO_INJEONG: Const.KO_INJEONG,
+      KO_EVENT: Const.KO_EVENT,
+      EN_INJEONG: Const.EN_INJEONG,
+      KO_THEME: Const.KO_THEME,
+      EN_THEME: Const.EN_THEME,
+      IJP_EXCEPT: Const.IJP_EXCEPT,
+      ogImage: "https://bfkkutu.kr/img/kkutu/logo.png",
+      ogURL: "https://bfkkutu.kr/",
+      ogTitle: "새로운 끄투의 시작, BF끄투!",
+      ogDescription: "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!",
+      wrapPage: true,
+    });
+  }
 });
 
 Server.get("/servers", (req, res) => {
-    let list = [];
+  let list = [];
 
-    if (UserAgent.parse(req.headers["user-agent"]).toAgent().includes("Python"))
-        return res
-            .status(hsc.StatusCodes.FORBIDDEN)
-            .send(`<h1>403 Forbidden</h1>`);
-
-    gameServers.forEach((v, i) => {
-        list[i] = v.seek;
-    });
-    res.send({ list: list, max: Const.KKUTU_MAX });
+  gameServers.forEach((v, i) => {
+    list[i] = v.seek;
+  });
+  res.send({ list: list, max: Const.KKUTU_MAX });
 });
 
 Server.get("//servers", (req, res) => {
-    let list = [];
+  let list = [];
 
-    gameServers.forEach((v, i) => {
-        list[i] = v.seek;
-    });
-    res.send({ list: list, max: Const.KKUTU_MAX });
+  gameServers.forEach((v, i) => {
+    list[i] = v.seek;
+  });
+  res.send({ list: list, max: Const.KKUTU_MAX });
 });
 
 Server.get("/adminList", (req, res) => {
-    res.send({ admin: GLOBAL.ADMIN });
+  res.send({ admin: GLOBAL.ADMIN });
 });
 
 Server.get("/newUser", (req, res) => {
-    let id = req.query.id;
+  let id = req.query.id;
 
-    if (!req.query.cp) {
-        DB.users.findOne(["_id", id]).on(($u) => {
-            if (!$u) return res.sendStatus(404);
-            else {
-                return res.send({ newUser: $u.newuser });
-            }
-        });
-    } else if (req.query.cp == `${id}cp`) {
-        DB.users.findOne(["_id", id]).on(($u) => {
-            if (!$u) return res.sendStatus(404);
-            else {
-                if ($u.newuser)
-                    DB.users.update(["_id", id]).set(["newuser", false]).on();
-                else return res.sendStatus(404);
-            }
-        });
-    } else return res.sendStatus(404);
-});
-
-Server.get("/portal_old", function (req, res) {
-    var server = req.query.server;
-
-    //볕뉘 수정 구문삭제(220~229, 240)
-    DB.session.findOne(["_id", req.session.id]).on(function ($ses) {
-        // var sid = (($ses || {}).profile || {}).sid || "NULL";
-        if (global.isPublic) {
-            onFinish($ses);
-            // DB.jjo_session.findOne([ '_id', sid ]).limit([ 'profile', true ]).on(onFinish);
-        } else {
-            if ($ses) $ses.profile.sid = $ses._id;
-            onFinish($ses);
-        }
+  if (!req.query.cp) {
+    DB.users.findOne(["_id", id]).on(($u) => {
+      if (!$u) return res.sendStatus(404);
+      else {
+        return res.send({ newUser: $u.newuser });
+      }
     });
-    function onFinish($doc) {
-        var id = req.session.id;
-        var ptc = "ws";
-
-        if (Const.IS_SECURED || Const.WS.ENABLED) ptc = "wss";
-
-        if ($doc) {
-            req.session.profile = $doc.profile;
-            id = $doc.profile.sid;
-        } else {
-            delete req.session.profile;
-        }
-        page(req, res, "portal_backup", {
-            _page: "kkutu",
-            ogImage: "https://bfkkutu.kr/img/kkutu/logo.png",
-            ogURL: "https://bfkkutu.kr/",
-            ogTitle: "새로운 끄투의 시작, BF끄투!",
-            ogDescription: "끝말잇기가 이렇게 박진감 넘치는 게임이었다니!",
-        });
-    }
+  } else if (req.query.cp == `${id}cp`) {
+    DB.users.findOne(["_id", id]).on(($u) => {
+      if (!$u) return res.sendStatus(404);
+      else {
+        if ($u.newuser)
+          DB.users.update(["_id", id]).set(["newuser", false]).on();
+        else return res.sendStatus(404);
+      }
+    });
+  } else return res.sendStatus(404);
 });
 
 Server.get("/legal/:page", (req, res) => {
-    page(req, res, "legal/" + req.params.page);
+  page(req, res, "legal/" + req.params.page);
 });
 
 Server.get("/server_status", (req, res) => {
-    page(req, res, "server_status");
+  page(req, res, "server_status");
 });
 
 Server.get("/unsupported", (req, res) => {
-    page(req, res, "unsupported");
+  page(req, res, "Unsupported");
 });
 
 Server.get("*", (req, res) => {
-    page(req, res, "notfound");
+  page(req, res, "Notfound");
 });

@@ -54,16 +54,16 @@ equ {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 6;
 }
-#Top {
+header {
   background-color: #7cc4f8;
   background-image: none;
 }
-#Top .menu-btn {
+header .Menu .menu-btn {
   color: #111111;
   background-color: #7cc4f8;
   background-image: none;
 }
-#Top .menu-sub-btn {
+header .Menu .menu-sub-btn {
   color: #222222;
 }
 #Bottom .bottom-text {
@@ -2023,16 +2023,16 @@ equ {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 6;
 }
-#Top {
+header {
   background-color: #7cc4f8;
   background-image: none;
 }
-#Top .menu-btn {
+header .Menu .menu-btn {
   color: #111111;
   background-color: #7cc4f8;
   background-image: none;
 }
-#Top .menu-sub-btn {
+header .Menu .menu-sub-btn {
   color: #222222;
 }
 #Bottom .bottom-text {

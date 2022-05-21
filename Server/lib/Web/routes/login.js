@@ -18,13 +18,12 @@
 
 const MainDB = require("../db");
 const JLog = require("../../sub/jjlog");
-// const Ajae	 = require("../../sub/ajaejs").checkAjae;
 const passport = require("passport");
 const glob = require("glob-promise");
-const GLOBAL = require("../../sub/global.json");
 const config = require("../../sub/auth.json");
-const local = require("../auth/auth_local.js");
 const path = require("path");
+
+let GLOBAL = require("../../sub/global.json");
 
 const strategyProcess = (req, accessToken, MainDB, $p, done) => {
   $p.token = accessToken;
@@ -37,9 +36,7 @@ const strategyProcess = (req, accessToken, MainDB, $p, done) => {
   MainDB.users.findOne(["_id", $p.id]).on(($body) => {
     req.session.profile = $p;
     req.session.nickname = $body ? $body.nickname : $p.title || $p.name;
-    if ($body) {
-      if ($body.nickname) $p.title = $p.name = $body.nickname;
-    }
+    if ($body && $body.nickname) $p.title = $p.name = $body.nickname;
     MainDB.session
       .upsert(["_id", req.session.id])
       .set({
@@ -64,6 +61,7 @@ exports.run = (Server, page) => {
   });
 
   const strategyList = {};
+
   for (let i in config) {
     try {
       let auth = require(path.resolve(
@@ -83,12 +81,11 @@ exports.run = (Server, page) => {
           failureRedirect: "/loginfail",
         })
       );
-      const aStrategy = new auth.config.strategy(
+      const Strategy = new auth.config.strategy(
         auth.strategyConfig,
-        auth.strategy(strategyProcess, MainDB /*, Ajae */)
+        auth.strategy(strategyProcess, MainDB)
       );
-      //aStrategy._oauth2.setAgent(agent);
-      passport.use(aStrategy);
+      passport.use(Strategy);
       strategyList[auth.config.vendor] = {
         vendor: auth.config.vendor,
         displayName: auth.config.displayName,
@@ -103,10 +100,10 @@ exports.run = (Server, page) => {
       JLog.error(error.message);
     }
   }
-  
+
   Server.get("/login", (req, res) => {
     if (global.isPublic) {
-      page(req, res, "login", {
+      page(req, res, "Login", {
         _id: req.session.id,
         text: req.query.desc,
         loginList: strategyList,
