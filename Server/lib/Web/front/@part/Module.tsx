@@ -1,6 +1,7 @@
 import React from "react";
 
-import { Props, L } from "../ReactBootstrap";
+import { Props } from "../ReactBootstrap";
+import L from "../Language";
 
 const MENU = [
   { key: "HOME", href: "/" },

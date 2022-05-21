@@ -1,7 +1,8 @@
 import React, { PureComponent } from "react";
 
 import Jungle from "../@part/Jungle";
-import Bind, { L } from "../ReactBootstrap";
+import Bind from "../ReactBootstrap";
+import L from "../Language";
 
 interface Props {
   locale: any;

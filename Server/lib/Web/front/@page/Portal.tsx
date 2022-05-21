@@ -2,7 +2,8 @@ import React, { PureComponent } from "react";
 
 import Icon from "../@block/Icon";
 import Expl from "../@block/Expl";
-import Bind, { Props, L } from "../ReactBootstrap";
+import Bind, { Props } from "../ReactBootstrap";
+import L from "../Language";
 
 declare global {
   interface Window {
