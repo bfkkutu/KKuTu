@@ -93,11 +93,41 @@ Pub.ready = (isPub) => {
       DB.kkutu_injeong = new mainAgent.Table("kkutu_injeong");
       DB.kkutu_shop = new mainAgent.Table("kkutu_shop");
       DB.kkutu_shop_desc = new mainAgent.Table("kkutu_shop_desc");
+      DB.kkutu_shop_desc.refreshLanguage = function (Language) {
+        this.find().on(($docs) => {
+          var lang, i;
+
+          for (lang in Language) {
+            var db;
+
+            Language[lang].SHOP = db = {};
+            for (i in $docs)
+              db[$docs[i]._id] = [
+                $docs[i][`name_${lang}`],
+                $docs[i][`desc_${lang}`],
+              ];
+          }
+        });
+      };
 
       DB.session = new mainAgent.Table("session");
+      DB.localUsers = new mainAgent.Table("localusers");
       DB.users = new mainAgent.Table("users");
+      DB.nicknameLog = new mainAgent.Table("nickname_log");
       DB.clans = new mainAgent.Table("clan");
+      DB.bank = new mainAgent.Table("bank");
       DB.record = new mainAgent.Table("record");
+
+      DB.log = {
+        connection: new mainAgent.Table("log_connection"),
+        chat: new mainAgent.Table("log_chat"),
+        whisper: new mainAgent.Table("log_whisper"),
+        admin: {
+          word: new mainAgent.Table("log_admin_word"),
+          user: new mainAgent.Table("log_admin_user"),
+          shop: new mainAgent.Table("log_admin_shop"),
+        },
+      };
 
       DB.statistics = new mainAgent.Table("statistics");
 

@@ -39,12 +39,8 @@ export default class Footer extends PureComponent {
                 개인정보 취급 방침
               </a>{" "}
               ·{" "}
-              <a href="http://ingame.bfk.kro.kr" target="_blank">
-                인게임 운영 정책
-              </a>{" "}
-              ·{" "}
-              <a href="http://discord.bfk.kro.kr" target="_blank">
-                디스코드 운영 정책
+              <a href="https://bfkkutu.kr/policy.txt" target="_blank">
+                운영 정책
               </a>
             </div>
             <div>
@@ -56,6 +52,12 @@ export default class Footer extends PureComponent {
               <br />
               <label style={{ color: "#777777" }}>
                 우리말샘 Copyright 2016 by 국립국어원. All rights reserved.
+              </label>
+              <br />
+              <label style={{ color: "#777777" }}>
+                <a href="https://kr.freepik.com/vectors/background">
+                  Background 벡터는 starline - kr.freepik.com가 제작함
+                </a>
               </label>
             </div>
           </div>

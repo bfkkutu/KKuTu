@@ -42,6 +42,10 @@ const MAX_OKG = 18;
 const PER_OKG = 600000;
 const L = require("../Web/lang/ko_KR.json");
 
+GLOBAL.GM = [];
+for (let i of Object.values(GLOBAL.ADMINS)) GLOBAL.GM.push(...i);
+GLOBAL.GM = Array.from(new Set(GLOBAL.GM));
+
 fs.watchFile("./lib/sub/global.json", () => {
   GLOBAL = require("../sub/global.json");
   JLog.info("global.json is Auto-Updated at {lib/Game/kkutu.js}");
@@ -53,31 +57,16 @@ const getFreeChannel = () => {
   if (Cluster.isMaster) {
     var mk = 1;
 
-    for (let i in CHAN) {
-      // if(CHAN[i].isDead()) continue;
-      list[i] = 0;
-    }
+    for (let i in CHAN) list[i] = 0;
+
     for (let i in ROOM) {
       // if(!list.hasOwnProperty(i)) continue;
       mk = ROOM[i].channel;
       list[mk]++;
     }
-    for (let i in list) {
-      if (list[i] < list[mk]) mk = i;
-    }
+    for (let i in list) if (list[i] < list[mk]) mk = i;
     return Number(mk);
-  } else {
-    return channel || 0;
-  }
-};
-const getGuestName = (sid) => {
-  const len = sid.length;
-  let res = 0;
-
-  for (let i = 0; i < len; i++) {
-    res += sid.charCodeAt(i) * (i + 1);
-  }
-  return "GUEST" + (1000 + (res % 9000));
+  } else return channel || 0;
 };
 const shuffle = (arr) => {
   const r = [];
@@ -98,14 +87,9 @@ const getRewards = (
   all,
   ss,
   srp,
-  opts,
-  nscore
+  opts
 ) => {
   if (opts.unknownword) return { score: 0, money: 0, rankPoint: 0 }; // 언노운워드는 보상이 없다.
-  if (Const.GAME_TYPE[mode] == "ADL")
-    return { score: 0, money: 0, rankPoint: 0 }; // 노운워드는 보상이 없다.
-
-  //score 점수, rw.score 획득 점수, rankPoint 랭크 포인트, rw.rankPoint 획득 랭크 포인트
 
   const rw = { score: 0, money: 0, rankPoint: 0 };
   const sr = score / ss;
@@ -136,16 +120,11 @@ const getRewards = (
   if (opts.injeong) rw.score *= 0.8; // 어인정
   if (opts.mission) {
     // 미션
-    if (!opts.randommission) {
-      rw.score *= 0.95;
-    } else {
-      rw.score *= 0.9;
-    }
-    if (opts.moremission) {
-      rw.score *= 1.25;
-    } else {
-      rw.score *= 0.9;
-    }
+    if (!opts.randommission) rw.score *= 0.95;
+    else rw.score *= 0.9;
+
+    if (opts.moremission) rw.score *= 1.25;
+    else rw.score *= 0.9;
   }
   if (opts.proverb) rw.score *= 1.4; // 속담
   if (opts.loanword) rw.score *= 1.3; // 우리말
@@ -166,7 +145,8 @@ const getRewards = (
   if (opts.item) rw.score *= 0.8; // 아이템 전
   if (opts.tournament) rw.score *= 3.0; // 토너먼트
   if (opts.endwords) rw.score *= 1.1; // 데자뷔 금지
-  if (opts.history) rw.score *= 0.6; // 히스토리
+  if (opts.history) rw.score *= 0.3; // 히스토리
+  if (opts.freestyle) rw.score *= 0.1; // 프리스타일
   // all은 1~16
   // rank는 0~15
   /*switch(Const.GAME_TYPE[mode]){
@@ -234,7 +214,7 @@ const getRewards = (
 			break;
 	}*/
   switch (Const.GAME_TYPE[mode]) {
-    case "EKT":
+    case "EUT":
       rw.score += score * 1.5;
       break;
     case "ESH":
@@ -276,23 +256,29 @@ const getRewards = (
     case "ESS":
       rw.score += score * 0.32;
       break;
-    case "KDG": //한국어 그림 퀴즈
+    case "KDG": // 한국어 그림 퀴즈
       rw.score += score * 0.2;
       break;
-    case "EDG": //영어 그림 퀴즈
+    case "EDG": // 영어 그림 퀴즈
       rw.score += score * 0.2;
       break;
-    case "KUT": //한국어 끄투
+    case "KUT": // 한국어 끄투
       rw.score += score * 1.5;
       break;
-    case "KRH": //한국어 랜덤잇기
+    case "KRH": // 한국어 랜덤잇기
       rw.score += score * 0.7;
       break;
-    case "ERH": //영어 랜덤잇기
+    case "ERH": // 영어 랜덤잇기
       rw.score += score * 0.7;
       break;
-    case "KMH": //한국어 가운데잇기
+    case "KMH": // 한국어 가운데잇기
       rw.score += score * 0.68;
+      break;
+    case "EKT": // 영어 쿵쿵따
+      rw.score += score * 1.4;
+      break;
+    case "KRK": // 한국어 랜덤쿵쿵따
+      rw.score += score * 1.45;
       break;
     default:
       break;
@@ -319,9 +305,7 @@ const getRewards = (
     rw.score *= 0.05;
     rw.money *= 0.05;
     rw.rankPoint = 0;
-  } else {
-    rw.together = true;
-  }
+  } else rw.together = true;
 
   if (all >= 2 && all <= 4) rw.rankPoint *= 0.5;
   else if (all > 4 && all <= 8) rw.rankPoint *= 0.75;
@@ -336,17 +320,22 @@ const getRewards = (
   rw.money = rw.money || 0;
   rw.rankPoint = rw.rankPoint || 0;
 
-  if (nscore <= "-1") {
-    rw.score = 0;
-  }
-
   if (rankPoint >= 2850 && rankPoint <= 2999) rw.rankPoint *= 0.7;
   else if (rankPoint >= 3700 && rankPoint <= 3999) rw.rankPoint *= 0.6;
   else if (rankPoint >= 4500 && rankPoint <= 4999) rw.rankPoint *= 0.5;
 
   //rw.rankPoint = rw.rankPoint * 0.65;
 
-  // 설 연휴 이벤트
+  if (GLOBAL.ADDITIONAL_REWARD.ENABLED) {
+    if (GLOBAL.ADDITIONAL_REWARD.SCORE)
+      rw.score *= GLOBAL.ADDITIONAL_REWARD.SCORE;
+    if (GLOBAL.ADDITIONAL_REWARD.MONEY)
+      rw.money *= GLOBAL.ADDITIONAL_REWARD.MONEY;
+    if (GLOBAL.ADDITIONAL_REWARD.RANKPOINT)
+      rw.rankPoint *= GLOBAL.ADDITIONAL_REWARD.RANKPOINT;
+  }
+
+  // 이벤트
   /*rw.score = rw.score * 2;
   rw.money = rw.money * 2;
   rw.rankPoint = rw.rankPoint * 2;*/
@@ -364,21 +353,21 @@ const getRewards = (
 
   if (rankPoint >= 5000) {
     // 마스터 이상 구간에서 하위 티어가 상위 티어를 따라잡기 더 쉽게 하기 위함.
-    if (rankPoint <= 5999) rw.rankPoint *= 0.99;
-    else if (rankPoint >= 6000 && rankPoint <= 6999) rw.rankPoint *= 0.98;
-    else if (rankPoint >= 7000 && rankPoint <= 7999) rw.rankPoint *= 0.97;
-    else if (rankPoint >= 8000 && rankPoint <= 8999) rw.rankPoint *= 0.96;
-    else if (rankPoint >= 9000 && rankPoint <= 9999) rw.rankPoint *= 0.95;
-    else if (rankPoint >= 10000 && rankPoint <= 10999) rw.rankPoint *= 0.94;
-    else if (rankPoint >= 11000 && rankPoint <= 11999) rw.rankPoint *= 0.93;
-    else if (rankPoint >= 12000 && rankPoint <= 12999) rw.rankPoint *= 0.92;
-    else if (rankPoint >= 13000 && rankPoint <= 13999) rw.rankPoint *= 0.91;
-    else if (rankPoint >= 14000 && rankPoint <= 14999) rw.rankPoint *= 0.9;
-    else if (rankPoint >= 15000 && rankPoint <= 15999) rw.rankPoint *= 0.89;
-    else if (rankPoint >= 16000 && rankPoint <= 16999) rw.rankPoint *= 0.88;
-    else if (rankPoint >= 17000 && rankPoint <= 17999) rw.rankPoint *= 0.87;
-    else if (rankPoint >= 18000 && rankPoint <= 18999) rw.rankPoint *= 0.86;
-    else if (rankPoint >= 19000 && rankPoint <= 19999) rw.rankPoint *= 0.85;
+    if (rankPoint <= 5999) rw.rankPoint *= 0.95;
+    else if (rankPoint >= 6000 && rankPoint <= 6999) rw.rankPoint *= 0.9;
+    else if (rankPoint >= 7000 && rankPoint <= 7999) rw.rankPoint *= 0.85;
+    else if (rankPoint >= 8000 && rankPoint <= 8999) rw.rankPoint *= 0.8;
+    else if (rankPoint >= 9000 && rankPoint <= 9999) rw.rankPoint *= 0.75;
+    else if (rankPoint >= 10000 && rankPoint <= 10999) rw.rankPoint *= 0.72;
+    else if (rankPoint >= 11000 && rankPoint <= 11999) rw.rankPoint *= 0.69;
+    else if (rankPoint >= 12000 && rankPoint <= 12999) rw.rankPoint *= 0.66;
+    else if (rankPoint >= 13000 && rankPoint <= 13999) rw.rankPoint *= 0.63;
+    else if (rankPoint >= 14000 && rankPoint <= 14999) rw.rankPoint *= 0.6;
+    else if (rankPoint >= 15000 && rankPoint <= 15999) rw.rankPoint *= 0.57;
+    else if (rankPoint >= 16000 && rankPoint <= 16999) rw.rankPoint *= 0.54;
+    else if (rankPoint >= 17000 && rankPoint <= 17999) rw.rankPoint *= 0.51;
+    else if (rankPoint >= 18000 && rankPoint <= 18999) rw.rankPoint *= 0.48;
+    else if (rankPoint >= 19000 && rankPoint <= 19999) rw.rankPoint *= 0.45;
   }
 
   if (opts.randomturn && all <= 3)
@@ -440,30 +429,48 @@ exports.narrate = (list, type, data) => {
 };
 exports.publish = function (type, data, _room) {
   if (Cluster.isMaster) {
-    for (let i in DIC) {
-      DIC[i].send(type, data);
-    }
+    for (let i in DIC) DIC[i].send(type, data);
   } else if (Cluster.isWorker) {
-    if (type == "room")
-      process.send({ type: "room-publish", data: data, password: _room });
-    else if (type == "breakroom") {
-      for (let i in ROOM[data].players) {
-        const $c = ROOM[data].players[i];
+    switch (type) {
+      case "room":
+        process.send({ type: "room-publish", data, password: _room });
+        break;
+      case "breakroom": {
+        for (let i in ROOM[data].players) {
+          const $c = ROOM[data].players[i];
 
-        if (!DIC) return null;
-        if (!$c) return null;
-        DIC[$c].place = null;
+          if (!$c) return null;
+          DIC[$c].place = null;
+        }
+        delete ROOM[data];
+        break;
       }
-      delete ROOM[data];
-    } else if (type == "forceready") DIC[data].ready = true;
-    else if (type == "forcespectate") DIC[data].spectate = true;
-    else if (type == "roomtitle") {
-      const [target, newtitle] = data.split(",");
-      ROOM[target].title = newtitle;
-    } else
-      for (let i in DIC) {
-        DIC[i].send(type, data);
+      case "forceready":
+        DIC[data].ready = true;
+        break;
+      case "forcespectate":
+        DIC[data].spectate = true;
+        break;
+      case "roomtitle": {
+        const [target, newtitle] = data.split(",");
+        ROOM[target].title = newtitle;
+        break;
       }
+      case "hottime-activate":
+        GLOBAL.ADDITIONAL_REWARD = data;
+        for (let i in DIC) DIC[i].send(type, data);
+        break;
+      case "hottime-inactivate":
+        GLOBAL.ADDITIONAL_REWARD = { ENABLED: false };
+        for (let i in DIC) DIC[i].send(type, data);
+        break;
+      case "maintanance":
+        GLOBAL.MAINTANANCE = !GLOBAL.MAINTANANCE;
+        if (GLOBAL.MAINTANANCE) for (let i in DIC) DIC[i].send(type, data);
+        break;
+      default:
+        for (let i in DIC) DIC[i].send(type, data);
+    }
   }
 };
 exports.Robot = function (target, place, level) {
@@ -502,23 +509,23 @@ exports.Robot = function (target, place, level) {
   my.invokeWordPiece = (text, coef) => {};
   my.publish = (type, data) => {
     const $room = ROOM[my.place];
-    const target = $room.game.seq
-      ? DIC[$room.game.seq[$room.game.turn]] || $room.game.seq[$room.game.turn]
-      : {};
 
     if (my.target == null) {
-      for (let i in DIC) {
-        if (DIC[i].place == place) DIC[i].send(type, data);
-      }
+      for (let i in DIC) if (DIC[i].place == place) DIC[i].send(type, data);
     } else if (DIC[my.target]) DIC[my.target].send(type, data);
 
     if (
       $room &&
       $room.gaming &&
+      $room.rec &&
       $room.mode != 14 &&
       $room.mode != 15 &&
       !$room.practice
     ) {
+      const target = $room.game.seq
+        ? DIC[$room.game.seq[$room.game.turn]] ||
+          $room.game.seq[$room.game.turn]
+        : {};
       if (data.hint) data.hint = data.hint._id;
       $room.rec.events.push({
         data: {
@@ -537,22 +544,26 @@ exports.Robot = function (target, place, level) {
   my.setLevel(level);
   my.setTeam(0);
 };
-exports.Data = function (data) {
-  let j;
-  if (!data) data = {};
+exports.Data = class Data {
+  constructor(data) {
+    if (!data) data = {};
 
-  this.score = data.score || 0;
-  this.playTime = data.playTime || 0;
-  this.rankPoint = data.rankPoint || 0;
-  this.connectDate = data.connectDate || 0;
-  this.record = {};
-  for (let i in Const.GAME_TYPE) {
-    this.record[(j = Const.GAME_TYPE[i])] = data.record
-      ? data.record[Const.GAME_TYPE[i]] || [0, 0, 0, 0]
-      : [0, 0, 0, 0];
-    if (!this.record[j][3]) this.record[j][3] = 0;
+    this.score = data.score || 0;
+    this.playTime = data.playTime || 0;
+    this.rankPoint = data.rankPoint || 0;
+    this.connectDate = data.connectDate || 0;
+    this.record = {};
+
+    for (let i in Const.GAME_TYPE) {
+      const gameType = Const.GAME_TYPE[i];
+      this.record[gameType] = data.record
+        ? data.record[Const.GAME_TYPE[i]] || [0, 0, 0, 0]
+        : [0, 0, 0, 0];
+      if (!this.record[gameType][3]) this.record[gameType][3] = 0;
+    }
+    // 전, 승, 점수, 누적 플레이 타임
+    // this.playTime: 플레이 타임
   }
-  // 전, 승, 점수, 플레이 타임
 };
 exports.WebServer = function (socket) {
   const my = this;
@@ -668,6 +679,7 @@ exports.Client = function (socket, profile, sid) {
   my.team = 0;
   my.ready = false;
   my.game = {};
+  my.gm = GLOBAL.GM.indexOf(my.id) != -1;
 
   my.subPlace = 0;
   my.error = false;
@@ -754,9 +766,10 @@ exports.Client = function (socket, profile, sid) {
     $room.drawingCanvas(msg);
   };
   my.getData = (gaming) => {
-    const o = {
+    let o = {
       id: my.id,
       guest: my.guest,
+      gm: my.gm,
       game: {
         ready: my.ready,
         form: my.form,
@@ -791,9 +804,6 @@ exports.Client = function (socket, profile, sid) {
     const now = new Date();
     const st = now - my._pub;
     const $room = ROOM[my.place];
-    const target = $room.game.seq
-      ? DIC[$room.game.seq[$room.game.turn]] || $room.game.seq[$room.game.turn]
-      : {};
 
     if (st <= Const.SPAM_ADD_DELAY) my.spam++;
     else if (st >= Const.SPAM_CLEAR_DELAY) my.spam = 0;
@@ -824,11 +834,17 @@ exports.Client = function (socket, profile, sid) {
 
     if (
       $room &&
+      $room.game &&
       $room.gaming &&
+      $room.rec &&
       $room.mode != 14 &&
       $room.mode != 15 &&
       !$room.practice
     ) {
+      const target = $room.game.seq
+        ? DIC[$room.game.seq[$room.game.turn]] ||
+          $room.game.seq[$room.game.turn]
+        : {};
       if (data.hint) data.hint = data.hint._id;
       $room.rec.events.push({
         data: {
@@ -920,9 +936,6 @@ exports.Client = function (socket, profile, sid) {
             nickname: my.profile.title || my.profile.name,
             money: 0,
           };
-        if (chatban.isBanned) {
-          my.noChat = true;
-        }
         my.nickname = $user.nickname || undefined;
         my.exordial = $user.exordial || "";
         if (my.nickname) my.profile.title = my.profile.name = my.nickname;
@@ -933,6 +946,7 @@ exports.Client = function (socket, profile, sid) {
         my.data = new exports.Data($user.kkutu);
         my.money = Number($user.money);
         my.friends = $user.friends || {};
+        my.giveaway = $user.giveaway;
         if (first) {
           my.flush();
           DB.users
@@ -964,7 +978,7 @@ exports.Client = function (socket, profile, sid) {
               .update(["_id", my.id])
               .set(["chatban", JSON.stringify(chatban)])
               .on();
-          }
+          } else my.noChat = true;
         }
         if (ban.isBanned) {
           const now = moment().format("YYYYMMDDHH");
@@ -1072,25 +1086,49 @@ exports.Client = function (socket, profile, sid) {
         return my.sendError(430, room.id);
       }
       if (!joinWhileGaming && !spectate) {
-        if ($room.gaming && $room.opts.joinwhilegaming) {
-          return my.send("error", { code: 466, target: $room.id });
-        } else if ($room.gaming) {
-          return my.send("error", { code: 416, target: $room.id });
-        } else if (my.guest)
-          if (!GUEST_PERMISSION.enter) {
-            return my.sendError(401);
-          }
+        if ($room.gaming)
+          return my.send("error", {
+            code: $room.opts.joinwhilegaming ? 466 : 416,
+            target: $room.id,
+          });
+        else if (my.guest && !GUEST_PERMISSION.enter) return my.sendError(401);
       }
+      if (joinWhileGaming && $room.opts.joinwhilegaming && $room.gaming)
+        my.game.item = my.game.item || {
+          turnSkip: {
+            limit: 1,
+            count: 1,
+          },
+          changeMission: {
+            limit: 3,
+            count: 3,
+          },
+          reverse: {
+            limit: 2,
+            count: 2,
+          },
+          jump: {
+            limit: 2,
+            count: 2,
+          },
+          middleToss: {
+            limit: 5,
+            count: 5,
+          },
+        };
+
       if ($room.time == 9999999 && !my.admin) return my.sendError(460);
+
       if (
+        !$room.opts.tournament &&
         $room.players.length >=
-        $room.limit + (spectate ? Const.MAX_OBSERVER : 0)
-      ) {
-        if (!my.admin) return my.sendError(429);
-      }
-      if ($room.players.indexOf(my.id) != -1) {
-        return my.sendError(409);
-      }
+          $room.limit + (spectate ? Const.MAX_OBSERVER : 0) &&
+        !my.admin
+      )
+        return my.sendError(429);
+
+      if ($room.players.indexOf(my.id) != -1) return my.sendError(409);
+
       if (Cluster.isMaster) {
         my.send("preRoom", {
           id: $room.id,
@@ -1100,10 +1138,10 @@ exports.Client = function (socket, profile, sid) {
         CHAN[$room.channel].send({
           type: "room-reserve",
           session: sid,
-          room: room,
-          spectate: spectate,
-          joinWhileGaming: joinWhileGaming,
-          password: password,
+          room,
+          spectate,
+          joinWhileGaming,
+          password,
         });
 
         $room = undefined;
@@ -1442,7 +1480,7 @@ exports.Room = function (room, channel) {
       time: my.time,
       master: my.master,
       players: pls,
-      readies: readies,
+      readies,
       gaming: my.gaming,
       admin: my.adminRoom,
       game: {
@@ -1648,10 +1686,16 @@ exports.Room = function (room, channel) {
       }
       if ((ijc = my.rule.opts.includes("ijp"))) {
         const ij = Const[`${my.rule.lang.toUpperCase()}_IJP`];
-        my.opts.injpick = (room.opts.injpick || []).filter(function (item) {
-          return ij.includes(item);
-        });
+        my.opts.injpick = (room.opts.injpick || []).filter((item) =>
+          ij.includes(item)
+        );
       } else my.opts.injpick = [];
+      if (my.rule.opts.includes("edb")) {
+        const edb = Const.KOR_EXTERNAL_DB;
+        my.opts.edbpick = (room.opts.edbpick || []).filter((item) =>
+          edb.includes(item)
+        );
+      } else my.opts.edbpick = [];
     }
     if (!my.rule.ai) {
       while (my.removeAI(false, true));
@@ -1693,7 +1737,7 @@ exports.Room = function (room, channel) {
     // 인정픽 검사
     if (!my.rule) return 400;
     if (my.rule.opts.includes("ijp")) {
-      if (!my.ijr) return false; // 인정픽 필수 여부
+      if (!my.ijr) return false; // 인정픽 필수 여부 검사
       if (!my.opts.injpick) return 400;
       if (!my.opts.injpick.length) return 413;
       if (
@@ -1716,7 +1760,7 @@ exports.Room = function (room, channel) {
     let len = 0;
 
     my.rec = {
-      version: L.kkutu.version,
+      version: L.Kkutu.version,
       events: [],
       time: new Date().getTime(),
     };
@@ -1758,6 +1802,7 @@ exports.Room = function (room, channel) {
     my.game.turn = 0;
     my.game.seq = [];
     my.game.robots = [];
+
     if (my.practice) {
       my.game.robots.push((o = new exports.Robot(my.master, my.id, pracLevel)));
       my.game.seq.push(o, my.master);
@@ -1797,10 +1842,29 @@ exports.Room = function (room, channel) {
       o.ready = false;
       o.game.score = 0;
       o.game.bonus = 0;
-      o.game.item = [
-        /*0, 0, 0, 0, 0, 0*/
-      ];
       o.game.wpc = [];
+      o.game.item = {
+        turnSkip: {
+          limit: 1,
+          count: 0,
+        },
+        changeMission: {
+          limit: 3,
+          count: 0,
+        },
+        reverse: {
+          limit: 2,
+          count: 0,
+        },
+        jump: {
+          limit: 2,
+          count: 0,
+        },
+        middleToss: {
+          limit: 5,
+          count: 0,
+        },
+      };
     }
     my.game.hum = hum;
     my.getTitle().then((title) => {
@@ -1830,54 +1894,57 @@ exports.Room = function (room, channel) {
     const suv = [];
     const teams = [null, [], [], [], []];
     const now = new Date().getTime();
-    const temp = my.rec.time;
     let sumScore = 0;
     let sumRankPoint = 0;
     let pv = -1;
 
     my.interrupt();
-    Object.assign(my.rec, my.getData());
-    for (let i in my.rec.players) {
-      let user = DIC[my.rec.players[i]] || my.rec.players[i];
-      let player = {
-        id: user.id,
-        score: 0,
-      };
-
-      if (user.robot) {
-        player.id = user.id;
-        player.robot = true;
-        player.data = { score: 0 };
-        user = {
-          profile: {
-            title: L[`aiLevel${user.level}`] + " " + L.robot,
-            image: `https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/robot.png`,
-          },
+    if (my.rec) {
+      const temp = my.rec.time;
+      Object.assign(my.rec, my.getData());
+      for (let i in my.rec.players) {
+        let user = DIC[my.rec.players[i]] || my.rec.players[i];
+        let player = {
+          id: user.id,
+          score: 0,
         };
-      } else {
-        player.data = user.data;
-        player.equip = user.equip;
+
+        if (user.robot) {
+          player.id = user.id;
+          player.robot = true;
+          player.data = { score: 0 };
+          user = {
+            profile: {
+              title: L[`aiLevel${user.level}`] + " " + L.robot,
+              image: `https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/robot.png`,
+            },
+          };
+        } else {
+          player.data = user.data;
+          player.equip = user.equip;
+        }
+        player.title = player.nickname = `#${user.id}`;
+        my.rec.players[i] = player;
       }
-      player.title = player.nickname = `#${user.id}`;
-      my.rec.players[i] = player;
+      if (my.mode != 14 && my.mode != 15 && !my.practice)
+        DB.record
+          .insert(
+            ["version", my.rec.version],
+            ["players", JSON.stringify(my.rec.players)],
+            ["events", JSON.stringify(my.rec.events)],
+            ["title", my.rec.title],
+            ["roundTime", Number(my.rec.time)],
+            ["round", Number(my.rec.round)],
+            ["mode", Number(my.rec.mode)],
+            ["limit", Number(my.rec.limit)],
+            ["game", JSON.stringify(my.rec.game)],
+            ["opts", JSON.stringify(my.rec.opts)],
+            ["readies", JSON.stringify(my.rec.readies)],
+            ["time", Number(temp)]
+          )
+          .on();
     }
-    if (my.mode != 14 && my.mode != 15 && !my.practice)
-      DB.record
-        .insert(
-          ["version", my.rec.version],
-          ["players", JSON.stringify(my.rec.players)],
-          ["events", JSON.stringify(my.rec.events)],
-          ["title", my.rec.title],
-          ["roundTime", Number(my.rec.time)],
-          ["round", Number(my.rec.round)],
-          ["mode", Number(my.rec.mode)],
-          ["limit", Number(my.rec.limit)],
-          ["game", JSON.stringify(my.rec.game)],
-          ["opts", JSON.stringify(my.rec.opts)],
-          ["readies", JSON.stringify(my.rec.readies)],
-          ["time", Number(temp)]
-        )
-        .on();
+
     for (let i in my.players) {
       const o = DIC[my.players[i]];
       if (!o) continue;
@@ -1944,8 +2011,7 @@ exports.Room = function (room, channel) {
         rl,
         sumScore,
         sumRankPoint,
-        my.opts,
-        o.data.score
+        my.opts
       );
       rw.playTime = now - o.playAt;
       o.applyEquipOptions(rw); // 착용 아이템 보너스 적용
@@ -2060,11 +2126,19 @@ exports.Room = function (room, channel) {
   my.turnNext = (force) => {
     if (!my.gaming) return;
     if (!my.game.seq) return;
-    if (my.opts && my.opts.randomturn) {
+    if (my.opts && my.opts.randomturn)
       my.game.turn = Math.floor(Math.random() * my.game.seq.length);
-    } else {
-      my.game.turn = (my.game.turn + 1) % my.game.seq.length;
-    }
+    else if (my.game.jump) {
+      if (my.game.reversed)
+        my.game.turn =
+          my.game.turn == 1
+            ? my.game.seq.length - 1
+            : (my.game.turn || my.game.seq.length) - 2;
+      else my.game.turn = (my.game.turn + 2) % my.game.seq.length;
+      my.game.jump = false;
+    } else if (my.game.reversed)
+      my.game.turn = (my.game.turn || my.game.seq.length) - 1;
+    else my.game.turn = (my.game.turn + 1) % my.game.seq.length;
     my.turnStart(force);
   };
   my.turnEnd = () => {
@@ -2072,6 +2146,12 @@ exports.Room = function (room, channel) {
   };
   my.submit = (client, text, data) => {
     return my.route("submit", client, text, data);
+  };
+  my.pause = () => {
+    return my.route("pause");
+  };
+  my.resume = () => {
+    return my.route("resume");
   };
   my.getScore = (text, delay, ignoreMission) => {
     return my.routeSync("getScore", text, delay, ignoreMission);

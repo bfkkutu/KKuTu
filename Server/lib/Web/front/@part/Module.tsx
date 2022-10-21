@@ -3,76 +3,67 @@ import React from "react";
 import { Props } from "../ReactBootstrap";
 import L from "../Language";
 
-const MENU = [
+interface MenuItem {
+  key: string;
+  href?: string;
+  sub?: MenuItem[];
+  onClick?: React.MouseEventHandler<unknown>;
+}
+
+const MENU: MenuItem[] = [
   { key: "HOME", href: "/" },
-  {
-    key: "FEAT",
-    sub: [
-      { key: "PLAYTS", href: "https://opg.kr/" },
-      { key: "OURKKT", href: "/" },
-      {
-        key: "IWANT",
-        onClick: () => {
-          alert(
-            "제휴 관련 문의는 디스코드 베프#4867 또는 BF끄투 디스코드로 문의해 주세요."
-          );
-        },
-      },
-    ],
-  },
+  { key: "KKUTU3", href: "https://kkutu.kr" },
+  { key: "KKUTU2", href: "https://free.kkutu.kr/" },
   {
     key: "DALDALSO",
-    sub: [
-      { key: "DALDALSO_MAIN", href: "https://daldal.so/" },
-      { key: "DALDALSO_LIST", href: "https://kkutu.kr/" },
-    ],
+    href: "https://daldal.so/",
   },
 ];
 
 export const Menu = ({ props }: { props: Props }) => {
   const menuList = [];
 
-  for (let i in MENU) {
-    if (MENU[i].href)
+  for (let item of MENU) {
+    if (item.href)
       menuList.push(
         <button
           className="menu-btn"
           onClick={() => {
-            if (MENU[i].href) location.href = MENU[i].href;
+            if (item.href) location.href = item.href;
           }}
         >
-          {L.render(MENU[i].key)}
+          {L.render(item.key)}
         </button>
       );
-    else if (MENU[i].sub) {
+    else if (item.sub) {
       let subMenuList = [];
-      for (let j in MENU[i].sub) {
-        if (!MENU[i].sub[j]) continue;
-        if (MENU[i].sub[j].onClick)
+      for (let subitem of item.sub) {
+        if (!subitem) continue;
+        if (subitem.onClick)
           subMenuList.push(
-            <div className="menu-sub-btn" onClick={MENU[i].sub[j].onClick}>
-              {L.render(MENU[i].sub[j].key)}
+            <div className="menu-sub-btn" onClick={subitem.onClick}>
+              {L.render(subitem.key)}
             </div>
           );
-        else if (MENU[i].sub[j].href)
+        else if (subitem.href)
           subMenuList.push(
             <div
               className="menu-sub-btn"
               onClick={() => {
-                location.href = MENU[i].sub[j].href;
+                if (subitem.href) location.href = subitem.href;
               }}
             >
-              {L.render(MENU[i].sub[j].key)}
+              {L.render(subitem.key)}
             </div>
           );
         else
           subMenuList.push(
-            <div className="menu-sub-btn">{L.render(MENU[i].sub[j].key)}</div>
+            <div className="menu-sub-btn">{L.render(subitem.key)}</div>
           );
       }
       menuList.push(
-        <div id={`menu-item-${MENU[i].key}`} className="menu-btn">
-          {L.render(MENU[i].key)}
+        <div id={`menu-item-${item.key}`} className="menu-btn">
+          {L.render(item.key)}
           <div className="menu-sub-separator">{subMenuList}</div>
         </div>
       );

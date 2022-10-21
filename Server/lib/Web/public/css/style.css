@@ -186,7 +186,7 @@ span {
 }
 #global-notice {
   padding: 3px 0px;
-  /*margin-top: 30px;*/
+  margin-top: 30px;
   color: #111111;
   text-align: center;
   font-weight: bold;
@@ -295,7 +295,6 @@ span {
   height: 100%;
   pointer-events: none;
   z-index: -1;
-  background-image: url(/img/kkutu/gamebg.png);
   background-size: 200px 200px;
 }
 

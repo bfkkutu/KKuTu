@@ -541,6 +541,10 @@ iframe {
 .rooms-testing-gaming {
   background: url("https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/testinggaming.png") !important;
 }
+.rooms-tournament {
+  background: url("/img/kkutu/roomTournamentBg.jpg") !important;
+  color: #dddddd;
+}
 
 .rooms-create {
   background-image: url("https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/createroom.png");
@@ -647,9 +651,11 @@ iframe {
 .RoomBox {
   width: 1000px;
   height: 360px;
+  overflow: hidden scroll;
 }
 .RoomBox .product-title {
   height: 12px;
+  position: fixed;
 }
 /*.RoomBox .product-title h5{ float: left; }
 		.room-head-modified{ animation: ModifiedBlink 1s ease 3; }
@@ -690,13 +696,23 @@ iframe {
   width: 40px;
   text-align: center;
 }
+.tmnt-settings {
+  float: left;
+  padding-right: 3px;
+  border-right: 1px solid #cccccc;
+  margin: 20px 2px 0px -5px;
+  width: 33px;
+  height: 320px;
+  position: fixed;
+}
 .team-selector {
   float: left;
   padding-right: 3px;
   border-right: 1px solid #cccccc;
-  margin: 0px 2px 0px -5px;
-  width: 40px;
+  margin: 20px 2px 0px -5px;
+  width: 33px;
   height: 320px;
+  position: fixed;
 }
 .team-button {
   float: left;
@@ -710,6 +726,21 @@ iframe {
   cursor: pointer;
 }
 .team-button:hover {
+  border-bottom: 4px solid rgba(0, 0, 0, 0.5);
+  margin-top: -2px;
+}
+.tmnt-team-button {
+  float: left;
+  padding-top: 20px;
+  border-radius: 10px;
+  margin: 2px 0px;
+  width: 100%;
+  height: 30px;
+  text-align: center;
+  font-size: 13px;
+  cursor: pointer;
+}
+.tmnt-team-button:hover {
   border-bottom: 4px solid rgba(0, 0, 0, 0.5);
   margin-top: -2px;
 }
@@ -735,12 +766,16 @@ iframe {
 .team-4 {
   background-color: #4a90d6;
 }
+.room-users {
+  margin-left: 33px;
+  margin-top: 20px;
+}
 .room-user {
   float: left;
   padding: 3px;
   border-radius: 10px;
   margin: 3px;
-  width: 224px;
+  width: 223px;
   height: 151px;
   box-shadow: 0px 1px 1px #777777;
   background-color: #e4e4e4;
@@ -755,7 +790,7 @@ iframe {
 }
 .room-user-stat {
   padding: 3px;
-  width: 112px;
+  width: 111px;
   height: 100px;
   font-size: 15px;
 }
@@ -779,6 +814,9 @@ iframe {
 .room-user-master {
   color: #e14e2d;
 }
+.room-user-master-tmnt {
+  color: #8160ff;
+}
 .room-user-team {
   margin-left: 60%;
   width: 40%;
@@ -786,7 +824,7 @@ iframe {
 }
 .room-user-title {
   padding: 6px 4px;
-  width: 216px;
+  width: 215px;
   font-size: 15px;
 }
 .room-user-level {

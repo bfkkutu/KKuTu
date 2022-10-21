@@ -29,6 +29,7 @@ export interface Props {
   EN_THEME: string[];
   GROUPS: any;
   HOST: string;
+  PORT: number;
   IJP_EXCEPT: string[];
   KO_EVENT: string[];
   KO_INJEONG: string[];

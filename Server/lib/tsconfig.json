@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/node12/tsconfig.json",
+  "compilerOptions": {
+    "target": "ES2016",
+    "jsx": "react",
+    "baseUrl": "./src",
+    "sourceMap": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+
+    "strict": true,
+
+    "esModuleInterop": true,
+    "experimentalDecorators": true
+  }
+}

@@ -25,8 +25,8 @@ const Outer = require("../../sub/outer");
 const moment = require("moment");
 const sha256 = require("sha256");
 
-const translateToPromise = (query) => {
-  return new Promise((res, rej) => {
+const translateToPromise = (query) =>
+  new Promise((res, rej) => {
     query.on(
       (doc) => {
         res(doc);
@@ -37,7 +37,6 @@ const translateToPromise = (query) => {
       }
     );
   });
-};
 const obtain = ($user, key, value, term, addValue) => {
   const now = new Date().getTime();
 
@@ -211,6 +210,37 @@ exports.run = (Server, page, Bot) => {
       });
     }
   });
+  Server.get("/client/session", (req, res) => {
+    MainDB.localUsers
+      .findOne(["id", req.query.id], ["password", sha256.x2(req.query.pw)])
+      .on(($body) => {
+        if (!$body) return res.sendStatus(404);
+
+        return res.send($body.sessionId);
+      });
+  });
+  Server.get("/client/data", (req, res) => {
+    MainDB.localUsers
+      .findOne(["id", req.query.id], ["password", sha256.x2(req.query.pw)])
+      .on(($body) => {
+        if (!$body) return res.sendStatus(404);
+
+        MainDB.users.findOne(["_id", `l${$body.id}`]).on(($user) => {
+          if ($user) return res.send(`${$body.sessionId}|${$user.nickname}`);
+          else return res.send(`${$body.sessionId}|l${body.id}`);
+        });
+      });
+  });
+  Server.get("/client/loadgame", (req, res) => {
+    const data = {};
+
+    data.MOREMI_PART = Const.MOREMI_PART;
+    data.MODE = Const.GAME_TYPE;
+    data.RULE = Const.RULE;
+    data.OPTIONS = Const.OPTIONS;
+    data.lang = require("../lang/ko_KR.json").kkutu;
+    return res.send(data);
+  });
 
   /*
 	Clan System
@@ -340,14 +370,14 @@ exports.run = (Server, page, Bot) => {
   });
   Server.post("/clan/user/add", (req, res) => {
     MainDB.clans.findOne(["_id", req.body.id]).on(($ec) => {
-      if (!$ec) return res.send({ message: "FAIL" });
+      if (!$ec) return res.send(400);
       else {
         if (Object.keys($ec.users).length == $ec.max)
-          return res.send({ message: "USERLIMITFAIL" });
-        else if ($ec.blacklist[req.body.me])
-          return res.send({ message: "BANNED" });
+          return res.sendStatus(401);
+        else if ($ec.blacklist[req.body.me]) return res.sendStatus(402);
         else {
           MainDB.users.findOne(["_id", req.body.me]).on(($user) => {
+            if ($user.clan) return res.sendStatus(403);
             $ec.uname[req.body.me] = $user.nickname;
             $ec.users[req.body.me] = 0;
             $ec.blacklist[req.body.me] = false;
@@ -359,8 +389,8 @@ exports.run = (Server, page, Bot) => {
               .update(["_id", req.body.id])
               .set(["users", $ec.users], ["uname", $ec.uname])
               .on();
+            return res.sendStatus(200);
           });
-          return res.send({ message: "OK" });
         }
       }
     });
@@ -376,7 +406,7 @@ exports.run = (Server, page, Bot) => {
           else {
             delete $ec.users[req.body.me];
             delete $ec.uname[req.body.me];
-            MainDB.users.update(["_id", req.body.me]).set(["clan", null]).on();
+            MainDB.users.update(["_id", req.body.me]).set(["clan", ""]).on();
             MainDB.clans
               .update(["_id", req.body.id])
               .set(["users", $ec.users])
@@ -389,18 +419,18 @@ exports.run = (Server, page, Bot) => {
   });
   Server.post("/clan/user/leave", (req, res) => {
     MainDB.users.findOne(["_id", req.body.me]).on(($user) => {
-      if (!$user) return res.send({ message: "FAIL" });
+      if (!$user) return res.sendStatus(500);
       else {
         MainDB.clans.findOne(["_id", $user.clan]).on(($ec) => {
           delete $ec.users[req.body.me];
           delete $ec.uname[req.body.me];
-          MainDB.users.update(["_id", req.body.me]).set(["clan", null]).on();
+          MainDB.users.update(["_id", req.body.me]).set(["clan", ""]).on();
           MainDB.clans
             .update(["_id", $user.clan])
             .set(["users", $ec.users])
             .on();
         });
-        return res.send({ message: "OK" });
+        return res.sendStatus(200);
       }
     });
   });
@@ -509,9 +539,7 @@ exports.run = (Server, page, Bot) => {
     MainDB.clans.find().on(($ec) => {
       if (!$ec) return res.send({ message: "FAIL" });
       else {
-        for (let i in $ec) {
-          delete $ec[i].password;
-        }
+        for (let i in $ec) delete $ec[i].password;
         return res.send({ list: $ec });
       }
     });
@@ -756,6 +784,14 @@ exports.run = (Server, page, Bot) => {
         MainDB.users.findOne(["nickname", nickname]).on((data) => {
           if (data) return res.send({ error: 465 });
           else {
+            MainDB.nicknameLog
+              .insert(
+                ["_id", req.session.profile.id],
+                ["prev", req.session.profile.nickname],
+                ["new", nickname],
+                ["at", new Date()]
+              )
+              .on();
             MainDB.users
               .update(["_id", req.session.profile.id])
               .set(["nickname", nickname])
@@ -774,7 +810,7 @@ exports.run = (Server, page, Bot) => {
   });
   Server.post("/request/word", (req, res) => {
     Bot.wordReq(req.body.submitter, req.body.theme, req.body.list);
-    return res.send(200);
+    return res.sendStatus(200);
   });
 
   Server.post("/buy/:id", (req, res) => {
@@ -1001,15 +1037,21 @@ exports.run = (Server, page, Bot) => {
     });
   });
 
-  Server.get("/record", (req, res) => {
-    if (!req.query.me) return res.send({ error: 404 });
+  Server.get("/record", async (req, res) => {
+    let { id } = req.session.profile;
+
+    if (req.query.nickname) {
+      const $user = await translateToPromise(
+        MainDB.users.findOne(["nickname", req.query.nickname])
+      );
+      if (!$user) return res.send({ error: 404 });
+      id = $user._id;
+    }
 
     MainDB.record
-      .find(["players", new RegExp(`(${req.query.me})`)])
+      .find(["players", new RegExp(`(${id})`)])
       .limit(7)
       .sort(["time", 0])
-      .on(($records) => {
-        return res.send($records);
-      });
+      .on(($records) => res.send($records));
   });
 };

@@ -74,10 +74,18 @@ header {
   flex-direction: column;
   display: flex;
   width: calc(100% - 4px);
+  height: 300px;
   border: 1px solid #ccc;
   margin-top: 10px;
   background-color: #eee;
   border-radius: 10px;
+}
+
+.adsbygoogle {
+  display: inline-block;
+  width: 728px;
+  height: 90px;
+  z-index: 11;
 }
 
 .Menu {
@@ -186,19 +194,24 @@ header {
   align-items: center;
 }
 
-#game-start {
+.game-start-wrapper {
+  display: inline-flex;
   float: left;
   width: 315px;
   height: 70px;
-  font-size: 20px;
-  font-weight: bold;
   border: none;
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
+}
+.game-start {
+  width: calc(315px / 2);
+  height: 70px;
+  font-size: 20px;
+  font-weight: bold;
   color: #ccc;
   background-image: url("https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/gamestart.png");
 }
-#game-start:hover {
+.game-start:hover {
   font-size: 24px;
   background-color: rgba(0, 0, 0, 0.5);
 }
@@ -207,7 +220,7 @@ header {
   display: inline-flex;
   background: url(https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/auth/daldalso.png);
 }
-.cafe {
+.kkutu3 {
   display: inline-flex;
   background-color: #189e47;
 }

@@ -48,7 +48,7 @@ exports.OPTIONS = {
   rtu: { name: "RandomTurn", diff: 2 },
   uwd: { name: "UnknownWord", diff: 0 },
   rtn: { name: "Returns", diff: 1 },
-  rms: { name: "AbcMission", diff: 2 },
+  rms: { name: "RandomMission", diff: 2 },
   igin: { name: "IgnoreInitial", diff: 3 },
   blw: { name: "BlockWord", diff: 2 },
   eve: { name: "EventMode", diff: 0 },
@@ -57,15 +57,14 @@ exports.OPTIONS = {
   ogow: { name: "Ogow", diff: 2 },
   selth: { name: "SelectTheme", diff: 3 },
   btm: { name: "BanTheme", diff: 2 },
-  mdt: { name: "MiddleToss", diff: 2 },
   tmnt: { name: "Tournament", diff: 0 },
   twt: { name: "Twenty", diff: 1 },
   bdb: { name: "BanDouble", diff: 2 },
-  mman: { name: "MidManner", diff: 1 },
   item: { name: "Item", diff: 1 },
   jwg: { name: "JoinWhileGaming", diff: 0 },
   ew: { name: "EndWords", diff: 1 },
   his: { name: "History", diff: 2 },
+  fsy: { name: "FreeStyle", diff: 1 },
 };
 exports.MOREMI_PART = [
   "back",
@@ -134,10 +133,10 @@ exports.RULE = {
 		ijr: 인정픽 필수?
 	}
 */
-  EKT: {
+  EUT: {
     lang: "en", // 영어 끄투
     rule: "Classic",
-    opts: ["ext", "mis", "rms", "rtu", /*"nrt", */ "upl", "rtn"],
+    opts: ["ext", "mis", "rms", "rtu", /*"nrt", */ "upl", "rtn", "tmnt"],
     time: 1,
     ai: true,
     big: false,
@@ -155,6 +154,7 @@ exports.RULE = {
       "rank",
       "ogow",
       "twt",
+      "tmnt",
     ],
     time: 1,
     ai: true,
@@ -170,24 +170,23 @@ exports.RULE = {
 		ewq: true
 	},*/
   KKT: {
-    lang: "ko", // 쿵쿵따
+    lang: "ko", // 한국어 쿵쿵따
     rule: "Classic",
     opts: [
       /*"ijp",*/ "man",
       "rms",
       "ext",
       "mis",
-      "mdt" /*, "loa", "str"*/,
       /*"nrt", */ "rtu",
       "upl",
       "rank",
       "ogow",
-      "mman",
       "item",
       "igin" /*, "selth", "btm"*/,
       /*"ew",
       "k32",*/
       "his",
+      "tmnt",
     ],
     time: 1,
     ai: true,
@@ -222,7 +221,7 @@ exports.RULE = {
   CSQ: {
     lang: "ko", // 한국어 자음퀴즈
     rule: "Jaqwi",
-    opts: ["ijp", "rank"],
+    opts: ["ijp", "rank", "tmnt"],
     time: 1,
     ai: true,
     big: false,
@@ -232,7 +231,7 @@ exports.RULE = {
   KCW: {
     lang: "ko", // 한국어 십자말풀이
     rule: "Crossword",
-    opts: [],
+    opts: ["tmnt"],
     time: 2,
     ai: false,
     big: true,
@@ -241,7 +240,7 @@ exports.RULE = {
   KTY: {
     lang: "ko", // 한국어 타자대결
     rule: "Typing",
-    opts: ["ijp", "prv", "selth"],
+    opts: ["ijp", "prv", "selth", "tmnt"],
     time: 1,
     ai: false,
     big: false,
@@ -251,7 +250,7 @@ exports.RULE = {
   ETY: {
     lang: "en", // 영어 타자대결
     rule: "Typing",
-    opts: ["ijp", "prv", "selth"],
+    opts: ["ijp", "prv", "selth", "tmnt"],
     time: 1,
     ai: false,
     big: false,
@@ -270,6 +269,7 @@ exports.RULE = {
       "upl",
       "rtn",
       "ogow",
+      "tmnt",
     ],
     time: 1,
     ai: true,
@@ -280,7 +280,7 @@ exports.RULE = {
   HUN: {
     lang: "ko", // 훈민정음
     rule: "Hunmin",
-    opts: ["ext", "mis" /*, "loa", "str"*/, "rtu", "upl"],
+    opts: ["ext", "mis" /*, "loa", "str"*/, "rtu", "upl", "tmnt"],
     time: 1,
     ai: true,
     big: false,
@@ -289,7 +289,18 @@ exports.RULE = {
   KDA: {
     lang: "ko", // 한국어 단어 대결
     rule: "Daneo",
-    opts: ["ijp", "mis", "mms", "rms", "rtu", "upl", "rank", "ogow"],
+    opts: [
+      "ijp",
+      "mis",
+      "mms",
+      "rms",
+      "rtu",
+      "upl",
+      "rank",
+      "ogow",
+      "fsy",
+      "tmnt",
+    ],
     time: 1,
     ai: true,
     big: false,
@@ -299,7 +310,7 @@ exports.RULE = {
   EDA: {
     lang: "en", // 영어 단어 대결
     rule: "Daneo",
-    opts: ["ijp", "mis", "mms", "rms", "rtu", "upl", "rank"],
+    opts: ["ijp", "mis", "mms", "rms", "rtu", "upl", "rank", "fsy", "tmnt"],
     time: 1,
     ai: true,
     big: false,
@@ -309,7 +320,7 @@ exports.RULE = {
   KSS: {
     lang: "ko", // 한국어 솎솎
     rule: "Sock",
-    opts: ["no2"],
+    opts: ["no2", "tmnt"],
     time: 1,
     ai: false,
     big: true,
@@ -318,7 +329,7 @@ exports.RULE = {
   ESS: {
     lang: "en", // 영어 솎솎
     rule: "Sock",
-    opts: ["no2"],
+    opts: ["no2", "tmnt"],
     time: 1,
     ai: false,
     big: true,
@@ -327,7 +338,7 @@ exports.RULE = {
   KDG: {
     lang: "ko", // 한국어 그림퀴즈
     rule: "Drawing",
-    opts: ["ijp", "sht", "ulm", "new"],
+    opts: ["ijp", "sht", "ulm", "new", "tmnt"],
     time: 1,
     ai: false,
     big: true,
@@ -337,7 +348,7 @@ exports.RULE = {
   EDG: {
     lang: "en", // 영어 그림퀴즈
     rule: "Drawing",
-    opts: ["ijp", "sht", "ulm", "new"],
+    opts: ["ijp", "sht", "ulm", "new", "tmnt"],
     time: 1,
     ai: false,
     big: true,
@@ -355,7 +366,7 @@ exports.RULE = {
   KUT: {
     lang: "ko", // 한국어 끄투
     rule: "Classic",
-    opts: ["man", "ext"],
+    opts: ["man", "ext", "tmnt"],
     time: 1,
     ai: true,
     big: false,
@@ -372,25 +383,27 @@ exports.RULE = {
   KRH: {
     lang: "ko", // 한국어 랜덤잇기
     rule: "Classic",
-    opts: ["man", "ext", "mis", "bdb", "rank", "twt"],
+    opts: ["man", "ext", "mis", "bdb", "rank", "twt", "tmnt"],
     time: 1,
     ai: true,
     big: false,
     ewq: true,
+    randomChar: true,
   },
   ERH: {
     lang: "en", // 영어 랜덤잇기
     rule: "Classic",
-    opts: ["mis", "ext", "rank", "twt"],
+    opts: ["mis", "ext", "rank", "twt", "tmnt"],
     time: 1,
     ai: true,
     big: false,
     ewq: true,
+    randomChar: true,
   },
   KMH: {
     lang: "ko", // 한국어 가운데잇기
     rule: "Classic",
-    opts: ["mis", "ext", "man", "rank", "twt"],
+    opts: ["mis", "ext", "man", "rank", "twt", "tmnt"],
     time: 1,
     ai: true,
     big: false,
@@ -399,12 +412,58 @@ exports.RULE = {
   EAP: {
     lang: "en", // 영어 앞말잇기
     rule: "Classic",
-    opts: ["ext", "mis", "rms", "nrt", "rtu"],
+    opts: ["ext", "mis", "rms", "nrt", "rtu", "tmnt"],
     time: 1,
     ai: true,
     big: false,
     _back: true,
     ewq: true,
+  },
+  EKT: {
+    lang: "en", // 영어 쿵쿵따
+    rule: "Classic",
+    opts: [
+      "rms",
+      "ext",
+      "mis",
+      /*"nrt", */ "rtu",
+      "upl",
+      "rank",
+      "ogow",
+      "item",
+      /*"ew",
+      "k32",*/
+      "his",
+      "tmnt",
+    ],
+    time: 1,
+    ai: true,
+    big: false,
+    ewq: true,
+  },
+  KRK: {
+    lang: "ko", // 한국어 랜덤쿵쿵따
+    rule: "Classic",
+    opts: [
+      /*"ijp",*/ "man",
+      "rms",
+      "ext",
+      "mis",
+      /*"nrt", */ "rtu",
+      "upl",
+      "ogow",
+      "item",
+      "igin" /*, "selth", "btm"*/,
+      /*"ew",
+      "k32",*/
+      "his",
+      "tmnt",
+    ],
+    time: 1,
+    ai: true,
+    big: false,
+    ewq: true,
+    randomChar: true,
   } /*,
 	'MSH': { lang: "mo", // 모렘어 끝말잇기
 		rule: "Classic",
@@ -918,6 +977,7 @@ exports.KOR_FLAG = {
   OLD: 16, // 옛말
   MUNHWA: 32, // 문화어
 };
+exports.KOR_EXTERNAL_DB = ["CDBKKT"];
 exports.WP_REWARD = function () {
   return 10 + Math.floor(Math.random() * 91);
 };

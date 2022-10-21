@@ -227,9 +227,7 @@ Object.keys(ROUTES).forEach((v) => {
 
 DB.ready = () => {
   setInterval(() => {
-    const q = ["createdAt", { $lte: Date.now() - 3600000 * 12 }];
-
-    DB.session.remove(q).on();
+    DB.session.remove(["createdAt", { $lte: Date.now() - 3600000 * 12 }]).on();
   }, 600000);
   setInterval(() => {
     gameServers.forEach((v) => {
@@ -239,7 +237,7 @@ DB.ready = () => {
   }, 4000);
   JLog.success("DB is ready.");
 
-  ROUTES.admin.flushShop();
+  DB.kkutu_shop_desc.refreshLanguage(Language);
 
   webServer.use(vHost("bfkkutu.kr", Server));
   webServer.get("*", (req, res) => {
@@ -351,6 +349,7 @@ Server.get("/", cors(), (req, res) => {
       EN_INJEONG: Const.EN_INJEONG,
       KO_THEME: Const.KO_THEME,
       EN_THEME: Const.EN_THEME,
+      KOR_EXTERNAL_DB: Const.KOR_EXTERNAL_DB,
       IJP_EXCEPT: Const.IJP_EXCEPT,
       ogImage: "https://bfkkutu.kr/img/kkutu/logo.png",
       ogURL: "https://bfkkutu.kr/",
@@ -409,8 +408,8 @@ Server.get("/legal/:page", (req, res) => {
   page(req, res, "legal/" + req.params.page);
 });
 
-Server.get("/server_status", (req, res) => {
-  page(req, res, "server_status");
+Server.get("/maintanance", (req, res) => {
+  page(req, res, "Maintanance");
 });
 
 Server.get("/unsupported", (req, res) => {

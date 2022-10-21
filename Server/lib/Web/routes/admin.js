@@ -16,12 +16,6 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const log4js = require("log4js");
-log4js.configure({
-  appenders: { System: { type: "file", filename: "WordInit.log" } },
-  categories: { default: { appenders: ["System"], level: "info" } },
-});
-const logger = log4js.getLogger("System");
 const fs = require("fs");
 const MainDB = require("../db");
 const JLog = require("../../sub/jjlog");
@@ -86,32 +80,24 @@ const noticeAdmin = (req, ...args) => {
     req.ip = req.ip.split(",")[0];
 
   if (req.originalUrl == "/gwalli/shopditem") {
-    logger.info(`[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`);
-    fs.appendFileSync(
-      `../IP-Log/ItemLog.txt`,
-      `\n[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`,
-      "utf8",
-      (err, ip, path) => {
-        if (err)
-          return logger.error(
-            `IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`
-          );
-      }
-    );
+    MainDB.log.admin.shop
+      .insert(
+        ["_id", req.session.id],
+        ["ip", req.ip],
+        ["type", "deletion"],
+        ["data", JSON.stringify(args)]
+      )
+      .on();
     JLog.info(`[ADMIN]: ${req.originalUrl} Removed item ${args} ${req.ip}`);
   } else {
-    logger.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(" | ")}`);
-    fs.appendFileSync(
-      `../IP-Log/WordInit.txt`,
-      `\n[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(" | ")}`,
-      "utf8",
-      (err, ip, path) => {
-        if (err)
-          return logger.error(
-            `IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`
-          );
-      }
-    );
+    MainDB.log.admin.shop
+      .insert(
+        ["_id", req.session.id],
+        ["ip", req.ip],
+        ["type", "insertion"],
+        ["data", JSON.stringify(args)]
+      )
+      .on();
     JLog.info(`[ADMIN]: ${req.originalUrl} ${req.ip} | ${args.join(" | ")}`);
   }
 };
@@ -124,41 +110,35 @@ const itemLog = (item, req, ...args) => {
   if (typeof req.ip == "string" && req.ip.includes(","))
     req.ip = req.ip.split(",")[0];
 
-  if (req.originalUrl == "/gwalli/kkutuDdb")
-    logger.info(
-      `[ADMIN]: ${req.originalUrl} Removed Word ${item} ${req.ip} | ${args.join(
-        " | "
-      )}`
-    );
-  else
-    logger.info(
-      `[ADMIN]: ${req.originalUrl} Added Word ${item} ${req.ip} | ${args.join(
-        " | "
-      )}`
-    );
-  fs.appendFileSync(
-    `../IP-Log/WordInit.txt`,
-    `\n[ADMIN]: ${req.originalUrl} ${item} ${req.ip} | ${args.join(" | ")}`,
-    "utf8",
-    (err, ip, path) => {
-      if (err)
-        return logger.error(
-          `IP를 기록하는 중에 문제가 발생했습니다.   (${err.toString()})`
-        );
-    }
-  );
-  if (req.originalUrl == "/gwalli/kkutuDdb")
+  if (req.originalUrl == "/gwalli/kkutuDdb") {
+    MainDB.log.admin.word
+      .insert(
+        ["_id", req.session.id],
+        ["ip", req.ip],
+        ["type", "deletion"],
+        ["data", JSON.stringify(item)]
+      )
+      .on();
     JLog.info(
       `[ADMIN]: ${req.originalUrl} Removed Word ${item} ${req.ip} | ${args.join(
         " | "
       )}`
     );
-  else
+  } else {
+    MainDB.log.admin.word
+      .insert(
+        ["_id", req.session.id],
+        ["ip", req.ip],
+        ["type", "insertion"],
+        ["data", JSON.stringify(item)]
+      )
+      .on();
     JLog.info(
       `[ADMIN]: ${req.originalUrl} Added Word ${item} ${req.ip} | ${args.join(
         " | "
       )}`
     );
+  }
 };
 const checkAdmin = (req, res, type) => {
   req.ip =
@@ -207,22 +187,6 @@ const checkAdmin = (req, res, type) => {
   }
   return true;
 };
-const flushShop = () => {
-  MainDB.kkutu_shop_desc.find().on(($docs) => {
-    const flush = (lang) => {
-      Language[lang].SHOP = {};
-      for (let j in $docs)
-        Language[lang].SHOP[$docs[j]._id] = [
-          $docs[j][`name_${lang}`],
-          $docs[j][`desc_${lang}`],
-        ];
-    };
-    for (let i in Language) flush(i);
-  });
-  JLog.log("Flushed Shop DB!");
-};
-
-exports.flushShop = flushShop;
 
 exports.run = (Server, page, Bot) => {
   Server.get("/admin/developer", (req, res) => {
@@ -293,60 +257,23 @@ exports.run = (Server, page, Bot) => {
   Server.get("/gwalli/users", (req, res) => {
     if (!checkAdmin(req, res, "USERS")) return;
 
-    if (req.query.name) {
-      MainDB.session.find(["profile.title", req.query.name]).on(($u) => {
-        if ($u) return onSession($u);
-        MainDB.session.find(["profile.name", req.query.name]).on(($u) => {
-          if ($u) return onSession($u);
-          res.sendStatus(404);
-        });
-      });
-    } else {
+    if (req.query.id)
       MainDB.users.findOne(["_id", req.query.id]).on(($u) => {
         if ($u) return res.send({ list: [$u] });
-        res.sendStatus(404);
+        return res.sendStatus(404);
       });
-    }
-    function onSession(list) {
-      const board = {};
-
-      Lizard.all(
-        list.map((v) => {
-          if (board[v.profile.id]) return null;
-          else {
-            board[v.profile.id] = true;
-            return getProfile(v.profile.id);
-          }
-        })
-      ).then((data) => {
-        res.send({ list: data });
+    else
+      MainDB.users.find(["nickname", req.query.name]).on(($u) => {
+        if ($u) return res.send({ list: $u });
+        return res.sendStatus(404);
       });
-    }
-    function getProfile(id) {
-      const R = new Lizard.Tail();
-
-      if (id)
-        MainDB.users.findOne(["_id", id]).on(($u) => {
-          R.go($u);
-        });
-      else R.go(null);
-      return R;
-    }
   });
-  Server.post("/gwalli/ip_log", (req, res) => {
+  Server.get("/gwalli/log/ip", (req, res) => {
     if (!checkAdmin(req, res, "USERS")) return;
 
-    res.send(fs.readFileSync("./../IP-Log/Join_Exit.txt", "utf8"));
-  });
-  Server.post("/gwalli/kkutu_log", (req, res) => {
-    if (!checkAdmin(req, res, "DEVELOPER")) return;
-
-    res.send("Sorry, This feature is not supported(Undeveloped).");
-  });
-  Server.post("/gwalli/kkutu_error", (req, res) => {
-    if (!checkAdmin(req, res, "DEVELOPER")) return;
-
-    res.send("Sorry, This feature is not supported(Undeveloped).");
+    MainDB.log.connection.find(["_id", req.query._id]).on((list) => {
+      return res.send({ list });
+    });
   });
   Server.get("/gwalli/kkutudb/:word", (req, res) => {
     if (!checkAdmin(req, res, "WORDS")) return;
@@ -760,20 +687,21 @@ exports.run = (Server, page, Bot) => {
     const list = req.body.list;
     const ping = req.body.ping;
 
-    for (let i in list) {
-      MainDB.users.findOne(["_id", list[i]]).on(($doc) => {
-        if (!$doc) return res.sendStatus(400);
+    for (let id of list) {
+      MainDB.users.findOne(["_id", id]).on(($doc) => {
+        if (!$doc) return;
 
         MainDB.users
-          .upsert(["_id", list[i]])
+          .update(["_id", id])
           .set(["money", Number($doc.money) + Number(ping)])
           .on();
-        return res.send({ result: "SUCCESS" });
       });
     }
+    return res.send({ result: "SUCCESS" });
   });
   Server.post("/gwalli/warn", (req, res) => {
-    if (!checkAdmin(req, res, "USERS")) return;
+    return res.sendStatus(400);
+    /*if (!checkAdmin(req, res, "USERS")) return;
 
     if (!req.body.id) return res.send({ error: 404 });
     if (!req.body.warn) return res.send({ error: 404 });
@@ -796,7 +724,7 @@ exports.run = (Server, page, Bot) => {
         Bot.warn($user, "관리자 페이지", warn - Number($user.warn), warn);
         return res.send({ result: "SUCCESS" });
       }
-    });
+    });*/
   });
   Server.get("/gwalli/getWarn", (req, res) => {
     if (!req.query.id) return res.send({ error: 404 });
@@ -881,7 +809,7 @@ exports.run = (Server, page, Bot) => {
       MainDB.kkutu_shop.upsert(["_id", item._id]).set(item.core).on();
       MainDB.kkutu_shop_desc.upsert(["_id", item._id]).set(item.text).on();
     });
-    flushShop();
+    MainDB.kkutu_shop_desc.refreshLanguage(Language);
     return res.sendStatus(200);
   });
   Server.post("/gwalli/shopditem", (req, res) => {
@@ -897,7 +825,7 @@ exports.run = (Server, page, Bot) => {
       MainDB.kkutu_shop_desc.remove(["_id", item._id]).on();
     });
     noticeAdmin(req, resItem._id);
-    flushShop();
+    MainDB.kkutu_shop_desc.refreshLanguage(Language);
     return res.send({ _id: resItem._id });
   });
   Server.post("/gwalli/shopGIIL", (req, res) => {

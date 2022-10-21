@@ -53,12 +53,13 @@ export default class Portal extends PureComponent<Props, State> {
   }
   async seekServers() {
     const { list } = await (await fetch("/servers")).json();
-    this.setState({
-      list,
-      sum: list.reduce((partialSum: number, i: number) => partialSum + i, 0),
-      isRefreshing: false,
-      isListInitialized: true,
-    });
+    if (list && list.length)
+      this.setState({
+        list,
+        sum: list.reduce((partialSum: number, i: number) => partialSum + i, 0),
+        isRefreshing: false,
+        isListInitialized: true,
+      });
   }
   render() {
     return (
@@ -75,19 +76,32 @@ export default class Portal extends PureComponent<Props, State> {
             alt="Logo"
           />
           <div id="start-button">
-            <button
-              id="game-start"
-              onClick={() => {
-                if (!this.state.profile) return (location.href = "/?server=0");
-                for (let i = 0.9; i < 1; i += 0.01)
-                  for (let j in this.state.list)
-                    if (this.state.list[j] < i * 100)
-                      return (location.href = `/?server=${j}`);
-              }}
-              disabled={!this.state.isListInitialized}
-            >
-              {L("gameStart")}
-            </button>
+            <div className="game-start-wrapper">
+              <button
+                className="game-start"
+                type="button"
+                onClick={() => {
+                  if (!this.state.profile)
+                    return (location.href = "/?server=0");
+                  for (let i = 0.9; i < 1; i += 0.01)
+                    for (let j in this.state.list)
+                      if (this.state.list[j] < i * 100)
+                        return (location.href = `/?server=${j}`);
+                }}
+                disabled={!this.state.isListInitialized}
+              >
+                {L("gameStartBF")}
+              </button>
+              <button
+                className="game-start"
+                type="button"
+                onClick={() => {
+                  location.href = "https://kkutu.kr";
+                }}
+                disabled={true}
+                dangerouslySetInnerHTML={{ __html: L("gameStartKKT3") }}
+              />
+            </div>
           </div>
         </div>
         <div
@@ -110,11 +124,11 @@ export default class Portal extends PureComponent<Props, State> {
               달달소
             </a>
             <a
-              className="p_button cafe"
+              className="p_button kkutu3"
               target="_blank"
-              href="http://cafe.bfkkutu.ze.am/"
+              href="https://kkutu.kr"
             >
-              네이버 카페
+              끄투3
             </a>
             <a
               className="p_button discord"
@@ -190,7 +204,6 @@ export default class Portal extends PureComponent<Props, State> {
         </div>
         <ins
           className="adsbygoogle"
-          style={{ display: "inline-block", width: "728px", height: "90px" }}
           data-ad-client="ca-pub-6336614061281577"
           data-ad-slot="5588160330"
         />
