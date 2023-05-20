@@ -1,0 +1,6 @@
+import * as TypeORM = require("typeorm");
+
+@TypeORM.Entity({ name: "%%TABLE%%" })
+export default class %%NAME%%{
+%%COLUMNS%%
+}
