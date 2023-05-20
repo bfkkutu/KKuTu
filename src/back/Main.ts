@@ -16,184 +16,114 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-const WS = require("ws");
-const Express = require("express");
-const Exession = require("express-session");
-const Redission = require("connect-redis")(Exession);
-const Redis = require("redis");
-const Server = Express();
-const webServer = Express();
-const vHost = require("vhost");
-const DB = require("./db");
-const JLog = require("../sub/jjlog");
-const WebInit = require("../sub/webinit");
-const fs = require("fs");
-const Secure = require("../sub/secure");
-const passport = require("passport");
-const Const = require("../const");
-const https = require("https");
-const hpkp = require("hpkp");
-const referrerPolicy = require("referrer-policy");
-const helmet = require("helmet");
-const cors = require("cors");
-const PACKAGE = require("../package.json");
+import fs from "fs";
+import https from "https";
+import { WebSocket } from "ws";
+import Express from "express";
+import Exession from "express-session";
+import RedisStore from "connect-redis";
+import Redis from "redis";
+// @ts-ignore
+import hpkp from "hpkp";
+import referrerPolicy from "referrer-policy";
+import passport from "passport";
+import helmet from "helmet";
+import cors from "cors";
 
-const hpkp_DIS = 15768000;
-const Router = Express.Router();
-const page = WebInit.page;
-const ROUTES = { major: {}, consume: {}, admin: {}, login: {} };
-const gameServers = [];
+import DB from "./utils/Database";
+import { Logger } from "./utils/Logger";
+import { SETTINGS } from "./utils/System";
+import Route from "./utils/Route";
+import ExpressAgent from "./utils/ExpressAgent";
+import Secure from "./utils/Secure";
 
-let Language = {
-  ko_KR: require("./lang/ko_KR.json"),
-  en_US: require("./lang/en_US.json"),
-};
-let IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
-let GLOBAL = require("../sub/global.json");
+const gameServers: GameClient[] = [];
 
-const HTML_TEMPLATE = fs.readFileSync(
-  "./lib/Web/front/templates/template.html",
-  "utf8"
-);
-const LOADING_TEMPLATE = fs.readFileSync(
-  "./lib/Web/front/templates/loading.html",
-  "utf8"
-);
-function Engine(path, $, callback) {
-  const REACT_SUFFIX = "production.min";
-  const CLIENT_SETTINGS = {};
-
-  $.title = $.locale.title;
-  $.version = PACKAGE["version"];
-  const HTML = HTML_TEMPLATE.replace(
-    new RegExp(`("?)/\\* %%SSR%% \\*/\\1`, "g"),
-    LOADING_TEMPLATE
-  ).replace(/("?)\/\*\{(.+?)\}\*\/\1/g, (v, p1, p2) => String(eval(p2)));
-  callback(null, HTML);
-}
-
-WebInit.MOBILE_AVAILABLE = ["portal", "main", "kkutu"];
+const App = Express();
 
 require("../sub/checkpub");
 require("../Game/bot");
-JLog.info("<< KKuTu Web >>");
-fs.watchFile("./lib/Web/filters/User.json", (res) => {
-  IpFilters = JSON.parse(fs.readFileSync("./lib/Web/filters/User.json"));
-  JLog.info("IP-Ban Data is Auto-Updated at {lib/Web/main.js}");
-});
-fs.watchFile("./lib/sub/global.json", () => {
-  GLOBAL = require("../sub/global.json");
-  JLog.info("global.json is Auto-Updated at {lib/Web/main.js}");
-});
+Logger.info("<< KKuTu Web >>");
 
-const getClientIp = (req, res) => {
-  let clientIp = req.headers["x-forwarded-for"] || req.connection.remoteAddress;
-  if (typeof clientIp == "string" && clientIp.includes(","))
-    clientIp = clientIp.split(",")[0];
-  if (clientIp.startsWith("::ffff:")) return clientIp.substr(7);
-
-  return clientIp;
-};
 class GameClient {
-  constructor(id, url) {
-    let override = url.match(/127\.0\.0\.\d{1,3}/);
-
+  private readonly id: string;
+  private readonly url: string;
+  private tryConnect = 0;
+  public connected = false;
+  public socket!: WebSocket;
+  public seek?: string;
+  public constructor(id: string, url: string) {
     this.id = id;
-    this.tryConnect = 0;
-    this.connected = false;
-    this.socket = new WS(url, {
-      perMessageDeflate: false,
-      rejectUnauthorized: !override,
-    });
-
-    const onOpen = () => {
-      this.connected = true;
-      JLog.info(`Game server #${this.id} connected`);
-    };
-    const onError = (err) => {
-      this.connected = true;
-      if (GLOBAL.GAME_SERVER_RETRY > 0) this.tryConnect++;
-      JLog.warn(
-        `Game server #${this.id} has an error: ${err.toString()} | ${err.code}`
-      );
-    };
-    const onClose = (code) => {
-      this.connected = false;
-      JLog.error(`Game server #${this.id} closed: ${code}`);
-      this.socket.removeAllListeners();
-      delete this.socket;
-
-      if (this.tryConnect <= GLOBAL.GAME_SERVER_RETRY) {
-        JLog.info(
-          `Retry connect ..` +
-            (GLOBAL.GAME_SERVER_RETRY > 0 ? `, try: ${this.tryConnect}` : "")
-        );
-        setTimeout(() => {
-          this.socket = new WS(url, {
-            perMessageDeflate: false,
-            rejectUnauthorized: override,
-            handshakeTimeout: 2000,
-          });
-          this.socket.on("open", onOpen);
-          this.socket.on("error", onError);
-          this.socket.on("close", onClose);
-          this.socket.on("message", onMessage);
-        }, 5000);
-      } else {
-        JLog.info("Connect fail.");
-      }
-    };
-    const onMessage = (data) => {
-      data = JSON.parse(data);
-
-      switch (data.type) {
-        case "seek":
-          this.seek = data.value;
-          break;
-        case "narrate-friend":
-          for (let i in data.list) {
-            gameServers[i].send("narrate-friend", {
-              id: data.id,
-              s: data.s,
-              stat: data.stat,
-              list: data.list[i],
-            });
-          }
-          break;
-        default:
-      }
-    };
-
-    this.socket.on("open", onOpen);
-    this.socket.on("error", onError);
-    this.socket.on("close", onClose);
-    this.socket.on("message", onMessage);
+    this.url = url;
+    this.connect();
   }
-  send(type, data) {
+  private connect() {
+    const override = this.url.match(/127\.0\.0\.\d{1,3}/);
+    this.socket = new WebSocket(this.url, {
+      perMessageDeflate: false,
+      rejectUnauthorized: this.tryConnect === 0 ? !override : !!override,
+      handshakeTimeout: this.tryConnect === 0 ? undefined : 2000,
+    });
+    this.socket.on("open", this.onOpen);
+    this.socket.on("error", this.onError);
+    this.socket.on("close", this.onClose);
+    this.socket.on("message", this.onMessage);
+  }
+  private onOpen() {
+    this.connected = true;
+    Logger.info(`Game server #${this.id} connected`);
+  }
+  private onError(err: Error) {
+    this.connected = true;
+    if (SETTINGS.gameServerRetry > 0) this.tryConnect++;
+    Logger.warning(`Game server #${this.id} has an error: ${err.toString()}`);
+  }
+  private onClose(code: number) {
+    this.connected = false;
+    Logger.error(`Game server #${this.id} closed: ${code}`);
+    this.socket.removeAllListeners();
+
+    if (this.tryConnect <= SETTINGS.gameServerRetry) {
+      Logger.info(
+        `Retry connect ..` +
+          (SETTINGS.gameServerRetry > 0 ? `, try: ${this.tryConnect}` : "")
+      );
+      setTimeout(() => this.connect(), 5000);
+    } else {
+      Logger.info("Connect fail.");
+    }
+  }
+  private onMessage = (data: any) => {
+    data = JSON.parse(data);
+
+    switch (data.type) {
+      case "seek":
+        this.seek = data.value;
+        break;
+      case "narrate-friend":
+        for (let i in data.list as any[]) {
+          gameServers[i].send("narrate-friend", {
+            id: data.id,
+            s: data.s,
+            stat: data.stat,
+            list: data.list[i],
+          });
+        }
+        break;
+      default:
+    }
+  };
+  private send(type: string, data: any) {
     if (!data) data = {};
     data.type = type;
 
     this.socket.send(JSON.stringify(data));
   }
 }
-Server.use((req, res, _next) => {
-  let clientIp = getClientIp(req, res);
-
-  if (IpFilters.ips.indexOf(clientIp) == -1) _next();
-  else
-    res.send(
-      `<head><title>BF끄투 - 406</title><style>body{ font-family:나눔바른고딕,맑은 고딕,돋움; }</style></head><body><center><h1>406 Not Acceptable</h1><div>서버가 요청을 거절했습니다.</div><br/>서버에서 받아들일 수 없는 요청이거나 서버에서 차단한 요청입니다.</body></center>`
-    );
-});
-Server.set("views", __dirname + "/views");
-Server.engine("tsx", Engine);
-Server.set("view engine", "pug");
-Server.set("view engine", "tsx");
-Server.use(Express.static(__dirname + "/public"));
-Server.use(Express.urlencoded({ extended: true }));
-Server.use(
+Route(App);
+App.use(
   Exession({
-    store: new Redission({
+    store: new RedisStore({
       client: Redis.createClient(),
       ttl: 3600 * 12,
     }),
@@ -202,26 +132,14 @@ Server.use(
     saveUninitialized: true,
   })
 );
-//볕뉘 수정
-Server.use(passport.initialize());
-Server.use(passport.session());
-Server.use((req, res, next) => {
-  if (req.session.passport) {
-    delete req.session.passport;
-  }
-  next();
-});
-Server.use((req, res, next) => {
-  if (Const.HTTPS_ONLY) {
-    if (req.protocol == "http") {
-      let url = "https://" + req.get("host") + req.path;
-      res.status(302).redirect(url);
-    } else next();
+App.use(passport.initialize());
+App.use(passport.session());
+App.use((req, res, next) => {
+  if (SETTINGS.secure.httpsOnly) {
+    if (req.protocol == "http")
+      res.status(302).redirect("https://" + req.get("host") + req.path);
+    else next();
   } else next();
-});
-WebInit.init(Server, true);
-Object.keys(ROUTES).forEach((v) => {
-  ROUTES[v] = require(`./routes/${v}`);
 });
 
 DB.ready = () => {
@@ -234,45 +152,30 @@ DB.ready = () => {
       else v.seek = undefined;
     });
   }, 4000);
-  JLog.success("DB is ready.");
+  Logger.success("DB is ready.");
 
-  DB.kkutu_shop_desc.refreshLanguage(Language);
-
-  webServer.use(vHost("bfkkutu.kr", Server));
-  webServer.get("*", (req, res) => {
-    res.status(hsc.StatusCodes.FORBIDDEN).send(`<h1>403 Forbidden</h1>`);
-  });
-  if (Const.IS_SECURED || Const.WS.ENABLED) {
+  if (SETTINGS.secure.ssl) {
     const options = Secure();
-    https.createServer(options, webServer).listen(443);
+    https.createServer(options, App).listen(443);
   }
-  if (!Const.WS.ENABLED) webServer.listen(80);
+  App.listen(80);
 };
-Const.MAIN_PORTS.forEach((v, i) => {
-  let KEY = process.env["WS_KEY"];
-  let protocol = Const.WS.ENABLED ? "ws" : Const.IS_SECURED ? "wss" : "ws";
+SETTINGS.ports.game.forEach((v, i) => {
+  const KEY = process.env["WS_KEY"]!;
 
   gameServers[i] = new GameClient(
     KEY,
-    `${protocol}://${GLOBAL.GAME_SERVER_HOST}:${v}/${KEY}`
+    `${SETTINGS.secure.ssl ? "wss" : "ws"}://${
+      SETTINGS.gameServerHost
+    }:${v}/${KEY}`
   );
 });
 
-for (let i of Object.values(ROUTES))
-  i.run(
-    Server,
-    WebInit.page,
-    require.cache[require.resolve("../Game/bot")].exports
-  );
+App.use(helmet());
+App.use(helmet.xssFilter());
+App.use(helmet.frameguard());
 
-//Server.listen(3000);
-
-Server.use(helmet());
-Server.use(helmet.xssFilter());
-//Server.use(helmet.frameguard({ action: "SAMEORIGIN" }));
-Server.use(helmet.frameguard());
-
-Server.use(
+App.use(
   helmet.hsts({
     maxAge: 31536000,
     includeSubDomains: true,
@@ -280,24 +183,18 @@ Server.use(
   })
 );
 
-Server.use(
+App.use(
   hpkp({
-    maxAge: hpkp_DIS,
+    maxAge: 15768000,
     sha256s: [],
 
-    setIf: (req, res) => {
-      return req.secure;
-    },
+    setIf: (req: Express.Request) => req.secure,
   })
 );
 
-Server.use(referrerPolicy({ policy: "same-origin" }));
+App.use(referrerPolicy({ policy: ["same-origin", "unsafe-url"] }));
 
-Server.use(referrerPolicy({ policy: "unsafe-url" }));
-
-Server.use(referrerPolicy());
-
-Server.get("/", cors(), (req, res) => {
+App.get("/", cors(), (req, res) => {
   let server = req.query.server;
   let loc = Const.MAIN_PORTS[server] ? "Kkutu" : "Portal";
 
@@ -309,13 +206,7 @@ Server.get("/", cors(), (req, res) => {
 
   //볕뉘 수정 구문삭제(220~229, 240)
   DB.session.findOne(["_id", req.session.id]).on(($ses) => {
-    if (global.isPublic) {
-      onFinish($ses);
-      // DB.jjo_session.findOne([ '_id', sid ]).limit([ 'profile', true ]).on(onFinish);
-    } else {
-      if ($ses) $ses.profile.sid = $ses._id;
-      onFinish($ses);
-    }
+    onFinish($ses);
   });
   function onFinish($doc) {
     let id = req.session.id;
@@ -359,7 +250,7 @@ Server.get("/", cors(), (req, res) => {
   }
 });
 
-Server.get("/servers", (req, res) => {
+App.get("/servers", (req, res) => {
   let list = [];
 
   gameServers.forEach((v, i) => {
@@ -368,7 +259,7 @@ Server.get("/servers", (req, res) => {
   res.send({ list: list, max: Const.KKUTU_MAX });
 });
 
-Server.get("//servers", (req, res) => {
+App.get("//servers", (req, res) => {
   let list = [];
 
   gameServers.forEach((v, i) => {
@@ -377,11 +268,11 @@ Server.get("//servers", (req, res) => {
   res.send({ list: list, max: Const.KKUTU_MAX });
 });
 
-Server.get("/adminList", (req, res) => {
+App.get("/adminList", (req, res) => {
   res.send({ admin: GLOBAL.ADMIN });
 });
 
-Server.get("/newUser", (req, res) => {
+App.get("/newUser", (req, res) => {
   let id = req.query.id;
 
   if (!req.query.cp) {
@@ -403,18 +294,10 @@ Server.get("/newUser", (req, res) => {
   } else return res.sendStatus(404);
 });
 
-Server.get("/legal/:page", (req, res) => {
+App.get("/legal/:page", (req, res) => {
   page(req, res, "legal/" + req.params.page);
 });
 
-Server.get("/maintanance", (req, res) => {
-  page(req, res, "Maintanance");
-});
-
-Server.get("/unsupported", (req, res) => {
-  page(req, res, "Unsupported");
-});
-
-Server.get("*", (req, res) => {
+App.get("*", (req, res) => {
   page(req, res, "Notfound");
 });

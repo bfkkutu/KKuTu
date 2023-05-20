@@ -6,6 +6,7 @@
     "sourceMap": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "strict": true,
+    "experimentalDecorators": true,
     "esModuleInterop": true,
     "outDir": "dist"
   }

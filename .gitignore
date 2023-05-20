@@ -1,5 +1,4 @@
 node_modules
 data/auth.json
-data/global.json
 data/settings.json
 .vscode
