@@ -1,5 +1,9 @@
 {
   "application": {},
+  "advertisement": {
+    "client": "",
+    "slot": ""
+  },
   "cookie": {
     "age": 604800000,
     "secret": "jjwak"
@@ -12,7 +16,8 @@
     "database": ""
   },
   "languageSupport": {
-    "ko-KR": "한국어"
+    "ko-KR": "한국어",
+    "en-US": "English"
   },
   "log": {
     "directory": "logs",

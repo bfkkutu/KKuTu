@@ -1,8 +1,13 @@
-import { DateUnit } from "../enums/DateUnit";
-import { cut, FRONT, TIMEZONE_OFFSET, toSignedString } from "./Utility";
+import { DateUnit } from "back/enums/DateUnit";
+import {
+  cut,
+  FRONT,
+  TIMEZONE_OFFSET,
+  toSignedString,
+} from "back/utils/Utility";
 
 let FS: typeof import("fs");
-let System: typeof import("./System");
+let System: typeof import("back/utils/System");
 
 type CallerInfo = {
   file: string;
@@ -113,7 +118,8 @@ export class Logger {
    */
   public static async initialize(subject: string): Promise<void> {
     FS = await import("fs");
-    System = await import("./System");
+    // @ts-ignore
+    System = await import("back/utils/System");
     if ((await import("cluster")).default.isWorker) {
       Logger.workerProcessId = (await import("process")).pid;
     }

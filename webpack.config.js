@@ -5,13 +5,12 @@ const NodeExternals = require("webpack-node-externals");
 const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TSCheckerPlugin = require("fork-ts-checker-webpack-plugin");
-const { BannerPlugin } = require("webpack");
 
 const { SETTINGS } = require("./tools/lib/common.js");
 
 const DEVELOPMENT =
   process.argv[process.argv.indexOf("--mode") + 1] === "development";
-const REGEXP_PAGE = /^([a-z|A-Z]\w+?)+$/;
+const REGEXP_PAGE = /^([A-Z]\w+?)+$/;
 const WP_ENTRY = FS.readdirSync(Path.resolve(__dirname, "src/front")).filter(
   (v) => REGEXP_PAGE.test(v)
 );
@@ -65,7 +64,6 @@ const ANCESTOR = {
       {
         test: /\.json$/i,
         use: "./tools/lib/lang-loader",
-        exclude: [Path.resolve(__dirname, "node_modules")],
       },
     ],
   },
@@ -141,7 +139,6 @@ module.exports = [
       path: Path.join(__dirname, "dist", "strings"),
       filename: "[name].dummy.js",
     },
-    externals: [NodeExternals()],
     plugins: [
       ...ANCESTOR.plugins,
       new CleanWebpackPlugin({
@@ -169,12 +166,5 @@ module.exports = [
     optimization: {
       minimize: false,
     },
-    plugins: [
-      ...ANCESTOR.plugins,
-      new BannerPlugin({
-        banner: "#!/usr/bin/node",
-        raw: true,
-      }),
-    ],
   },
 ];

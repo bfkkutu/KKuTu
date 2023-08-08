@@ -2,48 +2,74 @@ import * as TypeORM from "typeorm";
 
 import { Database } from "../../common/Database";
 
-@TypeORM.Entity({ name: "users" })
+@TypeORM.Entity({ name: "kkutu_users" })
 export default class User implements Database.Serializable<Database.User> {
-  @TypeORM.PrimaryGeneratedColumn({ name: "id", type: "int8" })
+  @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
   public id!: number;
 
-  @TypeORM.Column({ name: "money", type: "int8" })
+  @TypeORM.Column({
+    name: "u_money",
+    type: "int8",
+    default: 0,
+    nullable: false,
+  })
   public money!: number;
 
-  @TypeORM.Column({ name: "record", type: "json" })
+  @TypeORM.Column({ name: "u_record", type: "json" })
   public record!: Database.UserRecord;
 
-  @TypeORM.Column({ name: "lastLogin", type: "datetime" })
-  public lastLogin!: number;
-
-  @TypeORM.Column({ name: "inventory", type: "json" })
+  @TypeORM.Column({ name: "u_inventory", type: "json" })
   public inventory!: Database.UserInventory;
 
-  @TypeORM.Column({ name: "equipment", type: "json" })
+  @TypeORM.Column({ name: "u_equipment", type: "json" })
   public equipment!: Database.UserEquipment;
 
-  @TypeORM.Column({ name: "exordial", type: "varchar", length: 100 })
+  @TypeORM.Column({
+    name: "u_nickname",
+    type: "varchar",
+    length: 16,
+    nullable: true,
+  })
+  public nickname!: Database.Nullable<string>;
+
+  @TypeORM.Column({
+    name: "u_exordial",
+    type: "varchar",
+    length: 100,
+    default: "",
+    nullable: false,
+  })
   public exordial!: string;
 
-  @TypeORM.Column({ name: "punishment", type: "json" })
+  @TypeORM.Column({ name: "u_punishment", type: "json" })
   public punishment!: Database.UserPunishment;
 
-  @TypeORM.Column({ name: "server", type: "varchar" })
-  public server!: string;
+  @TypeORM.Column({ name: "u_server", type: "varchar", nullable: true })
+  public server!: Database.Nullable<string>;
 
-  @TypeORM.Column({ name: "password", type: "varbinary" })
-  public password!: string;
+  @TypeORM.Column({
+    name: "u_password",
+    type: "varchar",
+    length: 32,
+    nullable: true,
+  })
+  public password!: Database.Nullable<string>;
 
-  @TypeORM.Column({ name: "friends", type: "json" })
+  @TypeORM.Column({ name: "u_friends", type: "json" })
   public friends!: Database.UserFriendList;
 
-  @TypeORM.Column({ name: "nickname", type: "varchar", length: 16 })
-  public nickname!: string;
+  @TypeORM.Column({ name: "u_lastLogin", type: "timestamp" })
+  public lastLogin!: number;
 
-  @TypeORM.Column({ name: "clan", type: "int8" })
-  public clan!: number;
+  @TypeORM.Column({
+    name: "u_createdAt",
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    nullable: false,
+  })
+  public createdAt!: number;
 
-  serialize(): Database.User {
+  public serialize(): Database.User {
     return {
       id: this.id,
       money: this.money,
@@ -57,7 +83,7 @@ export default class User implements Database.Serializable<Database.User> {
       password: this.password,
       friends: this.friends,
       nickname: this.nickname,
-      clan: this.clan,
+      createdAt: this.createdAt,
     };
   }
 }

@@ -22,43 +22,39 @@
       content="끝말잇기가 이렇게 박진감 넘치는 게임이었다니!"
     />
     <title>/*{$.title}*/</title>
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/css/fa.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/css/expl.css"
-    />
-    <link rel="stylesheet" href="/css/in_/*{$.page}*/.css?v=/*{$.version}*/" />
-    <link rel="stylesheet" href="/css/style_react.css" />
-    <link rel="stylesheet" href="/css/in_react_kkutu.css" />
+    <link rel="stylesheet" href="/libs/font-awesome/css/all.min.css" />
+    <link rel="stylesheet" href="/pages//*{$.page}*/.css?v=/*{$.version}*/" />
     <script type="text/javascript">
       Object["FRONT"] = true;
       window.__PROPS = "/*{JSON.stringify($)}*/";
     </script>
     <script
-      src="https://unpkg.com/react@17/umd/react./*{REACT_SUFFIX}*/.js"
-      crossorigin="true"
+      type="text/javascript"
+      src="/libs/react/react./*{REACT_SUFFIX}*/.js"
     ></script>
     <script
-      src="https://unpkg.com/react-dom@17/umd/react-dom./*{REACT_SUFFIX}*/.js"
-      crossorigin="true"
+      type="text/javascript"
+      src="/libs/react-dom/react-dom./*{REACT_SUFFIX}*/.js"
     ></script>
-    <script
-      async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6336614061281577"
-      crossorigin="anonymous"
-    ></script>
+    <script type="text/javascript">
+      Object["FRONT"] = true;
+      window.__PROPS = "/*{JSON.stringify($)}*/";
+    </script>
+    /*{GOOGLE_ADS}*/
   </head>
   <body>
     <main class><section id="stage">/* %%SSR%% */</section></main>
+    <script type="text/javascript" src="/constants.js"></script>
     <script type="text/javascript">
       Object.assign(
         window.__CLIENT_SETTINGS,
         "/*{JSON.stringify(CLIENT_SETTINGS)}*/"
       );
     </script>
+    <script
+      type="text/javascript"
+      src="/strings//*{$.locale}*/./*{$.page}*/.js?v=/*{$.version}*/"
+    ></script>
     <script
       type="text/javascript"
       src="/pages//*{$.page}*/.js?v=/*{$.version}*/"

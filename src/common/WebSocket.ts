@@ -1,4 +1,4 @@
-import { Database } from "./Database";
+import { Database } from "common/Database";
 
 export enum MessageType {
   Error = "error",

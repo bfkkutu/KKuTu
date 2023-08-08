@@ -1,13 +1,10 @@
 import React from "react";
 import { Oval } from "react-loader-spinner";
 
-import Jungle from "../@part/Jungle";
-
 export default class Loading extends React.PureComponent {
   render() {
     return (
       <>
-        <Jungle />
         <article id="loading">
           <div id="loading-wrapper">
             <Oval

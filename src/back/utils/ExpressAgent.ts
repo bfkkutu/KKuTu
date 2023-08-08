@@ -1,12 +1,26 @@
 import Express from "express";
+import Exession from "express-session";
+import RedisStore from "connect-redis";
+import * as Redis from "redis";
 import CookieParser from "cookie-parser";
+import passport from "passport";
 
-import { resolve, SETTINGS } from "./System";
-import * as ReactNest from "./ReactNest";
-import { getLocale } from "./Language";
-import { send404 } from "./Utility";
+import { resolve, SETTINGS } from "back/utils/System";
+import * as ReactNest from "back/utils/ReactNest";
+import { getLocale } from "back/utils/Language";
+import { send404 } from "back/utils/Middleware";
+import { Logger, LogStyle } from "back/utils/Logger";
+import { Profile } from "back/utils/LoginRoute";
 
-export default function (App: Express.Application) {
+declare module "express-session" {
+  interface SessionData {
+    authType: string;
+    profile?: Partial<Profile>;
+  }
+}
+
+export default function (App: Express.Application): void {
+  // JJWAK 기본
   App.engine(
     "js",
     ReactNest.Engine as (
@@ -27,12 +41,60 @@ export default function (App: Express.Application) {
   App.use("/favicon.ico", (req, res) =>
     res.sendFile(resolve("dist", "favicon.ico"))
   );
-  App.use(Express.json({ limit: "10MB" }));
-  App.use(CookieParser(SETTINGS.cookie.secret) as Express.RequestHandler);
+  App.use((req, res, next) => {
+    req.address = req.ip || req.ips.join();
+    if (req.xhr) {
+      Logger.log()
+        .putS(LogStyle.METHOD, req.method)
+        .putS(LogStyle.XHR, " XHR")
+        .next("URL")
+        .put(req.originalUrl)
+        .next("Address")
+        .put(req.address)
+        .out();
+    } else {
+      Logger.log()
+        .putS(LogStyle.METHOD, req.method)
+        .next("URL")
+        .put(req.originalUrl)
+        .next("Address")
+        .put(req.address)
+        .out();
+    }
+    next();
+  });
+  const redisClient = Redis.createClient();
+  redisClient.connect();
+  App.use(
+    Exession({
+      store: new RedisStore({
+        client: redisClient,
+        ttl: 3600 * 12,
+      }),
+      secret: "kkutu",
+      resave: false,
+      saveUninitialized: true,
+    })
+  );
+  App.use(passport.initialize());
+  App.use(passport.session());
+  /*App.use((req, res, next) => {
+    if (req.session.passport) 
+      delete req.session.passport;
+    next();
+  });*/
+  App.use(Express.json({ limit: "1MB" }));
+  App.use(CookieParser(SETTINGS.cookie.secret));
   App.use((req, res, next) => {
     req.agentInfo = `${req.address} (${req.header("User-Agent")})`;
     req.locale = getLocale(req);
-    res.metadata = {};
+    if (req.session.profile === undefined) {
+      req.session.profile = {};
+      req.session.save();
+    }
+    res.metadata = {
+      ad: SETTINGS.advertisement,
+    };
     res.removeCookie = responseRemoveCookie;
     res.setCookie = responseSetCookie;
     res.header({
@@ -58,7 +120,7 @@ function responseSetCookie(
   path: string = "/"
 ): Express.Response {
   return this.cookie(name, value, {
-    path,
+    path: path,
     maxAge: SETTINGS.cookie.age,
     secure: true,
   });

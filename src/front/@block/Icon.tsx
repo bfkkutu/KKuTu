@@ -21,9 +21,7 @@ export const Icon = ({ className, name, type }: Props) => {
   const style: React.CSSProperties = {};
   let chunk: RegExpMatchArray | null;
 
-  if (className) {
-    classList.push(className);
-  }
+  if (className) classList.push(className);
   switch (type) {
     default:
     case IconType.NORMAL: {

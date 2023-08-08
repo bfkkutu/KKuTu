@@ -68,4 +68,3 @@ module.exports = function (source) {
     return Object.assign(pv, include.reduce(resolveDependency, {}), table);
   }
 };
-

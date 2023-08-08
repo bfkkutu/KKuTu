@@ -1,13 +1,15 @@
 {
   "extends": "@tsconfig/node18/tsconfig.json",
   "compilerOptions": {
-    "target": "ES2016",
+    "target": "ES2022",
     "jsx": "react",
+    "baseUrl": "./src",
     "sourceMap": true,
     "lib": ["ES2022", "DOM", "DOM.Iterable"],
+
     "strict": true,
-    "experimentalDecorators": true,
+
     "esModuleInterop": true,
-    "outDir": "dist"
+    "experimentalDecorators": true
   }
 }

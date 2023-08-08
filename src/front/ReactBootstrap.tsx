@@ -1,16 +1,22 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
 
-import Header from "./@part/Header";
-import Jungle from "./@part/Jungle";
-import Footer from "./@part/Footer";
+import { PROPS } from "front/@global/Utility";
+import { Nest } from "common/Nest";
 
-interface RootProps {
-  children: React.ReactNode;
+import Footer from "front/@global/Footer";
+import Header from "front/@global/Header";
+import L from "front/@global/Language";
+
+declare global {
+  interface Window {
+    adsbygoogle: any;
+  }
 }
-interface RootState {}
 
-const PROPS = eval("window['__PROPS']");
+interface State {
+  error?: Error;
+}
 
 export default function Bind(TargetClass: any) {
   const $root = document.getElementById("stage") as HTMLTableSectionElement;
@@ -19,17 +25,19 @@ export default function Bind(TargetClass: any) {
     React.createElement(Root, PROPS, React.createElement(TargetClass, PROPS))
   );
 }
-export class Root extends React.PureComponent<RootProps, RootState> {
-  render() {
-    return PROPS.wrapPage ? (
+export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
+  public static getDerivedStateFromError(error: Error): Partial<State> {
+    return { error };
+  }
+  public state: State = {};
+  public render() {
+    if (this.state.error) return L.render("ERROR", this.state.error.message);
+    return (
       <>
-        <Header {...PROPS} />
-        <Jungle />
+        <Header />
         {this.props.children}
         <Footer />
       </>
-    ) : (
-      <>{this.props.children}</>
     );
   }
 }

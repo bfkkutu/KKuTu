@@ -1,0 +1,8 @@
+{
+  "$items": {
+    "example": ["GET", "/example"]
+  },
+  "$global": [],
+  "Portal": [],
+  "Login": []
+}

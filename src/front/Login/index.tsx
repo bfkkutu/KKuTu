@@ -1,64 +1,60 @@
 import React from "react";
 
-import Jungle from "../@part/Jungle";
-import Bind from "../ReactBootstrap";
-import L from "../@global/Language";
+import Bind from "front/ReactBootstrap";
+import L from "front/@global/Language";
+import { Nest } from "common/Nest";
 
-interface Props {
-  locale: any;
-  loginList: any[];
-  text: string;
-}
 interface State {
-  loginBtns: React.ReactNode[];
+  loginButtons: React.ReactNode[];
 }
 
-export default class Login extends React.PureComponent<Props, State> {
-  state: State = { loginBtns: [] };
-  componentDidMount() {
-    let loginBtns = [];
-    for (let i in this.props.loginList) {
-      if (this.props.loginList[i].useOAuthButtons)
-        loginBtns.push(
-          <a href={`/login/${this.props.loginList[i].vendor}`}>
+export default class Login extends React.PureComponent<
+  Nest.Page.Props<"Login">,
+  State
+> {
+  public state: State = { loginButtons: [] };
+  public componentDidMount() {
+    const loginButtons: React.ReactNode[] = [];
+    console.log(this.props.data.loginMethods);
+    for (const config of this.props.data.loginMethods) {
+      if (config.useOAuthButtons)
+        loginButtons.push(
+          <a href={`/login/${config.vendor}`}>
             <div
-              className={`lbtn lbtn-${this.props.loginList[i].vendor}`}
+              className={`lbtn lbtn-${config.vendor}`}
               style={{ marginLeft: Math.max(0, window.innerWidth * 0.5 - 157) }}
             >
               <i className="logo" />
-              <a className="label">{L(this.props.loginList[i].displayName)}</a>
+              <a className="label">{L.render(config.displayName)}</a>
             </div>
           </a>
         );
       else
-        loginBtns.push(
-          <a href={`/login/${this.props.loginList[i].vendor}`}>
+        loginButtons.push(
+          <a href={`/login/${config.vendor}`}>
             <button
-              id={this.props.loginList[i].vendor}
+              id={config.vendor}
               style={{
-                color: this.props.loginList[i].fontColor,
-                backgroundColor: this.props.loginList[i].color,
+                color: config.fontColor,
+                backgroundColor: config.color,
               }}
             >
-              {L(this.props.loginList[i].displayName)}
+              {L.render(config.displayName)}
             </button>
           </a>
         );
     }
-    this.setState({ loginBtns });
+    this.setState({ loginButtons });
   }
-  render() {
+  public render() {
     return (
       <>
-        <Jungle />
         <article id="main">
-          <div className="login-with">
-            {this.props.text ? L(this.props.text) : L("loginWith")}
-          </div>
+          <div className="login-with">{L.render("loginWith")}</div>
           <a href="/">
             <button id="portal" />
           </a>
-          {this.state.loginBtns}
+          {this.state.loginButtons}
           <div className="login-legal">
             로그인이 이루어지면 BFKKuTu가 공지하는{" "}
             <a href="http://agreement.bfkkutu.ze.am" target="_blank">
@@ -70,8 +66,11 @@ export default class Login extends React.PureComponent<Props, State> {
             </a>
             에 동의하는 것으로 간주 합니다.
           </div>
-          <link rel="stylesheet" href="/css/oauth-buttons.min.css" />
-          <script src="/js/oauth-buttons.min.js" />
+          <link
+            rel="stylesheet"
+            href="/libs/oauth-buttons/oauth-buttons.min.css"
+          />
+          <script src="/libs/oauth-buttons/oauth-buttons.min.js" />
         </article>
       </>
     );

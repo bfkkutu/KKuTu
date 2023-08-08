@@ -1,12 +1,12 @@
 import Express from "express";
 import ALP from "accept-language-parser";
 
-import { SETTINGS, getProjectData } from "./System";
-import { reduceToTable, resolveLanguageArguments } from "./Utility";
+import { SETTINGS, getProjectData } from "back/utils/System";
+import { reduceToTable, resolveLanguageArguments } from "back/utils/Utility";
 import { Logger } from "./Logger";
 
-const LANGUAGE_SUPPORT = Object.keys(SETTINGS['languageSupport']);
-let LANGUAGES:Table<string>;
+const LANGUAGE_SUPPORT = Object.keys(SETTINGS["languageSupport"]);
+let LANGUAGES: Table<string>;
 
 /**
  * 문자열표에서 문자열을 얻어 반환한다.
@@ -14,11 +14,10 @@ let LANGUAGES:Table<string>;
  * @param key 식별자.
  * @param args 추가 정보.
  */
-export function L(key:string, ...args:any[]):string{
+export function L(key: string, ...args: any[]): string {
   return args.length
     ? resolveLanguageArguments(LANGUAGES[key], ...args)
-    : LANGUAGES[key]
-  ;
+    : LANGUAGES[key];
 }
 /**
  * 언어 파일에서 주어진 식별자와 대응되는 문자열표를 반환한다.
@@ -26,7 +25,7 @@ export function L(key:string, ...args:any[]):string{
  * @param locale 언어 식별자.
  * @param page 페이지 식별자.
  */
-export function getLanguageTable(locale:string, page:string):Table<string>{
+export function getLanguageTable(locale: string, page: string): Table<string> {
   return JSON.parse(LANGUAGES[`${locale}/${page}`]);
 }
 /**
@@ -34,11 +33,13 @@ export function getLanguageTable(locale:string, page:string):Table<string>{
  *
  * @param req Express 요청 객체.
  */
-export function getLocale(req:Express.Request):string{
-  let R:string = req.cookies['dds.locale'];
+export function getLocale(req: Express.Request): string {
+  let R: string = req.cookies["dds.locale"];
 
-  if(!LANGUAGES || !SETTINGS.languageSupport[R]){
-    R = ALP.pick(LANGUAGE_SUPPORT, String(req.headers['accept-language'])) || LANGUAGE_SUPPORT[0];
+  if (!LANGUAGES || !SETTINGS.languageSupport[R]) {
+    R =
+      ALP.pick(LANGUAGE_SUPPORT, String(req.headers["accept-language"])) ||
+      LANGUAGE_SUPPORT[0];
   }
   return R;
 }
@@ -47,33 +48,37 @@ export function getLocale(req:Express.Request):string{
  *
  * 메모리에 올려진 문자열표는 페이지 렌더 시 내용으로 포함된다.
  */
-export function loadLanguages():void{
-  const prototables = reduceToTable(LANGUAGE_SUPPORT, v => (
-    JSON.parse(getProjectData(`lang/${v}.json`).toString()) as Table<Table<string>&{ '$include'?: string[] }>
-  ));
-  const R:Table<string> = {};
+export function loadLanguages(): void {
+  const prototables = reduceToTable(
+    LANGUAGE_SUPPORT,
+    (v) =>
+      JSON.parse(getProjectData(`lang/${v}.json`).toString()) as Table<
+        Table<string> & { $include?: string[] }
+      >
+  );
+  const R: Table<string> = {};
 
-  for(const locale in prototables){
+  for (const locale in prototables) {
     const prototable = prototables[locale];
-    for(const page in prototable){
-      if(page[0] === "$" || page[0] === "@") continue;
+    for (const page in prototable) {
+      if (page[0] === "$" || page[0] === "@") continue;
       const key = `${locale}/${page}`;
       const pageTable = prototable[page] || {};
       const table = {
-        ...(prototable['$global'] || {}),
-        ...(pageTable['$include'] || []).reduce(resolveDependency, {}),
-        ...pageTable
+        ...(prototable["$global"] || {}),
+        ...(pageTable["$include"] || []).reduce(resolveDependency, {}),
+        ...pageTable,
       };
-      delete table['$include'];
+      delete table["$include"];
       R[key] = JSON.stringify(table);
-      R[`${key}#title`] = table['title'];
+      R[`${key}#title`] = table["title"];
     }
-    function resolveDependency(pv:Table<string>, v:string):any{
+    function resolveDependency(pv: Table<string>, v: string): any {
       const pageTable = prototable[`@${v}`] || {};
 
       return Object.assign(pv, {
-        ...(pageTable['$include'] || []).reduce(resolveDependency, {}),
-        ...pageTable
+        ...(pageTable["$include"] || []).reduce(resolveDependency, {}),
+        ...pageTable,
       });
     }
   }

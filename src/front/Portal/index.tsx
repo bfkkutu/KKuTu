@@ -1,15 +1,9 @@
 import React from "react";
 
-import Icon from "../@block/Icon";
-import Expl from "../@block/Expl";
-import Bind, { Props } from "../ReactBootstrap";
-import L from "../@global/Language";
-
-declare global {
-  interface Window {
-    adsbygoogle: any;
-  }
-}
+import { Icon } from "front/@block/Icon";
+import Bind from "front/ReactBootstrap";
+import L from "front/@global/Language";
+import { Nest } from "common/Nest";
 
 interface State {
   profile: any;
@@ -22,8 +16,11 @@ interface State {
   windowHeight?: number;
 }
 
-export default class Portal extends React.PureComponent<Props, State> {
-  state: State = {
+export default class Portal extends React.PureComponent<
+  Nest.Page.Props<"Portal">,
+  State
+> {
+  public state: State = {
     profile: {},
     list: [],
     isRefreshing: true,
@@ -32,7 +29,7 @@ export default class Portal extends React.PureComponent<Props, State> {
 
     windowWidth: window.innerWidth,
   };
-  componentDidMount() {
+  public componentDidMount() {
     this.seekServers = this.seekServers.bind(this);
     (window.adsbygoogle = window.adsbygoogle || []).push({});
 
@@ -44,14 +41,13 @@ export default class Portal extends React.PureComponent<Props, State> {
       });
     });
     setInterval(() => {
-      if (this.state.isRefreshing)
-        return alert(this.props.locale["serverWait"]);
+      if (this.state.isRefreshing) return alert(L.get("serverWait"));
       this.setState({ isRefreshing: true });
       setTimeout(this.seekServers, 1000);
     }, 60000);
     this.seekServers();
   }
-  async seekServers() {
+  public async seekServers() {
     const { list } = await (await fetch("/servers")).json();
     if (list && list.length)
       this.setState({
@@ -61,7 +57,7 @@ export default class Portal extends React.PureComponent<Props, State> {
         isListInitialized: true,
       });
   }
-  render() {
+  public render() {
     return (
       <article
         id="Middle"
@@ -70,11 +66,7 @@ export default class Portal extends React.PureComponent<Props, State> {
         }}
       >
         <div className="flex">
-          <img
-            id="logo"
-            src="https://cdn.jsdelivr.net/npm/bfkkutudelivr@latest/img/kkutu/short_logo.png"
-            alt="Logo"
-          />
+          <img id="logo" src="/media/img/kkutu/short_logo.png" alt="Logo" />
           <div id="start-button">
             <div className="game-start-wrapper">
               <button
@@ -90,7 +82,7 @@ export default class Portal extends React.PureComponent<Props, State> {
                 }}
                 disabled={!this.state.isListInitialized}
               >
-                {L("gameStartBF")}
+                {L.render("gameStartBF")}
               </button>
               <button
                 className="game-start"
@@ -99,7 +91,7 @@ export default class Portal extends React.PureComponent<Props, State> {
                   location.href = "https://kkutu.kr";
                 }}
                 disabled={true}
-                dangerouslySetInnerHTML={{ __html: L("gameStartKKT3") }}
+                dangerouslySetInnerHTML={{ __html: L.get("gameStartKKT3") }}
               />
             </div>
           </div>
@@ -146,7 +138,7 @@ export default class Portal extends React.PureComponent<Props, State> {
                     id="server-refresh"
                     onClick={() => {
                       if (this.state.isRefreshing)
-                        return alert(L("serverWait"));
+                        return alert(L.get("serverWait"));
                       this.setState({ isRefreshing: true });
                       setTimeout(this.seekServers, 1000);
                     }}
@@ -155,13 +147,14 @@ export default class Portal extends React.PureComponent<Props, State> {
                       name="refresh"
                       className={this.state.isRefreshing ? "fa-spin" : ""}
                     />
-                    <Expl text={L("serverRefresh")} />
                   </a>
-                  <label className="inline-flex">{L("serverList")}</label>
+                  <label className="inline-flex">
+                    {L.render("serverList")}
+                  </label>
                 </div>
                 <label id="server-total">
-                  &nbsp;{L("TOTAL")} {this.state.sum}
-                  {L("MN")}
+                  &nbsp;{L.render("TOTAL")} {this.state.sum}
+                  {L.render("MN")}
                 </label>
               </h3>
               <div id="server-list">
@@ -181,7 +174,9 @@ export default class Portal extends React.PureComponent<Props, State> {
                       }}
                     >
                       <div className={`server-status ss-${status}`} />
-                      <div className="server-name">{L(`server_${i}`)}</div>
+                      <div className="server-name">
+                        {L.render(`server_${i}`)}
+                      </div>
                       <div className="server-people graph">
                         <div
                           className="graph-bar"
@@ -190,7 +185,7 @@ export default class Portal extends React.PureComponent<Props, State> {
                         <label>{people}</label>
                       </div>
                       <div className="server-enter">
-                        {status == "x" ? "-" : L("serverEnter")}
+                        {status == "x" ? "-" : L.render("serverEnter")}
                       </div>
                     </div>
                   );
@@ -200,12 +195,12 @@ export default class Portal extends React.PureComponent<Props, State> {
           </div>
         </div>
         <div className="iframe-container">
-          <iframe id="kkutu-bulletin" src="/kkutu_bulletin.html" />
+          <iframe id="kkutu-bulletin" src="/media/notice/bulletin.html" />
         </div>
         <ins
           className="adsbygoogle"
-          data-ad-client="ca-pub-6336614061281577"
-          data-ad-slot="5588160330"
+          data-ad-client={this.props.metadata!.ad?.client}
+          data-ad-slot={this.props.metadata!.ad?.slot}
         />
       </article>
     );

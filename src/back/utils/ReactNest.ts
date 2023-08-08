@@ -2,13 +2,18 @@ import Express from "express";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 
-import { setTable } from "../../front/@global/Language";
-import { Root } from "../../front/ReactBootstrap";
-import { getLanguageTable, L } from "./Language";
-import { ENDPOINTS, getProjectData, PACKAGE, SETTINGS } from "./System";
-import { Page } from "../../common/Nest";
+import { setTable } from "front/@global/Language";
+import { Root } from "front/ReactBootstrap";
+import { getLanguageTable, L } from "back/utils/Language";
+import {
+  ENDPOINTS,
+  getProjectData,
+  PACKAGE,
+  SETTINGS,
+} from "back/utils/System";
+import { Nest } from "common/Nest";
 
-const HTML_TEMPLATE: string = getProjectData("template.html").toString();
+const HTML_TEMPLATE = getProjectData("template.html").toString();
 
 const READER_SSR = createReader("SSR");
 const READER_NEST = /("?)\/\*\{(.+?)\}\*\/\1/g;
@@ -23,19 +28,20 @@ function createReader(key: string): RegExp {
  * @param page 페이지.
  * @param data 추가 정보.
  */
-export function PageBuilder<T extends Page.Type>(
+export function PageBuilder<T extends Nest.Page.Type>(
   page: T,
-  data?: Page.DataTable[T]
+  data?: Nest.Page.DataTable[T]
 ): Express.RequestHandler {
   return async (req, res) => {
     res.render(page, {
+      session: req.session,
       locale: req.locale,
       page,
       path: req.originalUrl,
       data,
 
       metadata: res.metadata,
-    } as Page.Props<T>);
+    } as Nest.Page.Props<T>);
   };
 }
 /**
@@ -47,15 +53,23 @@ export function PageBuilder<T extends Page.Type>(
  * @param $ Express 관련 추가 정보.
  * @param callback 콜백 함수.
  */
-export function Engine<T extends Page.Type>(
+export function Engine<T extends Nest.Page.Type>(
   path: string,
-  $: Page.Props<T>,
+  $: Nest.Page.Props<T>,
   callback: (err: any, content?: string) => void
 ): void {
   const REACT_SUFFIX =
     process.env["NODE_ENV"] === "production" ? "production.min" : "development";
   const KEY = `${$.locale}/${$.page}`;
   const SSR = $.ssr;
+  const ad_client = $.metadata!.ad?.client;
+  const GOOGLE_ADS = ad_client
+    ? `<script
+  async
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ad_client}"
+  crossorigin="anonymous"
+></script>`
+    : "";
   let Index: any;
 
   $.title = L(`${KEY}#title`, ...($.metadata?.titleArgs || []));
@@ -65,9 +79,7 @@ export function Engine<T extends Page.Type>(
   delete ($ as any)["cache"];
   delete ($ as any)["_locals"];
 
-  const CLIENT_SETTINGS = {
-    endpoints: ENDPOINTS[$.page],
-  };
+  const CLIENT_SETTINGS: Partial<Nest.ClientSettings> = {};
   if (SSR) {
     setTable(getLanguageTable($.locale, $.page));
     Index = require(`front/${$.page}/index.tsx`).default;

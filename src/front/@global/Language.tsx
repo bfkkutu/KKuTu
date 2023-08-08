@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Icon, IconType } from "../@block/Icon";
-import { getTimeDistance } from "./Utility";
-import { FRONT } from "../../back/utils/Utility";
+import { Icon, IconType } from "front/@block/Icon";
+import { getTimeDistance } from "front/@global/Utility";
+import { FRONT } from "back/utils/Utility";
 
 type PatternResolver = (key: number, ...args: string[]) => React.ReactNode;
 

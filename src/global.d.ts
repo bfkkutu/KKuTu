@@ -1,6 +1,4 @@
 declare type Table<V> = {
   [key: string]: V;
 };
-declare interface Window {
-  editedSections: Database.Section<"s_sec">[];
-}
+declare type HexColor = `#${string & { length: 6 }}`;

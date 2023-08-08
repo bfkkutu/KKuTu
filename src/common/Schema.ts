@@ -1,6 +1,10 @@
 export namespace Schema {
   export interface Settings {
     application: {};
+    advertisement: {
+      client: string;
+      slot: string;
+    };
     cookie: {
       age: number;
       secret: string;
@@ -33,13 +37,16 @@ export namespace Schema {
     gameServerHost: string;
     gameServerRetry: number;
     ports: {
+      http: number;
+      https: number;
       game: number[];
       room: number[];
     };
   }
-  export interface Dirent {
-    name: string;
-    isDirectory: boolean;
-    isSelected: boolean;
+  export interface AuthClientConfig {
+    clientID: string;
+    clientSecret: string;
+    callbackURL: string;
   }
+  export type AuthConfig = Table<AuthClientConfig>;
 }
