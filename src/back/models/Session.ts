@@ -1,6 +1,6 @@
 import * as TypeORM from "typeorm";
 
-import { Database } from "../../common/Database";
+import { Database } from "common/Database";
 
 @TypeORM.Entity({ name: "kkutu_session" })
 export default class Session
@@ -12,8 +12,8 @@ export default class Session
   @TypeORM.Column({ name: "ses_sid", type: "varchar", length: 32 })
   public sid!: string;
 
-  @TypeORM.Column({ name: "ses_profile", type: "json" })
-  public profile!: Database.SessionProfile;
+  @TypeORM.Column({ name: "ses_profile", type: "json", default: {} })
+  public profile!: Database.JSON.Session.profile;
 
   @TypeORM.Column({
     name: "ses_createdAt",

@@ -1,7 +1,4 @@
 import Express from "express";
-import Exession from "express-session";
-import RedisStore from "connect-redis";
-import * as Redis from "redis";
 import CookieParser from "cookie-parser";
 import passport from "passport";
 
@@ -11,11 +8,12 @@ import { getLocale } from "back/utils/Language";
 import { send404 } from "back/utils/Middleware";
 import { Logger, LogStyle } from "back/utils/Logger";
 import { Profile } from "back/utils/LoginRoute";
+import { sessionParser } from "back/utils/ExpressSession";
 
 declare module "express-session" {
   interface SessionData {
     authType: string;
-    profile?: Partial<Profile>;
+    profile?: Profile;
   }
 }
 
@@ -63,19 +61,7 @@ export default function (App: Express.Application): void {
     }
     next();
   });
-  const redisClient = Redis.createClient();
-  redisClient.connect();
-  App.use(
-    Exession({
-      store: new RedisStore({
-        client: redisClient,
-        ttl: 3600 * 12,
-      }),
-      secret: "kkutu",
-      resave: false,
-      saveUninitialized: true,
-    })
-  );
+  App.use(sessionParser);
   App.use(passport.initialize());
   App.use(passport.session());
   /*App.use((req, res, next) => {
@@ -88,10 +74,6 @@ export default function (App: Express.Application): void {
   App.use((req, res, next) => {
     req.agentInfo = `${req.address} (${req.header("User-Agent")})`;
     req.locale = getLocale(req);
-    if (req.session.profile === undefined) {
-      req.session.profile = {};
-      req.session.save();
-    }
     res.metadata = {
       ad: SETTINGS.advertisement,
     };

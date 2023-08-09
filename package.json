@@ -30,6 +30,7 @@
     "@types/passport-oauth2": "^1.4.12",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
+    "@types/ws": "^8.5.5",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.8.1",
     "fork-ts-checker-webpack-plugin": "^8.0.0",
@@ -47,6 +48,7 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^6.4.2",
     "accept-language-parser": "^1.5.0",
+    "bufferutil": "^4.0.7",
     "colors": "^1.1.2",
     "connect-redis": "^7.1.0",
     "cookie-parser": "^1.4.6",
@@ -74,6 +76,7 @@
     "redis": "^4.6.7",
     "sha256": "^0.2.0",
     "typeorm": "^0.3.17",
+    "utf-8-validate": "^6.0.3",
     "ws": "^8.13.0"
   },
   "license": "GPL-3.0"

@@ -1,11 +1,17 @@
 import * as TypeORM from "typeorm";
 
-import { Database } from "../../common/Database";
+import { Database } from "common/Database";
+import WebSocket from "back/utils/WebSocket";
 
 @TypeORM.Entity({ name: "kkutu_users" })
-export default class User implements Database.Serializable<Database.User> {
+export default class User<Connected extends boolean = false>
+  implements Database.Serializable<Database.User>
+{
   @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
   public id!: number;
+
+  @TypeORM.Column({ name: "u_auth", type: "json", default: {} })
+  public auth!: Database.JSON.User.auth;
 
   @TypeORM.Column({
     name: "u_money",
@@ -15,14 +21,14 @@ export default class User implements Database.Serializable<Database.User> {
   })
   public money!: number;
 
-  @TypeORM.Column({ name: "u_record", type: "json" })
-  public record!: Database.UserRecord;
+  @TypeORM.Column({ name: "u_record", type: "json", default: {} })
+  public record!: Database.JSON.User.record;
 
-  @TypeORM.Column({ name: "u_inventory", type: "json" })
-  public inventory!: Database.UserInventory;
+  @TypeORM.Column({ name: "u_inventory", type: "json", default: {} })
+  public inventory!: Database.JSON.User.inventory;
 
-  @TypeORM.Column({ name: "u_equipment", type: "json" })
-  public equipment!: Database.UserEquipment;
+  @TypeORM.Column({ name: "u_equipment", type: "json", default: {} })
+  public equipment!: Database.JSON.User.equipment;
 
   @TypeORM.Column({
     name: "u_nickname",
@@ -41,11 +47,8 @@ export default class User implements Database.Serializable<Database.User> {
   })
   public exordial!: string;
 
-  @TypeORM.Column({ name: "u_punishment", type: "json" })
-  public punishment!: Database.UserPunishment;
-
-  @TypeORM.Column({ name: "u_server", type: "varchar", nullable: true })
-  public server!: Database.Nullable<string>;
+  @TypeORM.Column({ name: "u_punishment", type: "json", default: {} })
+  public punishment!: Database.JSON.User.punishment;
 
   @TypeORM.Column({
     name: "u_password",
@@ -55,8 +58,8 @@ export default class User implements Database.Serializable<Database.User> {
   })
   public password!: Database.Nullable<string>;
 
-  @TypeORM.Column({ name: "u_friends", type: "json" })
-  public friends!: Database.UserFriendList;
+  @TypeORM.Column({ name: "u_friends", type: "json", default: {} })
+  public friends!: Database.JSON.User.friends;
 
   @TypeORM.Column({ name: "u_lastLogin", type: "timestamp" })
   public lastLogin!: number;
@@ -69,6 +72,11 @@ export default class User implements Database.Serializable<Database.User> {
   })
   public createdAt!: number;
 
+  /**
+   * undefined라면 데이터베이스에서 조회되기만 한 유저.
+   */
+  public socket!: Connected extends true ? WebSocket : undefined;
+
   public serialize(): Database.User {
     return {
       id: this.id,
@@ -79,7 +87,6 @@ export default class User implements Database.Serializable<Database.User> {
       equipment: this.equipment,
       exordial: this.exordial,
       punishment: this.punishment,
-      server: this.server,
       password: this.password,
       friends: this.friends,
       nickname: this.nickname,

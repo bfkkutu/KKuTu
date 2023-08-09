@@ -11,51 +11,57 @@ export namespace Database {
   }
   export type Nullable<T> = T | null;
 
-  export interface UserRecord {}
-  export type UserInventory = {
-    [item: string]: number;
-  };
-  export interface UserEquipment {}
-  export type UserFriendList = {
-    [id: string]: string;
-  };
-  export interface UserPunishmentData {
-    range: [number, number];
-    reason: string;
-  }
-  export interface UserPunishment {
-    chat: UserPunishmentData;
-    play: UserPunishmentData;
-  }
-  export interface SessionProfile {
-    authType: string;
-    id: string;
-    nickname: string;
-    exordial: string;
-    image: string;
-    token: string;
-    sid: string;
+  export namespace JSON {
+    export namespace User {
+      export interface PunishmentData {
+        range: [begin: number, end: number];
+        reason: string;
+      }
+
+      export interface auth {
+        type: string;
+        id: string;
+      }
+      export interface record {}
+      export type inventory = Table<number>;
+      export interface equipment {}
+      export type friends = Table<string>;
+      export interface punishment {
+        chat: PunishmentData;
+        play: PunishmentData;
+      }
+    }
+    export namespace Session {
+      export interface profile {
+        authType: string;
+        id: string;
+        nickname: string;
+        exordial: string;
+        image: string;
+        token: string;
+        sid: string;
+      }
+    }
   }
 
   // table interfaces
   export interface User {
     id: number;
     money: number;
-    record: UserRecord;
+    record: JSON.User.record;
     lastLogin: number;
-    inventory: UserInventory;
-    equipment: Partial<UserEquipment>;
+    inventory: JSON.User.inventory;
+    equipment: Partial<JSON.User.equipment>;
     nickname: Nullable<string>;
     exordial: string;
-    punishment: UserPunishment;
-    server: Nullable<string>;
+    punishment: JSON.User.punishment;
     password: Nullable<string>;
-    friends: UserFriendList;
+    friends: JSON.User.friends;
     createdAt: number;
   }
   export interface Session {
     id: string;
-    profile: SessionProfile;
+    profile: JSON.Session.profile;
     createdAt: number;
   }
 }

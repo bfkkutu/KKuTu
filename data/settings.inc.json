@@ -1,20 +1,22 @@
 {
-  "application": {},
   "advertisement": {
     "client": "",
     "slot": ""
   },
+  "application": {},
   "cookie": {
     "age": 604800000,
-    "secret": "jjwak"
+    "secret": "kkutu"
   },
   "database": {
     "host": "",
-    "port": 3306,
+    "port": 0,
     "username": "",
     "password": "",
     "database": ""
   },
+  "gameServerHost": "127.0.0.2",
+  "gameServerRetry": 5,
   "languageSupport": {
     "ko-KR": "한국어",
     "en-US": "English"
@@ -23,13 +25,21 @@
     "directory": "logs",
     "interval": 86400000
   },
+  "max": [100],
+  "ports": {
+    "http": 80,
+    "https": 443,
+    "channel": [8080]
+  },
   "secure": {
     "ssl": false,
+    "isPFX": false,
+    "isCA": false,
     "key": "",
-    "cert": ""
-  },
-  "port": 0,
-  "wsPort": 0,
-  "server": "",
-  "managePassword": ""
+    "cert": "",
+    "ca": "",
+    "pfx": "",
+    "pfxPass": "",
+    "httpsOnly": false
+  }
 }

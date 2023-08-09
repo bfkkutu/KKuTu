@@ -3,7 +3,7 @@ import ALP from "accept-language-parser";
 
 import { SETTINGS, getProjectData } from "back/utils/System";
 import { reduceToTable, resolveLanguageArguments } from "back/utils/Utility";
-import { Logger } from "./Logger";
+import { Logger } from "back/utils/Logger";
 
 const LANGUAGE_SUPPORT = Object.keys(SETTINGS["languageSupport"]);
 let LANGUAGES: Table<string>;

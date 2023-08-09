@@ -2,4 +2,7 @@ node_modules
 data/ssl/*
 data/auth.json
 data/settings.json
+dist/*Main.js*
+dist/pages/*
+dist/strings/*
 .vscode

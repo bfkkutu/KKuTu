@@ -46,7 +46,6 @@
     "AGREEMENT": "서비스 이용 약관",
     "PRIVACY": "개인정보 취급 방침",
     "OPOLICY": "운영 정책",
-    "allDocument": "<a href='/public_info_use.html' target='_blank'>서비스 이용 약관</a> · <a href='/public_info_personal.html' target='_blank'>개인정보 취급 방침</a> · <a href='https://bfkkutu.kr/policy.txt' target='_blank'>운영 정책</a>",
     "OK": "확인",
     "NO": "취소",
     "Alert": "BF끄투 알림",
@@ -81,7 +80,9 @@
     "GROUP_Mclothes": "모레미 옷",
     "GROUP_Mshoes": "모레미 발",
     "GROUP_Mback": "모레미 배경",
-    "GROUP_Mfront": "모레미 전경"
+    "GROUP_Mfront": "모레미 전경",
+
+    "error_452": "로그인이 필요합니다."
   },
   "Portal": {
     "title": "BF끄투",
@@ -90,7 +91,9 @@
     "gameStartKKT3": "끄투3<br />(준비 중)",
     "serverList": "서버 목록",
     "serverRefresh": "서버 목록을 다시 불러옵니다.",
-    "serverWait": "잠시 기다려 주세요."
+    "serverWait": "잠시 기다려 주세요.",
+
+    "server_0": "BF끄투"
   },
   "Login": {
     "title": "BF끄투 - 로그인",
@@ -115,6 +118,9 @@
     "title": "BF끄투 - 로그인 실패",
     "description": "로그인에 실패하였습니다. 다시 시도해주세요.",
     "login": "로그인"
+  },
+  "Game": {
+    "title": "BF끄투"
   },
   "Loading": { "title": "불러오는 중" }
 }

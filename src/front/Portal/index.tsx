@@ -73,12 +73,11 @@ export default class Portal extends React.PureComponent<
                 className="game-start"
                 type="button"
                 onClick={() => {
-                  if (!this.state.profile)
-                    return (location.href = "/?server=0");
+                  if (!this.state.profile) return (location.href = "/game/0");
                   for (let i = 0.9; i < 1; i += 0.01)
                     for (let j in this.state.list)
                       if (this.state.list[j] < i * 100)
-                        return (location.href = `/?server=${j}`);
+                        return (location.href = `/game/${j}`);
                 }}
                 disabled={!this.state.isListInitialized}
               >
@@ -170,7 +169,7 @@ export default class Portal extends React.PureComponent<
                     <div
                       className="server"
                       onClick={() => {
-                        if (status != "x") location.href = `/?server=${i}`;
+                        if (status != "x") location.href = `/game/${i}`;
                       }}
                     >
                       <div className={`server-status ss-${status}`} />

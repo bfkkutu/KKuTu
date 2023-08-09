@@ -1,10 +1,10 @@
 export namespace Schema {
   export interface Settings {
-    application: {};
     advertisement: {
       client: string;
       slot: string;
     };
+    application: {};
     cookie: {
       age: number;
       secret: string;
@@ -18,10 +18,18 @@ export namespace Schema {
       connectTimeout: number;
       maxQueryExecutionTime: number;
     };
+    gameServerHost: string;
+    gameServerRetry: number;
     languageSupport: Table<string>;
     log: {
       directory: string;
       interval: number;
+    };
+    max: number[];
+    ports: {
+      http: number;
+      https: number;
+      channel: number[];
     };
     secure: {
       ssl: boolean;
@@ -33,14 +41,6 @@ export namespace Schema {
       pfx: string;
       pfxPass: string;
       httpsOnly: boolean;
-    };
-    gameServerHost: string;
-    gameServerRetry: number;
-    ports: {
-      http: number;
-      https: number;
-      game: number[];
-      room: number[];
     };
   }
   export interface AuthClientConfig {

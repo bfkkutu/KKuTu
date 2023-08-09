@@ -1,7 +1,7 @@
 import { Strategy } from "passport-google-oauth2";
 
-import { AUTH_CONFIG } from "../utils/System";
-import { AuthModule } from "../utils/LoginRoute";
+import { AUTH_CONFIG } from "back/utils/System";
+import { AuthModule } from "back/utils/LoginRoute";
 
 interface ProfilePhoto {
   value: string;

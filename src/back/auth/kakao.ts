@@ -1,7 +1,7 @@
 import { Strategy } from "passport-kakao";
 
-import { AUTH_CONFIG } from "../utils/System";
-import { AuthModule } from "../utils/LoginRoute";
+import { AUTH_CONFIG } from "back/utils/System";
+import { AuthModule } from "back/utils/LoginRoute";
 
 interface Profile {
   id: number;
@@ -34,7 +34,7 @@ export const createProfile: AuthModule["createProfile"] = (
   profile: Profile
 ) => ({
   authType: config.vendor,
-  id: `${config.vendor}-${profile.id}`,
+  id: profile.id.toString(),
   name: profile.username,
   title: profile.displayName,
   image: profile._json.properties.profile_image,

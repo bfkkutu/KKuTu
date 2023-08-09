@@ -1,7 +1,7 @@
 import { Strategy } from "passport-daldalso";
 
-import { AUTH_CONFIG } from "../utils/System";
-import { AuthModule } from "../utils/LoginRoute";
+import { AUTH_CONFIG } from "back/utils/System";
+import { AuthModule } from "back/utils/LoginRoute";
 
 interface Profile {
   id: string;

@@ -31,9 +31,11 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
   }
   public state: State = {};
   public render() {
-    if (this.state.error) return L.render("ERROR", this.state.error.message);
+    if (this.state.error !== undefined)
+      return L.render("ERROR", this.state.error.message);
     return (
       <>
+        <img id="background" className="jt-image" />
         <Header />
         {this.props.children}
         <Footer />

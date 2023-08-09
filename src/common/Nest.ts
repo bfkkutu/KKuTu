@@ -11,6 +11,9 @@ export namespace Nest {
       Login: {
         loginMethods: AuthModuleConfig[];
       };
+      Game: {
+        wsUrl: string;
+      };
     };
     export type Metadata = {
       titleArgs?: string[];

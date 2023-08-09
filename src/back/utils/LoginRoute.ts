@@ -27,6 +27,7 @@ export interface AuthModule {
 }
 export interface Profile {
   authType: string;
+  // 이 식별자는 인게임에서 사용하지 않는다.
   id: string;
   name: string;
   title: string;

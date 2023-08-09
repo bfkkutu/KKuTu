@@ -1,7 +1,7 @@
 import { Strategy } from "passport-discord";
 
-import { AUTH_CONFIG } from "../utils/System";
-import { AuthModule } from "../utils/LoginRoute";
+import { AUTH_CONFIG } from "back/utils/System";
+import { AuthModule } from "back/utils/LoginRoute";
 
 interface Profile {
   id: string;
@@ -28,7 +28,7 @@ export const createProfile: AuthModule["createProfile"] = (
   profile: Profile
 ) => ({
   authType: config.vendor,
-  id: `${config.vendor}-${profile.id}`,
+  id: profile.id,
   name: profile.username,
   title: profile.username,
   image: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}`,
