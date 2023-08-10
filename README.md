@@ -1,10 +1,15 @@
 # 안내
 
-- 이 레포지토리의 리소스 파일 (음악, 아이템 파일 등) 중 BF끄투에서 제작한 리소스들의 저작권은 BF끄투에 있어 다른 프리서버에서 사용하실 수 없습니다.
+- 이 레포지토리의 리소스 파일 (음악, 아이템 파일 등) 중 BF끄투에서 제작한 리소스들의 저작권은 BF끄투에 있어 다른 프리서버에서 무단으로 사용하실 수 없습니다.
 - 이 레포지토리는 BF끄투의 제휴 서버 중 사용을 허가받은 일부 제휴 서버에서만 일부 또는 전부 사용이 가능합니다.
 - BF끄투의 사용 허가 없이 이 레포지토리를 참고, 사용하지 말아주세요.
-- 이 레포지토리는 SweetAlert2를 사용하고 있습니다. https://sweetalert2.github.io/
-- 현재 진행 중인 프론트엔드 리팩토링 프로젝트에서는 [JJoriping/JJWAK v1.9 (MIT)](https://github.com/JJoriping/JJWAK)의 아이디어를 일부 차용했습니다.
+- 현재 개발 중인 Reatomized 업데이트는 [JJoriping/JJWAK v1.9 (MIT)](https://github.com/JJoriping/JJWAK)을 기반으로 하고 있습니다.
+
+# BFKKuTu: Reatomized
+
+- Rewrite FrontEnd with React & TypeScript.
+- Rewrite BackEnd with TypeScript & TypeORM.
+- Rewrite whole existing code structures.
 
 # KKuTu
 

@@ -39,7 +39,7 @@ export const createProfile: AuthModule["createProfile"] = (
   profile: Profile
 ) => ({
   authType: config.vendor,
-  id: profile.id,
+  id: `${config.vendor}-${profile.id}`,
   name:
     (profile.name.familyName != "" ? profile.name.familyName + " " : "") +
     profile.name.givenName,

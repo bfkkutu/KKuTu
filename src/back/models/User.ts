@@ -10,8 +10,11 @@ export default class User<Connected extends boolean = false>
   @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
   public id!: number;
 
-  @TypeORM.Column({ name: "u_auth", type: "json", default: {} })
-  public auth!: Database.JSON.User.auth;
+  @TypeORM.Column({
+    name: "u_oid",
+    type: "text",
+  })
+  public oid!: string;
 
   @TypeORM.Column({
     name: "u_money",
@@ -34,9 +37,9 @@ export default class User<Connected extends boolean = false>
     name: "u_nickname",
     type: "varchar",
     length: 16,
-    nullable: true,
+    nullable: false,
   })
-  public nickname!: Database.Nullable<string>;
+  public nickname!: string;
 
   @TypeORM.Column({
     name: "u_exordial",
@@ -58,11 +61,8 @@ export default class User<Connected extends boolean = false>
   })
   public password!: Database.Nullable<string>;
 
-  @TypeORM.Column({ name: "u_friends", type: "json", default: {} })
+  @TypeORM.Column({ name: "u_friends", type: "json", default: [] })
   public friends!: Database.JSON.User.friends;
-
-  @TypeORM.Column({ name: "u_lastLogin", type: "timestamp" })
-  public lastLogin!: number;
 
   @TypeORM.Column({
     name: "u_createdAt",
@@ -82,14 +82,13 @@ export default class User<Connected extends boolean = false>
       id: this.id,
       money: this.money,
       record: this.record,
-      lastLogin: this.lastLogin,
       inventory: this.inventory,
       equipment: this.equipment,
+      nickname: this.nickname,
       exordial: this.exordial,
       punishment: this.punishment,
       password: this.password,
       friends: this.friends,
-      nickname: this.nickname,
       createdAt: this.createdAt,
     };
   }

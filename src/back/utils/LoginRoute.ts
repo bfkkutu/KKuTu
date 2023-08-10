@@ -5,9 +5,10 @@ import Strategy from "passport-oauth2";
 import { AUTH_CONFIG } from "back/utils/System";
 import { Logger } from "back/utils/Logger";
 import DB from "back/utils/Database";
+import { PageBuilder } from "back/utils/ReactNest";
+import { Schema } from "common/Schema";
 
 import User from "back/models/User";
-import Session from "back/models/Session";
 
 const strategyList = new Map<string, AuthModuleConfig>();
 
@@ -23,56 +24,21 @@ export interface AuthModuleConfig {
 export interface AuthModule {
   config: AuthModuleConfig;
   options: Strategy.StrategyOptionsWithRequest;
-  createProfile: (profile: any) => Profile;
-}
-export interface Profile {
-  authType: string;
-  // 이 식별자는 인게임에서 사용하지 않는다.
-  id: string;
-  name: string;
-  title: string;
-  image: string;
-  exordial: string;
-
-  token?: string;
-  sid?: string;
+  createProfile: (profile: any) => Schema.Profile;
 }
 
 async function strategyProcess(
   req: Express.Request,
   accessToken: string,
-  profile: Profile,
+  profile: Schema.Profile,
   done: Strategy.VerifyCallback
 ) {
   profile.token = accessToken;
   profile.sid = req.session.id;
-
-  const now = Date.now();
-  req.session.authType = profile.authType;
-  const user =
-    (await DB.Manager.createQueryBuilder(User, "u")
-      .where("u.id == :id:", { id: profile.id })
-      .getOne()) || new User();
-  req.session.profile = profile;
-  req.session.save();
-  if (user.nickname === null) user.nickname = profile.name;
-  const session =
-    (await DB.Manager.createQueryBuilder(Session, "ses")
-      .where("ses.id == :id:", { id: req.session.id })
-      .getOne()) || new Session();
-  session.profile = {
-    authType: profile.authType,
-    id: profile.id,
-    nickname: user.nickname,
-    exordial: user.exordial,
-    image: profile.image,
-    token: profile.token,
-    sid: profile.sid,
-  };
-  session.createdAt = now;
-  await DB.Manager.save(session);
-  user.lastLogin = now;
-  await DB.Manager.save(user);
+  const user = await DB.Manager.createQueryBuilder(User, "u")
+    .where("u.oid = :oid", { oid: profile.id })
+    .getOne();
+  if (user !== null) profile.name = profile.title = user.nickname;
   done(null, profile);
 }
 
@@ -88,18 +54,54 @@ export default async function LoginRoute(App: Express.Application) {
     done(null, obj as any);
   });
 
+  App.get("/register", async (req, res, next) => {
+    if (req.session.profile === undefined) return res.sendStatus(400);
+    if (
+      (await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.oid = :oid", { oid: req.session.profile.id })
+        .getCount()) !== 0
+    )
+      return res.sendStatus(400);
+    return PageBuilder("Register")(req, res, next);
+  });
+  App.post("/register", async (req, res) => {
+    if (req.session.profile === undefined) return res.sendStatus(400);
+    if (
+      (await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.oid = :oid", { oid: req.session.profile.id })
+        .getCount()) !== 0
+    )
+      return res.sendStatus(400);
+    const user = new User();
+    user.oid = req.session.profile.id;
+    user.nickname = req.body.nickname;
+    user.exordial = req.body.exordial;
+    await DB.Manager.save(user);
+    return res.sendStatus(200);
+  });
+
   for (const vendor in AUTH_CONFIG)
     try {
       const { config, options, createProfile }: AuthModule = await import(
         `back/auth/${vendor}`
       );
       App.get(`/login/${vendor}`, passport.authenticate(vendor));
-      App.get(
-        `/login/${vendor}/callback`,
-        passport.authenticate(vendor, {
-          successRedirect: "/",
-          failureRedirect: "/loginfail",
-        })
+      App.get(`/login/${vendor}/callback`, (req, res, next) =>
+        passport.authenticate(
+          vendor,
+          async (e: unknown, profile: Schema.Profile, _: never, __: never) => {
+            if (e) return res.redirect("/login/fail");
+            req.session.profile = profile;
+            await req.session.save();
+            return res.redirect(
+              (await DB.Manager.createQueryBuilder(User, "u")
+                .where("u.oid = :oid", { oid: profile.id })
+                .getCount()) === 0
+                ? "/register"
+                : "/"
+            );
+          }
+        )(req, res, next)
       );
       const strategy = new config.strategy(
         options,
@@ -120,7 +122,7 @@ export default async function LoginRoute(App: Express.Application) {
     }
 
   App.get("/logout", (req, res) => {
-    if (!req.session.profile) return res.redirect("/");
+    if (req.session.profile === undefined) return res.redirect("/");
     else req.session.destroy(() => res.redirect("/"));
   });
 }

@@ -21,6 +21,14 @@
   src: url("/media/NanumBarunGothicLight.woff") format("woff");
 }
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+}
+
 #loading {
   height: 500px;
   display: flex;
@@ -43,6 +51,10 @@
   font-family: NBGothic, 돋움;
   min-height: 100%;
   margin-bottom: 10px;
+
+  #main {
+    max-height: calc(100vh - 125px);
+  }
 }
 a {
   color: inherit;
@@ -60,8 +72,8 @@ textarea {
 }
 button {
   display: block;
-  box-sizing: inherit;
   font-family: inherit;
+  box-sizing: inherit;
   padding: 5px;
   border: 1px solid #aaaaaa;
   border-radius: 10px;
@@ -79,57 +91,6 @@ button:focus {
 }
 span {
   display: none;
-}
-.Menu {
-  min-width: 500px;
-}
-.Menu .menu-btn {
-  float: left;
-  padding: 7px 5px 5px 5px;
-  border: none;
-  border-top-left-radius: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-left-radius: 5px;
-  border-bottom-right-radius: 5px;
-  width: 100px;
-  height: 18px;
-  font-size: 15px;
-  text-align: center;
-  color: #47330d;
-  background-image: url("/media/img/topbg.png");
-  transition: all 200ms ease;
-}
-.Menu .menu-btn:hover {
-  padding-top: 12px;
-  height: auto;
-  box-shadow: 0px 2px 2px #141414;
-  background-image: none;
-}
-.Menu .menu-btn:active {
-  color: #ffffff;
-}
-.Menu .menu-btn .menu-sub-separator {
-  display: none;
-  border-top: 1px dashed #777777;
-  margin: 3px 0px;
-}
-.Menu .menu-btn .menu-sub-btn {
-  display: none;
-  float: left;
-  margin-top: 4px;
-  width: 100px;
-  font-size: 13px;
-  color: #47330d;
-  cursor: pointer;
-}
-.Menu .menu-btn:hover .menu-sub-separator {
-  display: block;
-}
-.Menu .menu-btn:hover .menu-sub-btn {
-  display: block;
-}
-.Menu .menu-btn .menu-sub-btn:hover {
-  color: inherit;
 }
 #quick-search {
   float: right;
@@ -171,12 +132,6 @@ span {
   color: #ffffff;
   background-color: rgba(50, 50, 50, 0.8);
 }
-#account {
-  float: right;
-  margin: 1px;
-  font-size: 11px;
-  color: #444444;
-}
 #account-setting {
   float: left;
   padding-top: 8px;
@@ -184,12 +139,15 @@ span {
   text-align: center;
 }
 #account-info {
-  float: left;
+  float: right;
+  margin: 1px;
+  font-size: 13px;
   padding-top: 8px;
   width: 80px;
   text-align: center;
   cursor: pointer;
   transition: color 300ms ease;
+  color: #444444;
 }
 #account-info:hover {
   color: #eeeeee;
@@ -344,22 +302,60 @@ header {
   background-image: none;
   z-index: 10;
   box-shadow: 0px 2px 2px #111111;
-}
-#Middle {
-  float: left;
-  margin-top: 80px;
-  width: 1010px;
-  z-index: 1;
-}
-#Bottom {
-  float: left;
-  width: 1000px;
-  color: #444444;
-  font-size: 11px;
-  text-align: center;
-}
-footer.portal {
-  z-index: 3;
+
+  #menu {
+    width: 100%;
+
+    .menu-btn {
+      float: left;
+      padding: 7px 5px 5px 5px;
+      border: none;
+      border-top-left-radius: 0px;
+      border-top-right-radius: 0px;
+      border-bottom-left-radius: 5px;
+      border-bottom-right-radius: 5px;
+      width: 100px;
+      height: 18px;
+      font-size: 15px;
+      text-align: center;
+      color: #47330d;
+      transition: all 200ms ease;
+
+      .menu-sub-separator {
+        display: none;
+        border-top: 1px dashed #777777;
+        margin: 3px 0px;
+      }
+      .menu-sub-btn {
+        display: none;
+        float: left;
+        margin-top: 4px;
+        width: 100px;
+        font-size: 13px;
+        color: #47330d;
+        cursor: pointer;
+      }
+      .menu-sub-btn:hover {
+        color: inherit;
+      }
+    }
+    .menu-btn:hover {
+      padding-top: 12px;
+      height: auto;
+      box-shadow: 0px 2px 2px #141414;
+      background-image: none;
+
+      .menu-sub-separator {
+        display: block;
+      }
+      .menu-sub-btn {
+        display: block;
+      }
+    }
+    .menu-btn:active {
+      color: #ffffff;
+    }
+  }
 }
 footer {
   float: left;
@@ -373,7 +369,34 @@ footer {
   position: absolute;
   bottom: 0;
   height: 85px;
-  z-index: -1;
+  text-align: center;
+
+  .left {
+    text-align: left;
+    padding-left: 10%;
+    float: left;
+    width: 40%;
+  }
+
+  .right {
+    text-align: right;
+    padding-right: 10%;
+    float: left;
+    width: 40%;
+  }
+}
+
+#Middle {
+  float: left;
+  margin-top: 80px;
+  width: 1010px;
+  z-index: 1;
+}
+#Bottom {
+  float: left;
+  width: 1000px;
+  color: #444444;
+  font-size: 11px;
   text-align: center;
 }
 .bottom-legal {
@@ -386,27 +409,6 @@ footer {
 .bottom-contact {
   color: #777777;
   font-weight: bold;
-}
-
-/* 설명 */
-#ExplBox {
-  box-sizing: border-box;
-  position: fixed;
-  font-size: 12px;
-  min-width: 100px;
-  padding: 4px;
-  border: 1px solid #777777;
-  border-radius: 5px;
-  pointer-events: none;
-  background-color: #222222;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 3;
-}
-#ExplBox expl {
-  display: block;
-}
-explcss[yellow] {
-  color: #eeee77;
 }
 
 /* jjowt */
@@ -482,34 +484,6 @@ code {
 .tier-C {
   color: #2effdf;
   text-shadow: 0px 0px 5px #1072aa;
-}
-
-.footer-div {
-  padding-top: 10px;
-  color: #cccccc;
-  display: flex;
-  justify-content: space-between;
-  position: absolute;
-  bottom: 0;
-  height: 85px;
-  width: 100%;
-  z-index: 0;
-}
-
-.footer-left {
-  text-align: left;
-  padding-left: 10%;
-  float: left;
-  width: 40%;
-  z-index: -1;
-}
-
-.footer-right {
-  text-align: right;
-  padding-right: 10%;
-  float: left;
-  width: 40%;
-  z-index: -1;
 }
 
 .in-iframe {

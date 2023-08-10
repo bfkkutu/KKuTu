@@ -2,6 +2,7 @@ import WebSocketServer from "back/utils/WebSocketServer";
 import DB from "back/utils/Database";
 import Room from "back/game/Room";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
+import { Logger } from "back/utils/Logger";
 
 import User from "back/models/User";
 
@@ -21,29 +22,23 @@ export default class Channel extends WebSocketServer {
 
     this.on("connection", async (socket, req) => {
       if (req.session.profile === undefined) {
-        socket.sendError(WebSocketError.Type.Unauthenticated, {});
+        socket.sendError(WebSocketError.Type.Unauthorized, {});
         socket.close();
         return;
       }
-      const user =
-        (await DB.Manager.createQueryBuilder(User<true>, "u")
-          .where("u.auth.id == :id:", { id: req.session.profile.id })
-          .getOne()) || new User<true>();
-      const isFirstConnection = user.nickname === null;
+      const user = await DB.Manager.createQueryBuilder(User<true>, "u")
+        .where("u.oid = :oid", {
+          oid: req.session.profile.id,
+        })
+        .getOne();
+      if (user === null) return socket.close();
       this.users.set(user.id, user);
       user.socket = socket;
-      if (isFirstConnection) {
-        user.auth = {
-          type: req.session.profile.authType,
-          id: req.session.profile.id,
-        };
-        socket.send(WebSocketMessage.Type.Agreement, {
-          nickname: req.session.profile.name,
-          exordial: req.session.profile.exordial,
-        });
-        await DB.Manager.save(user);
-      }
-      console.log(user);
+      socket.on("close", () => {
+        this.users.delete(user.id);
+        Logger.info(`User #${user.id} left.`).out();
+      });
+      Logger.info(`New user #${user.id}.`).out();
     });
   }
 

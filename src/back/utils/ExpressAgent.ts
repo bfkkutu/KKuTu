@@ -7,13 +7,12 @@ import * as ReactNest from "back/utils/ReactNest";
 import { getLocale } from "back/utils/Language";
 import { send404 } from "back/utils/Middleware";
 import { Logger, LogStyle } from "back/utils/Logger";
-import { Profile } from "back/utils/LoginRoute";
+import { Schema } from "common/Schema";
 import { sessionParser } from "back/utils/ExpressSession";
 
 declare module "express-session" {
   interface SessionData {
-    authType: string;
-    profile?: Profile;
+    profile?: Schema.Profile;
   }
 }
 
@@ -64,11 +63,6 @@ export default function (App: Express.Application): void {
   App.use(sessionParser);
   App.use(passport.initialize());
   App.use(passport.session());
-  /*App.use((req, res, next) => {
-    if (req.session.passport) 
-      delete req.session.passport;
-    next();
-  });*/
   App.use(Express.json({ limit: "1MB" }));
   App.use(CookieParser(SETTINGS.cookie.secret));
   App.use((req, res, next) => {

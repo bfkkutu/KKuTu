@@ -9,14 +9,8 @@ export namespace WebSocketMessage {
      * 현재 채널의 유저 정보, 방 정보, 캐릭터 정보 등을 클라이언트에 제공한다.
      */
     Initialize = "initialize",
-    /**
-     * @sender Server.
-     * @condition 처음 채널 접속 시.
-     *
-     * 약관 동의 및 닉네임 설정 화면을 보여준다.
-     */
-    Agreement = "agreement",
 
+    Heartbeat = "heartbeat",
     Error = "error",
   }
 
@@ -26,17 +20,8 @@ export namespace WebSocketMessage {
      */
     export interface Server {
       [Type.Initialize]: {};
-      [Type.Agreement]: {
-        /**
-         * OAuth에서 제공 받은 닉네임.
-         */
-        nickname: string;
-        /**
-         * OAuth에서 제공 받은 소개문 (없을 경우 빈 문자열).
-         */
-        exordial: string;
-      };
 
+      [Type.Heartbeat]: {};
       [Type.Error]: WebSocketError.Message[keyof WebSocketError.Content];
     }
     /**
@@ -59,11 +44,11 @@ export namespace WebSocketError {
      * @reason 게임 채널에 로그인하지 않은 채로 접속하려고 시도하면 발생한다.
      * @action 소켓을 닫는다.
      */
-    Unauthenticated = 452,
+    Unauthorized = 401,
   }
 
   export interface Content {
-    [Type.Unauthenticated]: {};
+    [Type.Unauthorized]: {};
   }
 
   // 오류는 서버만 보낸다.

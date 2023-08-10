@@ -33,7 +33,7 @@ export const createProfile: AuthModule["createProfile"] = ({
   profile,
 }: Profile) => ({
   authType: config.vendor,
-  id,
+  id: `${config.vendor}-${id}`,
   name,
   title: name,
   image:

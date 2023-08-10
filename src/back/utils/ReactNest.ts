@@ -5,12 +5,7 @@ import ReactDOMServer from "react-dom/server";
 import { setTable } from "front/@global/Language";
 import { Root } from "front/ReactBootstrap";
 import { getLanguageTable, L } from "back/utils/Language";
-import {
-  ENDPOINTS,
-  getProjectData,
-  PACKAGE,
-  SETTINGS,
-} from "back/utils/System";
+import { getProjectData, PACKAGE, SETTINGS } from "back/utils/System";
 import { Nest } from "common/Nest";
 
 const HTML_TEMPLATE = getProjectData("template.html").toString();

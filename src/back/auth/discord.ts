@@ -28,7 +28,7 @@ export const createProfile: AuthModule["createProfile"] = (
   profile: Profile
 ) => ({
   authType: config.vendor,
-  id: profile.id,
+  id: `${config.vendor}-${profile.id}`,
   name: profile.username,
   title: profile.username,
   image: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}`,

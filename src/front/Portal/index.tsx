@@ -4,9 +4,10 @@ import { Icon } from "front/@block/Icon";
 import Bind from "front/ReactBootstrap";
 import L from "front/@global/Language";
 import { Nest } from "common/Nest";
+import { Schema } from "common/Schema";
 
 interface State {
-  profile: any;
+  profile?: Schema.Profile;
   list: any[];
   isRefreshing: boolean;
   isListInitialized: boolean;
@@ -21,7 +22,6 @@ export default class Portal extends React.PureComponent<
   State
 > {
   public state: State = {
-    profile: {},
     list: [],
     isRefreshing: true,
     isListInitialized: false,
@@ -33,7 +33,7 @@ export default class Portal extends React.PureComponent<
     this.seekServers = this.seekServers.bind(this);
     (window.adsbygoogle = window.adsbygoogle || []).push({});
 
-    this.setState({ profile: this.props.session.profile || {} });
+    this.setState({ profile: this.props.session.profile });
     window.addEventListener("resize", () => {
       this.setState({
         windowWidth: window.innerWidth,
@@ -68,31 +68,21 @@ export default class Portal extends React.PureComponent<
         <div className="flex">
           <img id="logo" src="/media/img/kkutu/short_logo.png" alt="Logo" />
           <div id="start-button">
-            <div className="game-start-wrapper">
-              <button
-                className="game-start"
-                type="button"
-                onClick={() => {
-                  if (!this.state.profile) return (location.href = "/game/0");
-                  for (let i = 0.9; i < 1; i += 0.01)
-                    for (let j in this.state.list)
-                      if (this.state.list[j] < i * 100)
-                        return (location.href = `/game/${j}`);
-                }}
-                disabled={!this.state.isListInitialized}
-              >
-                {L.render("gameStartBF")}
-              </button>
-              <button
-                className="game-start"
-                type="button"
-                onClick={() => {
-                  location.href = "https://kkutu.kr";
-                }}
-                disabled={true}
-                dangerouslySetInnerHTML={{ __html: L.get("gameStartKKT3") }}
-              />
-            </div>
+            <button
+              className="game-start"
+              type="button"
+              onClick={() => {
+                if (this.state.profile === undefined)
+                  return (location.href = "/game/0");
+                for (let i = 0.9; i < 1; i += 0.01)
+                  for (let j in this.state.list)
+                    if (this.state.list[j] < i * 100)
+                      return (location.href = `/game/${j}`);
+              }}
+              disabled={!this.state.isListInitialized}
+            >
+              {L.render("gameStart")}
+            </button>
           </div>
         </div>
         <div
@@ -112,21 +102,14 @@ export default class Portal extends React.PureComponent<
               target="_blank"
               href="http://daldal.so/"
             >
-              달달소
-            </a>
-            <a
-              className="p_button kkutu3"
-              target="_blank"
-              href="https://kkutu.kr"
-            >
-              끄투3
+              {L.get("daldalso")}
             </a>
             <a
               className="p_button discord"
               target="_blank"
               href="http://discord.gg/scPVHcE"
             >
-              디스코드
+              {L.get("discord")}
             </a>
           </div>
           <div className="flex server-list-wrapper">
@@ -152,8 +135,8 @@ export default class Portal extends React.PureComponent<
                   </label>
                 </div>
                 <label id="server-total">
-                  &nbsp;{L.render("TOTAL")} {this.state.sum}
-                  {L.render("MN")}
+                  &nbsp;{L.render("total")} {this.state.sum}
+                  {L.render("unitPeople")}
                 </label>
               </h3>
               <div id="server-list">

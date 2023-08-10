@@ -30,7 +30,7 @@ export const createProfile: AuthModule["createProfile"] = (
   profile: Profile
 ) => ({
   authType: config.vendor,
-  id: profile.id,
+  id: `${config.vendor}-${profile.id}`,
   name: profile.displayName,
   title: profile.displayName,
   image: profile._json.profile_image,

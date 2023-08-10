@@ -10,7 +10,7 @@
     "start": "node ./dist/Main.js",
     "settle": "yarn install && node ./tools/setup.js && node ./tools/check-front.js && yarn build",
     "build": "webpack",
-    "watch": "webpack --mode development -w"
+    "watch": "webpack -w"
   },
   "author": "JJoriping",
   "frontDependencies": {
@@ -72,7 +72,6 @@
     "pg-escape": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-loader-spinner": "^5.3.4",
     "redis": "^4.6.7",
     "sha256": "^0.2.0",
     "typeorm": "^0.3.17",

@@ -31,17 +31,6 @@ export namespace Database {
         play: PunishmentData;
       }
     }
-    export namespace Session {
-      export interface profile {
-        authType: string;
-        id: string;
-        nickname: string;
-        exordial: string;
-        image: string;
-        token: string;
-        sid: string;
-      }
-    }
   }
 
   // table interfaces
@@ -49,7 +38,6 @@ export namespace Database {
     id: number;
     money: number;
     record: JSON.User.record;
-    lastLogin: number;
     inventory: JSON.User.inventory;
     equipment: Partial<JSON.User.equipment>;
     nickname: Nullable<string>;
@@ -57,11 +45,6 @@ export namespace Database {
     punishment: JSON.User.punishment;
     password: Nullable<string>;
     friends: JSON.User.friends;
-    createdAt: number;
-  }
-  export interface Session {
-    id: string;
-    profile: JSON.Session.profile;
     createdAt: number;
   }
 }

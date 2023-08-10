@@ -7,13 +7,14 @@ export namespace Nest {
   export namespace Page {
     export type Type = keyof Page.DataTable;
     export type DataTable = {
-      Portal: {};
-      Login: {
-        loginMethods: AuthModuleConfig[];
-      };
       Game: {
         wsUrl: string;
       };
+      Login: {
+        loginMethods: AuthModuleConfig[];
+      };
+      Portal: {};
+      Register: {};
     };
     export type Metadata = {
       titleArgs?: string[];

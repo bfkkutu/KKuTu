@@ -42,6 +42,7 @@ export namespace Schema {
       pfxPass: string;
       httpsOnly: boolean;
     };
+    wsUrl: string;
   }
   export interface AuthClientConfig {
     clientID: string;
@@ -49,4 +50,17 @@ export namespace Schema {
     callbackURL: string;
   }
   export type AuthConfig = Table<AuthClientConfig>;
+
+  export interface Profile {
+    authType: string;
+    // 이 식별자는 인게임에서 사용하지 않는다.
+    id: string;
+    name: string;
+    title: string;
+    image: string;
+    exordial: string;
+
+    token?: string;
+    sid?: string;
+  }
 }

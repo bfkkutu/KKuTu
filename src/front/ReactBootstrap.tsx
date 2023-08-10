@@ -36,7 +36,7 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
     return (
       <>
         <img id="background" className="jt-image" />
-        <Header />
+        <Header profile={this.props.session.profile} />
         {this.props.children}
         <Footer />
       </>

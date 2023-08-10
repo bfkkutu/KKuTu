@@ -41,5 +41,6 @@
     "pfx": "",
     "pfxPass": "",
     "httpsOnly": false
-  }
+  },
+  "wsUrl": ""
 }

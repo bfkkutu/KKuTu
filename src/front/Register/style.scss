@@ -1,0 +1,46 @@
+@import "../@global/global.scss";
+
+#main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h1 {
+  margin-top: 10px;
+}
+
+.document-box {
+  display: block;
+  font-family: inherit;
+  height: 300px;
+  width: 800px;
+  padding: 5px;
+  margin-top: 10px;
+  border: 1px solid #aaaaaa;
+  border-radius: 10px;
+  resize: none;
+  color: #000;
+  background-color: #fff;
+  overflow-y: scroll;
+}
+.checkbox-wrapper {
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.checkbox {
+  float: left;
+}
+.form {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 400px;
+
+  input {
+    margin-left: 5px;
+  }
+}
+.form-item-wrapper {
+  display: flex;
+}
