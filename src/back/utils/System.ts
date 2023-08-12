@@ -124,6 +124,7 @@ export function schedule(
 export function writeClientConstants(): void {
   const data: Partial<Nest.ClientSettings> = {
     languageSupport: SETTINGS.languageSupport,
+    sound: SETTINGS.application.sound,
   };
   FS.writeFileSync(
     resolve("dist", "constants.js"),

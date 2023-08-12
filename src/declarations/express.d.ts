@@ -6,7 +6,7 @@ declare namespace Express {
     locale: string;
   }
   export interface Response {
-    metadata: Page.Metadata;
+    metadata: Nest.Page.Metadata;
     removeCookie(name: string, path?: string): Express.Response;
     setCookie(name: string, value: any, path?: string): Express.Response;
   }

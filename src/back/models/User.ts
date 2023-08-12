@@ -1,6 +1,6 @@
 import * as TypeORM from "typeorm";
 
-import { Database } from "common/Database";
+import { Database } from "../../common/Database";
 import WebSocket from "back/utils/WebSocket";
 
 @TypeORM.Entity({ name: "kkutu_users" })
@@ -24,14 +24,26 @@ export default class User<Connected extends boolean = false>
   })
   public money!: number;
 
-  @TypeORM.Column({ name: "u_record", type: "json", default: {} })
-  public record!: Database.JSON.User.record;
+  @TypeORM.Column({
+    name: "u_record",
+    type: "json",
+    default: Database.JSON.Defaults.User.record,
+  })
+  public record!: Database.JSON.Types.User.record;
 
-  @TypeORM.Column({ name: "u_inventory", type: "json", default: {} })
-  public inventory!: Database.JSON.User.inventory;
+  @TypeORM.Column({
+    name: "u_inventory",
+    type: "json",
+    default: Database.JSON.Defaults.User.inventory,
+  })
+  public inventory!: Database.JSON.Types.User.inventory;
 
-  @TypeORM.Column({ name: "u_equipment", type: "json", default: {} })
-  public equipment!: Database.JSON.User.equipment;
+  @TypeORM.Column({
+    name: "u_equipment",
+    type: "json",
+    default: Database.JSON.Defaults.User.equipment,
+  })
+  public equipment!: Database.JSON.Types.User.equipment;
 
   @TypeORM.Column({
     name: "u_nickname",
@@ -50,8 +62,12 @@ export default class User<Connected extends boolean = false>
   })
   public exordial!: string;
 
-  @TypeORM.Column({ name: "u_punishment", type: "json", default: {} })
-  public punishment!: Database.JSON.User.punishment;
+  @TypeORM.Column({
+    name: "u_punishment",
+    type: "json",
+    default: Database.JSON.Defaults.User.punishment,
+  })
+  public punishment!: Database.JSON.Types.User.punishment;
 
   @TypeORM.Column({
     name: "u_password",
@@ -62,7 +78,14 @@ export default class User<Connected extends boolean = false>
   public password!: Database.Nullable<string>;
 
   @TypeORM.Column({ name: "u_friends", type: "json", default: [] })
-  public friends!: Database.JSON.User.friends;
+  public friends!: number[];
+
+  @TypeORM.Column({
+    name: "u_settings",
+    type: "json",
+    default: Database.JSON.Defaults.User.settings,
+  })
+  public settings!: Database.JSON.Types.User.settings;
 
   @TypeORM.Column({
     name: "u_createdAt",
@@ -89,6 +112,7 @@ export default class User<Connected extends boolean = false>
       punishment: this.punishment,
       password: this.password,
       friends: this.friends,
+      settings: this.settings,
       createdAt: this.createdAt,
     };
   }

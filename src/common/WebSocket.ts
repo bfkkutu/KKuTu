@@ -19,7 +19,9 @@ export namespace WebSocketMessage {
      * 서버가 보내는 메시지.
      */
     export interface Server {
-      [Type.Initialize]: {};
+      [Type.Initialize]: {
+        users: Database.User[];
+      };
 
       [Type.Heartbeat]: {};
       [Type.Error]: WebSocketError.Message[keyof WebSocketError.Content];
@@ -27,7 +29,12 @@ export namespace WebSocketMessage {
     /**
      * 클라이언트가 보내는 메시지.
      */
-    export interface Client {}
+    export interface Client {
+      [Type.Initialize]: {};
+
+      [Type.Heartbeat]: {};
+      [Type.Error]: {}; // dummy
+    }
   }
 
   export type Server = {

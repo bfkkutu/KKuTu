@@ -4,7 +4,9 @@ export namespace Schema {
       client: string;
       slot: string;
     };
-    application: {};
+    application: {
+      sound: Table<string>;
+    };
     cookie: {
       age: number;
       secret: string;
@@ -42,7 +44,7 @@ export namespace Schema {
       pfxPass: string;
       httpsOnly: boolean;
     };
-    wsUrl: string;
+    wsHostname: string;
   }
   export interface AuthClientConfig {
     clientID: string;

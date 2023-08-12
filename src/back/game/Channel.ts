@@ -34,11 +34,20 @@ export default class Channel extends WebSocketServer {
       if (user === null) return socket.close();
       this.users.set(user.id, user);
       user.socket = socket;
+      socket.on("message", (raw) => {
+        const message: WebSocketMessage.Client[WebSocketMessage.Type] =
+          JSON.parse(raw.toString());
+        switch (message.type) {
+        }
+      });
       socket.on("close", () => {
         this.users.delete(user.id);
         Logger.info(`User #${user.id} left.`).out();
       });
       Logger.info(`New user #${user.id}.`).out();
+      socket.send(WebSocketMessage.Type.Initialize, {
+        users: Array.from(this.users.values()).map((user) => user.serialize()),
+      });
     });
   }
 

@@ -18,15 +18,14 @@ export default function (App: Express.Application): void {
       res.status(401);
       return res.redirect("/login");
     }
-    if (
-      (await DB.Manager.createQueryBuilder(User, "u")
-        .where("u.oid = :oid", { oid: req.session.profile.id })
-        .getCount()) === 0
-    )
-      return res.redirect("/register");
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) return res.redirect("/register");
     return PageBuilder("Game", {
+      id: user.id,
       wsUrl: `${SETTINGS.secure.ssl ? "wss" : "ws"}://${
-        SETTINGS.wsUrl || req.hostname
+        SETTINGS.wsHostname || req.hostname
       }:${SETTINGS.ports.channel[id]}/?sid=${req.session.id}`,
     })(req, res, next);
   });

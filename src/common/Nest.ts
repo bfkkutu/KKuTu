@@ -8,6 +8,7 @@ export namespace Nest {
     export type Type = keyof Page.DataTable;
     export type DataTable = {
       Game: {
+        id: number;
         wsUrl: string;
       };
       Login: {
@@ -36,7 +37,7 @@ export namespace Nest {
       children: React.ReactNode;
     }
   }
-  export type ClientSettings = Pick<Schema.Settings["application"], never> & {
+  export type ClientSettings = Pick<Schema.Settings["application"], "sound"> & {
     languageSupport: Table<string>;
   };
   export type ScheduleOptions = {

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 
 import { PROPS } from "front/@global/Utility";
 import { Nest } from "common/Nest";
+import { WebSocketMessage } from "common/WebSocket";
 
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
@@ -12,6 +13,28 @@ declare global {
   interface Window {
     adsbygoogle: any;
   }
+  interface WebSocket {
+    _send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
+    send<T extends WebSocketMessage.Type>(
+      type: T,
+      content: WebSocketMessage.Content.Client[T]
+    ): void;
+  }
+}
+
+if (typeof window !== "undefined") {
+  window.WebSocket.prototype._send = window.WebSocket.prototype.send;
+  window.WebSocket.prototype.send = function <T extends WebSocketMessage.Type>(
+    type: T,
+    content?: WebSocketMessage.Content.Client[T]
+  ): void {
+    this._send(
+      JSON.stringify({
+        type,
+        ...content,
+      } as WebSocketMessage.Client[T])
+    );
+  };
 }
 
 interface State {

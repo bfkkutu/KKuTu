@@ -96,7 +96,5 @@ export function Engine<T extends Nest.Page.Type>(
         )
       : ""
   ).replace(READER_NEST, (v, p1, p2) => String(eval(p2)));
-  // NOTE never used 오류 회피
-  void REACT_SUFFIX;
   callback(null, HTML);
 }
