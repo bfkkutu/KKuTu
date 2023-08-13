@@ -46,7 +46,10 @@ export default class Channel extends WebSocketServer {
       });
       Logger.info(`New user #${user.id}.`).out();
       socket.send(WebSocketMessage.Type.Initialize, {
-        users: Array.from(this.users.values()).map((user) => user.serialize()),
+        me: user.serialize(),
+        users: Array.from(this.users.values())
+          .filter((u) => u.id !== user.id)
+          .map((user) => user.summarize()),
       });
     });
   }

@@ -37,7 +37,10 @@ export namespace Nest {
       children: React.ReactNode;
     }
   }
-  export type ClientSettings = Pick<Schema.Settings["application"], "sound"> & {
+  export type ClientSettings = Pick<
+    Schema.Settings["application"],
+    "sound" | "maxLevel" | "expTable"
+  > & {
     languageSupport: Table<string>;
   };
   export type ScheduleOptions = {

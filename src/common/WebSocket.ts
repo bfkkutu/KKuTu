@@ -20,7 +20,8 @@ export namespace WebSocketMessage {
      */
     export interface Server {
       [Type.Initialize]: {
-        users: Database.User[];
+        me: Database.DetailedUser;
+        users: Database.SummarizedUser[];
       };
 
       [Type.Heartbeat]: {};

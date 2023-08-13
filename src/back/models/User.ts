@@ -5,7 +5,7 @@ import WebSocket from "back/utils/WebSocket";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User<Connected extends boolean = false>
-  implements Database.Serializable<Database.User>
+  implements Database.Serializable<Database.DetailedUser>
 {
   @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
   public id!: number;
@@ -23,6 +23,14 @@ export default class User<Connected extends boolean = false>
     nullable: false,
   })
   public money!: number;
+
+  @TypeORM.Column({
+    name: "u_score",
+    type: "int8",
+    default: 0,
+    nullable: false,
+  })
+  public score!: number;
 
   @TypeORM.Column({
     name: "u_record",
@@ -44,6 +52,13 @@ export default class User<Connected extends boolean = false>
     default: Database.JSON.Defaults.User.equipment,
   })
   public equipment!: Database.JSON.Types.User.equipment;
+
+  @TypeORM.Column({
+    name: "u_image",
+    type: "text",
+    nullable: false,
+  })
+  public image!: string;
 
   @TypeORM.Column({
     name: "u_nickname",
@@ -100,17 +115,30 @@ export default class User<Connected extends boolean = false>
    */
   public socket!: Connected extends true ? WebSocket : undefined;
 
-  public serialize(): Database.User {
+  public summarize(): Database.SummarizedUser {
     return {
       id: this.id,
+      score: this.score,
+      record: this.record,
+      equipment: this.equipment,
+      image: this.image,
+      nickname: this.nickname,
+      exordial: this.exordial,
+      createdAt: this.createdAt,
+    };
+  }
+  public serialize(): Database.DetailedUser {
+    return {
+      id: this.id,
+      score: this.score,
       money: this.money,
       record: this.record,
       inventory: this.inventory,
       equipment: this.equipment,
+      image: this.image,
       nickname: this.nickname,
       exordial: this.exordial,
       punishment: this.punishment,
-      password: this.password,
       friends: this.friends,
       settings: this.settings,
       createdAt: this.createdAt,

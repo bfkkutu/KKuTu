@@ -1,1 +1,204 @@
 @import "../@global/global.scss";
+
+#stage {
+  #main {
+    display: flex;
+    justify-content: center;
+
+    #game {
+      display: flex;
+      flex-direction: column;
+      width: 1000px;
+      height: 600px;
+      margin-top: 20px;
+
+      #box-grid {
+        width: 100%;
+        height: 100%;
+
+        &.lobby {
+          display: grid;
+          grid-template: {
+            columns: 1fr 4fr;
+            rows: 9fr 5fr;
+          }
+        }
+
+        &.gaming {
+          display: grid;
+          grid-template: {
+            columns: 1fr;
+            rows: 9fr 5fr;
+          }
+        }
+      }
+    }
+  }
+}
+
+.top-menu {
+  float: left;
+  width: 100%;
+  height: 30px;
+
+  button {
+    float: left;
+    border: none;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    width: 98px;
+    height: 20px;
+  }
+  button:hover {
+    margin-top: -5px;
+    height: 25px;
+  }
+
+  .toggled {
+    margin-top: 5px;
+    color: #eeeeee;
+    background-color: #444444;
+  }
+}
+.tiny-menu {
+  width: 20px;
+}
+
+#box-user-list {
+  div {
+    float: left;
+  }
+
+  .body {
+    width: calc(100% - 10px);
+    height: 330px;
+    overflow: {
+      x: hidden;
+      y: scroll;
+    }
+
+    .user-item {
+      display: flex;
+
+      &:hover {
+        cursor: pointer;
+        background-color: #f4f4f4;
+      }
+
+      .image {
+        margin: 1px;
+        width: 18px;
+        height: 18px;
+      }
+      .name {
+        padding: 2px 0px 0px 3px;
+        width: 122px;
+        font-size: 13px;
+      }
+    }
+  }
+}
+
+#box-room-list {
+  div {
+    float: left;
+  }
+
+  .body {
+    width: calc(100% - 10px);
+    height: 330px;
+    overflow: {
+      x: hidden;
+      y: scroll;
+    }
+  }
+}
+
+#box-shop {
+  div {
+    float: left;
+  }
+
+  .body {
+    width: calc(100% - 10px);
+    height: 330px;
+  }
+}
+
+#box-room {
+  width: 100%;
+  height: 360px;
+
+  .title {
+    height: 12px;
+
+    h5 {
+      float: left;
+    }
+  }
+}
+
+#box-profile {
+  cursor: pointer;
+
+  div {
+    float: left;
+  }
+}
+
+#box-chat {
+  .item-enabled {
+    height: 230px;
+  }
+}
+
+#box-game {
+  width: 100%;
+  height: 410px;
+  background-image: url("/media/img/kkutu/gamebg.png");
+
+  .title {
+    height: 12px;
+
+    h5 {
+      float: left;
+    }
+  }
+
+  div {
+    float: left;
+  }
+
+  .body {
+    padding-top: 0px;
+  }
+}
+
+.product {
+  float: left;
+  padding: 5px;
+  margin-bottom: 1px;
+  border-radius: 0px;
+  color: #111111;
+  box-shadow: 0px 2px 1px #dddddd;
+  background-color: #eeeeee;
+
+  .title {
+    border-bottom-color: #cccccc;
+    border-radius: 5px;
+    color: #222222;
+    background-color: #dddddd;
+    padding: 3px;
+    border-bottom: 1px solid #333333;
+    margin-bottom: 5px;
+
+    i {
+      color: #111111;
+    }
+  }
+
+  .body {
+    font-size: 12px;
+    padding: 5px 5px 0px 5px;
+  }
+}

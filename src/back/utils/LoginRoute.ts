@@ -74,6 +74,7 @@ export default async function LoginRoute(App: Express.Application) {
       return res.sendStatus(400);
     const user = new User();
     user.oid = req.session.profile.id;
+    user.image = req.session.profile.image;
     user.nickname = req.body.nickname;
     user.exordial = req.body.exordial;
     await DB.Manager.save(user);

@@ -47,18 +47,21 @@ export namespace Database {
   }
 
   // table interfaces
-  export interface User {
+  export interface SummarizedUser {
     id: number;
-    money: number;
+    score: number;
     record: JSON.Types.User.record;
-    inventory: JSON.Types.User.inventory;
     equipment: Partial<JSON.Types.User.equipment>;
+    image: string;
     nickname: string;
     exordial: string;
+    createdAt: number;
+  }
+  export interface DetailedUser extends SummarizedUser {
+    money: number;
+    inventory: JSON.Types.User.inventory;
     punishment: JSON.Types.User.punishment;
-    password: Nullable<string>;
     friends: number[];
     settings: JSON.Types.User.settings;
-    createdAt: number;
   }
 }

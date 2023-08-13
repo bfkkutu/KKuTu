@@ -62,6 +62,8 @@
     "GROUP_Mback": "모레미 배경",
     "GROUP_Mfront": "모레미 전경",
 
+    "server_0": "BF끄투",
+
     "loading": "불러오는 중",
 
     "error_401": "로그인이 필요합니다."
@@ -77,7 +79,9 @@
     "sound_lobby_1": "HexaCube - Breakdown Fragment",
     "sound_lobby_2": "라크다르 - 새로운 시작",
     "sound_lobby_3": "BF끄투 (Piano)",
-    "sound_lobby_4": "끄투"
+    "sound_lobby_4": "끄투",
+
+    "userListBox_title": "<{#0}> 접속자 목록 [{#1}명]"
   },
   "Login": {
     "title": "BF끄투 - 로그인",
@@ -107,9 +111,7 @@
     "serverList": "서버 목록",
     "serverRefresh": "서버 목록을 다시 불러옵니다.",
     "serverWait": "잠시 기다려 주세요.",
-    "serverEnter": "접속",
-
-    "server_0": "BF끄투"
+    "serverEnter": "접속"
   },
   "Register": {
     "title": "BF끄투 - 계정 등록",

@@ -3,7 +3,7 @@
     "client": "",
     "slot": ""
   },
-  "application": {},
+  "application": { "sound": {}, "maxLevel": 450, "expTable": [] },
   "cookie": {
     "age": 604800000,
     "secret": "kkutu"

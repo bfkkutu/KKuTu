@@ -6,6 +6,8 @@ export namespace Schema {
     };
     application: {
       sound: Table<string>;
+      maxLevel: number;
+      expTable: number[];
     };
     cookie: {
       age: number;
