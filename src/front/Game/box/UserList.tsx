@@ -1,9 +1,9 @@
 import React from "react";
 
 import { Database } from "common/Database";
-import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
 import { getLevel } from "front/@global/Utility";
+import LevelIcon from "front/@block/LevelIcon";
 
 interface Props {
   server: number;
@@ -16,7 +16,6 @@ export default class UserListBox extends React.PureComponent<Props> {
     return (
       <section id="box-user-list" className="product">
         <h5 className="title">
-          <Icon type={IconType.NORMAL} name="users" />{" "}
           {L.render(
             "userListBox_title",
             <b>{L.get(`server_${this.props.server}`)}</b>,
@@ -25,14 +24,9 @@ export default class UserListBox extends React.PureComponent<Props> {
         </h5>
         <div className="body">
           {[this.props.me, ...this.props.users].map((user) => (
-            <div className="user-item">
+            <div className="item">
               <img className="jt-image image" src={user.image} />
-              <img
-                className="image"
-                src={`/media/img/kkutu/lv/lv${getLevel(user.score)
-                  .toString()
-                  .padStart(4, "0")}.png`}
-              />
+              <LevelIcon className="image" level={getLevel(user.score)} />
               <div className="name ellipse">{user.nickname}</div>
             </div>
           ))}

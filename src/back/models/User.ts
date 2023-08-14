@@ -8,7 +8,7 @@ export default class User<Connected extends boolean = false>
   implements Database.Serializable<Database.DetailedUser>
 {
   @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
-  public id!: number;
+  public id!: string;
 
   @TypeORM.Column({
     name: "u_oid",
@@ -18,7 +18,7 @@ export default class User<Connected extends boolean = false>
 
   @TypeORM.Column({
     name: "u_money",
-    type: "int8",
+    type: "int4",
     default: 0,
     nullable: false,
   })
@@ -26,7 +26,7 @@ export default class User<Connected extends boolean = false>
 
   @TypeORM.Column({
     name: "u_score",
-    type: "int8",
+    type: "int4",
     default: 0,
     nullable: false,
   })

@@ -1,10 +1,20 @@
 import React from "react";
 
-export default class RoomListBox extends React.PureComponent {
+import L from "front/@global/Language";
+import { Room } from "common/Interfaces";
+
+interface Props {
+  rooms: Room[];
+}
+
+export default class RoomListBox extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
       <section id="box-room-list" className="product">
-        room list box
+        <h5 className="title">
+          {L.render("roomListBox_title", this.props.rooms.length)}
+        </h5>
+        <div className="body">{}</div>
       </section>
     );
   }

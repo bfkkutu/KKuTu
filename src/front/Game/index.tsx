@@ -15,8 +15,10 @@ import RoomListBox from "./box/RoomList";
 import { getRequiredScore } from "front/@global/Utility";
 
 interface State {
-  me: Database.DetailedUser;
-  users: Record<number, Database.SummarizedUser>;
+  loading: boolean;
+
+  me?: Database.DetailedUser;
+  users: Table<Database.SummarizedUser>;
 }
 
 export default class Game extends React.PureComponent<
@@ -26,8 +28,10 @@ export default class Game extends React.PureComponent<
   private server: number = parseInt(this.props.path.match(/\/game\/(.*)/)![1]);
   private socket!: WebSocket;
   private audioContext = new Audio();
+  private $intro = React.createRef<HTMLDivElement>();
   public state: State = {
-    me: {} as any,
+    loading: false,
+
     users: {},
   };
   public componentDidMount(): void {
@@ -48,13 +52,16 @@ export default class Game extends React.PureComponent<
 
       switch (message.type) {
         case WebSocketMessage.Type.Initialize:
-          const users: Record<number, Database.SummarizedUser> = {};
+          const users: Table<Database.SummarizedUser> = {};
           for (const user of message.users) users[user.id] = user;
-          this.setState({ me: message.me, users });
           for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound))
             await this.audioContext.register(id, `/media/sound${src}`);
           this.audioContext.volume = message.me.settings.volume;
           this.audioContext.play(`lobby_${message.me.settings.lobbyMusic}`);
+          this.setState({ me: message.me, users });
+          const $intro = this.$intro.current!;
+          $intro.style.opacity = "0";
+          window.setTimeout(() => $intro.remove(), 2000);
           break;
         case WebSocketMessage.Type.Error:
           alert(L.get(`error_${message.errorType}`));
@@ -69,17 +76,30 @@ export default class Game extends React.PureComponent<
   public render(): React.ReactNode {
     return (
       <article id="main">
+        <div
+          id="loading"
+          style={{ display: this.state.loading ? "block" : "none" }}
+        ></div>
         <div id="game">
           <section className="top-menu">menu</section>
+          <div id="intro" ref={this.$intro}>
+            <img className="image" src="/media/img/kkutu/intro.png" />
+            <div className="version">{this.props.version}</div>
+            <div className="text">{L.get("welcome")}</div>
+          </div>
           <div id="box-grid" className="lobby">
-            <UserListBox
-              server={this.server}
-              me={this.state.me}
-              users={Object.values(this.state.users)}
-            />
-            <RoomListBox />
-            <ProfileBox />
-            <ChatBox />
+            {this.state.me ? (
+              <>
+                <UserListBox
+                  server={this.server}
+                  me={this.state.me}
+                  users={Object.values(this.state.users)}
+                />
+                <RoomListBox rooms={[]} />
+                <ProfileBox {...this.state.me} />
+                <ChatBox />
+              </>
+            ) : null}
           </div>
         </div>
       </article>

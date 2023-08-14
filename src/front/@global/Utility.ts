@@ -16,7 +16,7 @@ export function getRequiredScore(level: number) {
   );
 }
 export function getLevel(score: number) {
-  for (const idx in CLIENT_SETTINGS.expTable)
-    if (score < CLIENT_SETTINGS.expTable[idx]) return idx + 1;
+  for (let i = 0; i <= CLIENT_SETTINGS.maxLevel; i++)
+    if (score < CLIENT_SETTINGS.expTable[i]) return i + 1;
   return 1;
 }

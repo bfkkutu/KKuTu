@@ -3,7 +3,35 @@
     "client": "",
     "slot": ""
   },
-  "application": { "sound": {}, "maxLevel": 450, "expTable": [] },
+  "application": {
+    "sound": {},
+    "maxLevel": 360,
+    "expTable": [],
+    "moremiPart": [
+      "background",
+      "body",
+      "eye",
+      "mouth",
+      "shoes",
+      "clothes",
+      "head",
+      "hair",
+      "handLeft",
+      "handRight",
+      "badge"
+    ],
+    "itemCategory": [
+      "background",
+      "eye",
+      "mouth",
+      "shoes",
+      "clothes",
+      "head",
+      "hair",
+      "hand",
+      "badge"
+    ]
+  },
   "cookie": {
     "age": 604800000,
     "secret": "kkutu"

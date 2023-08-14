@@ -8,6 +8,8 @@ export namespace Schema {
       sound: Table<string>;
       maxLevel: number;
       expTable: number[];
+      moremiPart: string[];
+      itemCategory: string[];
     };
     cookie: {
       age: number;

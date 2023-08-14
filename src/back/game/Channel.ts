@@ -11,7 +11,7 @@ export default class Channel extends WebSocketServer {
   /**
    * 이 채널에 접속 중인 유저 맵.
    */
-  private users = new Map<number, User<true>>();
+  private users = new Map<string, User<true>>();
   /**
    * 이 채널에 만들어진 방 맵.
    */

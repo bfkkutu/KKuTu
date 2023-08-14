@@ -21,7 +21,7 @@ export namespace Database {
 
         export interface record {}
         export type inventory = Table<number>;
-        export interface equipment {}
+        export type equipment = Table<string>;
         export interface punishment {
           chat?: PunishmentData;
           play?: PunishmentData;
@@ -48,10 +48,10 @@ export namespace Database {
 
   // table interfaces
   export interface SummarizedUser {
-    id: number;
+    id: string;
     score: number;
     record: JSON.Types.User.record;
-    equipment: Partial<JSON.Types.User.equipment>;
+    equipment: JSON.Types.User.equipment;
     image: string;
     nickname: string;
     exordial: string;

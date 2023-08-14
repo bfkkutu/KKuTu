@@ -8,7 +8,7 @@ export namespace Nest {
     export type Type = keyof Page.DataTable;
     export type DataTable = {
       Game: {
-        id: number;
+        id: string;
         wsUrl: string;
       };
       Login: {
@@ -39,7 +39,7 @@ export namespace Nest {
   }
   export type ClientSettings = Pick<
     Schema.Settings["application"],
-    "sound" | "maxLevel" | "expTable"
+    "sound" | "maxLevel" | "expTable" | "moremiPart" | "itemCategory"
   > & {
     languageSupport: Table<string>;
   };

@@ -25,9 +25,11 @@
     "serviceTerms": "서비스 이용 약관",
     "personalPolicy": "개인정보 취급 방침",
     "policy": "운영 정책",
+    "level": "레벨",
     "ok": "확인",
     "no": "취소",
     "next": "다음",
+    "send": "전송",
     "optional": "(선택)",
 
     "nickname": "닉네임",
@@ -76,12 +78,20 @@
   "Game": {
     "title": "BF끄투",
 
+    "welcome": "환영합니다.",
+
     "sound_lobby_1": "HexaCube - Breakdown Fragment",
     "sound_lobby_2": "라크다르 - 새로운 시작",
     "sound_lobby_3": "BF끄투 (Piano)",
     "sound_lobby_4": "끄투",
 
-    "userListBox_title": "<{#0}> 접속자 목록 [{#1}명]"
+    "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
+    "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",
+    "chatBox_title": "<{FA|comment}> 채팅",
+    "profileBox_title": "<{FA|user}> 내 정보",
+
+    "stat_record": "통산 {#0}승",
+    "stat_money": "{#0}핑"
   },
   "Login": {
     "title": "BF끄투 - 로그인",

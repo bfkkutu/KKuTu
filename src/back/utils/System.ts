@@ -127,6 +127,8 @@ export function writeClientConstants(): void {
     sound: SETTINGS.application.sound,
     maxLevel: SETTINGS.application.maxLevel,
     expTable: [],
+    moremiPart: SETTINGS.application.moremiPart,
+    itemCategory: SETTINGS.application.itemCategory,
   };
   FS.writeFileSync(
     resolve("dist", "constants.js"),

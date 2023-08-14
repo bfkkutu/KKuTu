@@ -15,7 +15,7 @@ export default class Login extends React.PureComponent<
   public state: State = { loginButtons: [] };
   public componentDidMount() {
     const loginButtons: React.ReactNode[] = [];
-    for (const config of this.props.data.loginMethods) {
+    for (const config of this.props.data.loginMethods)
       if (config.useOAuthButtons)
         loginButtons.push(
           <a href={`/login/${config.vendor}`}>
@@ -42,7 +42,6 @@ export default class Login extends React.PureComponent<
             </button>
           </a>
         );
-    }
     this.setState({ loginButtons });
   }
   public render() {

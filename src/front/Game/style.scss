@@ -5,12 +5,50 @@
     display: flex;
     justify-content: center;
 
+    #loading {
+      padding-top: 200px;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      background-color: #232323;
+      z-index: 6;
+    }
+
     #game {
       display: flex;
       flex-direction: column;
       width: 1000px;
       height: 600px;
       margin-top: 20px;
+
+      #intro {
+        position: fixed;
+        z-index: 5;
+        transition: opacity 2s;
+
+        .image {
+          width: 1000px;
+          height: 600px;
+        }
+
+        .version {
+          position: absolute;
+          top: 4px;
+          left: 4px;
+          font-size: 13px;
+          text-shadow: 0px 0px 3px #000000;
+        }
+
+        .text {
+          position: absolute;
+          top: 360px;
+          left: 0px;
+          width: 100%;
+          font-size: 15px;
+          text-align: center;
+          text-shadow: 0px 0px 3px #000000;
+        }
+      }
 
       #box-grid {
         width: 100%;
@@ -20,10 +58,9 @@
           display: grid;
           grid-template: {
             columns: 1fr 4fr;
-            rows: 9fr 5fr;
+            rows: 37fr 20fr;
           }
         }
-
         &.gaming {
           display: grid;
           grid-template: {
@@ -39,7 +76,7 @@
 .top-menu {
   float: left;
   width: 100%;
-  height: 30px;
+  min-height: 30px;
 
   button {
     float: left;
@@ -56,8 +93,8 @@
 
   .toggled {
     margin-top: 5px;
-    color: #eeeeee;
-    background-color: #444444;
+    color: #eee;
+    background-color: #444;
   }
 }
 .tiny-menu {
@@ -65,6 +102,9 @@
 }
 
 #box-user-list {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+
   div {
     float: left;
   }
@@ -77,7 +117,7 @@
       y: scroll;
     }
 
-    .user-item {
+    .item {
       display: flex;
 
       &:hover {
@@ -100,6 +140,9 @@
 }
 
 #box-room-list {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+
   div {
     float: left;
   }
@@ -111,23 +154,110 @@
       x: hidden;
       y: scroll;
     }
+
+    .item {
+      padding: 5px;
+      border-radius: 10px;
+      margin: 3px;
+      width: 364px;
+      height: 64px;
+      box-shadow: 0px 1px 1px #777;
+      cursor: pointer;
+      transition: all 300ms ease;
+
+      .id {
+        padding-top: 18px;
+        border-right: 1px solid #ccc;
+        margin-right: 4px;
+        width: 49px;
+        height: 46px;
+        font-size: 24px;
+      }
+
+      .title {
+        padding-top: 4px;
+        width: 270px;
+        height: 20px;
+        font-size: 16px;
+        font-weight: bold;
+      }
+
+      .limit {
+        padding-top: 7px;
+        width: 39px;
+        height: 17px;
+        text-align: center;
+      }
+
+      .mode {
+        padding-top: 5px;
+        width: 270px;
+      }
+
+      .info {
+        width: 270px;
+      }
+
+      .round {
+        padding-top: 5px;
+        margin-right: 10px;
+      }
+
+      .time {
+        padding-top: 5px;
+      }
+
+      .lock {
+        padding-top: 8px;
+        width: 39px;
+        text-align: center;
+        font-size: 24px;
+      }
+
+      &.waiting {
+        background: url("/media/img/kkutu/waiting.png");
+      }
+      &.gaming {
+        background: url("/media/img/kkutu/gaming.png");
+
+        .id {
+          border-color: #cc9999;
+        }
+      }
+
+      &.admin {
+        &.waiting {
+          background: url("/media/img/kkutu/adminwaiting.png");
+        }
+        &.gaming {
+          background: url("/media/img/kkutu/admingaming.png");
+        }
+      }
+
+      &.create {
+        background: url("/media/img/kkutu/createroom.png");
+      }
+    }
   }
 }
 
 #box-shop {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+
   div {
     float: left;
   }
 
   .body {
     width: calc(100% - 10px);
-    height: 330px;
+    height: calc(100% - 10px);
   }
 }
 
 #box-room {
-  width: 100%;
-  height: 360px;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
 
   .title {
     height: 12px;
@@ -139,16 +269,131 @@
 }
 
 #box-profile {
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
   cursor: pointer;
 
   div {
     float: left;
   }
+
+  .body {
+    .moremi {
+      width: 80px;
+      height: 80px;
+
+      * {
+        width: 100%;
+        height: 100%;
+      }
+
+      .moremi-handRight {
+        transform: scaleX(-1);
+      }
+    }
+    .stat {
+      padding-left: 5px;
+      width: 105px;
+
+      .level {
+        float: left;
+        margin: 1px;
+        width: 18px;
+        height: 18px;
+      }
+      .name {
+        padding-top: 3px;
+        padding-left: 4px;
+        width: 76px;
+        height: 17px;
+        font-weight: bold;
+      }
+      .record {
+        margin-top: 3px;
+        width: 100%;
+      }
+      .money {
+        margin-top: 3px;
+        width: 100%;
+      }
+    }
+    .name {
+      padding-top: 3px;
+      padding-left: 4px;
+      width: 76px;
+      height: 17px;
+      font-weight: bold;
+    }
+    .level {
+      margin: 12px 0px;
+      width: 190px;
+      font-size: 15px;
+      text-align: center;
+    }
+    .gauge {
+      border-radius: 10px;
+      margin: -5px 0px;
+      width: 190px;
+      height: 30px;
+      overflow: hidden;
+      background-color: #333333;
+
+      .graph-bar {
+        background-image: url("/media/img/kkutu/scorebar.png");
+      }
+    }
+    .gauge-text {
+      margin-top: -16px;
+      width: 190px;
+    }
+
+    .bar-text {
+      color: #eeeeee;
+      text-align: center;
+      text-shadow: 0px 1px 1px #141414;
+    }
+  }
 }
 
 #box-chat {
-  .item-enabled {
-    height: 230px;
+  width: calc(100% - 10px);
+  height: calc(100% - 10px);
+
+  .list {
+    height: 120px;
+    width: 100%;
+    overflow-y: scroll;
+
+    hr {
+      padding-top: 0px;
+      border: 0px;
+      border-bottom: 1px dashed #999;
+      margin: 2px 0px;
+    }
+  }
+
+  .input-chat {
+    float: left;
+    border: {
+      right: none;
+      top-right-radius: 0px;
+      bottom-right-radius: 0px;
+    }
+    margin-top: 5px;
+    width: calc(100% - 82px);
+    height: 20px;
+  }
+
+  .button-send {
+    float: left;
+    border: {
+      left: none;
+      top-left-radius: 0px;
+      bottom-left-radius: 0px;
+    }
+    margin-top: 5px;
+    width: 60px;
+    height: 20px;
   }
 }
 
@@ -179,26 +424,124 @@
   padding: 5px;
   margin-bottom: 1px;
   border-radius: 0px;
-  color: #111111;
-  box-shadow: 0px 2px 1px #dddddd;
-  background-color: #eeeeee;
+  color: #111;
+  box-shadow: 0px 2px 1px #ddd;
+  background-color: #eee;
 
   .title {
-    border-bottom-color: #cccccc;
     border-radius: 5px;
-    color: #222222;
-    background-color: #dddddd;
+    color: #222;
+    background-color: #ddd;
     padding: 3px;
-    border-bottom: 1px solid #333333;
+    border-bottom: 1px solid #ccc;
     margin-bottom: 5px;
 
     i {
-      color: #111111;
+      color: #111;
     }
   }
 
   .body {
     font-size: 12px;
     padding: 5px 5px 0px 5px;
+  }
+}
+
+.moremi {
+  position: relative;
+
+  img {
+    position: absolute;
+  }
+}
+
+.ellipse {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes RoundEffect {
+  0% {
+    font-size: 16px;
+    color: #ffff44;
+    background-color: rgba(0, 0, 0, 1);
+  }
+  100% {
+    font-size: 12px;
+    color: #ffffff;
+    background-color: rgba(0, 0, 0, 0);
+  }
+}
+@keyframes ReadyBlink {
+  0% {
+    margin-top: 0px;
+    height: 20px;
+  }
+  50% {
+    margin-top: -5px;
+    height: 25px;
+  }
+  100% {
+    margin-top: 0px;
+    height: 20px;
+  }
+}
+@keyframes CurrentBlink {
+  0% {
+    border-color: #3eff3e;
+  }
+  50% {
+    border-color: #009000;
+  }
+  100% {
+    border-color: #3eff3e;
+  }
+}
+@keyframes FailBlink {
+  0% {
+    text-decoration: line-through;
+  }
+  25% {
+    text-decoration: inherit;
+  }
+  50% {
+    text-decoration: line-through;
+  }
+  75% {
+    text-decoration: inherit;
+  }
+}
+@keyframes ModifiedBlink {
+  0% {
+    background-color: #ffff44;
+  }
+  100% {
+    background-color: #dddddd;
+  }
+}
+@keyframes LvUpBlink {
+  0% {
+    margin-top: 6px;
+  }
+  100% {
+    margin-top: 1px;
+  }
+}
+@keyframes ScoreGoing {
+  0% {
+    margin-top: -80px;
+    font-size: 24px;
+    opacity: 1;
+  }
+  10% {
+    margin-top: -95px;
+    font-size: 36px;
+    opacity: 0.95;
+  }
+  100% {
+    margin-top: -25px;
+    font-size: 20px;
+    opacity: 0.1;
   }
 }
