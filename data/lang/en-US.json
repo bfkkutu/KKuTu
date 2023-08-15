@@ -79,11 +79,25 @@
     "title": "BF끄투",
 
     "welcome": "환영합니다.",
+    "closed": "[#{#0}] 서버와 연결이 끊어졌습니다.",
 
     "sound_lobby_1": "HexaCube - Breakdown Fragment",
     "sound_lobby_2": "라크다르 - 새로운 시작",
     "sound_lobby_3": "BF끄투 (Piano)",
     "sound_lobby_4": "끄투",
+
+    "menu_spectate": "관전하기",
+    "menu_roomSettings": "방 설정",
+    "menu_createRoom": "방 만들기",
+    "menu_quick": "빠른 입장",
+    "menu_shop": "상점",
+    "menu_dict": "사전",
+    "menu_invite": "초대",
+    "menu_practice": "연습",
+    "menu_ready": "준비",
+    "menu_start": "시작",
+    "menu_exit": "나가기",
+    "menu_replay": "전적",
 
     "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
     "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",

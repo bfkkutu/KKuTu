@@ -110,10 +110,8 @@ export default class User<Connected extends boolean = false>
   })
   public createdAt!: number;
 
-  /**
-   * undefined라면 데이터베이스에서 조회되기만 한 유저.
-   */
   public socket!: Connected extends true ? WebSocket : undefined;
+  public roomId!: Connected extends true ? number | undefined : undefined;
 
   public summarize(): Database.SummarizedUser {
     return {
@@ -129,19 +127,12 @@ export default class User<Connected extends boolean = false>
   }
   public serialize(): Database.DetailedUser {
     return {
-      id: this.id,
-      score: this.score,
+      ...this.summarize(),
       money: this.money,
-      record: this.record,
       inventory: this.inventory,
-      equipment: this.equipment,
-      image: this.image,
-      nickname: this.nickname,
-      exordial: this.exordial,
       punishment: this.punishment,
       friends: this.friends,
       settings: this.settings,
-      createdAt: this.createdAt,
     };
   }
 }

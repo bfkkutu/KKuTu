@@ -76,7 +76,7 @@
 .top-menu {
   float: left;
   width: 100%;
-  min-height: 30px;
+  height: 30px;
 
   button {
     float: left;
@@ -85,10 +85,11 @@
     border-bottom-right-radius: 0px;
     width: 98px;
     height: 20px;
-  }
-  button:hover {
-    margin-top: -5px;
-    height: 25px;
+
+    &:hover {
+      margin-top: -5px;
+      height: 25px;
+    }
   }
 
   .toggled {
@@ -96,9 +97,61 @@
     color: #eee;
     background-color: #444;
   }
-}
-.tiny-menu {
-  width: 20px;
+
+  .menu {
+    &-help {
+      background-color: rgb(187, 187, 187);
+    }
+    &-settings {
+      background-color: rgb(204, 204, 204);
+    }
+    &-community {
+      background-color: rgb(218, 169, 255);
+    }
+    &-leader {
+      background-color: rgb(70, 232, 91);
+    }
+    &-spectate {
+      background-color: rgb(209, 157, 255);
+    }
+    &-roomSettings {
+      background-color: rgb(176, 210, 243);
+    }
+    &-createRoom {
+      background-color: rgb(142, 192, 243);
+    }
+    &-quick {
+      background-color: rgb(176, 210, 243);
+    }
+    &-shop {
+      background-color: rgb(179, 231, 183);
+    }
+    &-dict {
+      background-color: rgb(115, 208, 122);
+    }
+    &-invite {
+      background-color: rgb(159, 230, 105);
+    }
+    &-practice {
+      background-color: rgb(252, 245, 169);
+    }
+    &-ready {
+      background-color: #ffc67f;
+    }
+    &-start {
+      background-color: rgb(255, 181, 118);
+    }
+    &-exit {
+      background-color: #ffadad;
+    }
+    &-replay {
+      background-color: rgb(217, 255, 130);
+    }
+  }
+
+  .tiny-menu {
+    width: 20px;
+  }
 }
 
 #box-user-list {
@@ -348,7 +401,7 @@
     }
 
     .bar-text {
-      color: #eeeeee;
+      color: #eee;
       text-align: center;
       text-shadow: 0px 1px 1px #141414;
     }
@@ -369,6 +422,43 @@
       border: 0px;
       border-bottom: 1px dashed #999;
       margin: 2px 0px;
+    }
+
+    .item {
+      float: left;
+      padding: 1px 0px;
+      margin: 1px 0px;
+      width: 100%;
+      overflow: hidden;
+
+      .head {
+        float: left;
+        padding-right: 4px;
+        margin-right: 5px;
+        width: 100px;
+        font-weight: bold;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #fff;
+        }
+      }
+
+      .content {
+        float: left;
+        width: calc(100% - 190px);
+        min-height: 14px;
+      }
+
+      .timestamp {
+        float: left;
+        padding-top: 2px;
+        width: 70px;
+        font-size: 11px;
+        text-align: right;
+        color: #999;
+      }
     }
   }
 
@@ -434,7 +524,7 @@
     background-color: #ddd;
     padding: 3px;
     border-bottom: 1px solid #ccc;
-    margin-bottom: 5px;
+    margin-bottom: 4px;
 
     i {
       color: #111;

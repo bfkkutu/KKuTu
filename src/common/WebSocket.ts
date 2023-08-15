@@ -9,6 +9,11 @@ export namespace WebSocketMessage {
      * 현재 채널의 유저 정보, 방 정보, 캐릭터 정보 등을 클라이언트에 제공한다.
      */
     Initialize = "initialize",
+    /**
+     * @sender Server & Client.
+     * @condition 누군가 채팅 전송 시.
+     */
+    Chat = "chat",
 
     Heartbeat = "heartbeat",
     Error = "error",
@@ -23,6 +28,16 @@ export namespace WebSocketMessage {
         me: Database.DetailedUser;
         users: Database.SummarizedUser[];
       };
+      [Type.Chat]: {
+        /**
+         * 채팅을 보낸 유저의 식별자.
+         */
+        sender: string;
+        /**
+         * 채팅 내용.
+         */
+        content: string;
+      };
 
       [Type.Heartbeat]: {};
       [Type.Error]: WebSocketError.Message[keyof WebSocketError.Content];
@@ -32,6 +47,12 @@ export namespace WebSocketMessage {
      */
     export interface Client {
       [Type.Initialize]: {};
+      [Type.Chat]: {
+        /**
+         * 채팅 내용.
+         */
+        content: string;
+      };
 
       [Type.Heartbeat]: {};
       [Type.Error]: {}; // dummy

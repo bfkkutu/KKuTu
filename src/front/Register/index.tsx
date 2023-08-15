@@ -101,6 +101,7 @@ export default class Register extends React.PureComponent<
               {L.get("agree")}
             </label>
             <button
+              type="button"
               onClick={() => this.setState({ page: 1 })}
               disabled={
                 !this.state.agreeServiceTerms || !this.state.agreePersonalPolicy

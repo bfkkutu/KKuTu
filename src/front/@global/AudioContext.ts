@@ -1,4 +1,4 @@
-export default class Audio extends window.AudioContext {
+export default class AudioContext extends window.AudioContext {
   private sources: Table<AudioBufferSourceNode> = {};
   private gainNode = this.createGain();
   public current?: string;

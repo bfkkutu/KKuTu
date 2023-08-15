@@ -32,6 +32,7 @@ export default class Login extends React.PureComponent<
         loginButtons.push(
           <a href={`/login/${config.vendor}`}>
             <button
+              type="button"
               id={config.vendor}
               style={{
                 color: config.fontColor,
@@ -49,7 +50,7 @@ export default class Login extends React.PureComponent<
       <article id="main">
         <div className="login-with">{L.render("loginWith")}</div>
         <a href="/">
-          <button id="portal" />
+          <button type="button" id="portal" />
         </a>
         {this.state.loginButtons}
         <div className="login-legal">

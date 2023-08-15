@@ -7,6 +7,7 @@ import qs from "qs";
 import { SECURE_OPTIONS } from "back/utils/Secure";
 import WebSocket from "back/utils/WebSocket";
 import { redisStore } from "back/utils/ExpressSession";
+import { WebSocketMessage } from "common/WebSocket";
 
 type IncomingMessage = Omit<typeof http.IncomingMessage, "constructor"> &
   Express.Request & {
@@ -41,5 +42,14 @@ export default class WebSocketServer extends _WebSocketServer<
 
     this.app = app;
     server.listen(port);
+  }
+
+  public broadcast<T extends WebSocketMessage.Type>(
+    type: T,
+    content: WebSocketMessage.Content.Server[T],
+    filter?: (client: WebSocket) => boolean
+  ) {
+    for (const client of this.clients)
+      if (filter === undefined || filter(client)) client.send(type, content);
   }
 }
