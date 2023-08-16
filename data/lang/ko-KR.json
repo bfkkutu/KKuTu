@@ -30,6 +30,8 @@
     "no": "취소",
     "next": "다음",
     "send": "전송",
+    "save": "저장",
+    "alert": "알림",
     "optional": "(선택)",
 
     "nickname": "닉네임",
@@ -81,10 +83,19 @@
     "welcome": "환영합니다.",
     "closed": "[#{#0}] 서버와 연결이 끊어졌습니다.",
 
-    "sound_lobby_1": "HexaCube - Breakdown Fragment",
-    "sound_lobby_2": "라크다르 - 새로운 시작",
-    "sound_lobby_3": "BF끄투 (Piano)",
-    "sound_lobby_4": "끄투",
+    "invite": "초대",
+    "whisper": "귓속말",
+    "friendRequest": "친구 추가",
+
+    "autoReady": "자동 준비",
+    "badWordsFilter": "비속어 필터링",
+
+    "moveServer": "채널 변경",
+
+    "bgm_lobby_1": "HexaCube - Breakdown Fragment",
+    "bgm_lobby_2": "라크다르 - 새로운 시작",
+    "bgm_lobby_3": "BF끄투 (Piano)",
+    "bgm_lobby_4": "끄투",
 
     "menu_spectate": "관전하기",
     "menu_roomSettings": "방 설정",
@@ -98,6 +109,14 @@
     "menu_start": "시작",
     "menu_exit": "나가기",
     "menu_replay": "전적",
+
+    "settings_title": "환경 설정",
+    "settings_bgmVolume": "배경 음악 크기",
+    "settings_effectVolume": "효과음 크기",
+    "settings_bgm": "배경 음악 선택",
+    "settings_refuse": "자동 거절",
+    "settings_game": "게임",
+    "settings_etc": "기타",
 
     "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
     "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",

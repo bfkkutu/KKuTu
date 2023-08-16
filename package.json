@@ -72,6 +72,7 @@
     "pg-escape": "^0.2.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-loader-spinner": "^5.3.4",
     "redis": "^4.6.7",
     "sha256": "^0.2.0",
     "typeorm": "^0.3.17",

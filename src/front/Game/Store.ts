@@ -3,11 +3,9 @@ import { subscribeWithSelector } from "zustand/middleware";
 
 import { Database } from "common/Database";
 import { Room } from "common/Interfaces";
-import { Chat } from "front/@global/Interfaces";
+import { Chat } from "front/@global/Types";
 
 interface State {
-  loading: boolean;
-
   socket: WebSocket;
   initializeSocket: (url: string) => WebSocket;
 
@@ -28,8 +26,6 @@ interface State {
 
 export const useStore = create<State>()(
   subscribeWithSelector((setState) => ({
-    loading: false,
-
     socket: undefined as any,
     initializeSocket: (url: string) => {
       const socket = new WebSocket(url);
@@ -40,13 +36,13 @@ export const useStore = create<State>()(
     },
 
     me: undefined,
-    updateMe: (me: Database.DetailedUser) =>
+    updateMe: (me) =>
       setState({
         me,
       }),
 
     chatLog: [],
-    appendChat: (chat: Chat) =>
+    appendChat: (chat) =>
       setState((state) => {
         const chatLog = [...state.chatLog, chat];
         if (chatLog.length > 100) chatLog.shift();
@@ -54,20 +50,20 @@ export const useStore = create<State>()(
       }),
 
     users: {},
-    initializeUsers: (list: Database.SummarizedUser[]) =>
+    initializeUsers: (list) =>
       setState(() => {
         const users: Table<Database.SummarizedUser> = {};
         for (const item of list) users[item.id] = item;
         return { users };
       }),
-    addUser: (user: Database.SummarizedUser) =>
+    addUser: (user) =>
       setState(({ users }) => ({
         users: {
           ...users,
           [user.id]: user,
         },
       })),
-    removeUser: (user: Database.SummarizedUser) =>
+    removeUser: (user) =>
       setState((state) => {
         const users = { ...state.users };
         delete users[user.id];

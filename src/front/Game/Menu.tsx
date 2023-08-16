@@ -3,41 +3,19 @@ import React from "react";
 import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import { MenuType } from "front/@global/Types";
+import { Dialogs } from "front/@global/Bayadere/dialog/templates";
 
-function MenuButton(
-  type: MenuType,
-  isTiny: boolean = false,
-  children?: React.ReactNode
-) {
-  const classNames = [`menu-${type}`];
-  if (isTiny) classNames.push("tiny-menu");
-  return (
-    <button type="button" className={classNames.join(" ")}>
-      {children}
-    </button>
-  );
-}
-
-enum MenuType {
-  Help = "help",
-  Settings = "settings",
-  Community = "community",
-  Leaderboard = "leader",
-  Spectate = "spectate",
-  RoomSettings = "roomSettings",
-  CreateRoom = "createRoom",
-  Quick = "quick",
-  Shop = "shop",
-  Dictionary = "dict",
-  Invite = "invite",
-  Practice = "practice",
-  Ready = "ready",
-  Start = "start",
-  Exit = "exit",
-  Replay = "replay",
+enum Action {
+  Dialog,
+  Tab,
 }
 interface MenuItem {
-  element: React.JSX.Element;
+  type: MenuType;
+  isTiny: boolean;
+  label: React.ReactNode;
+  action?: Action;
   forLobby: boolean;
   forRoom: boolean;
   forMaster: boolean;
@@ -46,132 +24,145 @@ interface MenuItem {
 
 const buttons: MenuItem[] = [
   {
-    element: MenuButton(
-      MenuType.Help,
-      true,
-      <Icon type={IconType.NORMAL} name="question-circle" />
-    ),
+    type: MenuType.Help,
+    isTiny: true,
+    label: <Icon type={IconType.NORMAL} name="question-circle" />,
     forLobby: true,
     forRoom: true,
     forMaster: true,
     forGaming: true,
   },
   {
-    element: MenuButton(
-      MenuType.Settings,
-      true,
-      <Icon type={IconType.NORMAL} name="wrench" />
-    ),
+    type: MenuType.Settings,
+    isTiny: true,
+    label: <Icon type={IconType.NORMAL} name="wrench" />,
+    action: Action.Dialog,
     forLobby: true,
     forRoom: true,
     forMaster: true,
     forGaming: true,
   },
   {
-    element: MenuButton(
-      MenuType.Community,
-      true,
-      <Icon type={IconType.NORMAL} name="comments" />
-    ),
+    type: MenuType.Community,
+    isTiny: true,
+    label: <Icon type={IconType.NORMAL} name="comments" />,
     forLobby: true,
     forRoom: true,
     forMaster: true,
     forGaming: true,
   },
   {
-    element: MenuButton(
-      MenuType.Leaderboard,
-      true,
-      <Icon type={IconType.NORMAL} name="trophy" />
-    ),
+    type: MenuType.Leaderboard,
+    isTiny: true,
+    label: <Icon type={IconType.NORMAL} name="trophy" />,
     forLobby: true,
     forRoom: false,
     forMaster: false,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Spectate, false, L.get("menu_spectate")),
+    type: MenuType.Spectate,
+    isTiny: false,
+    label: L.get("menu_spectate"),
     forLobby: false,
     forRoom: true,
     forMaster: true,
     forGaming: false,
   },
   {
-    element: MenuButton(
-      MenuType.RoomSettings,
-      false,
-      L.get("menu_roomSettings")
-    ),
+    type: MenuType.RoomSettings,
+    isTiny: false,
+    label: L.get("menu_roomSettings"),
     forLobby: false,
     forRoom: false,
     forMaster: true,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.CreateRoom, false, L.get("menu_createRoom")),
+    type: MenuType.CreateRoom,
+    isTiny: false,
+    label: L.get("menu_createRoom"),
     forLobby: true,
     forRoom: false,
     forMaster: false,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Quick, false, L.get("menu_quick")),
+    type: MenuType.Quick,
+    isTiny: false,
+    label: L.get("menu_quick"),
     forLobby: true,
     forRoom: false,
     forMaster: false,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Shop, false, L.get("menu_shop")),
+    type: MenuType.Shop,
+    isTiny: false,
+    label: L.get("menu_shop"),
     forLobby: true,
     forRoom: false,
     forMaster: false,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Dictionary, false, L.get("menu_dict")),
+    type: MenuType.Dictionary,
+    isTiny: false,
+    label: L.get("menu_dict"),
     forLobby: true,
     forRoom: true,
     forMaster: true,
     forGaming: true,
   },
   {
-    element: MenuButton(MenuType.Invite, false, L.get("menu_invite")),
+    type: MenuType.Invite,
+    isTiny: false,
+    label: L.get("menu_invite"),
     forLobby: false,
     forRoom: true,
     forMaster: true,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Practice, false, L.get("menu_practice")),
+    type: MenuType.Practice,
+    isTiny: false,
+    label: L.get("menu_practice"),
     forLobby: false,
     forRoom: true,
     forMaster: true,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Ready, false, L.get("menu_ready")),
+    type: MenuType.Ready,
+    isTiny: false,
+    label: L.get("menu_ready"),
     forLobby: false,
     forRoom: true,
     forMaster: false,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Start, false, L.get("menu_start")),
+    type: MenuType.Start,
+    isTiny: false,
+    label: L.get("menu_start"),
     forLobby: false,
     forRoom: false,
     forMaster: true,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Exit, false, L.get("menu_exit")),
+    type: MenuType.Exit,
+    isTiny: false,
+    label: L.get("menu_exit"),
     forLobby: false,
     forRoom: true,
     forMaster: true,
     forGaming: false,
   },
   {
-    element: MenuButton(MenuType.Replay, false, L.get("menu_replay")),
+    type: MenuType.Replay,
+    isTiny: false,
+    label: L.get("menu_replay"),
     forLobby: true,
     forRoom: false,
     forMaster: false,
@@ -181,6 +172,7 @@ const buttons: MenuItem[] = [
 
 export function Menu() {
   const room = useStore((state) => state.room);
+  const toggle = useDialogStore((state) => state.toggle);
   let property: keyof MenuItem = "forLobby";
 
   if (room === undefined) property = "forLobby";
@@ -188,7 +180,26 @@ export function Menu() {
     <section className="top-menu">
       {buttons
         .filter((config) => config[property])
-        .map((config) => config.element)}
+        .map((config) => {
+          const classNames = [`menu-${config.type}`];
+          if (config.isTiny) classNames.push("tiny-menu");
+          const props: React.DetailedHTMLProps<
+            React.ButtonHTMLAttributes<HTMLButtonElement>,
+            HTMLButtonElement
+          > = {
+            className: classNames.join(" "),
+            onClick: undefined,
+          };
+          switch (config.action) {
+            case Action.Dialog:
+              props.onClick = () => toggle(Dialogs[config.type]);
+          }
+          return (
+            <button type="button" {...props}>
+              {config.label}
+            </button>
+          );
+        })}
     </section>
   );
 }

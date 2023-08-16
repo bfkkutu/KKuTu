@@ -51,6 +51,9 @@ export default class Channel extends WebSocketServer {
               // broadcast to room
             }
             break;
+          case WebSocketMessage.Type.UpdateMe:
+            // TODO
+            break;
         }
       });
       socket.on("close", () => {

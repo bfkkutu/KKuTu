@@ -9,7 +9,13 @@ export default function RoomListBox() {
   return (
     <section id="box-room-list" className="product">
       <h5 className="title">{L.render("roomListBox_title", rooms.length)}</h5>
-      <div className="body">{}</div>
+      <div className="body">
+        {rooms.length === 0 ? (
+          <div className="item create">{L.get("menu_createRoom")}</div>
+        ) : (
+          rooms.map((room) => <div></div>)
+        )}
+      </div>
     </section>
   );
 }

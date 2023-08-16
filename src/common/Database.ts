@@ -27,8 +27,17 @@ export namespace Database {
           play?: PunishmentData;
         }
         export interface settings {
-          volume: number;
+          bgmVolume: number;
+          effectVolume: number;
           lobbyMusic: number;
+          refuse: {
+            invite: boolean;
+            whisper: boolean;
+            friendRequest: boolean;
+          };
+          game: {
+            autoReady: boolean;
+          };
         }
       }
     }
@@ -39,8 +48,17 @@ export namespace Database {
         export const equipment: Types.User.equipment = {};
         export const punishment: Types.User.punishment = {};
         export const settings: Types.User.settings = {
-          volume: 0.5,
+          bgmVolume: 0.5,
+          effectVolume: 0.5,
           lobbyMusic: 1,
+          refuse: {
+            invite: false,
+            whisper: false,
+            friendRequest: false,
+          },
+          game: {
+            autoReady: false,
+          },
         };
       }
     }

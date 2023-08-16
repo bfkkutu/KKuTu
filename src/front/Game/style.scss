@@ -218,6 +218,16 @@
       cursor: pointer;
       transition: all 300ms ease;
 
+      &.create {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 15px;
+        font-weight: bold;
+        color: #fff;
+        background-image: url("/media/img/kkutu/createroom.png");
+      }
+
       .id {
         padding-top: 18px;
         border-right: 1px solid #ccc;

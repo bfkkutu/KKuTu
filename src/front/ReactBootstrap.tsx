@@ -8,6 +8,10 @@ import { WebSocketMessage } from "common/WebSocket";
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
 import L from "front/@global/Language";
+import DialogManager from "front/@global/Bayadere/dialog/Manager";
+import SpinnerManager from "front/@global/Bayadere/spinner/Manager";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
 
 declare global {
   interface Window {
@@ -23,6 +27,20 @@ declare global {
 }
 
 if (typeof window !== "undefined") {
+  window.alert = (content: React.ReactNode) => {
+    const { show, hide } = useDialogStore.getState();
+    // TODO: first show => first hide
+    const dialog = new DialogTuple(
+      L.get("alert"),
+      () => <div className="dialog-alert">{content}</div>,
+      () => (
+        <button type="button" onClick={() => hide(dialog)}>
+          {L.get("ok")}
+        </button>
+      )
+    );
+    show(dialog);
+  };
   window.WebSocket.prototype._send = window.WebSocket.prototype.send;
   window.WebSocket.prototype.send = function <T extends WebSocketMessage.Type>(
     type: T,
@@ -59,6 +77,10 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
     return (
       <>
         <img id="background" className="jt-image" />
+        <div id="bayadere">
+          <DialogManager />
+          <SpinnerManager />
+        </div>
         <Header profile={this.props.session.profile} />
         {this.props.children}
         <Footer />

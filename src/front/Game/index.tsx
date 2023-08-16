@@ -6,14 +6,14 @@ import { WebSocketMessage } from "../../common/WebSocket";
 import L from "front/@global/Language";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import AudioContext from "front/@global/AudioContext";
-
 import { getRequiredScore } from "front/@global/Utility";
+import { Menu } from "front/Game/Menu";
+import { useStore } from "front/Game/Store";
+
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
 import ChatBox from "front/Game/box/Chat";
 import RoomListBox from "front/Game/box/RoomList";
-import { Menu } from "front/Game/Menu";
-import { useStore } from "front/Game/Store";
 
 CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
 for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
@@ -24,16 +24,12 @@ CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
 CLIENT_SETTINGS.expTable.push(Infinity);
 
 function Game(props: Nest.Page.Props<"Game">) {
-  const [socket, initializeSocket] = useStore((state) => [
-    state.socket,
-    state.initializeSocket,
-  ]);
-  const loading = useStore((state) => state.loading);
+  const initializeSocket = useStore((state) => state.initializeSocket);
   const updateMe = useStore((state) => state.updateMe);
   const appendChat = useStore((state) => state.appendChat);
   const initializeUsers = useStore((state) => state.initializeUsers);
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
-  const audioContext = new AudioContext();
+  const audioContext = AudioContext.instance;
 
   const $intro = useRef<HTMLDivElement>(null);
 
@@ -49,8 +45,8 @@ function Game(props: Nest.Page.Props<"Game">) {
         case WebSocketMessage.Type.Initialize:
           for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound))
             await audioContext.register(id, `/media/sound${src}`);
-          audioContext.volume = message.me.settings.volume;
-          audioContext.play(`lobby_${message.me.settings.lobbyMusic}`);
+          audioContext.volume = message.me.settings.bgmVolume;
+          audioContext.play(`lobby_${message.me.settings.lobbyMusic}`, true);
           updateMe(message.me);
           initializeUsers(message.users);
           const intro = $intro.current!;
@@ -76,7 +72,6 @@ function Game(props: Nest.Page.Props<"Game">) {
 
   return (
     <article id="main">
-      <div id="loading" style={{ display: loading ? "block" : "none" }}></div>
       <div id="game">
         <div id="intro" ref={$intro}>
           <img className="image" src="/media/img/kkutu/intro.png" />
