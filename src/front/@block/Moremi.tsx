@@ -2,6 +2,7 @@ import React from "react";
 
 import { Database } from "common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
+import { omit } from "../../common/Utility";
 
 interface Props
   extends React.DetailedHTMLProps<
@@ -14,7 +15,7 @@ interface Props
 export default class Moremi extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
-      <div {...this.props}>
+      <div {...omit(this.props, "equipment")}>
         {CLIENT_SETTINGS.moremiPart.map((part) => (
           <img
             className={`moremi-${part}`}

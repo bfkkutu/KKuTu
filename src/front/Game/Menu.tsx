@@ -4,8 +4,8 @@ import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { MenuType } from "front/@global/Types";
 import { Dialogs } from "front/@global/Bayadere/dialog/templates";
+import { MenuType } from "front/@global/enums/MenuType";
 
 enum Action {
   Dialog,

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import L from "front/@global/Language";
 import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
@@ -6,27 +6,31 @@ import { useStore } from "front/Game/Store";
 import { Database } from "common/Database";
 import AudioContext from "front/@global/AudioContext";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
+import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 
-export default new DialogTuple(
-  L.get("settings_title"),
-  () => {
-    const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
+export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
+  const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
+  const socket = useStore((state) => state.socket);
+  const hide = useDialogStore((state) => state.hide);
+  const [valueChanged, setValueChanged] = useState(false);
 
-    if (me === undefined) return null;
+  const updateSettings = (
+    settings: Partial<Database.JSON.Types.User.settings>
+  ) => {
+    setValueChanged(true);
+    updateMe({
+      ...me,
+      settings: {
+        ...me.settings,
+        ...settings,
+      },
+    });
+  };
 
-    const updateSettings = (
-      settings: Partial<Database.JSON.Types.User.settings>
-    ) =>
-      updateMe({
-        ...me,
-        settings: {
-          ...me.settings,
-          ...settings,
-        },
-      });
-
-    return (
-      <div className="dialog-settings">
+  return (
+    <>
+      <div className="body dialog-settings">
         <label>
           <label className="dialog-desc" htmlFor="settings-input-bgm-volume">
             {L.get("settings_bgmVolume")}
@@ -173,19 +177,29 @@ export default new DialogTuple(
           </div>
         </label>
       </div>
-    );
-  },
-  () => (
-    <>
-      <button
-        type="button"
-        onClick={() => alert("이동 가능한 채널이 없습니다.")}
-      >
-        {L.get("moveServer")}
-      </button>
-      <button type="button" onClick={() => {}}>
-        {L.get("save")}
-      </button>
+      <div className="footer">
+        <button
+          type="button"
+          onClick={() => alert("이동 가능한 채널이 없습니다.")}
+        >
+          {L.get("moveServer")}
+        </button>
+        <button
+          type="button"
+          disabled={!valueChanged}
+          onClick={() => {
+            socket.send(WebSocketMessage.Type.UpdateSettings, {
+              settings: me.settings,
+            });
+            socket.wait(WebSocketMessage.Type.UpdateSettings, () => {
+              hide(SettingsDialog);
+              alert("변경 사항이 저장되었습니다.");
+            });
+          }}
+        >
+          {L.get("save")}
+        </button>
+      </div>
     </>
-  )
-);
+  );
+});

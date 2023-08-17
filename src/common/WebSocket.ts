@@ -9,7 +9,7 @@ export namespace WebSocketMessage {
      * 현재 채널의 유저 정보, 방 정보, 캐릭터 정보 등을 클라이언트에 제공한다.
      */
     Initialize = "initialize",
-    UpdateMe = "updateMe",
+    UpdateSettings = "updateSettings",
     /**
      * @sender Server & Client.
      * @condition 누군가 채팅 전송 시.
@@ -29,7 +29,7 @@ export namespace WebSocketMessage {
         me: Database.DetailedUser;
         users: Database.SummarizedUser[];
       };
-      [Type.UpdateMe]: {};
+      [Type.UpdateSettings]: {};
       [Type.Chat]: {
         /**
          * 채팅을 보낸 유저의 식별자.
@@ -49,7 +49,9 @@ export namespace WebSocketMessage {
      */
     export interface Client {
       [Type.Initialize]: {};
-      [Type.UpdateMe]: {};
+      [Type.UpdateSettings]: {
+        settings: Database.JSON.Types.User.settings;
+      };
       [Type.Chat]: {
         /**
          * 채팅 내용.

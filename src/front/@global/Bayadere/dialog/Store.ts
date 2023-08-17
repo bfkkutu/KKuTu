@@ -11,16 +11,25 @@ interface State {
 export const useDialogStore = create<State>((setState) => ({
   dialogs: [],
   show: (dt) => {
+    dt.initializeState();
+    dt.visible = true;
     setState(({ dialogs }) => ({ dialogs: [...dialogs, dt] }));
   },
-  hide: (dt) =>
+  hide: (dt) => {
+    dt.visible = false;
     setState(({ dialogs }) => ({
       dialogs: dialogs.filter((dialog) => dialog !== dt),
-    })),
-  toggle: (dt) =>
-    setState((state) => ({
-      dialogs: state.dialogs.find((dialog) => dialog === dt)
-        ? state.dialogs.filter((dialog) => dialog !== dt)
-        : [...state.dialogs, dt],
-    })),
+    }));
+  },
+  toggle: (dt) => {
+    if (dt.visible)
+      setState(({ dialogs }) => ({
+        dialogs: dialogs.filter((dialog) => dialog !== dt),
+      }));
+    else {
+      dt.initializeState();
+      setState(({ dialogs }) => ({ dialogs: [...dialogs, dt] }));
+    }
+    dt.visible = !dt.visible;
+  },
 }));

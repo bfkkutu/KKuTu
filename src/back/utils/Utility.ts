@@ -106,23 +106,6 @@ export function orderByString<T>(
     : (a, b) => retriever(a).localeCompare(retriever(b));
 }
 /**
- * 대상 객체의 엔트리 일부만 갖는 객체를 반환한다.
- *
- * @param object 대상 객체.
- * @param keys 선택할 키.
- */
-export function pick<T extends object, U extends keyof T>(
-  object: T,
-  ...keys: U[]
-): Pick<T, U> {
-  return keys.reduce<Pick<T, U>>((pv, v) => {
-    if (v in object) {
-      pv[v] = object[v];
-    }
-    return pv;
-  }, {} as any);
-}
-/**
  * 배열을 주어진 함수에 따라 딕셔너리로 바꾸어 반환한다.
  *
  * @param target 대상 배열.
@@ -163,4 +146,16 @@ export function resolveLanguageArguments(text: string, ...args: any[]): string {
  */
 export function toSignedString(value: number): string {
   return (value > 0 ? "+" : "") + value;
+}
+/**
+ * 객체에 누락된 값이 있으면 제공된 기본 객체의 값을 복사한다.
+ *
+ * @param object 누락된 값이 있을 것으로 의심되는 객체.
+ * @param defaults 기본 값을 담은 객체.
+ */
+export function fillWithDefaults<T extends object>(
+  object: Partial<T>,
+  defaults: T
+): void {
+  for (const key in defaults) if (!(key in object)) object[key] = defaults[key];
 }

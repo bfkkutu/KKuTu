@@ -6,9 +6,9 @@ import { WebSocketMessage } from "../../common/WebSocket";
 import L from "front/@global/Language";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import AudioContext from "front/@global/AudioContext";
-import { getRequiredScore } from "front/@global/Utility";
 import { Menu } from "front/Game/Menu";
 import { useStore } from "front/Game/Store";
+import { getRequiredScore } from "front/@global/Utility";
 
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
@@ -25,7 +25,7 @@ CLIENT_SETTINGS.expTable.push(Infinity);
 
 function Game(props: Nest.Page.Props<"Game">) {
   const initializeSocket = useStore((state) => state.initializeSocket);
-  const updateMe = useStore((state) => state.updateMe);
+  const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const appendChat = useStore((state) => state.appendChat);
   const initializeUsers = useStore((state) => state.initializeUsers);
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
@@ -35,8 +35,8 @@ function Game(props: Nest.Page.Props<"Game">) {
 
   useEffect(() => {
     const socket = initializeSocket(props.data.wsUrl);
-    socket.onopen = () => {};
-    socket.onmessage = async (raw) => {
+    socket.on("open", () => {});
+    socket.on("message", async (raw) => {
       const message: WebSocketMessage.Server[WebSocketMessage.Type] =
         JSON.parse(raw.data);
       console.log(message);
@@ -64,10 +64,10 @@ function Game(props: Nest.Page.Props<"Game">) {
           alert(L.get(`error_${message.errorType}`));
           break;
       }
-    };
-    socket.onclose = (e) => {
+    });
+    socket.on("close", (e) => {
       alert(L.get("closed", e.code));
-    };
+    });
   }, []);
 
   return (
@@ -78,13 +78,17 @@ function Game(props: Nest.Page.Props<"Game">) {
           <div className="version">{props.version}</div>
           <div className="text">{L.get("welcome")}</div>
         </div>
-        <Menu />
-        <div id="box-grid" className="lobby">
-          <UserListBox server={server} />
-          <RoomListBox />
-          <ProfileBox />
-          <ChatBox />
-        </div>
+        {me ? (
+          <>
+            <Menu />
+            <div id="box-grid" className="lobby">
+              <UserListBox server={server} />
+              <RoomListBox />
+              <ProfileBox />
+              <ChatBox />
+            </div>
+          </>
+        ) : null}
       </div>
     </article>
   );

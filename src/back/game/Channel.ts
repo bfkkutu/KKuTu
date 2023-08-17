@@ -3,6 +3,8 @@ import DB from "back/utils/Database";
 import Room from "back/game/Room";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Logger } from "back/utils/Logger";
+import { fillWithDefaults } from "back/utils/Utility";
+import { Database } from "../../common/Database";
 
 import User from "back/models/User";
 
@@ -29,9 +31,10 @@ export default class Channel extends WebSocketServer {
         .getOne();
       if (user === null) return socket.close();
       socket.uid = user.id;
+      fillWithDefaults(user.settings, Database.JSON.Defaults.User.settings); // 옵션이 나중에 추가될 경우 오류 방지.
       this.users.set(user.id, user);
       user.socket = socket;
-      socket.on("message", (raw) => {
+      socket.on("message", async (raw) => {
         const message: WebSocketMessage.Client[WebSocketMessage.Type] =
           JSON.parse(raw.toString());
         switch (message.type) {
@@ -51,8 +54,10 @@ export default class Channel extends WebSocketServer {
               // broadcast to room
             }
             break;
-          case WebSocketMessage.Type.UpdateMe:
-            // TODO
+          case WebSocketMessage.Type.UpdateSettings:
+            Object.assign(user.settings, message.settings);
+            await DB.Manager.save(user);
+            socket.send(WebSocketMessage.Type.UpdateSettings, {});
             break;
         }
       });

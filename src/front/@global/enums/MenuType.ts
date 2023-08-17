@@ -1,8 +1,3 @@
-export interface Chat {
-  sender: string;
-  content: string;
-  receivedAt: Date;
-}
 export enum MenuType {
   Help = "help",
   Settings = "settings",

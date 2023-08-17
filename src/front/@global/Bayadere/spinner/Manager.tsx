@@ -8,18 +8,16 @@ export default function SpinnerManager() {
 
   if (!visible) return null;
   return (
-    <div id="dialog">
-      <Oval
-        height={80}
-        width={80}
-        color="#fff"
-        ariaLabel="oval-loading"
-        secondaryColor="#000"
-        strokeWidth={3}
-        strokeWidthSecondary={3}
-        wrapperClass="spinner-wrapper"
-        visible
-      />
-    </div>
+    <Oval
+      height={80}
+      width={80}
+      color="#fff"
+      ariaLabel="oval-loading"
+      secondaryColor="#000"
+      strokeWidth={3}
+      strokeWidthSecondary={3}
+      wrapperClass="spinner-wrapper"
+      visible
+    />
   );
 }

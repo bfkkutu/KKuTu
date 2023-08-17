@@ -342,24 +342,6 @@ span {
   width: 1010px;
   z-index: 1;
 }
-#Bottom {
-  float: left;
-  width: 1000px;
-  color: #444444;
-  font-size: 11px;
-  text-align: center;
-}
-.bottom-legal {
-  margin-top: 10px;
-  color: #cccccc;
-}
-.bottom-legal a {
-  padding: 0px 5px;
-}
-.bottom-contact {
-  color: #777777;
-  font-weight: bold;
-}
 
 /* jjowt */
 h1,
@@ -447,6 +429,7 @@ code {
   width: 100%;
   height: 100%;
   pointer-events: none;
+  z-index: 1;
 
   .dialog {
     position: fixed;

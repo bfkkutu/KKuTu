@@ -2,15 +2,13 @@ import React from "react";
 
 import L from "front/@global/Language";
 import LevelIcon from "front/@block/LevelIcon";
-import { getLevel } from "front/@global/Utility";
 import Moremi from "front/@block/Moremi";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { useStore } from "front/Game/Store";
+import { getLevel } from "front/@global/Utility";
 
 export default function ProfileBox() {
   const me = useStore((state) => state.me);
-
-  if (me === undefined) return null;
 
   const level = getLevel(me.score);
   const prev = CLIENT_SETTINGS.expTable[level - 2] || 0;

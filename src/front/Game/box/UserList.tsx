@@ -1,9 +1,9 @@
 import React from "react";
 
 import L from "front/@global/Language";
-import { getLevel } from "front/@global/Utility";
 import LevelIcon from "front/@block/LevelIcon";
 import { useStore } from "front/Game/Store";
+import { getLevel } from "front/@global/Utility";
 
 interface Props {
   server: number;

@@ -1,66 +1,64 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
 
-interface Props extends DialogTuple {
-  hide: () => void;
+interface Props {
+  instance: DialogTuple;
 }
-interface State {
-  x: number;
-  y: number;
-  isMoving: boolean;
-}
-class Dialog extends React.PureComponent<Props, State> {
-  public state: State = {
-    x: window.innerWidth / 2,
-    y: window.innerHeight / 2,
-    isMoving: false,
-  };
-  public componentDidMount(): void {
-    window.addEventListener(
-      "mousemove",
-      (e) =>
-        this.state.isMoving &&
-        this.setState({
-          x: this.state.x + e.movementX,
-          y: this.state.y + e.movementY,
-        })
-    );
-    window.addEventListener("mouseup", () =>
-      this.setState({ isMoving: false })
-    );
-  }
-  public render(): React.ReactNode {
-    return (
-      <div
-        className="dialog"
-        style={{ top: `${this.state.y}px`, left: `${this.state.x}px` }}
-      >
-        <div
-          className="head"
-          onMouseDown={() => this.setState({ isMoving: true })}
-        >
-          <label>{this.props.title}</label>
-          <div className="button-close" onClick={() => this.props.hide()} />
-        </div>
-        <div className="body">{React.createElement(this.props.body)}</div>
-        <div className="footer">{React.createElement(this.props.footer)}</div>
+function Dialog(props: Props) {
+  const hide = useDialogStore((state) => state.hide);
+  const [x, y, move] = props.instance.usePoint((state) => [
+    state.x,
+    state.y,
+    state.move,
+  ]);
+  const [isMoving, setIsMoving] = useState(false);
+  const $ = useRef<HTMLDivElement>(null);
+  const mousemove = (e: MouseEvent) =>
+    isMoving && move(e.movementX, e.movementY);
+  const mouseup = () => setIsMoving(false);
+
+  useEffect(() => {
+    // mount 이전에는 dialog의 크기를 알 수 없으므로 mount 직후 업데이트한다.
+    if ($.current) {
+      move(-$.current.clientWidth / 2, -$.current.clientHeight / 2);
+      $.current.onkeydown = (e) => {
+        if (e.code === "Escape") hide(props.instance);
+      };
+    }
+  }, []);
+
+  useEffect(() => {
+    // 마우스가 head에서 벗어나도 마우스를 떼기 전까지는 움직이는 상태를 유지하게 하기 위해 전역에 이벤트 리스너를 건다.
+    if (isMoving) {
+      window.addEventListener("mousemove", mousemove);
+      window.addEventListener("mouseup", mouseup);
+    }
+    return () => {
+      window.removeEventListener("mousemove", mousemove);
+      window.removeEventListener("mouseup", mouseup);
+    };
+  }, [isMoving]);
+
+  return (
+    <div className="dialog" ref={$} style={{ top: `${y}px`, left: `${x}px` }}>
+      <div className="head" onMouseDown={() => setIsMoving(true)}>
+        <label>{props.instance.title}</label>
+        <div className="button-close" onClick={() => hide(props.instance)} />
       </div>
-    );
-  }
+      {React.createElement(props.instance.content)}
+    </div>
+  );
 }
 
 export default function DialogManager() {
-  const [dialogs, hide] = useDialogStore((state) => [
-    state.dialogs,
-    state.hide,
-  ]);
+  const dialogs = useDialogStore((state) => state.dialogs);
 
   return (
     <div id="dialog">
       {dialogs.map((dialog) => (
-        <Dialog {...dialog} hide={() => hide(dialog)} />
+        <Dialog instance={dialog} />
       ))}
     </div>
   );
