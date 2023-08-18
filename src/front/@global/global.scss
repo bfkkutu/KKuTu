@@ -496,26 +496,6 @@ code {
         height: 20px;
       }
     }
-
-    &-settings {
-      display: flex;
-      flex-direction: column;
-      font-size: 13px;
-
-      select {
-        width: 187px;
-      }
-
-      &-checkbox-wrapper {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-
-        label {
-          display: flex;
-          align-items: center;
-        }
-      }
-    }
   }
 
   .dialog-desc {

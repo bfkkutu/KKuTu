@@ -93,7 +93,7 @@ export default class User<Connected extends boolean = false>
   public password!: Database.Nullable<string>;
 
   @TypeORM.Column({ name: "u_friends", type: "json", default: [] })
-  public friends!: number[];
+  public friends!: string[];
 
   @TypeORM.Column({
     name: "u_settings",

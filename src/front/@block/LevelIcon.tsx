@@ -1,5 +1,7 @@
 import React from "react";
 
+import { omit } from "../../common/Utility";
+
 interface Props
   extends React.DetailedHTMLProps<
     React.ImgHTMLAttributes<HTMLImageElement>,
@@ -15,7 +17,7 @@ export default class LevelIcon extends React.PureComponent<Props> {
         src={`/media/img/kkutu/lv/lv${this.props.level
           .toString()
           .padStart(4, "0")}.png`}
-        {...this.props}
+        {...omit(this.props, "level")}
       />
     );
   }

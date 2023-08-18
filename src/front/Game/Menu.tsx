@@ -46,6 +46,7 @@ const buttons: MenuItem[] = [
     type: MenuType.Community,
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="comments" />,
+    action: Action.Dialog,
     forLobby: true,
     forRoom: true,
     forMaster: true,

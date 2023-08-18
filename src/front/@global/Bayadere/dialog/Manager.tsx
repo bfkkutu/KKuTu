@@ -44,7 +44,11 @@ function Dialog(props: Props) {
   return (
     <div className="dialog" ref={$} style={{ top: `${y}px`, left: `${x}px` }}>
       <div className="head" onMouseDown={() => setIsMoving(true)}>
-        <label>{props.instance.title}</label>
+        <label>
+          {typeof props.instance.title === "string"
+            ? props.instance.title
+            : React.createElement(props.instance.title)}
+        </label>
         <div className="button-close" onClick={() => hide(props.instance)} />
       </div>
       {React.createElement(props.instance.content)}

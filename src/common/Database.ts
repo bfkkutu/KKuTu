@@ -79,7 +79,7 @@ export namespace Database {
     money: number;
     inventory: JSON.Types.User.inventory;
     punishment: JSON.Types.User.punishment;
-    friends: number[];
+    friends: string[];
     settings: JSON.Types.User.settings;
   }
 }

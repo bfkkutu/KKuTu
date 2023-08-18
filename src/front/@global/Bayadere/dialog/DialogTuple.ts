@@ -7,11 +7,11 @@ interface Point {
   move: (movementX: number, movementY: number) => void;
 }
 export default class DialogTuple {
-  public title: string;
+  public title: string | React.FC;
   public content: React.FC;
   public usePoint!: UseBoundStore<StoreApi<Point>>;
   public visible = false;
-  constructor(title: string, content: React.FC) {
+  constructor(title: string | React.FC, content: React.FC) {
     this.title = title;
     this.content = content;
     this.initializeState();

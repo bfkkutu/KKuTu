@@ -4,6 +4,28 @@ import L from "front/@global/Language";
 import LevelIcon from "front/@block/LevelIcon";
 import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
+import ProfileImage from "front/@block/ProfileImage";
+import { Database } from "common/Database";
+import { createProfileDialog } from "front/@global/Bayadere/dialog/templates/Profile";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+
+function UserItem(user: Database.SummarizedUser) {
+  const toggle = useDialogStore((state) => state.toggle);
+  const dialog = createProfileDialog(user);
+
+  return (
+    <div className="item" onClick={() => toggle(dialog)}>
+      <ProfileImage src={user.image} width={18} height={18} />
+      <LevelIcon
+        className="image"
+        level={getLevel(user.score)}
+        width={18}
+        height={18}
+      />
+      <div className="name ellipse">{user.nickname}</div>
+    </div>
+  );
+}
 
 interface Props {
   server: number;
@@ -23,11 +45,7 @@ export default function UserListBox(props: Props) {
       </h5>
       <div className="body">
         {users.map((user) => (
-          <div className="item">
-            <img className="jt-image image" src={user.image} />
-            <LevelIcon className="image" level={getLevel(user.score)} />
-            <div className="name ellipse">{user.nickname}</div>
-          </div>
+          <UserItem {...user} />
         ))}
       </div>
     </section>

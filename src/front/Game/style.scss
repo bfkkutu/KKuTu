@@ -180,8 +180,6 @@
 
       .image {
         margin: 1px;
-        width: 18px;
-        height: 18px;
       }
       .name {
         padding: 2px 0px 0px 3px;
@@ -341,19 +339,6 @@
   }
 
   .body {
-    .moremi {
-      width: 80px;
-      height: 80px;
-
-      * {
-        width: 100%;
-        height: 100%;
-      }
-
-      .moremi-handRight {
-        transform: scaleX(-1);
-      }
-    }
     .stat {
       padding-left: 5px;
       width: 105px;
@@ -392,28 +377,6 @@
       width: 190px;
       font-size: 15px;
       text-align: center;
-    }
-    .gauge {
-      border-radius: 10px;
-      margin: -5px 0px;
-      width: 190px;
-      height: 30px;
-      overflow: hidden;
-      background-color: #333333;
-
-      .graph-bar {
-        background-image: url("/media/img/kkutu/scorebar.png");
-      }
-    }
-    .gauge-text {
-      margin-top: -16px;
-      width: 190px;
-    }
-
-    .bar-text {
-      color: #eee;
-      text-align: center;
-      text-shadow: 0px 1px 1px #141414;
     }
   }
 }
@@ -547,11 +510,118 @@
   }
 }
 
+.dialog {
+  &-settings {
+    display: flex;
+    flex-direction: column;
+    font-size: 13px;
+
+    select {
+      width: 187px;
+    }
+
+    &-checkbox-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+
+      label {
+        display: flex;
+        align-items: center;
+      }
+    }
+  }
+
+  &-community {
+    width: 300px;
+    height: 300px;
+    overflow-y: scroll;
+  }
+
+  &-profile {
+    width: 390px;
+    height: 465px;
+
+    .profile {
+      display: flex;
+
+      .item {
+        margin: 3px 2px;
+        width: 300px;
+
+        &.gauge-wrapper {
+          display: flex;
+          justify-content: center;
+        }
+
+        .image {
+          margin-right: 3px;
+        }
+
+        .nickname {
+          font-weight: bold;
+          line-height: 20px;
+        }
+
+        .level {
+          display: flex;
+          float: left;
+          align-items: center;
+          font-size: 13px;
+        }
+
+        .score {
+          float: right;
+          font-size: 11px;
+          color: #444;
+        }
+
+        .gauge-text {
+          font-size: 11px;
+        }
+      }
+    }
+  }
+}
+
 .moremi {
+  width: 80px;
+  height: 80px;
   position: relative;
+
+  * {
+    width: 100%;
+    height: 100%;
+  }
 
   img {
     position: absolute;
+  }
+
+  .moremi-handRight {
+    transform: scaleX(-1);
+  }
+}
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: 10px;
+  margin: -5px 0px;
+  overflow: hidden;
+  background-color: #333333;
+
+  .graph-bar {
+    background-image: url("/media/img/kkutu/scorebar.png");
+  }
+
+  .gauge-text {
+    position: absolute;
+  }
+  .bar-text {
+    color: #eee;
+    text-align: center;
+    text-shadow: 0px 1px 1px #141414;
   }
 }
 

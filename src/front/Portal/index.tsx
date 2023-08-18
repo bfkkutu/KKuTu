@@ -135,8 +135,8 @@ export default class Portal extends React.PureComponent<
                   </label>
                 </div>
                 <label id="server-total">
-                  &nbsp;{L.render("total")} {this.state.sum}
-                  {L.render("unitPeople")}
+                  &nbsp;
+                  {L.get("total")} {L.get("unitPeople", this.state.sum)}
                 </label>
               </h3>
               <div id="server-list">

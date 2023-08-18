@@ -6,19 +6,28 @@ import Moremi from "front/@block/Moremi";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
+import { createProfileDialog } from "front/@global/Bayadere/dialog/templates/Profile";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import Gauge from "front/@block/Gauge";
 
 export default function ProfileBox() {
   const me = useStore((state) => state.me);
+  const toggle = useDialogStore((state) => state.toggle);
+  const dialog = createProfileDialog(me);
 
   const level = getLevel(me.score);
   const prev = CLIENT_SETTINGS.expTable[level - 2] || 0;
   const goal = CLIENT_SETTINGS.expTable[level - 1];
 
   return (
-    <section id="box-profile" className="product">
+    <section
+      id="box-profile"
+      className="product"
+      onClick={() => toggle(dialog)}
+    >
       <h5 className="title">{L.render("profileBox_title")}</h5>
       <div className="body">
-        <Moremi className="moremi" equipment={me.equipment} />
+        <Moremi equipment={me.equipment} />
         <div className="stat">
           <LevelIcon className="level" level={level} />
           <div className="name ellipse">{me.nickname}</div>
@@ -28,17 +37,7 @@ export default function ProfileBox() {
         <div className="level">
           {L.get("level")} {level}
         </div>
-        <div className="graph gauge">
-          <div
-            className="graph-bar"
-            style={{
-              width: ((me.score - prev) / (goal - prev)) * 190,
-            }}
-          />
-        </div>
-        <div className="bar-text gauge-text">
-          {me.score.toLocaleString()} / {goal.toLocaleString()}
-        </div>
+        <Gauge value={me.score - prev} max={goal - prev} />
       </div>
     </section>
   );

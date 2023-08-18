@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom/client";
 
 import { PROPS } from "front/@global/Utility";
@@ -16,39 +16,106 @@ import SpinnerManager from "front/@global/Bayadere/spinner/Manager";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 
-declare global {
-  interface Window {
-    adsbygoogle: any;
-  }
-  interface WebSocket {
-    on: WebSocket["addEventListener"];
-    off: WebSocket["removeEventListener"];
-    _send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
-    send<T extends WebSocketMessage.Type>(
-      type: T,
-      content: WebSocketMessage.Content.Client[T]
-    ): void;
-    wait(type: WebSocketMessage.Type, callback: () => void): void;
-  }
-}
-
 if (typeof window !== "undefined") {
-  window.alert = (content: React.ReactNode) => {
-    const dialog = new DialogTuple(L.get("alert"), () => {
-      const hide = useDialogStore((state) => state.hide);
-      return (
-        <>
-          <div className="body dialog-alert">{content}</div>
-          <div className="footer">
-            <button type="button" onClick={() => hide(dialog)}>
-              {L.get("ok")}
-            </button>
-          </div>
-        </>
-      );
+  window.alert = (content: React.ReactNode) =>
+    new Promise<void>((resolve) => {
+      const dialog = new DialogTuple(L.get("alert"), () => {
+        const hide = useDialogStore((state) => state.hide);
+
+        return (
+          <>
+            <div className="body dialog-alert">{content}</div>
+            <div className="footer">
+              <button
+                type="button"
+                onClick={() => {
+                  hide(dialog);
+                  resolve();
+                }}
+              >
+                {L.get("ok")}
+              </button>
+            </div>
+          </>
+        );
+      });
+      useDialogStore.getState().show(dialog);
     });
-    useDialogStore.getState().show(dialog);
-  };
+  // @ts-ignore
+  window.prompt = (title: string, content: React.ReactNode) =>
+    new Promise<string | null>((resolve) => {
+      const dialog = new DialogTuple(title, () => {
+        const hide = useDialogStore((state) => state.hide);
+        const [input, setInput] = useState("");
+
+        return (
+          <>
+            <div className="body dialog-prompt">
+              {content}
+              <input
+                value={input}
+                onChange={(e) => setInput(e.currentTarget.value)}
+              />
+            </div>
+            <div className="footer">
+              <button
+                type="button"
+                onClick={() => {
+                  hide(dialog);
+                  resolve(input);
+                }}
+              >
+                {L.get("ok")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  hide(dialog);
+                  resolve(null);
+                }}
+              >
+                {L.get("cancel")}
+              </button>
+            </div>
+          </>
+        );
+      });
+      useDialogStore.getState().show(dialog);
+    });
+  // @ts-ignore
+  window.confirm = (content: React.ReactNode) =>
+    new Promise<boolean>((resolve) => {
+      const dialog = new DialogTuple(L.get("confirm"), () => {
+        const hide = useDialogStore((state) => state.hide);
+
+        return (
+          <>
+            <div className="body dialog-confirm">{content}</div>
+            <div className="footer">
+              <button
+                type="button"
+                onClick={() => {
+                  hide(dialog);
+                  resolve(true);
+                }}
+              >
+                {L.get("yes")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  hide(dialog);
+                  resolve(false);
+                }}
+              >
+                {L.get("no")}
+              </button>
+            </div>
+          </>
+        );
+      });
+      useDialogStore.getState().show(dialog);
+    });
   window.WebSocket.prototype.on = window.WebSocket.prototype.addEventListener;
   window.WebSocket.prototype.off =
     window.WebSocket.prototype.removeEventListener;
@@ -77,6 +144,7 @@ if (typeof window !== "undefined") {
     };
     this.on("message", cb);
   };
+  window.onselectstart = window.ondragstart = () => false;
 }
 
 interface State {

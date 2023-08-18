@@ -15,7 +15,7 @@ interface Props
 export default class Moremi extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
-      <div {...omit(this.props, "equipment")}>
+      <div className="moremi" {...omit(this.props, "equipment")}>
         {CLIENT_SETTINGS.moremiPart.map((part) => (
           <img
             className={`moremi-${part}`}

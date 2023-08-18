@@ -9,7 +9,8 @@
     "freeServerList": "서버 목록",
 
     "total": "총",
-    "unitPeople": "명",
+    "unitPeople": "{#0}명",
+    "unitLevel": "레벨 {#0}",
 
     "MINUTES_0": "방금",
     "MINUTES_1": "{#0} 분",
@@ -27,11 +28,14 @@
     "policy": "운영 정책",
     "level": "레벨",
     "ok": "확인",
-    "no": "취소",
+    "cancel": "취소",
+    "yes": "예",
+    "no": "아니오",
     "next": "다음",
     "send": "전송",
     "save": "저장",
     "alert": "알림",
+    "confirm": "확인",
     "optional": "(선택)",
 
     "nickname": "닉네임",
@@ -118,13 +122,19 @@
     "settings_game": "게임",
     "settings_etc": "기타",
 
+    "community_title": "친구 ({#0} / 100)",
+
+    "profile_title": "{#0}님의 정보",
+
     "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
     "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",
     "chatBox_title": "<{FA|comment}> 채팅",
     "profileBox_title": "<{FA|user}> 내 정보",
 
     "stat_record": "통산 {#0}승",
-    "stat_money": "{#0}핑"
+    "stat_money": "{#0}핑",
+
+    "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?"
   },
   "Login": {
     "title": "BF끄투 - 로그인",
