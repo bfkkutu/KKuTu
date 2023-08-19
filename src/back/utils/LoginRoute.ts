@@ -72,6 +72,12 @@ export default async function LoginRoute(App: Express.Application) {
         .getCount()) !== 0
     )
       return res.sendStatus(400);
+    if (
+      (await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.nickname = :nickname", { nickname: req.body.nickname })
+        .getCount()) !== 0
+    )
+      return res.sendStatus(409);
     const user = new User();
     user.oid = req.session.profile.id;
     user.image = req.session.profile.image;

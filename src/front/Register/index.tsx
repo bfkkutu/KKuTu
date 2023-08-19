@@ -118,22 +118,26 @@ export default class Register extends React.PureComponent<
               className="form"
               onSubmit={async (e) => {
                 e.preventDefault();
-                try {
-                  await fetch("/register", {
-                    method: "POST",
-                    body: JSON.stringify({
-                      nickname: this.state.nickname,
-                      exordial: this.state.exordial,
-                    }),
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                  });
-                  alert(L.get("success"));
+                const { ok } = await fetch("/register", {
+                  method: "POST",
+                  body: JSON.stringify({
+                    nickname: this.state.nickname,
+                    exordial: this.state.exordial,
+                  }),
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                });
+                if (ok) {
+                  await alert(L.get("success"));
                   location.href = "/";
-                } catch (e) {
-                  alert(L.get("fail"));
-                }
+                } else
+                  alert(
+                    <>
+                      <label>{L.get("fail")}</label>
+                      <label>{L.get("error_409_nickname")}</label>
+                    </>
+                  );
               }}
             >
               <label className="form-item-wrapper">

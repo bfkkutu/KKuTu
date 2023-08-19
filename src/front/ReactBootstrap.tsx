@@ -139,7 +139,7 @@ if (typeof window !== "undefined") {
       if (message.type === type) {
         this.off("message", cb);
         hide();
-        callback();
+        callback?.(message);
       }
     };
     this.on("message", cb);

@@ -10,19 +10,32 @@ import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import Gauge from "front/@block/Gauge";
+import { WebSocketMessage } from "../../../../../common/WebSocket";
 
 export const createProfileDialog = (user: Database.SummarizedUser) => {
+  const socket = useStore((state) => state.socket);
   const id = useStore((state) => state.me.id);
+  const community = useStore((state) => state.community);
   const level = getLevel(user.score);
   const prev = CLIENT_SETTINGS.expTable[level - 2] || 0;
   const goal = CLIENT_SETTINGS.expTable[level - 1];
   const footerButtons: React.ReactNode[] = [];
 
-  if (user.id !== id)
+  if (user.id !== id && !community.friends.includes(user.id))
     footerButtons.push(
       <button
+        disabled={community.friendRequests.sent.includes(user.id)}
         onClick={async () => {
-          await confirm(L.render("confirm_friendRequest", user.nickname));
+          if (
+            !(await confirm(L.render("confirm_friendRequest", user.nickname)))
+          )
+            return;
+          socket.send(WebSocketMessage.Type.FriendRequest, {
+            target: user.id,
+          });
+          socket.wait(WebSocketMessage.Type.FriendRequest, () =>
+            alert(L.get("alert_friendRequest", user.nickname))
+          );
         }}
       >
         {L.get("friendRequest")}

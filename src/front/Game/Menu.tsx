@@ -15,6 +15,7 @@ interface MenuItem {
   type: MenuType;
   isTiny: boolean;
   label: React.ReactNode;
+  badge?: () => number;
   action?: Action;
   forLobby: boolean;
   forRoom: boolean;
@@ -46,6 +47,7 @@ const buttons: MenuItem[] = [
     type: MenuType.Community,
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="comments" />,
+    badge: () => useStore.getState().community.friendRequests.received.length,
     action: Action.Dialog,
     forLobby: true,
     forRoom: true,
@@ -189,14 +191,15 @@ export function Menu() {
             HTMLButtonElement
           > = {
             className: classNames.join(" "),
-            onClick: undefined,
           };
           switch (config.action) {
             case Action.Dialog:
               props.onClick = () => toggle(Dialogs[config.type]);
           }
+          const badge = config.badge && config.badge();
           return (
             <button type="button" {...props}>
+              {badge ? <span className="badge">{badge}</span> : null}
               {config.label}
             </button>
           );

@@ -11,10 +11,40 @@ export namespace WebSocketMessage {
     Initialize = "initialize",
     UpdateSettings = "updateSettings",
     /**
+     * @sender Server.
+     * @condition 현재 클라이언트와 관련된 커뮤니티 데이터에 변경 사항이 생겼을 때.
+     */
+    UpdateCommunity = "updateCommunity",
+    /**
+     * @sender Server.
+     * @condition 다른 유저 접속 시.
+     *
+     * 새로 접속한 유저 정보를 기존에 접속 중이던 클라이언트들에게 제공한다.
+     */
+    Join = "join",
+    /**
+     * @sender Server.
+     * @condition 다른 유저 접속 종료 시.
+     *
+     * 접속을 종료한 유저 id를 클라이언트에 제공한다.
+     */
+    Leave = "leave",
+    /**
      * @sender Server & Client.
      * @condition 누군가 채팅 전송 시.
      */
     Chat = "chat",
+    /**
+     * @sender Server & Client.
+     * @condition 친구 요청 전송 시.
+     */
+    FriendRequest = "friendRequest",
+    FriendRequestResponse = "friendRequestR",
+    /**
+     * @sender Client.
+     * @condition 접속 중이 아닌 유저의 정보가 필요한 경우.
+     */
+    QueryUser = "queryUser",
 
     Heartbeat = "heartbeat",
     Error = "error",
@@ -27,9 +57,19 @@ export namespace WebSocketMessage {
     export interface Server {
       [Type.Initialize]: {
         me: Database.DetailedUser;
+        community: Database.Community;
         users: Database.SummarizedUser[];
       };
       [Type.UpdateSettings]: {};
+      [Type.UpdateCommunity]: {
+        community: Database.Community;
+      };
+      [Type.Join]: {
+        user: Database.SummarizedUser;
+      };
+      [Type.Leave]: {
+        userId: string;
+      };
       [Type.Chat]: {
         /**
          * 채팅을 보낸 유저의 식별자.
@@ -39,6 +79,11 @@ export namespace WebSocketMessage {
          * 채팅 내용.
          */
         content: string;
+      };
+      [Type.FriendRequest]: {};
+      [Type.FriendRequestResponse]: {};
+      [Type.QueryUser]: {
+        user?: Database.SummarizedUser;
       };
 
       [Type.Heartbeat]: {};
@@ -52,11 +97,30 @@ export namespace WebSocketMessage {
       [Type.UpdateSettings]: {
         settings: Database.JSON.Types.User.settings;
       };
+      [Type.UpdateCommunity]: {}; // dummy
+      [Type.Join]: {}; // dummy
+      [Type.Leave]: {}; // dummy
       [Type.Chat]: {
         /**
          * 채팅 내용.
          */
         content: string;
+      };
+      [Type.FriendRequest]: {
+        /**
+         * 친구 요청 대상의 식별자.
+         */
+        target: string;
+      };
+      [Type.FriendRequestResponse]: {
+        sender: string;
+        /**
+         * 친구 요청 수락 여부.
+         */
+        accept: boolean;
+      };
+      [Type.QueryUser]: {
+        userId: string;
       };
 
       [Type.Heartbeat]: {};

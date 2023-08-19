@@ -79,6 +79,7 @@
   height: 30px;
 
   button {
+    position: relative;
     float: left;
     border: none;
     border-bottom-left-radius: 0px;
@@ -89,6 +90,21 @@
     &:hover {
       margin-top: -5px;
       height: 25px;
+    }
+
+    .badge {
+      position: absolute;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      top: -5px;
+      right: -5px;
+      width: 18px;
+      height: 18px;
+      background-color: red;
+      border-radius: 50%;
+      color: white;
+      z-index: 1;
     }
   }
 
@@ -535,6 +551,36 @@
     width: 300px;
     height: 300px;
     overflow-y: scroll;
+
+    .item {
+      display: flex;
+      justify-content: space-between;
+      width: 100%;
+
+      &.request {
+        background-color: rgba(0, 255, 0, 0.5);
+      }
+
+      .left {
+        display: flex;
+        align-items: center;
+
+        .image {
+          margin: 3px;
+        }
+      }
+
+      .right {
+        display: flex;
+
+        .accept {
+          float: right;
+        }
+        .decline {
+          float: right;
+        }
+      }
+    }
   }
 
   &-profile {

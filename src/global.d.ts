@@ -29,6 +29,9 @@ declare global {
       type: T,
       content: WebSocketMessage.Content.Client[T]
     ): void;
-    wait(type: WebSocketMessage.Type, callback: () => void): void;
+    wait<T extends WebSocketMessage.Type>(
+      type: T,
+      callback?: (message: WebSocketMessage.Server[T]) => void
+    ): void;
   }
 }

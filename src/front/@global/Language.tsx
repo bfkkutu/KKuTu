@@ -1,4 +1,5 @@
 import React from "react";
+import { josa } from "josa";
 
 import { Icon, IconType } from "front/@block/Icon";
 import { getTimeDistance } from "front/@global/Utility";
@@ -51,9 +52,11 @@ export default class L {
     const R: string = TABLE[key];
 
     if (!R) return `(L#${key})`;
-    return R.replace(L.REGEXP_PATTERN, "").replace(
-      L.REGEXP_ARGS,
-      (p, v1) => args[v1]
+    return josa(
+      R.replace(L.REGEXP_PATTERN, "").replace(
+        L.REGEXP_ARGS,
+        (p, v1) => args[v1]
+      )
     );
   }
   public static render(key: string, ...args: any[]): React.ReactNode {
@@ -94,9 +97,7 @@ export default class L {
       }
       prevIndex = PATTERN.lastIndex;
     }
-    if (prevIndex < value.length) {
-      R.push(value.slice(prevIndex));
-    }
+    if (prevIndex < value.length) R.push(josa(value.slice(prevIndex)));
     return <>{R}</>;
   }
 }

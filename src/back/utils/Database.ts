@@ -6,6 +6,7 @@ import { Database } from "common/Database";
 import { Logger } from "back/utils/Logger";
 
 import User from "back/models/User";
+import FriendRequest from "back/models/FriendRequest";
 
 export default class DB {
   private static dataSource = new TypeORM.DataSource({
@@ -13,7 +14,7 @@ export default class DB {
     ...SETTINGS["database"],
     synchronize: true,
     logging: [],
-    entities: [User],
+    entities: [User, FriendRequest],
   });
 
   public static get Manager(): TypeORM.EntityManager {

@@ -1,7 +1,11 @@
 import * as TypeORM from "typeorm";
 
-import { Database } from "../../common/Database";
+import DB from "back/utils/Database";
 import WebSocket from "back/utils/WebSocket";
+import { Database } from "../../common/Database";
+import { WebSocketMessage } from "../../common/WebSocket";
+
+import FriendRequest from "back/models/FriendRequest";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User<Connected extends boolean = false>
@@ -112,6 +116,32 @@ export default class User<Connected extends boolean = false>
 
   public socket!: Connected extends true ? WebSocket : undefined;
   public roomId!: Connected extends true ? number | undefined : undefined;
+  public community: Database.Community = {
+    friends: [],
+    friendRequests: {
+      sent: [],
+      received: [],
+    },
+  };
+
+  public async updateCommunity(updateClient: boolean = true) {
+    if (this.socket === undefined) return;
+    this.community.friends = this.friends;
+    this.community.friendRequests.sent = (
+      await DB.Manager.createQueryBuilder(FriendRequest, "fr")
+        .where("fr.sender = :id", { id: this.id })
+        .getMany()
+    ).map((friendRequest) => friendRequest.target);
+    this.community.friendRequests.received = (
+      await DB.Manager.createQueryBuilder(FriendRequest, "fr")
+        .where("fr.target = :id", { id: this.id })
+        .getMany()
+    ).map((friendRequest) => friendRequest.sender);
+    if (updateClient)
+      this.socket.send(WebSocketMessage.Type.UpdateCommunity, {
+        community: this.community,
+      });
+  }
 
   public summarize(): Database.SummarizedUser {
     return {
@@ -131,7 +161,6 @@ export default class User<Connected extends boolean = false>
       money: this.money,
       inventory: this.inventory,
       punishment: this.punishment,
-      friends: this.friends,
       settings: this.settings,
     };
   }

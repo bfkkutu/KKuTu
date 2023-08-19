@@ -26,8 +26,13 @@ CLIENT_SETTINGS.expTable.push(Infinity);
 function Game(props: Nest.Page.Props<"Game">) {
   const initializeSocket = useStore((state) => state.initializeSocket);
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
+  const updateCommunity = useStore((state) => state.updateCommunity);
   const appendChat = useStore((state) => state.appendChat);
-  const initializeUsers = useStore((state) => state.initializeUsers);
+  const [initializeUsers, appendUser, removeUser] = useStore((state) => [
+    state.initializeUsers,
+    state.appendUser,
+    state.removeUser,
+  ]);
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 
@@ -44,16 +49,28 @@ function Game(props: Nest.Page.Props<"Game">) {
       switch (message.type) {
         case WebSocketMessage.Type.Initialize:
           for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound))
-            await audioContext.register(id, `/media/sound${src}`);
+            if (!(await audioContext.register(id, `/media/sound${src}`)))
+              alert(L.get("error_soundNotFound", id));
           audioContext.volume = message.me.settings.bgmVolume;
           audioContext.play(`lobby_${message.me.settings.lobbyMusic}`, true);
           updateMe(message.me);
+          updateCommunity(message.community);
           initializeUsers(message.users);
           const intro = $intro.current!;
           intro.style.opacity = "0";
           window.setTimeout(() => intro.remove(), 2000);
           break;
+        case WebSocketMessage.Type.UpdateCommunity:
+          updateCommunity(message.community);
+          break;
+        case WebSocketMessage.Type.Join:
+          appendUser(message.user);
+          break;
+        case WebSocketMessage.Type.Leave:
+          removeUser(message.userId);
+          break;
         case WebSocketMessage.Type.Chat:
+          audioContext.playEffect("chat");
           appendChat({
             sender: message.sender,
             content: message.content,
@@ -66,7 +83,7 @@ function Game(props: Nest.Page.Props<"Game">) {
       }
     });
     socket.on("close", (e) => {
-      alert(L.get("closed", e.code));
+      alert(L.get("error_closed", e.code));
     });
   }, []);
 

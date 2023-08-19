@@ -183,30 +183,6 @@ textarea:focus,
 button:focus {
   outline: none;
 }
-span {
-  display: none;
-}
-#quick-search {
-  float: right;
-  margin: 1px;
-}
-#quick-search-tf {
-  float: left;
-  border-right: none;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
-  width: 100px;
-  height: 16px;
-  font-size: 13px !important;
-}
-#quick-search-btn {
-  float: left;
-  border-left: none;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
-  width: 30px;
-  height: 16px;
-}
 .autocomp {
   position: absolute;
   padding: 3px;
@@ -441,6 +417,11 @@ code {
     box-shadow: 0px 1px 1px #141414;
     background-color: #eeeeee;
     z-index: 3;
+
+    &-alert {
+      display: flex;
+      flex-direction: column;
+    }
 
     .head {
       cursor: move;

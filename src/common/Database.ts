@@ -79,7 +79,19 @@ export namespace Database {
     money: number;
     inventory: JSON.Types.User.inventory;
     punishment: JSON.Types.User.punishment;
-    friends: string[];
     settings: JSON.Types.User.settings;
+  }
+  export interface Community {
+    friends: string[];
+    friendRequests: {
+      sent: string[];
+      received: string[];
+    };
+  }
+  export interface FriendRequest {
+    id: number;
+    sender: string;
+    target: string;
+    createdAt: number;
   }
 }

@@ -74,7 +74,8 @@
 
     "loading": "불러오는 중",
 
-    "error_401": "로그인이 필요합니다."
+    "error_401": "로그인이 필요합니다.",
+    "error_409_nickname": "중복되는 닉네임이 있습니다."
   },
   "LoginFail": {
     "title": "BF끄투 - 로그인 실패",
@@ -85,7 +86,8 @@
     "title": "BF끄투",
 
     "welcome": "환영합니다.",
-    "closed": "[#{#0}] 서버와 연결이 끊어졌습니다.",
+    "error_closed": "[#{#0}] 서버와 연결이 끊어졌습니다.",
+    "error_soundNotFound": "소리 리소스 {#0}#{을} 로드하지 못했습니다.",
 
     "invite": "초대",
     "whisper": "귓속말",
@@ -134,7 +136,9 @@
     "stat_record": "통산 {#0}승",
     "stat_money": "{#0}핑",
 
-    "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?"
+    "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?",
+
+    "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈습니다."
   },
   "Login": {
     "title": "BF끄투 - 로그인",
@@ -172,6 +176,6 @@
     "failedToLoad": "불러오지 못했습니다.",
     "agree": "동의합니다.",
     "success": "계정을 등록했습니다.\n메인 화면으로 돌아갑니다.",
-    "fail": "등록 처리 중 문제가 발생했습니다."
+    "fail": "계정 등록에 실패했습니다."
   }
 }
