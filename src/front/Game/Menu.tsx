@@ -4,8 +4,12 @@ import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { Dialogs } from "front/@global/Bayadere/dialog/templates";
 import { MenuType } from "front/@global/enums/MenuType";
+import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+
+import { SettingsDialog } from "front/@global/Bayadere/dialog/templates/Settings";
+import { CommunityDialog } from "front/@global/Bayadere/dialog/templates/Community";
+import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/CreateRoom";
 
 enum Action {
   Dialog,
@@ -17,6 +21,7 @@ interface MenuItem {
   label: React.ReactNode;
   badge?: () => number;
   action?: Action;
+  dialog?: DialogTuple;
   forLobby: boolean;
   forRoom: boolean;
   forMaster: boolean;
@@ -38,6 +43,7 @@ const buttons: MenuItem[] = [
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="wrench" />,
     action: Action.Dialog,
+    dialog: SettingsDialog,
     forLobby: true,
     forRoom: true,
     forMaster: true,
@@ -49,6 +55,7 @@ const buttons: MenuItem[] = [
     label: <Icon type={IconType.NORMAL} name="comments" />,
     badge: () => useStore.getState().community.friendRequests.received.length,
     action: Action.Dialog,
+    dialog: CommunityDialog,
     forLobby: true,
     forRoom: true,
     forMaster: true,
@@ -58,6 +65,7 @@ const buttons: MenuItem[] = [
     type: MenuType.Leaderboard,
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="trophy" />,
+    action: Action.Dialog,
     forLobby: true,
     forRoom: false,
     forMaster: false,
@@ -84,16 +92,18 @@ const buttons: MenuItem[] = [
   {
     type: MenuType.CreateRoom,
     isTiny: false,
-    label: L.get("menu_createRoom"),
+    label: L.get("createRoom"),
+    action: Action.Dialog,
+    dialog: CreateRoomDialog,
     forLobby: true,
     forRoom: false,
     forMaster: false,
     forGaming: false,
   },
   {
-    type: MenuType.Quick,
+    type: MenuType.SearchRoom,
     isTiny: false,
-    label: L.get("menu_quick"),
+    label: L.get("menu_searchRoom"),
     forLobby: true,
     forRoom: false,
     forMaster: false,
@@ -194,7 +204,8 @@ export function Menu() {
           };
           switch (config.action) {
             case Action.Dialog:
-              props.onClick = () => toggle(Dialogs[config.type]);
+              props.onClick = () => toggle(config.dialog!);
+              break;
           }
           const badge = config.badge && config.badge();
           return (

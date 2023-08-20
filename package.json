@@ -31,6 +31,7 @@
     "@types/passport-oauth2": "^1.4.12",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
+    "@types/sha256": "^0.2.0",
     "@types/ws": "^8.5.5",
     "clean-webpack-plugin": "^4.0.0",
     "css-loader": "^6.8.1",

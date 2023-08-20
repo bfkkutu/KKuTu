@@ -129,6 +129,7 @@ export function writeClientConstants(): void {
     expTable: [],
     moremiPart: SETTINGS.application.moremiPart,
     itemCategory: SETTINGS.application.itemCategory,
+    roundTimes: SETTINGS.application.roundTimes,
   };
   FS.writeFileSync(
     resolve("dist", "constants.js"),

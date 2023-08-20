@@ -6,7 +6,7 @@ export enum MenuType {
   Spectate = "spectate",
   RoomSettings = "roomSettings",
   CreateRoom = "createRoom",
-  Quick = "quick",
+  SearchRoom = "searchRoom",
   Shop = "shop",
   Dictionary = "dict",
   Invite = "invite",

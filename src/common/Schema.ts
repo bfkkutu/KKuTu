@@ -10,6 +10,7 @@ export namespace Schema {
       expTable: number[];
       moremiPart: string[];
       itemCategory: string[];
+      roundTimes: number[];
     };
     cookie: {
       age: number;

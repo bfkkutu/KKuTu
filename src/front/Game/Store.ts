@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 import { Database } from "common/Database";
-import { Room } from "common/Interfaces";
 import { Chat } from "front/@global/interfaces/Chat";
+import { Game } from "common/Game";
 
 interface State {
   socket: WebSocket;
@@ -22,8 +22,8 @@ interface State {
   appendUser: (user: Database.SummarizedUser) => void;
   removeUser: (user: string) => void;
 
-  room?: Room;
-  rooms: Room[];
+  room?: Game.Room;
+  rooms: Game.Room[];
 }
 
 export const useStore = create<State>((setState) => ({

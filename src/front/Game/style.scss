@@ -136,7 +136,7 @@
     &-createRoom {
       background-color: rgb(142, 192, 243);
     }
-    &-quick {
+    &-searchRoom {
       background-color: rgb(176, 210, 243);
     }
     &-shop {
@@ -536,7 +536,7 @@
       width: 187px;
     }
 
-    &-checkbox-wrapper {
+    .checkbox-wrapper {
       display: grid;
       grid-template-columns: 1fr 1fr;
 
@@ -579,6 +579,36 @@
         .decline {
           float: right;
         }
+      }
+    }
+  }
+
+  &-createRoom {
+    display: flex;
+    flex-direction: column;
+    width: 350px;
+    font-size: 13px;
+
+    .item-wrapper {
+      margin: 3px 0px;
+
+      input[type="text"],
+      input[type="password"],
+      input[type="number"] {
+        width: 187px;
+      }
+      select {
+        width: 199px;
+      }
+    }
+
+    .checkbox-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+
+      label {
+        display: flex;
+        align-items: center;
       }
     }
   }

@@ -587,6 +587,13 @@
     "@types/mime" "*"
     "@types/node" "*"
 
+"@types/sha256@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@types/sha256/-/sha256-0.2.0.tgz#e91194d70f4eb67f08812e847feecf5146f4afdd"
+  integrity sha512-QYMr6HuxTQunFWRLZpGopbkgQFoFWOmKTBGgNSYiWMqU/CWnQSTo3edyHvgsRXsOWtOSOG/cmDptPzgCeOsQGw==
+  dependencies:
+    "@types/node" "*"
+
 "@types/uid2@0.0.0":
   version "0.0.0"
   resolved "https://registry.yarnpkg.com/@types/uid2/-/uid2-0.0.0.tgz#d650ce54123c1280535f3759d94b37d1de48c56e"

@@ -21,3 +21,11 @@ export function omit<T extends object, U extends keyof T>(
   for (const key of keys) if (key in R) delete R[key];
   return R;
 }
+export function EnumKeyIterator(object: Table<string | number>) {
+  return Object.keys(object).filter((key) => isNaN(Number(key)));
+}
+export function EnumValueIterator(object: Table<string | number>) {
+  return Object.values(object).filter(
+    (value) => !isNaN(Number(value))
+  ) as number[];
+}

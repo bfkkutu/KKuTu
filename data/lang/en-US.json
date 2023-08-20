@@ -11,12 +11,7 @@
     "total": "총",
     "unitPeople": "{#0}명",
     "unitLevel": "레벨 {#0}",
-
-    "MINUTES_0": "방금",
-    "MINUTES_1": "{#0} 분",
-    "MINUTES_2": "{#0} 시간 {#1} 분",
-    "MINUTES_3": "{#0} 일 {#1} 시간",
-    "MINUTES_4": "{#0} 개월 {#1} 일",
+    "unitSecond": "{#0}초",
 
     "TIME_DISTANCE_PAST": "<{HUMAN_M|{##0}}> 전",
     "TIME_DISTANCE_FUTURE": "<{HUMAN_M|{##0}}> 후",
@@ -92,6 +87,7 @@
     "invite": "초대",
     "whisper": "귓속말",
     "friendRequest": "친구 추가",
+    "createRoom": "방 만들기",
 
     "autoReady": "자동 준비",
     "badWordsFilter": "비속어 필터링",
@@ -103,10 +99,18 @@
     "bgm_lobby_3": "BF끄투 (Piano)",
     "bgm_lobby_4": "끄투",
 
+    "game_mode_0": "한국어 끝말잇기",
+    "game_mode_1": "한국어 쿵쿵따",
+    "game_mode_2": "한국어 끄투",
+    "game_mode_3": "한국어 앞말잇기",
+
+    "game_rule_manner": "매너",
+    "game_rule_wide": "어인정",
+    "game_rule_mission": "미션",
+
     "menu_spectate": "관전하기",
     "menu_roomSettings": "방 설정",
-    "menu_createRoom": "방 만들기",
-    "menu_quick": "빠른 입장",
+    "menu_searchRoom": "방 검색",
     "menu_shop": "상점",
     "menu_dict": "사전",
     "menu_invite": "초대",
@@ -125,6 +129,15 @@
     "settings_etc": "기타",
 
     "community_title": "친구 ({#0} / 100)",
+
+    "createRoom_title": "방 제목",
+    "createRoom_title_default": "{#0}님의 방",
+    "createRoom_password": "비밀번호",
+    "createRoom_limit": "플레이어 수",
+    "createRoom_mode": "게임 유형",
+    "createRoom_round": "라운드 수",
+    "createRoom_roundTime": "라운드 시간",
+    "createRoom_rules": "특수 규칙",
 
     "profile_title": "{#0}님의 정보",
 

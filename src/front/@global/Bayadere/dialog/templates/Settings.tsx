@@ -96,7 +96,7 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
         </label>
         <label>
           <label className="dialog-desc">{L.get("settings_refuse")}</label>
-          <div className="dialog-settings-checkbox-wrapper">
+          <div className="checkbox-wrapper">
             <label>
               <input
                 type="checkbox"
@@ -155,7 +155,7 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
         </label>
         <label>
           <label className="dialog-desc">{L.get("settings_game")}</label>
-          <div className="dialog-settings-checkbox-wrapper">
+          <div className="checkbox-wrapper">
             <label>
               <input
                 type="checkbox"
