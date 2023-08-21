@@ -1,4 +1,5 @@
 import { Database } from "common/Database";
+import { Game } from "common/Game";
 
 export namespace WebSocketMessage {
   export enum Type {
@@ -34,6 +35,10 @@ export namespace WebSocketMessage {
      * @condition 누군가 채팅 전송 시.
      */
     Chat = "chat",
+    CreateRoom = "createRoom",
+    UpdateRoom = "updateRoom",
+    LeaveRoom = "leaveRoom",
+    UpdateRoomList = "updateRoomList",
     /**
      * @sender Server & Client.
      * @condition 친구 요청 전송 시.
@@ -57,7 +62,6 @@ export namespace WebSocketMessage {
     export interface Server {
       [Type.Initialize]: {
         me: Database.DetailedUser;
-        community: Database.Community;
         users: Database.SummarizedUser[];
       };
       [Type.UpdateSettings]: {};
@@ -79,6 +83,16 @@ export namespace WebSocketMessage {
          * 채팅 내용.
          */
         content: string;
+      };
+      [Type.CreateRoom]: {
+        room: Game.PublishedRoom;
+      };
+      [Type.UpdateRoom]: {
+        room: Game.PublishedRoom;
+      };
+      [Type.LeaveRoom]: {};
+      [Type.UpdateRoomList]: {
+        rooms: Game.PublishedRoom[];
       };
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
@@ -106,6 +120,14 @@ export namespace WebSocketMessage {
          */
         content: string;
       };
+      [Type.CreateRoom]: {
+        room: Game.RoomConfig;
+      };
+      [Type.UpdateRoom]: {
+        room: Game.RoomConfig;
+      };
+      [Type.LeaveRoom]: {};
+      [Type.UpdateRoomList]: {};
       [Type.FriendRequest]: {
         /**
          * 친구 요청 대상의 식별자.

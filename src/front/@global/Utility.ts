@@ -1,6 +1,7 @@
 import { CLIENT_SETTINGS, FRONT } from "back/utils/Utility";
 import { Database } from "common/Database";
 import { WebSocketMessage } from "../../common/WebSocket";
+import WebSocket from "front/@global/WebSocket";
 
 export const PROPS = FRONT && eval("window['__PROPS']");
 export function getTimeDistance(from: number, to: number = Date.now()) {
@@ -26,12 +27,14 @@ export function getOfflineUser(
   socket: WebSocket,
   id: string
 ): Promise<Database.SummarizedUser> {
-  return new Promise<Database.SummarizedUser>((resolve, reject) => {
+  return new Promise<Database.SummarizedUser>(async (resolve, reject) => {
     socket.send(WebSocketMessage.Type.QueryUser, {
       userId: id,
     });
-    socket.wait(WebSocketMessage.Type.QueryUser, (message) =>
-      message.user ? resolve(message.user) : reject()
+    const { user } = await socket.messageReceiver.wait(
+      WebSocketMessage.Type.QueryUser
     );
+    if (user) resolve(user);
+    else reject();
   });
 }

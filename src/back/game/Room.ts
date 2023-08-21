@@ -1,7 +1,8 @@
+import WebSocket from "back/utils/WebSocket";
 import WebSocketGroup from "back/utils/WebSocketGroup";
 import { Game } from "common/Game";
 
-export default class Room extends WebSocketGroup implements Game.Room {
+export default class Room extends WebSocketGroup implements Game.PublishedRoom {
   public id: number;
   public title: string;
   private password: string;
@@ -10,13 +11,20 @@ export default class Room extends WebSocketGroup implements Game.Room {
   public round: number;
   public roundTime: number;
   public rules: Record<Game.Rule, boolean>;
+  public master: string;
 
-  constructor(data: Game.Room, password: string) {
+  public get isEmpty() {
+    return this.clients.size === 0;
+  }
+
+  constructor(id: number, master: string, data: Game.RoomConfig) {
     super();
 
-    this.id = data.id;
+    this.id = id;
+    this.master = master;
+
     this.title = data.title;
-    this.password = password;
+    this.password = data.password;
     this.limit = data.limit;
     this.mode = data.mode;
     this.round = data.round;
@@ -24,7 +32,12 @@ export default class Room extends WebSocketGroup implements Game.Room {
     this.rules = data.rules;
   }
 
-  public serialize(): Game.Room {
+  public override remove(socket: WebSocket): void {
+    super.remove(socket);
+    if (this.master === socket.uid && this.clients.size !== 0)
+      this.master = Array.from(this.clients.values())[0].uid;
+  }
+  public serialize(): Game.PublishedRoom {
     return {
       id: this.id,
       title: this.title,
@@ -33,6 +46,7 @@ export default class Room extends WebSocketGroup implements Game.Room {
       round: this.round,
       roundTime: this.roundTime,
       rules: this.rules,
+      master: this.master,
     };
   }
 }

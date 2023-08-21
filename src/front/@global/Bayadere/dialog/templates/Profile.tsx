@@ -33,9 +33,10 @@ export const createProfileDialog = (user: Database.SummarizedUser) => {
           socket.send(WebSocketMessage.Type.FriendRequest, {
             target: user.id,
           });
-          socket.wait(WebSocketMessage.Type.FriendRequest, () =>
-            alert(L.get("alert_friendRequest", user.nickname))
+          await socket.messageReceiver.wait(
+            WebSocketMessage.Type.FriendRequest
           );
+          alert(L.get("alert_friendRequest", user.nickname));
         }}
       >
         {L.get("friendRequest")}

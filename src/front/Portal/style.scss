@@ -28,14 +28,19 @@
   z-index: 5;
 }
 
-#Middle {
-  margin-top: 80px;
-  margin-right: 80px;
-  margin-bottom: auto;
-  display: flex;
-  flex-direction: column;
-  flex: 1 0 auto;
-  align-content: space-between;
+#stage {
+  #main {
+    margin-top: 80px;
+    margin-right: 80px;
+    margin-bottom: auto;
+    display: flex;
+    flex-direction: column;
+    flex: 1 0 auto;
+    align-content: space-between;
+    float: left;
+    margin-top: 80px;
+    width: 1010px;
+  }
 }
 
 .iframe-container {

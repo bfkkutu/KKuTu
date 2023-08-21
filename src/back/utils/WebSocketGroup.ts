@@ -1,5 +1,21 @@
-import User from "back/models/User";
+import WebSocket from "back/utils/WebSocket";
+import { WebSocketMessage } from "common/WebSocket";
 
 export default class WebSocketGroup {
-  private members = new Map<number, User<true>>();
+  protected clients = new Map<string, WebSocket>();
+
+  public add(socket: WebSocket) {
+    this.clients.set(socket.uid, socket);
+  }
+  public remove(socket: WebSocket) {
+    this.clients.delete(socket.uid);
+  }
+  public broadcast<T extends WebSocketMessage.Type>(
+    type: T,
+    content: WebSocketMessage.Content.Server[T],
+    filter?: (member: WebSocket) => boolean
+  ) {
+    for (const member of this.clients.values())
+      if (filter === undefined || filter(member)) member.send(type, content);
+  }
 }

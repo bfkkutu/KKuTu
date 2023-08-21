@@ -14,6 +14,7 @@ function Dialog(props: Props) {
     state.move,
   ]);
   const [isMoving, setIsMoving] = useState(false);
+  const [animation, setAnimation] = useState("appearing");
   const $ = useRef<HTMLDivElement>(null);
   const mousemove = (e: MouseEvent) =>
     isMoving && move(e.movementX, e.movementY);
@@ -27,6 +28,7 @@ function Dialog(props: Props) {
         if (e.code === "Escape") hide(props.instance);
       };
     }
+    window.setTimeout(() => setAnimation(""), 200);
   }, []);
 
   useEffect(() => {
@@ -42,14 +44,24 @@ function Dialog(props: Props) {
   }, [isMoving]);
 
   return (
-    <div className="dialog" ref={$} style={{ top: `${y}px`, left: `${x}px` }}>
+    <div
+      className={`dialog ${animation}`}
+      ref={$}
+      style={{ top: `${y}px`, left: `${x}px` }}
+    >
       <div className="head" onMouseDown={() => setIsMoving(true)}>
         <label>
           {typeof props.instance.title === "string"
             ? props.instance.title
             : React.createElement(props.instance.title)}
         </label>
-        <div className="button-close" onClick={() => hide(props.instance)} />
+        <div
+          className="button-close"
+          onClick={() => {
+            setAnimation("disappearing");
+            window.setTimeout(() => hide(props.instance), 200);
+          }}
+        />
       </div>
       {React.createElement(props.instance.content)}
     </div>

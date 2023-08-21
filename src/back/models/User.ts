@@ -9,7 +9,7 @@ import FriendRequest from "back/models/FriendRequest";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User<Connected extends boolean = false>
-  implements Database.Serializable<Database.DetailedUser>
+  implements Serializable<Database.DetailedUser>
 {
   @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
   public id!: string;
@@ -115,14 +115,8 @@ export default class User<Connected extends boolean = false>
   public createdAt!: number;
 
   public socket!: Connected extends true ? WebSocket : undefined;
-  public roomId!: Connected extends true ? number | undefined : undefined;
-  public community: Database.Community = {
-    friends: [],
-    friendRequests: {
-      sent: [],
-      received: [],
-    },
-  };
+  public roomId?: Connected extends true ? number : never;
+  public community = { ...Database.community };
 
   public async updateCommunity(updateClient: boolean = true) {
     if (this.socket === undefined) return;

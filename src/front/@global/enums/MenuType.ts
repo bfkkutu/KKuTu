@@ -13,6 +13,6 @@ export enum MenuType {
   Practice = "practice",
   Ready = "ready",
   Start = "start",
-  Exit = "exit",
+  Leave = "leave",
   Replay = "replay",
 }

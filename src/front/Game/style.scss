@@ -51,22 +51,14 @@
       }
 
       #box-grid {
+        display: grid;
+        grid-template-rows: 37fr 20fr;
         width: 100%;
         height: 100%;
 
-        &.lobby {
+        .lobby {
           display: grid;
-          grid-template: {
-            columns: 1fr 4fr;
-            rows: 37fr 20fr;
-          }
-        }
-        &.gaming {
-          display: grid;
-          grid-template: {
-            columns: 1fr;
-            rows: 9fr 5fr;
-          }
+          grid-template-columns: 1fr 4fr;
         }
       }
     }
@@ -157,7 +149,7 @@
     &-start {
       background-color: rgb(255, 181, 118);
     }
-    &-exit {
+    &-leave {
       background-color: #ffadad;
     }
     &-replay {

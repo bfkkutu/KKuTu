@@ -6,6 +6,12 @@ declare global {
   type Table<V> = {
     [key: string]: V;
   };
+  interface Serializable<T> {
+    /**
+     * 정보를 클라이언트에서 다룰 수 있도록 가공해 반환한다.
+     */
+    serialize(): T;
+  }
   type HexColor = `#${string & { length: 6 }}`;
 
   declare function alert(content: React.ReactNode): Promise<void>;
@@ -20,18 +26,5 @@ declare global {
     alert(content: React.ReactNode): Promise<void>;
     prompt(title: string, content: React.ReactNode): Promise<string | null>;
     confirm(content: React.ReactNode): Promise<boolean>;
-  }
-  interface WebSocket {
-    on: WebSocket["addEventListener"];
-    off: WebSocket["removeEventListener"];
-    _send(data: string | ArrayBufferLike | Blob | ArrayBufferView): void;
-    send<T extends WebSocketMessage.Type>(
-      type: T,
-      content: WebSocketMessage.Content.Client[T]
-    ): void;
-    wait<T extends WebSocketMessage.Type>(
-      type: T,
-      callback?: (message: WebSocketMessage.Server[T]) => void
-    ): void;
   }
 }

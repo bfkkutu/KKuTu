@@ -39,7 +39,7 @@ export const CommunityDialog = new DialogTuple(
         sender,
         accept,
       });
-      socket.wait(WebSocketMessage.Type.UpdateCommunity);
+      socket.messageReceiver.wait(WebSocketMessage.Type.UpdateCommunity);
     }
 
     return (

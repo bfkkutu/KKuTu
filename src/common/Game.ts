@@ -18,16 +18,19 @@ export namespace Game {
     [Mode.KoreanRelayReversed]: [Rule.Manner, Rule.WideTheme, Rule.Mission],
   };
 
-  export interface RoomConfig {
+  export interface Room {
     title: string;
-    password: string;
     limit: number;
     mode: Mode;
     round: number;
     roundTime: number;
     rules: Record<Rule, boolean>;
   }
-  export interface Room extends Omit<RoomConfig, "password"> {
+  export interface RoomConfig extends Room {
+    password: string;
+  }
+  export interface PublishedRoom extends Room {
     id: number;
+    master: string;
   }
 }

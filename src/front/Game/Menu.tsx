@@ -5,23 +5,17 @@ import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { MenuType } from "front/@global/enums/MenuType";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import { WebSocketMessage } from "../../common/WebSocket";
 
 import { SettingsDialog } from "front/@global/Bayadere/dialog/templates/Settings";
 import { CommunityDialog } from "front/@global/Bayadere/dialog/templates/Community";
 import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/CreateRoom";
 
-enum Action {
-  Dialog,
-  Tab,
-}
 interface MenuItem {
   type: MenuType;
   isTiny: boolean;
   label: React.ReactNode;
   badge?: () => number;
-  action?: Action;
-  dialog?: DialogTuple;
   forLobby: boolean;
   forRoom: boolean;
   forMaster: boolean;
@@ -42,8 +36,6 @@ const buttons: MenuItem[] = [
     type: MenuType.Settings,
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="wrench" />,
-    action: Action.Dialog,
-    dialog: SettingsDialog,
     forLobby: true,
     forRoom: true,
     forMaster: true,
@@ -54,8 +46,6 @@ const buttons: MenuItem[] = [
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="comments" />,
     badge: () => useStore.getState().community.friendRequests.received.length,
-    action: Action.Dialog,
-    dialog: CommunityDialog,
     forLobby: true,
     forRoom: true,
     forMaster: true,
@@ -65,7 +55,6 @@ const buttons: MenuItem[] = [
     type: MenuType.Leaderboard,
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="trophy" />,
-    action: Action.Dialog,
     forLobby: true,
     forRoom: false,
     forMaster: false,
@@ -93,8 +82,6 @@ const buttons: MenuItem[] = [
     type: MenuType.CreateRoom,
     isTiny: false,
     label: L.get("createRoom"),
-    action: Action.Dialog,
-    dialog: CreateRoomDialog,
     forLobby: true,
     forRoom: false,
     forMaster: false,
@@ -164,9 +151,9 @@ const buttons: MenuItem[] = [
     forGaming: false,
   },
   {
-    type: MenuType.Exit,
+    type: MenuType.Leave,
     isTiny: false,
-    label: L.get("menu_exit"),
+    label: L.get("menu_leave"),
     forLobby: false,
     forRoom: true,
     forMaster: true,
@@ -184,11 +171,16 @@ const buttons: MenuItem[] = [
 ];
 
 export function Menu() {
-  const room = useStore((state) => state.room);
+  const socket = useStore((state) => state.socket);
+  const me = useStore((state) => state.me);
+  const [room, leaveRoom] = useStore((state) => [state.room, state.leaveRoom]);
   const toggle = useDialogStore((state) => state.toggle);
+
   let property: keyof MenuItem = "forLobby";
 
   if (room === undefined) property = "forLobby";
+  else if (room.master === me.id) property = "forMaster";
+  else property = "forLobby";
   return (
     <section className="top-menu">
       {buttons
@@ -202,9 +194,23 @@ export function Menu() {
           > = {
             className: classNames.join(" "),
           };
-          switch (config.action) {
-            case Action.Dialog:
-              props.onClick = () => toggle(config.dialog!);
+          switch (config.type) {
+            case MenuType.Settings:
+              props.onClick = () => toggle(SettingsDialog);
+              break;
+            case MenuType.Community:
+              props.onClick = () => toggle(CommunityDialog);
+              break;
+            case MenuType.CreateRoom:
+              props.onClick = () => toggle(CreateRoomDialog);
+              break;
+            case MenuType.Leave:
+              props.onClick = () => {
+                socket.send(WebSocketMessage.Type.LeaveRoom, {});
+                socket.messageReceiver
+                  .wait(WebSocketMessage.Type.LeaveRoom)
+                  .then(() => leaveRoom());
+              };
               break;
           }
           const badge = config.badge && config.badge();

@@ -77,6 +77,7 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
             id="settings-select-bgm"
             value={me.settings.lobbyMusic}
             onChange={(e) => {
+              AudioContext.instance.stop(`lobby_${me.settings.lobbyMusic}`);
               const lobbyMusic = parseInt(e.currentTarget.value);
               updateSettings({
                 lobbyMusic,
@@ -84,14 +85,16 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
               AudioContext.instance.play(`lobby_${lobbyMusic}`, true);
             }}
           >
-            {Object.keys(CLIENT_SETTINGS.sound).map((key, idx) => {
-              const id = key.split("_").at(-1);
-              return (
-                <option value={id}>
-                  {id}. {L.get(`bgm_${key}`)}
-                </option>
-              );
-            })}
+            {Object.keys(CLIENT_SETTINGS.sound)
+              .filter((key) => key.startsWith("lobby_"))
+              .map((key, idx) => {
+                const id = key.split("_").at(-1);
+                return (
+                  <option value={id}>
+                    {id}. {L.get(`bgm_${key}`)}
+                  </option>
+                );
+              })}
           </select>
         </label>
         <label>
@@ -187,14 +190,15 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
         <button
           type="button"
           disabled={!valueChanged}
-          onClick={() => {
+          onClick={async () => {
             socket.send(WebSocketMessage.Type.UpdateSettings, {
               settings: me.settings,
             });
-            socket.wait(WebSocketMessage.Type.UpdateSettings, () => {
-              hide(SettingsDialog);
-              alert("변경 사항이 저장되었습니다.");
-            });
+            await socket.messageReceiver.wait(
+              WebSocketMessage.Type.UpdateSettings
+            );
+            hide(SettingsDialog);
+            alert("변경 사항이 저장되었습니다.");
           }}
         >
           {L.get("save")}

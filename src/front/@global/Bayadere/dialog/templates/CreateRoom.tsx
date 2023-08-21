@@ -1,4 +1,5 @@
 import React, { useCallback, useState } from "react";
+import sha256 from "sha256";
 
 import L from "front/@global/Language";
 import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
@@ -7,17 +8,15 @@ import { WebSocketMessage } from "../../../../../common/WebSocket";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { Game } from "../../../../../common/Game";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
-import {
-  EnumKeyIterator,
-  EnumValueIterator,
-} from "../../../../../common/Utility";
+import { EnumValueIterator } from "../../../../../common/Utility";
 
 export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
-  const me = useStore((state) => state.me);
+  const nickname = useStore((state) => state.me.nickname);
   const socket = useStore((state) => state.socket);
+  const updateRoom = useStore((state) => state.updateRoom);
   const hide = useDialogStore((state) => state.hide);
   const [room, setRoom] = useState<Game.RoomConfig>({
-    title: L.get("createRoom_title_default", me.nickname),
+    title: L.get("createRoom_title_default", nickname),
     password: "",
     limit: 8,
     mode: 0,
@@ -51,7 +50,7 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
             type="text"
             id="createRoom-input-title"
             name="title"
-            placeholder={L.get("createRoom_title_default", me.nickname)}
+            placeholder={L.get("createRoom_title_default", nickname)}
             value={room.title}
             onChange={update}
           />
@@ -156,7 +155,19 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
         </label>
       </div>
       <div className="footer">
-        <button type="button" onClick={() => {}}>
+        <button
+          type="button"
+          onClick={async () => {
+            socket.send(WebSocketMessage.Type.CreateRoom, {
+              room: { ...room, password: sha256(room.password) },
+            });
+            const { room: publishedRoom } = await socket.messageReceiver.wait(
+              WebSocketMessage.Type.CreateRoom
+            );
+            hide(CreateRoomDialog);
+            updateRoom(publishedRoom);
+          }}
+        >
           {L.get("ok")}
         </button>
       </div>

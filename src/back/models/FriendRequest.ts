@@ -4,7 +4,7 @@ import { Database } from "../../common/Database";
 
 @TypeORM.Entity({ name: "kkutu_friend_requests" })
 export default class FriendRequest
-  implements Database.Serializable<Database.FriendRequest>
+  implements Serializable<Database.FriendRequest>
 {
   @TypeORM.PrimaryGeneratedColumn({ name: "fr_id", type: "int4" })
   public id!: number;

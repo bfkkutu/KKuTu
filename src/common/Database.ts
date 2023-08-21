@@ -3,12 +3,6 @@ export namespace Database {
     skip: number;
     take: number;
   };
-  export interface Serializable<T> {
-    /**
-     * 정보를 클라이언트에서 다룰 수 있도록 가공해 반환한다.
-     */
-    serialize(): T;
-  }
   export type Nullable<T> = T | null;
 
   export namespace JSON {
@@ -88,6 +82,13 @@ export namespace Database {
       received: string[];
     };
   }
+  export const community: Community = {
+    friends: [],
+    friendRequests: {
+      sent: [],
+      received: [],
+    },
+  };
   export interface FriendRequest {
     id: number;
     sender: string;

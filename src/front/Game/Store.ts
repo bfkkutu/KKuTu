@@ -1,8 +1,9 @@
 import { create } from "zustand";
 
-import { Database } from "common/Database";
+import { Database } from "../../common/Database";
 import { Chat } from "front/@global/interfaces/Chat";
 import { Game } from "common/Game";
+import WebSocket from "front/@global/WebSocket";
 
 interface State {
   socket: WebSocket;
@@ -22,8 +23,12 @@ interface State {
   appendUser: (user: Database.SummarizedUser) => void;
   removeUser: (user: string) => void;
 
-  room?: Game.Room;
-  rooms: Game.Room[];
+  room?: Game.PublishedRoom;
+  updateRoom: (room: Game.PublishedRoom) => void;
+  leaveRoom: () => void;
+
+  rooms: Game.PublishedRoom[];
+  updateRoomList: (rooms: Game.PublishedRoom[]) => void;
 }
 
 export const useStore = create<State>((setState) => ({
@@ -42,7 +47,7 @@ export const useStore = create<State>((setState) => ({
       me,
     }),
 
-  community: undefined as any,
+  community: { ...Database.community },
   updateCommunity: (community) => setState({ community }),
 
   chatLog: [],
@@ -75,5 +80,9 @@ export const useStore = create<State>((setState) => ({
     }),
 
   room: undefined,
+  updateRoom: (room) => setState({ room }),
+  leaveRoom: () => setState({ room: undefined }),
+
   rooms: [],
+  updateRoomList: (rooms) => setState({ rooms }),
 }));

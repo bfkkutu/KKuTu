@@ -60,7 +60,7 @@ export default class Portal extends React.PureComponent<
   public render() {
     return (
       <article
-        id="Middle"
+        id="main"
         style={{
           marginLeft: Math.max(0, this.state.windowWidth * 0.5 - 500),
         }}

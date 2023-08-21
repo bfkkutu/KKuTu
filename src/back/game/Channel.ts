@@ -5,6 +5,8 @@ import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
 import { Database } from "../../common/Database";
+import { Game } from "common/Game";
+import SerializableMap from "../../common/SerializableMap";
 
 import User from "back/models/User";
 import FriendRequest from "back/models/FriendRequest";
@@ -14,11 +16,11 @@ export default class Channel extends WebSocketServer {
   /**
    * 이 채널에 접속 중인 유저 맵.
    */
-  private users = new Map<string, User<true>>();
+  private users = new SerializableMap<string, User<true>>();
   /**
    * 이 채널에 만들어진 방 맵.
    */
-  private rooms = new Map<number, Room>();
+  private rooms = new SerializableMap<number, Room>();
 
   constructor(port: number, isSecure: boolean = false) {
     super(port, isSecure);
@@ -40,6 +42,14 @@ export default class Channel extends WebSocketServer {
         const message: WebSocketMessage.Client[WebSocketMessage.Type] =
           JSON.parse(raw.toString());
         switch (message.type) {
+          case WebSocketMessage.Type.Initialize:
+            socket.send(WebSocketMessage.Type.UpdateCommunity, {
+              community: user.community,
+            });
+            socket.send(WebSocketMessage.Type.UpdateRoomList, {
+              rooms: this.rooms.serialize(),
+            });
+            break;
           case WebSocketMessage.Type.UpdateSettings:
             Object.assign(user.settings, message.settings);
             await DB.Manager.save(user);
@@ -58,7 +68,42 @@ export default class Channel extends WebSocketServer {
             else {
               const room = this.rooms.get(user.roomId);
               if (room === undefined) return;
-              // broadcast to room
+              room.broadcast(WebSocketMessage.Type.Chat, {
+                sender: user.id,
+                content: message.content,
+              });
+            }
+            break;
+          case WebSocketMessage.Type.CreateRoom:
+            {
+              let id = 99;
+              while (this.rooms.get(++id));
+              const room = new Room(id, socket.uid, message.room);
+              this.rooms.set(id, room);
+              user.roomId = id;
+              socket.send(WebSocketMessage.Type.CreateRoom, {
+                room: room.serialize(),
+              });
+              this.broadcast(
+                WebSocketMessage.Type.UpdateRoomList,
+                {
+                  rooms: this.rooms.serialize(),
+                },
+                (client) => {
+                  const user = this.users.get(client.uid);
+                  return user !== undefined && user.roomId === undefined;
+                }
+              );
+            }
+            break;
+          case WebSocketMessage.Type.LeaveRoom:
+            {
+              if (user.roomId === undefined) return;
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) return;
+              room.remove(socket);
+              if (room.isEmpty) this.rooms.delete(room.id);
+              socket.send(WebSocketMessage.Type.LeaveRoom, {});
             }
             break;
           case WebSocketMessage.Type.FriendRequest:
@@ -121,6 +166,13 @@ export default class Channel extends WebSocketServer {
         }
       });
       socket.on("close", () => {
+        if (user.roomId !== undefined) {
+          const room = this.rooms.get(user.roomId);
+          if (room !== undefined) {
+            room.remove(socket);
+            if (room.isEmpty) this.rooms.delete(room.id);
+          }
+        }
         this.users.delete(user.id);
         Logger.info(`User #${user.id} left.`).out();
         this.broadcast(WebSocketMessage.Type.Leave, {
@@ -130,8 +182,7 @@ export default class Channel extends WebSocketServer {
       Logger.info(`User #${user.id} joined.`).out();
       socket.send(WebSocketMessage.Type.Initialize, {
         me: user.serialize(),
-        community: user.community,
-        users: Array.from(this.users.values()).map((user) => user.summarize()),
+        users: this.users.valuesAsArray().map((user) => user.summarize()),
       });
       this.broadcast(
         WebSocketMessage.Type.Join,

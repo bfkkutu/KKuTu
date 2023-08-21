@@ -52,6 +52,11 @@ body {
   min-height: 100%;
   margin-bottom: 10px;
 
+  #main {
+    position: relative;
+    z-index: 2;
+  }
+
   header {
     display: flex;
     width: 100%;
@@ -134,6 +139,7 @@ body {
     bottom: 0;
     height: 85px;
     text-align: center;
+    z-index: 1;
 
     .left {
       text-align: left;
@@ -312,13 +318,6 @@ button:focus {
   background-color: #3b3b3b;
 }
 
-#Middle {
-  float: left;
-  margin-top: 80px;
-  width: 1010px;
-  z-index: 1;
-}
-
 /* jjowt */
 h1,
 h2,
@@ -405,7 +404,7 @@ code {
   width: 100%;
   height: 100%;
   pointer-events: none;
-  z-index: 1;
+  z-index: 3;
 
   .dialog {
     position: fixed;
@@ -417,6 +416,13 @@ code {
     box-shadow: 0px 1px 1px #141414;
     background-color: #eeeeee;
     z-index: 3;
+
+    &.appearing {
+      animation: DialogAppearance 200ms ease;
+    }
+    &.disappearing {
+      animation: DialogDisappearance 200ms ease forwards;
+    }
 
     &-alert {
       display: flex;
@@ -498,6 +504,27 @@ code {
     justify-content: center;
     align-items: center;
     pointer-events: fill;
-    z-index: -1;
+    z-index: 4;
+  }
+}
+
+@keyframes DialogAppearance {
+  from {
+    opacity: 0;
+    transform: scaleY(0.5);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+@keyframes DialogDisappearance {
+  from {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+  to {
+    opacity: 0;
+    transform: scaleY(0.5);
   }
 }

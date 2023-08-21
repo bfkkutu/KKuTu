@@ -3,11 +3,15 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
+import AudioContext from "front/@global/AudioContext";
 
 export default function ChatBox() {
   const socket = useStore((state) => state.socket);
   const users = useStore((state) => state.users);
-  const chatLog = useStore((state) => state.chatLog);
+  const [chatLog, appendChat] = useStore((state) => [
+    state.chatLog,
+    state.appendChat,
+  ]);
   const [content, setContent] = useState("");
   const $chatInput = useRef<HTMLInputElement>(null);
   const $list = useRef<HTMLDivElement>(null);
@@ -19,6 +23,18 @@ export default function ChatBox() {
     setContent("");
     $chatInput.current?.focus();
   }, [socket, content]);
+  const audioContext = AudioContext.instance;
+
+  useEffect(() => {
+    socket.messageReceiver.on(WebSocketMessage.Type.Chat, (message) => {
+      audioContext.playEffect("chat");
+      appendChat({
+        sender: message.sender,
+        content: message.content,
+        receivedAt: new Date(),
+      });
+    });
+  }, []);
 
   useEffect(() => {
     $chatInput.current!.onkeydown = (e) => {

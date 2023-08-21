@@ -116,34 +116,6 @@ if (typeof window !== "undefined") {
       });
       useDialogStore.getState().show(dialog);
     });
-  window.WebSocket.prototype.on = window.WebSocket.prototype.addEventListener;
-  window.WebSocket.prototype.off =
-    window.WebSocket.prototype.removeEventListener;
-  window.WebSocket.prototype._send = window.WebSocket.prototype.send;
-  window.WebSocket.prototype.send = function <T extends WebSocketMessage.Type>(
-    type: T,
-    content?: WebSocketMessage.Content.Client[T]
-  ): void {
-    this._send(
-      JSON.stringify({
-        type,
-        ...content,
-      } as WebSocketMessage.Client[T])
-    );
-  };
-  window.WebSocket.prototype.wait = function (type, callback) {
-    const { show, hide } = useSpinnerStore.getState();
-    show();
-    const cb = (raw: MessageEvent) => {
-      const message = JSON.parse(raw.data);
-      if (message.type === type) {
-        this.off("message", cb);
-        hide();
-        callback?.(message);
-      }
-    };
-    this.on("message", cb);
-  };
   window.onselectstart = window.ondragstart = () => false;
 }
 
