@@ -4,6 +4,7 @@ import DB from "back/utils/Database";
 import WebSocket from "back/utils/WebSocket";
 import { Database } from "../../common/Database";
 import { WebSocketMessage } from "../../common/WebSocket";
+import Room from "back/game/Room";
 
 import FriendRequest from "back/models/FriendRequest";
 
@@ -114,11 +115,22 @@ export default class User<Connected extends boolean = false>
   })
   public createdAt!: number;
 
+  /**
+   * @reference
+   */
   public socket!: Connected extends true ? WebSocket : undefined;
-  public roomId?: Connected extends true ? number : never;
+  /**
+   * @reference
+   */
+  public room?: Connected extends true ? Room : never;
   public community = { ...Database.community };
 
-  public async updateCommunity(updateClient: boolean = true) {
+  /**
+   * 이 유저의 커뮤니티 관련 정보를 갱신한다.
+   *
+   * @param updateClient 클라이언트에 갱신된 정보를 보낼 지 여부.
+   */
+  public async updateCommunity(updateClient: boolean = true): Promise<void> {
     if (this.socket === undefined) return;
     this.community.friends = this.friends;
     this.community.friendRequests.sent = (
@@ -136,7 +148,14 @@ export default class User<Connected extends boolean = false>
         community: this.community,
       });
   }
-
+  /**
+   * 현재 접속 중인 방이 있으면 나간다.
+   */
+  public leaveRoom(): void {
+    if (this.room === undefined || this.socket === undefined) return;
+    this.room.remove(this.socket);
+    this.room = undefined;
+  }
   public summarize(): Database.SummarizedUser {
     return {
       id: this.id,

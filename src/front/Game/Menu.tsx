@@ -180,7 +180,8 @@ export function Menu() {
 
   if (room === undefined) property = "forLobby";
   else if (room.master === me.id) property = "forMaster";
-  else property = "forLobby";
+  else property = "forRoom";
+
   return (
     <section className="top-menu">
       {buttons

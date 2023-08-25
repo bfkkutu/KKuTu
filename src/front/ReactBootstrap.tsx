@@ -3,7 +3,6 @@ import ReactDOM from "react-dom/client";
 
 import { PROPS } from "front/@global/Utility";
 import { Nest } from "common/Nest";
-import { WebSocketMessage } from "common/WebSocket";
 
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
@@ -14,7 +13,6 @@ import DialogManager from "front/@global/Bayadere/dialog/Manager";
 import SpinnerManager from "front/@global/Bayadere/spinner/Manager";
 
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) =>
@@ -123,7 +121,9 @@ interface State {
   error?: Error;
 }
 
-export default function Bind(TargetClass: any) {
+export default function Bind(
+  TargetClass: React.FC<any> | typeof React.PureComponent
+) {
   const $root = document.getElementById("stage") as HTMLTableSectionElement;
 
   ReactDOM.createRoot($root).render(

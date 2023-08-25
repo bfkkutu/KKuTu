@@ -159,7 +159,10 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
           type="button"
           onClick={async () => {
             socket.send(WebSocketMessage.Type.CreateRoom, {
-              room: { ...room, password: sha256(room.password) },
+              room: {
+                ...room,
+                password: sha256(room.password),
+              },
             });
             const { room: publishedRoom } = await socket.messageReceiver.wait(
               WebSocketMessage.Type.CreateRoom

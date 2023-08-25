@@ -5,8 +5,7 @@ import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
 import { Database } from "../../common/Database";
-import { Game } from "common/Game";
-import SerializableMap from "../../common/SerializableMap";
+import ObjectMap from "../../common/ObjectMap";
 
 import User from "back/models/User";
 import FriendRequest from "back/models/FriendRequest";
@@ -16,11 +15,11 @@ export default class Channel extends WebSocketServer {
   /**
    * 이 채널에 접속 중인 유저 맵.
    */
-  private users = new SerializableMap<string, User<true>>();
+  private users = new ObjectMap<string, User<true>>();
   /**
    * 이 채널에 만들어진 방 맵.
    */
-  private rooms = new SerializableMap<number, Room>();
+  private rooms = new ObjectMap<number, Room>();
 
   constructor(port: number, isSecure: boolean = false) {
     super(port, isSecure);
@@ -47,7 +46,7 @@ export default class Channel extends WebSocketServer {
               community: user.community,
             });
             socket.send(WebSocketMessage.Type.UpdateRoomList, {
-              rooms: this.rooms.serialize(),
+              rooms: this.rooms.evaluate("summarize"),
             });
             break;
           case WebSocketMessage.Type.UpdateSettings:
@@ -56,55 +55,64 @@ export default class Channel extends WebSocketServer {
             socket.send(WebSocketMessage.Type.UpdateSettings, {});
             break;
           case WebSocketMessage.Type.Chat:
-            if (user.roomId === undefined)
+            if (user.room === undefined)
               this.broadcast(
                 WebSocketMessage.Type.Chat,
                 {
                   sender: user.id,
                   content: message.content,
                 },
-                (client) => this.users.get(client.uid)?.roomId === undefined
+                (client) => this.users.get(client.uid)?.room === undefined
               );
-            else {
-              const room = this.rooms.get(user.roomId);
-              if (room === undefined) return;
-              room.broadcast(WebSocketMessage.Type.Chat, {
+            else
+              user.room.broadcast(WebSocketMessage.Type.Chat, {
                 sender: user.id,
                 content: message.content,
               });
-            }
             break;
           case WebSocketMessage.Type.CreateRoom:
             {
               let id = 99;
               while (this.rooms.get(++id));
-              const room = new Room(id, socket.uid, message.room);
-              this.rooms.set(id, room);
-              user.roomId = id;
+              user.room = new Room(this, id, user.id, message.room);
+              user.room.add(socket);
+              this.rooms.set(id, user.room);
+              Logger.info(`Room #${id} created by user #${user.id}.`).out();
               socket.send(WebSocketMessage.Type.CreateRoom, {
+                room: user.room.serialize(),
+              });
+              user.room.updateMembers();
+              this.updateRoomList();
+            }
+            break;
+          case WebSocketMessage.Type.JoinRoom:
+            {
+              const room = this.rooms.get(message.roomId);
+              if (room === undefined) return;
+              user.room = room;
+              room.add(socket);
+              Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
+              socket.send(WebSocketMessage.Type.JoinRoom, {
                 room: room.serialize(),
               });
-              this.broadcast(
-                WebSocketMessage.Type.UpdateRoomList,
-                {
-                  rooms: this.rooms.serialize(),
-                },
-                (client) => {
-                  const user = this.users.get(client.uid);
-                  return user !== undefined && user.roomId === undefined;
-                }
-              );
+              room.updateMembers();
             }
             break;
           case WebSocketMessage.Type.LeaveRoom:
-            {
-              if (user.roomId === undefined) return;
-              const room = this.rooms.get(user.roomId);
-              if (room === undefined) return;
-              room.remove(socket);
-              if (room.isEmpty) this.rooms.delete(room.id);
-              socket.send(WebSocketMessage.Type.LeaveRoom, {});
-            }
+            if (user.room === undefined) return;
+            const room = user.room;
+            user.leaveRoom();
+            Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
+            socket.send(WebSocketMessage.Type.LeaveRoom, {});
+            socket.send(WebSocketMessage.Type.UpdateRoomList, {
+              rooms: this.rooms.evaluate("summarize"),
+            });
+            room.updateMembers();
+            break;
+          case WebSocketMessage.Type.HandoverRoom:
+            if (user.room === undefined || user.room.master !== user.id) return;
+            user.room.master = message.master;
+            user.room.update();
             break;
           case WebSocketMessage.Type.FriendRequest:
             {
@@ -166,13 +174,7 @@ export default class Channel extends WebSocketServer {
         }
       });
       socket.on("close", () => {
-        if (user.roomId !== undefined) {
-          const room = this.rooms.get(user.roomId);
-          if (room !== undefined) {
-            room.remove(socket);
-            if (room.isEmpty) this.rooms.delete(room.id);
-          }
-        }
+        if (user.room !== undefined) user.leaveRoom();
         this.users.delete(user.id);
         Logger.info(`User #${user.id} left.`).out();
         this.broadcast(WebSocketMessage.Type.Leave, {
@@ -192,6 +194,33 @@ export default class Channel extends WebSocketServer {
     });
   }
 
+  /**
+   * 로비에 접속 중인 모든 유저의 방 목록을 갱신한다.
+   */
+  private updateRoomList(): void {
+    this.broadcast(
+      WebSocketMessage.Type.UpdateRoomList,
+      {
+        rooms: this.rooms.evaluate("summarize"),
+      },
+      (client) => {
+        const user = this.users.get(client.uid);
+        return user !== undefined && user.room === undefined;
+      }
+    );
+  }
+  /**
+   * 더 이상 유효하지 않은 방을 메모리에서 제거한다.
+   * @param id 방 식별자.
+   */
+  public unloadRoom(id: number): void {
+    if (this.rooms.delete(id)) this.updateRoomList();
+  }
+  /**
+   * 현재 이 채널에 접속 중인 유저 수를 반환한다.
+   *
+   * @returns 접속 중인 유저 수.
+   */
   public getActiveUserCount(): number {
     return this.users.size;
   }

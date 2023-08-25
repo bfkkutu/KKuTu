@@ -12,6 +12,7 @@
     "unitPeople": "{#0}명",
     "unitLevel": "레벨 {#0}",
     "unitSecond": "{#0}초",
+    "unitRound": "라운드 {#0}",
 
     "TIME_DISTANCE_PAST": "<{HUMAN_M|{##0}}> 전",
     "TIME_DISTANCE_FUTURE": "<{HUMAN_M|{##0}}> 후",

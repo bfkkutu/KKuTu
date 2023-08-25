@@ -170,7 +170,7 @@
     float: left;
   }
 
-  .body {
+  .product-body {
     width: calc(100% - 10px);
     height: 330px;
     overflow: {
@@ -206,7 +206,7 @@
     float: left;
   }
 
-  .body {
+  .product-body {
     width: calc(100% - 10px);
     height: 330px;
     overflow: {
@@ -258,22 +258,22 @@
         text-align: center;
       }
 
-      .mode {
-        padding-top: 5px;
+      .game-settings {
         width: 270px;
-      }
 
-      .info {
-        width: 270px;
-      }
+        .mode {
+          padding-top: 5px;
+          width: 270px;
+        }
 
-      .round {
-        padding-top: 5px;
-        margin-right: 10px;
-      }
+        .round {
+          padding-top: 5px;
+          margin-right: 10px;
+        }
 
-      .time {
-        padding-top: 5px;
+        .time {
+          padding-top: 5px;
+        }
       }
 
       .lock {
@@ -318,7 +318,7 @@
     float: left;
   }
 
-  .body {
+  .product-body {
     width: calc(100% - 10px);
     height: calc(100% - 10px);
   }
@@ -328,7 +328,7 @@
   width: calc(100% - 10px);
   height: calc(100% - 10px);
 
-  .title {
+  .product-title {
     height: 12px;
 
     h5 {
@@ -346,7 +346,7 @@
     float: left;
   }
 
-  .body {
+  .product-body {
     .stat {
       padding-left: 5px;
       width: 105px;
@@ -473,7 +473,7 @@
   height: 410px;
   background-image: url("/media/img/kkutu/gamebg.png");
 
-  .title {
+  .product-title {
     height: 12px;
 
     h5 {
@@ -485,7 +485,7 @@
     float: left;
   }
 
-  .body {
+  .product-body {
     padding-top: 0px;
   }
 }
@@ -499,7 +499,7 @@
   box-shadow: 0px 2px 1px #ddd;
   background-color: #eee;
 
-  .title {
+  .product-title {
     border-radius: 5px;
     color: #222;
     background-color: #ddd;
@@ -512,7 +512,7 @@
     }
   }
 
-  .body {
+  .product-body {
     font-size: 12px;
     padding: 5px 5px 0px 5px;
   }

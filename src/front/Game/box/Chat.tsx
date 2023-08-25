@@ -48,8 +48,8 @@ export default function ChatBox() {
 
   return (
     <section id="box-chat" className="product">
-      <h5 className="title">{L.render("chatBox_title")}</h5>
-      <div className="body">
+      <h5 className="product-title">{L.render("chatBox_title")}</h5>
+      <div className="product-body">
         <div className="list" ref={$list}>
           {chatLog.map((chat) => (
             <div className="item">

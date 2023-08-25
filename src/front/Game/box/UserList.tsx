@@ -36,14 +36,14 @@ export default function UserListBox(props: Props) {
 
   return (
     <section id="box-user-list" className="product">
-      <h5 className="title">
+      <h5 className="product-title">
         {L.render(
           "userListBox_title",
           <b>{L.get(`server_${props.server}`)}</b>,
           users.length
         )}
       </h5>
-      <div className="body">
+      <div className="product-body">
         {users.map((user) => (
           <UserItem {...user} />
         ))}

@@ -9,18 +9,40 @@ export default function RoomBox() {
     state.room,
     state.updateRoom,
   ]);
+  const [members, updateMembers] = useStore((state) => [
+    state.roomMembers,
+    state.updateRoomMembers,
+  ]);
 
   useEffect(() => {
-    socket.messageReceiver.on(WebSocketMessage.Type.UpdateRoom, ({ room }) => {
-      if (room === undefined || room.id !== room.id) return;
-      updateRoom(room);
-    });
-    return () => socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom);
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.UpdateRoom,
+      ({ room: data }) => {
+        if (room === undefined || room.id !== data.id) return;
+        updateRoom(data);
+      }
+    );
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.UpdateRoomMembers,
+      ({ members }) => updateMembers(members)
+    );
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.HandoverRoom,
+      ({ master }) => {
+        if (room === undefined) return;
+        updateRoom({ ...room, master });
+      }
+    );
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoomMembers);
+      socket.messageReceiver.off(WebSocketMessage.Type.HandoverRoom);
+    };
   }, []);
 
   return (
     <section id="box-room" className="product">
-      room box
+      {JSON.stringify(room)}
     </section>
   );
 }

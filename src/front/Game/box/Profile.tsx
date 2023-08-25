@@ -25,8 +25,8 @@ export default function ProfileBox() {
       className="product"
       onClick={() => toggle(dialog)}
     >
-      <h5 className="title">{L.render("profileBox_title")}</h5>
-      <div className="body">
+      <h5 className="product-title">{L.render("profileBox_title")}</h5>
+      <div className="product-body">
         <Moremi equipment={me.equipment} />
         <div className="stat">
           <LevelIcon className="level" level={level} />

@@ -5,6 +5,7 @@ import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/CreateRoom";
 import { WebSocketMessage } from "../../../common/WebSocket";
+import { Icon, IconType } from "front/@block/Icon";
 
 export default function RoomListBox() {
   const socket = useStore((state) => state.socket);
@@ -12,6 +13,7 @@ export default function RoomListBox() {
     state.rooms,
     state.updateRoomList,
   ]);
+  const updateRoom = useStore((state) => state.updateRoom);
   const toggle = useDialogStore((state) => state.toggle);
 
   useEffect(() => {
@@ -25,14 +27,56 @@ export default function RoomListBox() {
 
   return (
     <section id="box-room-list" className="product">
-      <h5 className="title">{L.render("roomListBox_title", rooms.length)}</h5>
-      <div className="body">
+      <h5 className="product-title">
+        {L.render("roomListBox_title", rooms.length)}
+      </h5>
+      <div className="product-body">
         {rooms.length === 0 ? (
           <div className="item create" onClick={() => toggle(CreateRoomDialog)}>
             {L.get("createRoom")}
           </div>
         ) : (
-          rooms.map((room) => <div className="item">{room.title}</div>)
+          rooms.map((room) => (
+            <div
+              className={`item ${room.isGaming ? "gaming" : "waiting"}`}
+              onClick={async () => {
+                socket.send(WebSocketMessage.Type.JoinRoom, {
+                  roomId: room.id,
+                });
+                const { room: detailedRoom } =
+                  await socket.messageReceiver.wait(
+                    WebSocketMessage.Type.JoinRoom
+                  );
+                updateRoom(detailedRoom);
+              }}
+            >
+              <div className="id">{room.id}</div>
+              <div className="title ellipse">{room.title}</div>
+              <div className="limit">
+                {room.members} / {room.limit}
+              </div>
+              <div className="game-settings">
+                <div className="mode">
+                  {[
+                    L.get(`game_mode_${room.mode}`),
+                    ...Object.entries(room.rules)
+                      .filter(([_, v]) => v)
+                      .map(([k]) => L.get(`game_rule_${k}`)),
+                  ].join(" / ")}
+                </div>
+                <div className="round">{L.get("unitRound", room.round)}</div>
+                <div className="time">
+                  {L.get("unitSecond", room.roundTime)}
+                </div>
+              </div>
+              <div className="lock">
+                <Icon
+                  type={IconType.NORMAL}
+                  name={room.isLocked ? "lock" : "unlock"}
+                />
+              </div>
+            </div>
+          ))
         )}
       </div>
     </section>

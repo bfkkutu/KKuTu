@@ -18,7 +18,7 @@ export namespace Game {
     [Mode.KoreanRelayReversed]: [Rule.Manner, Rule.WideTheme, Rule.Mission],
   };
 
-  export interface Room {
+  export interface BaseRoom {
     title: string;
     limit: number;
     mode: Mode;
@@ -26,11 +26,24 @@ export namespace Game {
     roundTime: number;
     rules: Record<Rule, boolean>;
   }
-  export interface RoomConfig extends Room {
+  export interface RoomConfig extends BaseRoom {
     password: string;
   }
-  export interface PublishedRoom extends Room {
+  export interface Room extends BaseRoom {
     id: number;
+  }
+  /**
+   * 로비에서 확인할 수 있는 방 정보들.
+   */
+  export interface SummarizedRoom extends Room {
+    isLocked: boolean;
+    isGaming: boolean;
+    members: number;
+  }
+  /**
+   * 방 안에서 확인할 수 있는 방 정보들.
+   */
+  export interface DetailedRoom extends Room {
     master: string;
   }
 }

@@ -37,6 +37,9 @@ export namespace WebSocketMessage {
     Chat = "chat",
     CreateRoom = "createRoom",
     UpdateRoom = "updateRoom",
+    UpdateRoomMembers = "updateRoomMembers",
+    HandoverRoom = "handoverRoom",
+    JoinRoom = "joinRoom",
     LeaveRoom = "leaveRoom",
     UpdateRoomList = "updateRoomList",
     /**
@@ -85,14 +88,23 @@ export namespace WebSocketMessage {
         content: string;
       };
       [Type.CreateRoom]: {
-        room: Game.PublishedRoom;
+        room: Game.DetailedRoom;
       };
       [Type.UpdateRoom]: {
-        room: Game.PublishedRoom;
+        room: Game.DetailedRoom;
+      };
+      [Type.UpdateRoomMembers]: {
+        members: string[];
+      };
+      [Type.HandoverRoom]: {
+        master: string;
+      };
+      [Type.JoinRoom]: {
+        room: Game.DetailedRoom;
       };
       [Type.LeaveRoom]: {};
       [Type.UpdateRoomList]: {
-        rooms: Game.PublishedRoom[];
+        rooms: Game.SummarizedRoom[];
       };
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
@@ -125,6 +137,13 @@ export namespace WebSocketMessage {
       };
       [Type.UpdateRoom]: {
         room: Game.RoomConfig;
+      };
+      [Type.UpdateRoomMembers]: {};
+      [Type.HandoverRoom]: {
+        master: string;
+      };
+      [Type.JoinRoom]: {
+        roomId: number;
       };
       [Type.LeaveRoom]: {};
       [Type.UpdateRoomList]: {};

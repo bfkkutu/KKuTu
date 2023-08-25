@@ -23,12 +23,15 @@ interface State {
   appendUser: (user: Database.SummarizedUser) => void;
   removeUser: (user: string) => void;
 
-  room?: Game.PublishedRoom;
-  updateRoom: (room: Game.PublishedRoom) => void;
+  room?: Game.DetailedRoom;
+  updateRoom: (room: Game.DetailedRoom) => void;
   leaveRoom: () => void;
 
-  rooms: Game.PublishedRoom[];
-  updateRoomList: (rooms: Game.PublishedRoom[]) => void;
+  roomMembers: string[];
+  updateRoomMembers: (members: string[]) => void;
+
+  rooms: Game.SummarizedRoom[];
+  updateRoomList: (rooms: Game.SummarizedRoom[]) => void;
 }
 
 export const useStore = create<State>((setState) => ({
@@ -81,7 +84,10 @@ export const useStore = create<State>((setState) => ({
 
   room: undefined,
   updateRoom: (room) => setState({ room }),
-  leaveRoom: () => setState({ room: undefined }),
+  leaveRoom: () => setState({ room: undefined, roomMembers: [] }),
+
+  roomMembers: [],
+  updateRoomMembers: (members) => setState({ roomMembers: members }),
 
   rooms: [],
   updateRoomList: (rooms) => setState({ rooms }),
