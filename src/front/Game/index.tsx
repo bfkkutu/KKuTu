@@ -8,13 +8,14 @@ import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { Menu } from "front/Game/Menu";
 import { useStore } from "front/Game/Store";
 import { getRequiredScore } from "front/@global/Utility";
+import AudioContext from "front/@global/AudioContext";
+import { useRoomStore } from "front/Game/box/Room/Store";
 
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
 import ChatBox from "front/Game/box/Chat";
 import RoomListBox from "front/Game/box/RoomList";
-import RoomBox from "front/Game/box/Room";
-import AudioContext from "front/@global/AudioContext";
+import RoomBox from "front/Game/box/Room/index";
 
 CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
 for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
@@ -33,7 +34,7 @@ function Game(props: Nest.Page.Props<"Game">) {
     state.appendUser,
     state.removeUser,
   ]);
-  const room = useStore((state) => state.room);
+  const room = useRoomStore((state) => state.room);
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 

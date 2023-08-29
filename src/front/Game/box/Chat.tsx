@@ -4,10 +4,11 @@ import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import AudioContext from "front/@global/AudioContext";
+import { ChatType } from "front/@global/enums/ChatType";
+import { Chat } from "front/@global/interfaces/Chat";
 
 export default function ChatBox() {
   const socket = useStore((state) => state.socket);
-  const users = useStore((state) => state.users);
   const [chatLog, appendChat] = useStore((state) => [
     state.chatLog,
     state.appendChat,
@@ -28,11 +29,7 @@ export default function ChatBox() {
   useEffect(() => {
     socket.messageReceiver.on(WebSocketMessage.Type.Chat, (message) => {
       audioContext.playEffect("chat");
-      appendChat({
-        sender: message.sender,
-        content: message.content,
-        receivedAt: new Date(),
-      });
+      appendChat(message.sender, message.content);
     });
   }, []);
 
@@ -52,8 +49,8 @@ export default function ChatBox() {
       <div className="product-body">
         <div className="list" ref={$list}>
           {chatLog.map((chat) => (
-            <div className="item">
-              <div className="head ellipse">{users[chat.sender].nickname}</div>
+            <div className={`item ${chat.type}`}>
+              <ChatHead {...chat} />
               <div className="content">{chat.content}</div>
               <div className="timestamp">
                 {chat.receivedAt.toLocaleTimeString()}
@@ -74,4 +71,15 @@ export default function ChatBox() {
       </div>
     </section>
   );
+}
+
+function ChatHead(chat: Chat) {
+  const users = useStore((state) => state.users);
+
+  switch (chat.type) {
+    case ChatType.Chat:
+      return <div className="head ellipse">{users[chat.sender].nickname}</div>;
+    case ChatType.Notice:
+      return <div className="head head-notice ellipse">{L.get("alert")}</div>;
+  }
 }

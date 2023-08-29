@@ -6,6 +6,7 @@ import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { MenuType } from "front/@global/enums/MenuType";
 import { WebSocketMessage } from "../../common/WebSocket";
+import { useRoomStore } from "front/Game/box/Room/Store";
 
 import { SettingsDialog } from "front/@global/Bayadere/dialog/templates/Settings";
 import { CommunityDialog } from "front/@global/Bayadere/dialog/templates/Community";
@@ -173,7 +174,10 @@ const buttons: MenuItem[] = [
 export function Menu() {
   const socket = useStore((state) => state.socket);
   const me = useStore((state) => state.me);
-  const [room, leaveRoom] = useStore((state) => [state.room, state.leaveRoom]);
+  const [room, leaveRoom] = useRoomStore((state) => [
+    state.room,
+    state.leaveRoom,
+  ]);
   const toggle = useDialogStore((state) => state.toggle);
 
   let property: keyof MenuItem = "forLobby";

@@ -4,6 +4,7 @@ import { Database } from "../../common/Database";
 import { Chat } from "front/@global/interfaces/Chat";
 import { Game } from "common/Game";
 import WebSocket from "front/@global/WebSocket";
+import { ChatType } from "front/@global/enums/ChatType";
 
 interface State {
   socket: WebSocket;
@@ -16,19 +17,13 @@ interface State {
   updateCommunity: (community: Database.Community) => void;
 
   chatLog: Chat[];
-  appendChat: (chat: Chat) => void;
+  appendChat: (sender: string, content: string) => void;
+  notice: (content: string) => void;
 
   users: Table<Database.SummarizedUser>;
   initializeUsers: (list: Database.SummarizedUser[]) => void;
   appendUser: (user: Database.SummarizedUser) => void;
   removeUser: (user: string) => void;
-
-  room?: Game.DetailedRoom;
-  updateRoom: (room: Game.DetailedRoom) => void;
-  leaveRoom: () => void;
-
-  roomMembers: string[];
-  updateRoomMembers: (members: string[]) => void;
 
   rooms: Game.SummarizedRoom[];
   updateRoomList: (rooms: Game.SummarizedRoom[]) => void;
@@ -54,9 +49,31 @@ export const useStore = create<State>((setState) => ({
   updateCommunity: (community) => setState({ community }),
 
   chatLog: [],
-  appendChat: (chat) =>
+  appendChat: (sender, content) =>
     setState((state) => {
-      const chatLog = [...state.chatLog, chat];
+      const chatLog = [
+        ...state.chatLog,
+        {
+          type: ChatType.Chat,
+          sender,
+          content,
+          receivedAt: new Date(),
+        },
+      ];
+      if (chatLog.length > 100) chatLog.shift();
+      return { chatLog };
+    }),
+  notice: (content) =>
+    setState((state) => {
+      const chatLog = [
+        ...state.chatLog,
+        {
+          type: ChatType.Notice,
+          sender: "",
+          content,
+          receivedAt: new Date(),
+        },
+      ];
       if (chatLog.length > 100) chatLog.shift();
       return { chatLog };
     }),
@@ -81,13 +98,6 @@ export const useStore = create<State>((setState) => ({
       delete users[user];
       return { users };
     }),
-
-  room: undefined,
-  updateRoom: (room) => setState({ room }),
-  leaveRoom: () => setState({ room: undefined, roomMembers: [] }),
-
-  roomMembers: [],
-  updateRoomMembers: (members) => setState({ roomMembers: members }),
 
   rooms: [],
   updateRoomList: (rooms) => setState({ rooms }),

@@ -6,6 +6,7 @@ import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/CreateRoom";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { Icon, IconType } from "front/@block/Icon";
+import { useRoomStore } from "front/Game/box/Room/Store";
 
 export default function RoomListBox() {
   const socket = useStore((state) => state.socket);
@@ -13,7 +14,7 @@ export default function RoomListBox() {
     state.rooms,
     state.updateRoomList,
   ]);
-  const updateRoom = useStore((state) => state.updateRoom);
+  const updateRoom = useRoomStore((state) => state.updateRoom);
   const toggle = useDialogStore((state) => state.toggle);
 
   useEffect(() => {
@@ -43,11 +44,10 @@ export default function RoomListBox() {
                 socket.send(WebSocketMessage.Type.JoinRoom, {
                   roomId: room.id,
                 });
-                const { room: detailedRoom } =
-                  await socket.messageReceiver.wait(
-                    WebSocketMessage.Type.JoinRoom
-                  );
-                updateRoom(detailedRoom);
+                const res = await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.InitializeRoom
+                );
+                updateRoom(res.room);
               }}
             >
               <div className="id">{room.id}</div>

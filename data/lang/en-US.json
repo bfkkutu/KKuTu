@@ -149,10 +149,15 @@
 
     "stat_record": "통산 {#0}승",
     "stat_money": "{#0}핑",
+    "stat_roomLimit": "참여자 {#0} / {#1}",
 
     "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?",
 
-    "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈습니다."
+    "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈습니다.",
+
+    "notice_joinRoom": "{#0}님이 입장했습니다.",
+    "notice_leaveRoom": "{#0}님이 퇴장했습니다.",
+    "notice_handover": "{#0}님으로 방장이 바뀌었습니다."
   },
   "Login": {
     "title": "BF끄투 - 로그인",

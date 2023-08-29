@@ -81,7 +81,6 @@ export default class Channel extends WebSocketServer {
               socket.send(WebSocketMessage.Type.CreateRoom, {
                 room: user.room.serialize(),
               });
-              user.room.updateMembers();
               this.updateRoomList();
             }
             break;
@@ -92,22 +91,29 @@ export default class Channel extends WebSocketServer {
               user.room = room;
               room.add(socket);
               Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
-              socket.send(WebSocketMessage.Type.JoinRoom, {
+              socket.send(WebSocketMessage.Type.InitializeRoom, {
                 room: room.serialize(),
               });
-              room.updateMembers();
+              room.broadcast(
+                WebSocketMessage.Type.JoinRoom,
+                {
+                  userId: user.id,
+                },
+                (client) => client.uid !== user.id
+              );
             }
             break;
           case WebSocketMessage.Type.LeaveRoom:
             if (user.room === undefined) return;
             const room = user.room;
+            room.broadcast(WebSocketMessage.Type.LeaveRoom, {
+              userId: user.id,
+            });
             user.leaveRoom();
             Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
-            socket.send(WebSocketMessage.Type.LeaveRoom, {});
             socket.send(WebSocketMessage.Type.UpdateRoomList, {
               rooms: this.rooms.evaluate("summarize"),
             });
-            room.updateMembers();
             break;
           case WebSocketMessage.Type.HandoverRoom:
             if (user.room === undefined || user.room.master !== user.id) return;

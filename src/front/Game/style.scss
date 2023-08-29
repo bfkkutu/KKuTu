@@ -412,6 +412,10 @@
       width: 100%;
       overflow: hidden;
 
+      &.notice {
+        background-color: #ccc;
+      }
+
       .head {
         float: left;
         padding-right: 4px;
@@ -424,6 +428,9 @@
         &:hover {
           background-color: #fff;
         }
+      }
+      .head-notice {
+        color: #1767ca;
       }
 
       .content {
@@ -465,6 +472,115 @@
     margin-top: 5px;
     width: 60px;
     height: 20px;
+  }
+}
+
+#box-room {
+  width: 1000px;
+  height: 360px;
+
+  .product-title {
+    height: 12px;
+    position: fixed;
+
+    h5 {
+      float: left;
+    }
+
+    .modified {
+      animation: ModifiedBlink 1s ease 3;
+    }
+
+    .id {
+      width: 35px;
+      text-align: center;
+    }
+
+    .title {
+      font-weight: bold;
+      width: 450px;
+    }
+
+    .mode {
+      margin-right: 5px;
+      width: 340px;
+      text-align: right;
+    }
+
+    .limit {
+      width: 60px;
+      text-align: center;
+    }
+
+    .round {
+      width: 60px;
+      text-align: center;
+    }
+
+    .roundTime {
+      width: 40px;
+      text-align: center;
+    }
+  }
+
+  .product-body {
+    .user-list {
+      margin-top: 20px;
+
+      .user {
+        float: left;
+        padding: 3px;
+        border-radius: 10px;
+        margin: 3px;
+        width: 224px;
+        height: 151px;
+        box-shadow: 0px 1px 1px #777777;
+        background-color: #e4e4e4;
+
+        &:hover {
+          cursor: pointer;
+          background-color: #eeeeee;
+        }
+
+        div {
+          float: left;
+        }
+
+        .image {
+          margin: 3px;
+          width: 100px;
+          height: 100px;
+        }
+
+        .stat {
+          padding: 3px;
+          width: 112px;
+          height: 100px;
+          font-size: 15px;
+
+          div {
+            margin-bottom: 4px;
+          }
+        }
+
+        .title {
+          padding: 6px 4px;
+          width: 216px;
+          font-size: 15px;
+
+          .level {
+            float: left;
+            width: 30px;
+            height: 30px;
+          }
+
+          .nickname {
+            padding: 6px 0px 0px 8px;
+            font-weight: bold;
+          }
+        }
+      }
+    }
   }
 }
 

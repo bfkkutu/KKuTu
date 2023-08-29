@@ -84,15 +84,6 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
       room: this.serialize(),
     });
   }
-  /**
-   * 이 방에 접속 중인 유저들의 방 유저 목록을 갱신한다.
-   * 이 방에 새 유저가 들어왔거나 기존 유저가 나갔을 때 호출되어야 한다.
-   */
-  public updateMembers(): void {
-    this.broadcast(WebSocketMessage.Type.UpdateRoomMembers, {
-      members: this.getMembers(),
-    });
-  }
   public summarize(): Game.SummarizedRoom {
     return {
       id: this.id,
@@ -117,6 +108,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
       roundTime: this.roundTime,
       rules: this.rules,
       master: this.master,
+      members: this.getMembers(),
     };
   }
 }

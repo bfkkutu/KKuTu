@@ -45,5 +45,6 @@ export namespace Game {
    */
   export interface DetailedRoom extends Room {
     master: string;
+    members: string[];
   }
 }
