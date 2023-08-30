@@ -89,6 +89,9 @@
     "whisper": "귓속말",
     "friendRequest": "친구 추가",
     "createRoom": "방 만들기",
+    "ready": "준비",
+    "spectate": "관전",
+    "master": "방장",
 
     "autoReady": "자동 준비",
     "badWordsFilter": "비속어 필터링",

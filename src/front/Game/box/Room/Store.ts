@@ -5,7 +5,7 @@ import { Game } from "common/Game";
 interface State {
   room?: Game.DetailedRoom;
   updateRoom: (room: Game.DetailedRoom) => void;
-  addMember: (id: string) => void;
+  addMember: (member: Game.RoomMember) => void;
   removeMember: (id: string) => void;
   leaveRoom: () => void;
 }
@@ -13,10 +13,10 @@ interface State {
 export const useRoomStore = create<State>((setState) => ({
   room: undefined,
   updateRoom: (room) => setState({ room }),
-  addMember: (id) =>
+  addMember: (member) =>
     setState(({ room }) => {
       if (room === undefined) return { room };
-      return { room: { ...room, members: [...room.members, id] } };
+      return { room: { ...room, members: [...room.members, member] } };
     }),
   removeMember: (id) =>
     setState(({ room }) => {
@@ -24,7 +24,7 @@ export const useRoomStore = create<State>((setState) => ({
       return {
         room: {
           ...room,
-          members: room.members.filter((member) => member !== id),
+          members: room.members.filter((v) => v.id !== id),
         },
       };
     }),

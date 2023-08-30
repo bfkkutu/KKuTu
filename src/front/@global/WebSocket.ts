@@ -1,7 +1,7 @@
 import { WebSocketMessage } from "../../common/WebSocket";
 import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 
-type EventListener<T extends WebSocketMessage.Type> = (
+export type EventListener<T extends WebSocketMessage.Type> = (
   message: WebSocketMessage.Server[T]
 ) => void | Promise<void>;
 

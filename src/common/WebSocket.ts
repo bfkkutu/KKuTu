@@ -100,10 +100,10 @@ export namespace WebSocketMessage {
         room: Game.DetailedRoom;
       };
       [Type.JoinRoom]: {
-        userId: string;
+        member: Game.RoomMember;
       };
       [Type.LeaveRoom]: {
-        userId: string;
+        memberId: string;
       };
       [Type.UpdateRoomList]: {
         rooms: Game.SummarizedRoom[];

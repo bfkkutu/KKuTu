@@ -18,6 +18,10 @@ export namespace Game {
     [Mode.KoreanRelayReversed]: [Rule.Manner, Rule.WideTheme, Rule.Mission],
   };
 
+  export interface RoomMember {
+    id: string;
+    isReady: boolean;
+  }
   export interface BaseRoom {
     title: string;
     limit: number;
@@ -45,6 +49,6 @@ export namespace Game {
    */
   export interface DetailedRoom extends Room {
     master: string;
-    members: string[];
+    members: RoomMember[];
   }
 }

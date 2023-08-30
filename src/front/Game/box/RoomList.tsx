@@ -7,6 +7,7 @@ import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/Create
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { Icon, IconType } from "front/@block/Icon";
 import { useRoomStore } from "front/Game/box/Room/Store";
+import Mode from "front/@block/Mode";
 
 export default function RoomListBox() {
   const socket = useStore((state) => state.socket);
@@ -57,12 +58,7 @@ export default function RoomListBox() {
               </div>
               <div className="game-settings">
                 <div className="mode">
-                  {[
-                    L.get(`game_mode_${room.mode}`),
-                    ...Object.entries(room.rules)
-                      .filter(([_, v]) => v)
-                      .map(([k]) => L.get(`game_rule_${k}`)),
-                  ].join(" / ")}
+                  <Mode {...room} />
                 </div>
                 <div className="round">{L.get("unitRound", room.round)}</div>
                 <div className="time">

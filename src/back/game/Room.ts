@@ -5,6 +5,7 @@ import { Game } from "common/Game";
 import Channel from "back/game/Channel";
 import WebSocket from "back/utils/WebSocket";
 import { WebSocketMessage } from "../../common/WebSocket";
+import ObjectMap from "../../common/ObjectMap";
 
 export default class Room extends WebSocketGroup implements Game.BaseRoom {
   private static emptyPassword = sha256("");
@@ -12,6 +13,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
    * @reference
    */
   private channel: Channel;
+  private members = new ObjectMap<string, Game.RoomMember>();
   public id: number;
   public title: string;
   public isLocked: boolean;
@@ -59,6 +61,15 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     this.roundTime = room.roundTime;
     this.rules = room.rules;
   }
+  public override add(socket: WebSocket): void {
+    const user = this.channel.getUser(socket.uid);
+    if (user === undefined) return;
+    super.add(socket);
+    this.members.set(user.id, {
+      id: user.id,
+      isReady: user.settings.game.autoReady,
+    });
+  }
   /**
    * 방에서 특정 유저를 제거한다.
    *
@@ -66,14 +77,18 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
    */
   public override remove(socket: WebSocket): void {
     super.remove(socket);
+    this.members.delete(socket.uid);
     if (this.isEmpty) return this.channel.unloadRoom(this.id);
     if (this.master === socket.uid) {
       this.master = this.clients.valuesAsArray()[0].uid;
       this.update();
     }
   }
-  private getMembers(): string[] {
-    return this.clients.valuesAsArray().map((client) => client.uid);
+  private getMembers(): Game.RoomMember[] {
+    return this.members.valuesAsArray();
+  }
+  public getMember(id: string) {
+    return this.members.get(id);
   }
   /**
    * 이 방에 접속 중인 유저들의 방 정보를 갱신한다.

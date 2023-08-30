@@ -94,10 +94,12 @@ export default class Channel extends WebSocketServer {
               socket.send(WebSocketMessage.Type.InitializeRoom, {
                 room: room.serialize(),
               });
+              const member = room.getMember(user.id);
+              if (member === undefined) return;
               room.broadcast(
                 WebSocketMessage.Type.JoinRoom,
                 {
-                  userId: user.id,
+                  member,
                 },
                 (client) => client.uid !== user.id
               );
@@ -107,7 +109,7 @@ export default class Channel extends WebSocketServer {
             if (user.room === undefined) return;
             const room = user.room;
             room.broadcast(WebSocketMessage.Type.LeaveRoom, {
-              userId: user.id,
+              memberId: user.id,
             });
             user.leaveRoom();
             Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
@@ -229,5 +231,8 @@ export default class Channel extends WebSocketServer {
    */
   public getActiveUserCount(): number {
     return this.users.size;
+  }
+  public getUser(id: string) {
+    return this.users.get(id);
   }
 }
