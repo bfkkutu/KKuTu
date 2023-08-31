@@ -6,7 +6,7 @@ import { useStore } from "front/Game/Store";
 import { Database } from "common/Database";
 import AudioContext from "front/@global/AudioContext";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
-import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { WebSocketMessage } from "../../../common/WebSocket";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 
 export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {

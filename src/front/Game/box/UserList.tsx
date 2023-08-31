@@ -6,7 +6,7 @@ import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
 import ProfileImage from "front/@block/ProfileImage";
 import { Database } from "common/Database";
-import { createProfileDialog } from "front/@global/Bayadere/dialog/templates/Profile";
+import { createProfileDialog } from "front/Game/dialogs/Profile";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 
 function UserItem(user: Database.SummarizedUser) {

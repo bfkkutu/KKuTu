@@ -10,7 +10,7 @@ import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import Gauge from "front/@block/Gauge";
-import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { WebSocketMessage } from "../../../common/WebSocket";
 
 export const createProfileDialog = (user: Database.SummarizedUser) => {
   const socket = useStore((state) => state.socket);

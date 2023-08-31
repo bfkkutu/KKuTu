@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/CreateRoom";
+import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { Icon, IconType } from "front/@block/Icon";
 import { useRoomStore } from "front/Game/box/Room/Store";

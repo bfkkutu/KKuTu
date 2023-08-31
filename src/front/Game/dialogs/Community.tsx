@@ -7,7 +7,7 @@ import { getLevel, getOfflineUser } from "front/@global/Utility";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { Icon, IconType } from "front/@block/Icon";
-import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { WebSocketMessage } from "../../../common/WebSocket";
 
 export const CommunityDialog = new DialogTuple(
   () => {

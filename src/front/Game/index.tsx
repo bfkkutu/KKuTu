@@ -10,6 +10,7 @@ import { useStore } from "front/Game/Store";
 import { getRequiredScore } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
 import { useRoomStore } from "front/Game/box/Room/Store";
+import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
@@ -35,6 +36,7 @@ function Game(props: Nest.Page.Props<"Game">) {
     state.removeUser,
   ]);
   const room = useRoomStore((state) => state.room);
+  const hide = useSpinnerStore((state) => state.hide);
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 
@@ -68,8 +70,12 @@ function Game(props: Nest.Page.Props<"Game">) {
     socket.messageReceiver.on(WebSocketMessage.Type.Leave, ({ userId }) =>
       removeUser(userId)
     );
-    socket.messageReceiver.on(WebSocketMessage.Type.Error, ({ errorType }) =>
-      alert(L.get(`error_${errorType}`))
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.Error,
+      async ({ errorType }) => {
+        await alert(L.get(`error_${errorType}`));
+        hide();
+      }
     );
     socket.on("close", (e) => {
       alert(L.get("error_closed", e.code));

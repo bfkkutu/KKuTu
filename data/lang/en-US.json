@@ -84,13 +84,15 @@
     "welcome": "환영합니다.",
     "error_closed": "[#{#0}] 서버와 연결이 끊어졌습니다.",
     "error_soundNotFound": "소리 리소스 {#0}#{을} 로드하지 못했습니다.",
+    "error_400": "잘못된 요청입니다.",
 
     "invite": "초대",
     "whisper": "귓속말",
     "friendRequest": "친구 추가",
     "createRoom": "방 만들기",
+    "roomSettings": "방 설정",
     "ready": "준비",
-    "spectate": "관전",
+    "spectator": "관전",
     "master": "방장",
 
     "autoReady": "자동 준비",

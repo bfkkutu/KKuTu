@@ -41,6 +41,8 @@ export namespace WebSocketMessage {
     InitializeRoom = "initializeRoom",
     JoinRoom = "joinRoom",
     LeaveRoom = "leaveRoom",
+    Spectate = "spectate",
+    Ready = "ready",
     UpdateRoomList = "updateRoomList",
     /**
      * @sender Server & Client.
@@ -105,6 +107,12 @@ export namespace WebSocketMessage {
       [Type.LeaveRoom]: {
         memberId: string;
       };
+      [Type.Spectate]: {
+        member: Game.RoomMember;
+      };
+      [Type.Ready]: {
+        member: Game.RoomMember;
+      };
       [Type.UpdateRoomList]: {
         rooms: Game.SummarizedRoom[];
       };
@@ -135,10 +143,10 @@ export namespace WebSocketMessage {
         content: string;
       };
       [Type.CreateRoom]: {
-        room: Game.RoomConfig;
+        room: Game.RoomSettings;
       };
       [Type.UpdateRoom]: {
-        room: Game.RoomConfig;
+        room: Game.RoomSettings;
       };
       [Type.HandoverRoom]: {
         master: string;
@@ -148,6 +156,8 @@ export namespace WebSocketMessage {
         roomId: number;
       };
       [Type.LeaveRoom]: {};
+      [Type.Spectate]: {};
+      [Type.Ready]: {};
       [Type.UpdateRoomList]: {};
       [Type.FriendRequest]: {
         /**
@@ -181,6 +191,7 @@ export namespace WebSocketMessage {
 
 export namespace WebSocketError {
   export enum Type {
+    BadRequest = 400,
     /**
      * @reason 게임 채널에 로그인하지 않은 채로 접속하려고 시도하면 발생한다.
      * @action 소켓을 닫는다.
@@ -189,6 +200,7 @@ export namespace WebSocketError {
   }
 
   export interface Content {
+    [Type.BadRequest]: {};
     [Type.Unauthorized]: {};
   }
 

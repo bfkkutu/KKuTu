@@ -11,18 +11,29 @@ export default function RoomBox() {
   const socket = useStore((state) => state.socket);
   const users = useStore((state) => state.users);
   const notice = useStore((state) => state.notice);
-  const [room, updateRoom, addMember, removeMember] = useRoomStore((state) => [
-    state.room,
-    state.updateRoom,
-    state.addMember,
-    state.removeMember,
-  ]);
+  const [room, updateRoom, addMember, updateMember, removeMember] =
+    useRoomStore((state) => [
+      state.room,
+      state.updateRoom,
+      state.addMember,
+      state.updateMember,
+      state.removeMember,
+    ]);
 
   useEffect(() => {
     socket.messageReceiver.on(WebSocketMessage.Type.JoinRoom, ({ member }) => {
       notice(L.get("notice_joinRoom", users[member.id].nickname));
       addMember(member);
     });
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.UpdateRoom,
+      ({ room: data }) => {
+        if (room === undefined || room.id !== data.id) return;
+        if (room.master !== data.master)
+          notice(L.get("notice_handover", users[data.master].nickname));
+        updateRoom(data);
+      }
+    );
     socket.messageReceiver.on(
       WebSocketMessage.Type.LeaveRoom,
       ({ memberId }) => {
@@ -32,28 +43,21 @@ export default function RoomBox() {
     );
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.JoinRoom);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom);
       socket.messageReceiver.off(WebSocketMessage.Type.LeaveRoom);
     };
   }, [users]);
 
   useEffect(() => {
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.UpdateRoom,
-      ({ room: data }) => {
-        if (room === undefined || room.id !== data.id) return;
-        updateRoom(data);
-      }
+    socket.messageReceiver.on(WebSocketMessage.Type.Spectate, ({ member }) =>
+      updateMember(member)
     );
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.HandoverRoom,
-      ({ master }) => {
-        if (room === undefined) return;
-        updateRoom({ ...room, master });
-      }
+    socket.messageReceiver.on(WebSocketMessage.Type.Ready, ({ member }) =>
+      updateMember(member)
     );
     return () => {
-      socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom);
-      socket.messageReceiver.off(WebSocketMessage.Type.HandoverRoom);
+      socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
+      socket.messageReceiver.off(WebSocketMessage.Type.Ready);
     };
   }, []);
 
@@ -67,14 +71,18 @@ export default function RoomBox() {
           <Mode {...room} />
         </h5>
         <h5 className="limit">
-          {L.get("stat_roomLimit", room.members.length, room.limit)}
+          {L.get(
+            "stat_roomLimit",
+            Object.keys(room.members).length,
+            room.limit
+          )}
         </h5>
         <h5 className="round">{L.get("unitRound", room.round)}</h5>
         <h5 className="roundTime">{L.get("unitSecond", room.roundTime)}</h5>
       </h5>
       <div className="product-body">
         <div className="user-list">
-          {room.members.map((member) => (
+          {Object.values(room.members).map((member) => (
             <Member {...member} />
           ))}
         </div>

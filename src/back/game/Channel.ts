@@ -84,6 +84,15 @@ export default class Channel extends WebSocketServer {
               this.updateRoomList();
             }
             break;
+          case WebSocketMessage.Type.UpdateRoom:
+            {
+              const room = user.room;
+              if (room === undefined) return;
+              if (room.master !== user.id)
+                socket.sendError(WebSocketError.Type.BadRequest, {});
+              room.configure(message.room);
+            }
+            break;
           case WebSocketMessage.Type.JoinRoom:
             {
               const room = this.rooms.get(message.roomId);
@@ -106,21 +115,48 @@ export default class Channel extends WebSocketServer {
             }
             break;
           case WebSocketMessage.Type.LeaveRoom:
-            if (user.room === undefined) return;
-            const room = user.room;
-            room.broadcast(WebSocketMessage.Type.LeaveRoom, {
-              memberId: user.id,
-            });
-            user.leaveRoom();
-            Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
-            socket.send(WebSocketMessage.Type.UpdateRoomList, {
-              rooms: this.rooms.evaluate("summarize"),
-            });
+            {
+              const room = user.room;
+              if (room === undefined) return;
+              room.broadcast(WebSocketMessage.Type.LeaveRoom, {
+                memberId: user.id,
+              });
+              user.leaveRoom();
+              Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
+              socket.send(WebSocketMessage.Type.UpdateRoomList, {
+                rooms: this.rooms.evaluate("summarize"),
+              });
+            }
             break;
           case WebSocketMessage.Type.HandoverRoom:
             if (user.room === undefined || user.room.master !== user.id) return;
             user.room.master = message.master;
             user.room.update();
+            break;
+          case WebSocketMessage.Type.Spectate:
+            {
+              const room = user.room;
+              if (room === undefined) return;
+              const member = room.getMember(user.id);
+              if (member === undefined) return;
+              member.isSpectator = !member.isSpectator;
+              member.isReady = member.isSpectator;
+              room.broadcast(WebSocketMessage.Type.Spectate, {
+                member,
+              });
+            }
+            break;
+          case WebSocketMessage.Type.Ready:
+            {
+              const room = user.room;
+              if (room === undefined || room.master === user.id) return;
+              const member = room.getMember(user.id);
+              if (member === undefined) return;
+              if (!member.isSpectator) member.isReady = !member.isReady;
+              room.broadcast(WebSocketMessage.Type.Ready, {
+                member,
+              });
+            }
             break;
           case WebSocketMessage.Type.FriendRequest:
             {

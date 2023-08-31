@@ -2,7 +2,7 @@ import React from "react";
 
 import { Game } from "common/Game";
 import { useStore } from "front/Game/Store";
-import { createProfileDialog } from "front/@global/Bayadere/dialog/templates/Profile";
+import { createProfileDialog } from "front/Game/dialogs/Profile";
 import { useRoomStore } from "./Store";
 import L from "front/@global/Language";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
@@ -26,6 +26,8 @@ export default function Member(member: Game.RoomMember) {
     stats.push(<div className="master">{L.get("master")}</div>);
   else if (member.isReady)
     stats.push(<div className="ready">{L.get("ready")}</div>);
+  if (member.isSpectator)
+    stats.push(<div className="spectator">{L.get("spectator")}</div>);
 
   return (
     <div className="user" onClick={() => toggle(dialog)}>

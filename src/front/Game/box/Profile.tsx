@@ -6,7 +6,7 @@ import Moremi from "front/@block/Moremi";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
-import { createProfileDialog } from "front/@global/Bayadere/dialog/templates/Profile";
+import { createProfileDialog } from "front/Game/dialogs/Profile";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import Gauge from "front/@block/Gauge";
 

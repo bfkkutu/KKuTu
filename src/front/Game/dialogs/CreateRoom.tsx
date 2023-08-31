@@ -4,11 +4,11 @@ import sha256 from "sha256";
 import L from "front/@global/Language";
 import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
 import { useStore } from "front/Game/Store";
-import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { WebSocketMessage } from "../../../common/WebSocket";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { Game } from "../../../../../common/Game";
+import { Game } from "../../../common/Game";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
-import { EnumValueIterator } from "../../../../../common/Utility";
+import { EnumValueIterator } from "../../../common/Utility";
 import { useRoomStore } from "front/Game/box/Room/Store";
 
 export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
@@ -16,7 +16,7 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
   const socket = useStore((state) => state.socket);
   const updateRoom = useRoomStore((state) => state.updateRoom);
   const hide = useDialogStore((state) => state.hide);
-  const [room, setRoom] = useState<Game.RoomConfig>({
+  const [room, setRoom] = useState<Game.RoomSettings>({
     title: L.get("createRoom_title_default", nickname),
     password: "",
     limit: 8,
@@ -143,7 +143,10 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
                   onChange={(e) =>
                     setRoom({
                       ...room,
-                      rules: { ...room.rules, [rule]: e.currentTarget.checked },
+                      rules: {
+                        ...room.rules,
+                        [rule]: e.currentTarget.checked,
+                      },
                     })
                   }
                 />

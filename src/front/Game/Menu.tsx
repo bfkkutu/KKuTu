@@ -8,9 +8,11 @@ import { MenuType } from "front/@global/enums/MenuType";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { useRoomStore } from "front/Game/box/Room/Store";
 
-import { SettingsDialog } from "front/@global/Bayadere/dialog/templates/Settings";
-import { CommunityDialog } from "front/@global/Bayadere/dialog/templates/Community";
-import { CreateRoomDialog } from "front/@global/Bayadere/dialog/templates/CreateRoom";
+import { SettingsDialog } from "front/Game/dialogs/Settings";
+import { CommunityDialog } from "front/Game/dialogs/Community";
+import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
+import { createRoomSettingsDialog } from "front/Game/dialogs/RoomSettings";
+import ClassName from "front/@global/ClassName";
 
 interface MenuItem {
   type: MenuType;
@@ -180,6 +182,8 @@ export function Menu() {
   ]);
   const toggle = useDialogStore((state) => state.toggle);
 
+  const RoomSettingsDialog =
+    room && createRoomSettingsDialog({ ...room, password: "" });
   let property: keyof MenuItem = "forLobby";
 
   if (room === undefined) property = "forLobby";
@@ -191,14 +195,12 @@ export function Menu() {
       {buttons
         .filter((config) => config[property])
         .map((config) => {
-          const classNames = [`menu-${config.type}`];
-          if (config.isTiny) classNames.push("tiny-menu");
+          const className = new ClassName(`menu-${config.type}`);
+          if (config.isTiny) className.push("tiny-menu");
           const props: React.DetailedHTMLProps<
             React.ButtonHTMLAttributes<HTMLButtonElement>,
             HTMLButtonElement
-          > = {
-            className: classNames.join(" "),
-          };
+          > = {};
           switch (config.type) {
             case MenuType.Settings:
               props.onClick = () => toggle(SettingsDialog);
@@ -208,6 +210,26 @@ export function Menu() {
               break;
             case MenuType.CreateRoom:
               props.onClick = () => toggle(CreateRoomDialog);
+              break;
+            case MenuType.RoomSettings:
+              props.onClick = () =>
+                RoomSettingsDialog && toggle(RoomSettingsDialog);
+              break;
+            case MenuType.Spectate:
+              if (
+                room &&
+                me.id in room.members &&
+                room.members[me.id].isSpectator
+              )
+                className.push("menu-toggled");
+              props.onClick = () =>
+                socket.send(WebSocketMessage.Type.Spectate, {});
+              break;
+            case MenuType.Ready:
+              if (room && me.id in room.members && room.members[me.id].isReady)
+                className.push("menu-toggled");
+              props.onClick = () =>
+                socket.send(WebSocketMessage.Type.Ready, {});
               break;
             case MenuType.Leave:
               props.onClick = () => {
@@ -220,7 +242,7 @@ export function Menu() {
           }
           const badge = config.badge && config.badge();
           return (
-            <button type="button" {...props}>
+            <button type="button" {...props} className={className.toString()}>
               {badge ? <span className="badge">{badge}</span> : null}
               {config.label}
             </button>

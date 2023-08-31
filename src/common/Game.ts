@@ -21,6 +21,7 @@ export namespace Game {
   export interface RoomMember {
     id: string;
     isReady: boolean;
+    isSpectator: boolean;
   }
   export interface BaseRoom {
     title: string;
@@ -30,7 +31,7 @@ export namespace Game {
     roundTime: number;
     rules: Record<Rule, boolean>;
   }
-  export interface RoomConfig extends BaseRoom {
+  export interface RoomSettings extends BaseRoom {
     password: string;
   }
   export interface Room extends BaseRoom {
@@ -49,6 +50,6 @@ export namespace Game {
    */
   export interface DetailedRoom extends Room {
     master: string;
-    members: RoomMember[];
+    members: Record<string, RoomMember>;
   }
 }

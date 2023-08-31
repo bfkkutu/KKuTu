@@ -33,7 +33,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     channel: Channel,
     id: number,
     master: string,
-    room: Game.RoomConfig
+    room: Game.RoomSettings
   ) {
     super();
 
@@ -51,7 +51,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     this.rules = room.rules;
   }
 
-  public configure(room: Game.RoomConfig): void {
+  public configure(room: Game.RoomSettings): void {
     this.title = room.title;
     this.isLocked = room.password !== Room.emptyPassword;
     this.password = room.password;
@@ -67,7 +67,8 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     super.add(socket);
     this.members.set(user.id, {
       id: user.id,
-      isReady: user.settings.game.autoReady,
+      isReady: user.settings.game.autoReady || this.master === user.id,
+      isSpectator: false,
     });
   }
   /**
@@ -81,11 +82,14 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     if (this.isEmpty) return this.channel.unloadRoom(this.id);
     if (this.master === socket.uid) {
       this.master = this.clients.valuesAsArray()[0].uid;
+      const member = this.getMember(this.master);
+      if (member === undefined) return;
+      member.isReady = true;
       this.update();
     }
   }
-  private getMembers(): Game.RoomMember[] {
-    return this.members.valuesAsArray();
+  private getMembers(): Record<string, Game.RoomMember> {
+    return this.members.asRecord();
   }
   public getMember(id: string) {
     return this.members.get(id);
