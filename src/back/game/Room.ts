@@ -54,7 +54,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
   public configure(room: Game.RoomSettings): void {
     this.title = room.title;
     this.isLocked = room.password !== Room.emptyPassword;
-    this.password = room.password;
+    this.password &&= room.password;
     this.limit = room.limit;
     this.mode = room.mode;
     this.round = room.round;

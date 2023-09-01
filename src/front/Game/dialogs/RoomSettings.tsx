@@ -9,13 +9,11 @@ import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { Game } from "../../../common/Game";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { EnumValueIterator } from "../../../common/Utility";
-import { useRoomStore } from "front/Game/box/Room/Store";
 
 export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
   const dialog = new DialogTuple(L.get("roomSettings"), () => {
     const nickname = useStore((state) => state.me.nickname);
     const socket = useStore((state) => state.socket);
-    const updateRoom = useRoomStore((state) => state.updateRoom);
     const hide = useDialogStore((state) => state.hide);
     const [room, setRoom] = useState(config);
 
@@ -158,7 +156,9 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
               socket.send(WebSocketMessage.Type.UpdateRoom, {
                 room: {
                   ...room,
-                  password: sha256(room.password),
+                  password: room.password.includes("\0")
+                    ? ""
+                    : sha256(room.password),
                 },
               });
               await socket.messageReceiver.wait(

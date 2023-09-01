@@ -7,12 +7,14 @@ import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { MenuType } from "front/@global/enums/MenuType";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { useRoomStore } from "front/Game/box/Room/Store";
+import ClassName from "front/@global/ClassName";
+import { useListBox } from "front/Game/box/ListBox/Store";
+import { ListBoxType } from "front/@global/enums/ListBoxType";
 
 import { SettingsDialog } from "front/Game/dialogs/Settings";
 import { CommunityDialog } from "front/Game/dialogs/Community";
 import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
 import { createRoomSettingsDialog } from "front/Game/dialogs/RoomSettings";
-import ClassName from "front/@global/ClassName";
 
 interface MenuItem {
   type: MenuType;
@@ -181,9 +183,13 @@ export function Menu() {
     state.leaveRoom,
   ]);
   const toggle = useDialogStore((state) => state.toggle);
+  const [currentListBox, changeListBox] = useListBox((state) => [
+    state.current,
+    state.change,
+  ]);
 
   const RoomSettingsDialog =
-    room && createRoomSettingsDialog({ ...room, password: "" });
+    room && createRoomSettingsDialog({ ...room, password: "\0".repeat(20) });
   let property: keyof MenuItem = "forLobby";
 
   if (room === undefined) property = "forLobby";
@@ -214,6 +220,14 @@ export function Menu() {
             case MenuType.RoomSettings:
               props.onClick = () =>
                 RoomSettingsDialog && toggle(RoomSettingsDialog);
+              break;
+            case MenuType.SearchRoom:
+              if (currentListBox === ListBoxType.SearchRoom)
+                className.push("menu-toggled");
+              props.onClick = () =>
+                currentListBox === ListBoxType.SearchRoom
+                  ? changeListBox(ListBoxType.RoomList)
+                  : changeListBox(ListBoxType.SearchRoom);
               break;
             case MenuType.Spectate:
               if (

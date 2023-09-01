@@ -84,7 +84,9 @@
     "welcome": "환영합니다.",
     "error_closed": "[#{#0}] 서버와 연결이 끊어졌습니다.",
     "error_soundNotFound": "소리 리소스 {#0}#{을} 로드하지 못했습니다.",
+    "error_noResult": "검색 결과가 없습니다.",
     "error_400": "잘못된 요청입니다.",
+    "error_403": "권한이 없습니다.",
 
     "invite": "초대",
     "whisper": "귓속말",

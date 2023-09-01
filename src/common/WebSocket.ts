@@ -197,11 +197,13 @@ export namespace WebSocketError {
      * @action 소켓을 닫는다.
      */
     Unauthorized = 401,
+    Forbidden = 403,
   }
 
   export interface Content {
     [Type.BadRequest]: {};
     [Type.Unauthorized]: {};
+    [Type.Forbidden]: {};
   }
 
   // 오류는 서버만 보낸다.

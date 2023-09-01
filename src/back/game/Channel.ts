@@ -87,16 +87,20 @@ export default class Channel extends WebSocketServer {
           case WebSocketMessage.Type.UpdateRoom:
             {
               const room = user.room;
-              if (room === undefined) return;
+              if (room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               if (room.master !== user.id)
-                socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.Forbidden, {});
+              socket.sendError(WebSocketError.Type.BadRequest, {});
               room.configure(message.room);
+              room.update();
             }
             break;
           case WebSocketMessage.Type.JoinRoom:
             {
               const room = this.rooms.get(message.roomId);
-              if (room === undefined) return;
+              if (room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               user.room = room;
               room.add(socket);
               Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
@@ -104,7 +108,8 @@ export default class Channel extends WebSocketServer {
                 room: room.serialize(),
               });
               const member = room.getMember(user.id);
-              if (member === undefined) return;
+              if (member === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               room.broadcast(
                 WebSocketMessage.Type.JoinRoom,
                 {
@@ -117,7 +122,8 @@ export default class Channel extends WebSocketServer {
           case WebSocketMessage.Type.LeaveRoom:
             {
               const room = user.room;
-              if (room === undefined) return;
+              if (room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               room.broadcast(WebSocketMessage.Type.LeaveRoom, {
                 memberId: user.id,
               });
@@ -129,16 +135,21 @@ export default class Channel extends WebSocketServer {
             }
             break;
           case WebSocketMessage.Type.HandoverRoom:
-            if (user.room === undefined || user.room.master !== user.id) return;
+            if (user.room === undefined)
+              return socket.sendError(WebSocketError.Type.BadRequest, {});
+            if (user.room.master !== user.id)
+              return socket.sendError(WebSocketError.Type.Forbidden, {});
             user.room.master = message.master;
             user.room.update();
             break;
           case WebSocketMessage.Type.Spectate:
             {
               const room = user.room;
-              if (room === undefined) return;
+              if (room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               const member = room.getMember(user.id);
-              if (member === undefined) return;
+              if (member === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               member.isSpectator = !member.isSpectator;
               member.isReady = member.isSpectator;
               room.broadcast(WebSocketMessage.Type.Spectate, {
@@ -149,9 +160,11 @@ export default class Channel extends WebSocketServer {
           case WebSocketMessage.Type.Ready:
             {
               const room = user.room;
-              if (room === undefined || room.master === user.id) return;
+              if (room === undefined || room.master === user.id)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               const member = room.getMember(user.id);
-              if (member === undefined) return;
+              if (member === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               if (!member.isSpectator) member.isReady = !member.isReady;
               room.broadcast(WebSocketMessage.Type.Ready, {
                 member,
@@ -165,7 +178,8 @@ export default class Channel extends WebSocketServer {
                 (await DB.Manager.createQueryBuilder(User<false>, "u")
                   .where("u.id = :id", { id: message.target })
                   .getOne());
-              if (target === null) return;
+              if (target === null)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               const friendRequest = new FriendRequest();
               friendRequest.sender = user.id;
               friendRequest.target = message.target;
@@ -184,13 +198,14 @@ export default class Channel extends WebSocketServer {
                 .where("fr.sender = :id", { id: message.sender })
                 .getOne();
               if (friendRequest === null || friendRequest.target !== user.id)
-                return;
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               const sender =
                 this.users.get(friendRequest.sender) ||
                 (await DB.Manager.createQueryBuilder(User<false>, "u")
                   .where("u.id = :id", { id: friendRequest.sender })
                   .getOne());
-              if (sender === null) return;
+              if (sender === null)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
               await DB.Manager.remove(friendRequest);
               if (message.accept) {
                 user.friends.push(sender.id);

@@ -1,15 +1,14 @@
 import React, { useEffect } from "react";
 
-import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
-import { WebSocketMessage } from "../../../common/WebSocket";
-import { Icon, IconType } from "front/@block/Icon";
 import { useRoomStore } from "front/Game/box/Room/Store";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import { WebSocketMessage } from "../../../../common/WebSocket";
+import L from "front/@global/Language";
 import Mode from "front/@block/Mode";
+import { Icon, IconType } from "front/@block/Icon";
 
-export default function RoomListBox() {
+export default function SearchRoom() {
   const socket = useStore((state) => state.socket);
   const [rooms, updateRoomList] = useStore((state) => [
     state.rooms,
@@ -34,9 +33,7 @@ export default function RoomListBox() {
       </h5>
       <div className="product-body">
         {rooms.length === 0 ? (
-          <div className="item create" onClick={() => toggle(CreateRoomDialog)}>
-            {L.get("createRoom")}
-          </div>
+          <div>{L.get("error_noResult")}</div>
         ) : (
           rooms.map((room) => (
             <div

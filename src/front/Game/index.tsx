@@ -15,8 +15,8 @@ import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
 import ChatBox from "front/Game/box/Chat";
-import RoomListBox from "front/Game/box/RoomList";
 import RoomBox from "front/Game/box/Room/index";
+import ListBox from "front/Game/box/ListBox";
 
 CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
 for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
@@ -73,8 +73,8 @@ function Game(props: Nest.Page.Props<"Game">) {
     socket.messageReceiver.on(
       WebSocketMessage.Type.Error,
       async ({ errorType }) => {
-        await alert(L.get(`error_${errorType}`));
         hide();
+        alert(L.get(`error_${errorType}`));
       }
     );
     socket.on("close", (e) => {
@@ -97,7 +97,7 @@ function Game(props: Nest.Page.Props<"Game">) {
               {room === undefined ? (
                 <div className="lobby">
                   <UserListBox server={server} />
-                  <RoomListBox />
+                  <ListBox />
                 </div>
               ) : (
                 <div className="room">
