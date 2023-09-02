@@ -95,9 +95,7 @@ export namespace WebSocketMessage {
       [Type.UpdateRoom]: {
         room: Game.DetailedRoom;
       };
-      [Type.HandoverRoom]: {
-        master: string;
-      };
+      [Type.HandoverRoom]: {};
       [Type.InitializeRoom]: {
         room: Game.DetailedRoom;
       };

@@ -91,6 +91,7 @@
     "invite": "초대",
     "whisper": "귓속말",
     "friendRequest": "친구 추가",
+    "handover": "방장 인계",
     "createRoom": "방 만들기",
     "roomSettings": "방 설정",
     "ready": "준비",
@@ -159,6 +160,7 @@
     "stat_roomLimit": "참여자 {#0} / {#1}",
 
     "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?",
+    "confirm_handover": "{#0}님께 방장을 인계할까요?",
 
     "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈습니다.",
 

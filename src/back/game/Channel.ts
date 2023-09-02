@@ -135,12 +135,22 @@ export default class Channel extends WebSocketServer {
             }
             break;
           case WebSocketMessage.Type.HandoverRoom:
-            if (user.room === undefined)
-              return socket.sendError(WebSocketError.Type.BadRequest, {});
-            if (user.room.master !== user.id)
-              return socket.sendError(WebSocketError.Type.Forbidden, {});
-            user.room.master = message.master;
-            user.room.update();
+            {
+              const room = user.room;
+              if (room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
+              if (room.master !== user.id)
+                return socket.sendError(WebSocketError.Type.Forbidden, {});
+              room.master = message.master;
+              const member = room.getMember(user.id);
+              const newMaster = room.getMember(message.master);
+              if (member === undefined || newMaster === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
+              member.isReady = false;
+              newMaster.isReady = true;
+              room.update();
+              socket.send(WebSocketMessage.Type.HandoverRoom, {});
+            }
             break;
           case WebSocketMessage.Type.Spectate:
             {
