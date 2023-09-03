@@ -29,11 +29,11 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
     );
 
     return (
-      <>
-        <div className="body dialog-createRoom">
+      <div className="body">
+        <form className="dialog-createRoom">
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-input-title">
-              {L.get("createRoom_title")}
+              {L.get("roomTitle")}
             </label>
             <input
               type="text"
@@ -59,7 +59,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-input-limit">
-              {L.get("createRoom_limit")}
+              {L.get("roomLimit")}
             </label>
             <input
               type="number"
@@ -73,7 +73,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-select-mode">
-              {L.get("createRoom_mode")}
+              {L.get("roomMode")}
             </label>
             <select
               id="createRoom-select-mode"
@@ -88,7 +88,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-input-round">
-              {L.get("createRoom_round")}
+              {L.get("roomRound")}
             </label>
             <input
               type="number"
@@ -105,7 +105,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
               className="dialog-desc"
               htmlFor="createRoom-select-roundTime"
             >
-              {L.get("createRoom_roundTime")}
+              {L.get("roomRoundTime")}
             </label>
             <select
               id="createRoom-select-roundTime"
@@ -122,7 +122,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-rules">
-              {L.get("createRoom_rules")}
+              {L.get("roomRules")}
             </label>
             <div className="checkbox-wrapper">
               {Game.availableRules[room.mode].map((rule) => (
@@ -148,7 +148,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
               ))}
             </div>
           </label>
-        </div>
+        </form>
         <div className="footer">
           <button
             type="button"
@@ -170,7 +170,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
             {L.get("ok")}
           </button>
         </div>
-      </>
+      </div>
     );
   });
   return dialog;

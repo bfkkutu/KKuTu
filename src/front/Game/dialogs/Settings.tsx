@@ -30,7 +30,7 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
 
   return (
     <>
-      <div className="body dialog-settings">
+      <form className="body dialog-settings">
         <label>
           <label className="dialog-desc" htmlFor="settings-input-bgm-volume">
             {L.get("settings_bgmVolume")}
@@ -179,7 +179,7 @@ export const SettingsDialog = new DialogTuple(L.get("settings_title"), () => {
             </label>
           </div>
         </label>
-      </div>
+      </form>
       <div className="footer">
         <button
           type="button"

@@ -18,6 +18,13 @@ export namespace Game {
     [Mode.KoreanRelayReversed]: [Rule.Manner, Rule.WideTheme, Rule.Mission],
   };
 
+  export interface RoomSearchOptions {
+    title: string;
+    mode: Mode;
+    round: NumberRange;
+    roundTime: NumberRange;
+    rules: Record<Rule, boolean>;
+  }
   export interface RoomMember {
     id: string;
     isReady: boolean;

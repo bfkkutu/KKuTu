@@ -91,9 +91,9 @@ export default class Channel extends WebSocketServer {
                 return socket.sendError(WebSocketError.Type.BadRequest, {});
               if (room.master !== user.id)
                 return socket.sendError(WebSocketError.Type.Forbidden, {});
-              socket.sendError(WebSocketError.Type.BadRequest, {});
               room.configure(message.room);
               room.update();
+              this.updateRoomList();
             }
             break;
           case WebSocketMessage.Type.JoinRoom:

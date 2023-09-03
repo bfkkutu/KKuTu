@@ -93,6 +93,12 @@
     "friendRequest": "친구 추가",
     "handover": "방장 인계",
     "createRoom": "방 만들기",
+    "roomTitle": "방 제목",
+    "roomLimit": "플레이어 수",
+    "roomMode": "게임 유형",
+    "roomRound": "라운드 수",
+    "roomRoundTime": "라운드 시간",
+    "roomRules": "특수 규칙",
     "roomSettings": "방 설정",
     "ready": "준비",
     "spectator": "관전",
@@ -139,19 +145,14 @@
 
     "community_title": "친구 ({#0} / 100)",
 
-    "createRoom_title": "방 제목",
     "createRoom_title_default": "{#0}님의 방",
     "createRoom_password": "비밀번호",
-    "createRoom_limit": "플레이어 수",
-    "createRoom_mode": "게임 유형",
-    "createRoom_round": "라운드 수",
-    "createRoom_roundTime": "라운드 시간",
-    "createRoom_rules": "특수 규칙",
 
     "profile_title": "{#0}님의 정보",
 
     "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
     "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",
+    "searchRoomBox_title": "<{FA|bars}> 방 검색",
     "chatBox_title": "<{FA|comment}> 채팅",
     "profileBox_title": "<{FA|user}> 내 정보",
 

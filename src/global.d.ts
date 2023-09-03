@@ -12,6 +12,7 @@ declare global {
      */
     serialize(): T;
   }
+  type NumberRange = [begin: number, end: number];
   type HexColor = `#${string & { length: 6 }}`;
 
   declare function alert(content: React.ReactNode): Promise<void>;

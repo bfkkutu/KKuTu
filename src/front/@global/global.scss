@@ -462,8 +462,6 @@ code {
     }
 
     .body {
-      padding: 5px;
-
       div {
         margin: 4px 0;
       }
@@ -485,14 +483,6 @@ code {
     }
   }
 
-  .dialog-desc {
-    float: left;
-    width: 100px;
-    text-align: center;
-    line-height: 18px;
-    padding: 5px;
-  }
-
   .spinner-wrapper {
     position: fixed;
     top: 0;
@@ -506,6 +496,14 @@ code {
     pointer-events: fill;
     z-index: 4;
   }
+}
+
+.dialog-desc {
+  float: left;
+  width: 100px;
+  text-align: center;
+  line-height: 18px;
+  padding: 5px;
 }
 
 @keyframes DialogAppearance {
