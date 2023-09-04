@@ -125,7 +125,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
               {L.get("roomRules")}
             </label>
             <div className="checkbox-wrapper">
-              {Game.availableRules[room.mode].map((rule) => (
+              {Game.modes[room.mode].rules.map((rule) => (
                 <label>
                   <input
                     type="checkbox"

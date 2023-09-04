@@ -134,7 +134,7 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
             {L.get("roomRules")}
           </label>
           <div className="checkbox-wrapper">
-            {Game.availableRules[room.mode].map((rule) => (
+            {Game.modes[room.mode].rules.map((rule) => (
               <label>
                 <input
                   type="checkbox"

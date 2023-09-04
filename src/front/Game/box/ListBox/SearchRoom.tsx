@@ -38,7 +38,7 @@ export default function SearchRoom() {
   }, []);
 
   const result = rooms.filter((v: Game.SummarizedRoom) => {
-    for (const key of Game.availableRules[v.mode])
+    for (const key of Game.modes[v.mode].rules)
       if (room.rules[key] && !v.rules[key]) return false;
     return (
       v.title.includes(room.title) &&
@@ -167,7 +167,7 @@ export default function SearchRoom() {
               {L.get("roomRules")}
             </label>
             <div className="checkbox-wrapper">
-              {Game.availableRules[room.mode].map((rule) => (
+              {Game.modes[room.mode].rules.map((rule) => (
                 <label>
                   <input
                     type="checkbox"
