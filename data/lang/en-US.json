@@ -89,7 +89,7 @@
     "error_403": "권한이 없습니다.",
 
     "invite": "초대",
-    "whisper": "귓속말",
+    "whisper": "1대1 채팅",
     "friendRequest": "친구 추가",
     "handover": "방장 인계",
     "createRoom": "방 만들기",
@@ -166,12 +166,14 @@
     "settings_game": "게임",
     "settings_etc": "기타",
 
-    "community_title": "친구 ({#0} / 100)",
+    "community_title": "<{FA|users}> 친구 ({#0} / 100)",
 
     "createRoom_title_default": "{#0}님의 방",
     "createRoom_password": "비밀번호",
 
-    "profile_title": "{#0}님의 정보",
+    "profile_title": "<{FA|user}> {#0}님의 정보",
+
+    "whisper_title": "<{FA|comment}> {#0}님과의 1대1 채팅",
 
     "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
     "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",

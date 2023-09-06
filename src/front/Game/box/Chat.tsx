@@ -31,13 +31,20 @@ export default function ChatBox() {
       audioContext.playEffect("chat");
       appendChat(message.sender, message.content);
     });
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Chat);
+    };
   }, []);
 
   useEffect(() => {
-    $chatInput.current!.onkeydown = (e) => {
-      if (e.code === "Enter") send();
+    if ($chatInput.current)
+      $chatInput.current.onkeydown = (e) => {
+        if (e.code === "Enter" || e.code === "NumpadEnter") send();
+      };
+    return () => {
+      if ($chatInput.current) $chatInput.current.onkeydown = null;
     };
-  }, [send]);
+  }, [$chatInput.current, send]);
 
   useEffect(() => {
     if ($list.current) $list.current.scrollTop = $list.current.scrollHeight;

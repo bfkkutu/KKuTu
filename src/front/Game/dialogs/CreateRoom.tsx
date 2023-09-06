@@ -41,8 +41,8 @@ export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
   );
 
   return (
-    <div className="body">
-      <form className="dialog-createRoom">
+    <div className="dialog-createRoom">
+      <form className="body">
         <label className="item-wrapper">
           <label className="dialog-desc" htmlFor="createRoom-input-title">
             {L.get("roomTitle")}

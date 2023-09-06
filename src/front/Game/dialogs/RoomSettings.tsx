@@ -29,8 +29,8 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
     );
 
     return (
-      <div className="body">
-        <form className="dialog-createRoom">
+      <div className="dialog-roomSettings">
+        <form className="body">
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-input-title">
               {L.get("roomTitle")}
