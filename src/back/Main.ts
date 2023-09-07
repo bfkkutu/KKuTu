@@ -12,7 +12,7 @@ import {
 } from "back/utils/System";
 import { Logger } from "back/utils/Logger";
 import LoginRoute from "back/utils/LoginRoute";
-import { SECURE_OPTIONS } from "back/utils/Secure";
+import { createSecureOptions } from "back/utils/Secure";
 import Channel from "./game/Channel";
 
 const App = Express();
@@ -27,9 +27,11 @@ const App = Express();
   await LoginRoute(App);
   App.use((_, res) => res.sendStatus(404));
   if (SETTINGS.secure.ssl)
-    https.createServer(SECURE_OPTIONS, App).listen(SETTINGS.ports.https, () => {
-      Logger.success("HTTPS Server").put(SETTINGS.ports.https).out();
-    });
+    https
+      .createServer(createSecureOptions(), App)
+      .listen(SETTINGS.ports.https, () => {
+        Logger.success("HTTPS Server").put(SETTINGS.ports.https).out();
+      });
   else App.listen(SETTINGS.ports.http);
   for (const idx in SETTINGS.ports.channel) {
     Channel.instances[idx] = new Channel(

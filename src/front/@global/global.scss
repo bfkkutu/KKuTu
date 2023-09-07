@@ -161,6 +161,16 @@ a {
   color: inherit;
   text-decoration: inherit;
 }
+p {
+  margin-block: {
+    start: 0px;
+    end: 0px;
+  }
+}
+ul {
+  list-style-type: none;
+  padding-inline-start: 0px;
+}
 input,
 select,
 textarea {

@@ -16,14 +16,14 @@ export const useRoomStore = create<State>((setState) => ({
   updateRoom: (room) => setState({ room }),
   addMember: (member) =>
     setState(({ room }) => {
-      if (room === undefined) return { room };
+      if (room === undefined) return {};
       return {
         room: { ...room, members: { ...room.members, [member.id]: member } },
       };
     }),
   updateMember: (member) =>
     setState(({ room }) => {
-      if (member.id === undefined || room === undefined) return { room };
+      if (member.id === undefined || room === undefined) return {};
       return {
         room: {
           ...room,
@@ -39,7 +39,7 @@ export const useRoomStore = create<State>((setState) => ({
     }),
   removeMember: (id) =>
     setState(({ room }) => {
-      if (room === undefined) return { room };
+      if (room === undefined) return {};
       const members = { ...room.members };
       delete members[id];
       return {

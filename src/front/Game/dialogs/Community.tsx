@@ -8,8 +8,7 @@ import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { Icon, IconType } from "front/@block/Icon";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { createWhisperDialog } from "front/Game/dialogs/Whisper";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import { toggleWhisperDialog } from "./Whisper";
 
 export const CommunityDialog = new DialogTuple(
   () => {
@@ -21,7 +20,6 @@ export const CommunityDialog = new DialogTuple(
     const socket = useStore((state) => state.socket);
     const community = useStore((state) => state.community);
     const [users, setUsers] = useState({ ...useStore((state) => state.users) });
-    const toggle = useDialogStore((state) => state.toggle);
 
     useEffect(() => {
       async function loadOfflineUsers() {
@@ -83,7 +81,6 @@ export const CommunityDialog = new DialogTuple(
           {community.friends.map((id) => {
             const friend = users[id];
             if (friend === undefined) return null;
-            const WhisperDialog = createWhisperDialog(friend);
             return (
               <div className="item">
                 <div className="left">
@@ -97,7 +94,7 @@ export const CommunityDialog = new DialogTuple(
                   <div className="name ellipse">{friend.nickname}</div>
                 </div>
                 <div className="right">
-                  <div onClick={() => toggle(WhisperDialog)}>
+                  <div onClick={() => toggleWhisperDialog(friend)}>
                     <Icon type={IconType.NORMAL} name="comment" />
                   </div>
                 </div>

@@ -1,6 +1,8 @@
 import React from "react";
 import { create, UseBoundStore, StoreApi } from "zustand";
 
+type OnHide = () => void;
+
 interface Point {
   x: number;
   y: number;
@@ -11,9 +13,14 @@ export default class DialogTuple {
   public content: React.FC;
   public usePoint!: UseBoundStore<StoreApi<Point>>;
   public visible = false;
-  constructor(title: string | React.FC, content: React.FC) {
+  /**
+   * Clean up을 위한 함수.
+   */
+  public onHide: OnHide = () => {};
+  constructor(title: string | React.FC, content: React.FC, onHide?: OnHide) {
     this.title = title;
     this.content = content;
+    if (onHide) this.onHide = onHide;
     this.initializeState();
   }
   public initializeState() {

@@ -4,7 +4,7 @@ import { WebSocketServer as _WebSocketServer } from "ws";
 import Express from "express";
 import qs from "qs";
 
-import { SECURE_OPTIONS } from "back/utils/Secure";
+import { createSecureOptions } from "back/utils/Secure";
 import WebSocket from "back/utils/WebSocket";
 import { redisStore } from "back/utils/ExpressSession";
 import { WebSocketMessage } from "common/WebSocket";
@@ -23,7 +23,7 @@ export default class WebSocketServer extends _WebSocketServer<
   constructor(port: number, isSecure: boolean = false) {
     const app = Express();
     const server = isSecure
-      ? https.createServer(SECURE_OPTIONS, app)
+      ? https.createServer(createSecureOptions(), app)
       : http.createServer(app);
     super({
       server,

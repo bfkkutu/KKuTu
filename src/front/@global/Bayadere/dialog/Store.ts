@@ -16,17 +16,19 @@ export const useDialogStore = create<State>((setState) => ({
     setState(({ dialogs }) => ({ dialogs: [...dialogs, dt] }));
   },
   hide: (dt) => {
+    if (dt.visible) dt.onHide();
     dt.visible = false;
     setState(({ dialogs }) => ({
       dialogs: dialogs.filter((dialog) => dialog !== dt),
     }));
   },
   toggle: (dt) => {
-    if (dt.visible)
+    if (dt.visible) {
+      dt.onHide();
       setState(({ dialogs }) => ({
         dialogs: dialogs.filter((dialog) => dialog !== dt),
       }));
-    else {
+    } else {
       dt.initializeState();
       setState(({ dialogs }) => ({ dialogs: [...dialogs, dt] }));
     }

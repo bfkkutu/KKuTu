@@ -13,10 +13,9 @@ import Gauge from "front/@block/Gauge";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { useRoomStore } from "front/Game/box/Room/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { createWhisperDialog } from "front/Game/dialogs/Whisper/index";
+import { toggleWhisperDialog } from "front/Game/dialogs/Whisper/index";
 
 export const createProfileDialog = (user: Database.SummarizedUser) => {
-  const WhisperDialog = createWhisperDialog(user);
   const dialog = new DialogTuple(
     () => <>{L.render("profile_title", user.nickname)}</>,
     () => {
@@ -24,10 +23,7 @@ export const createProfileDialog = (user: Database.SummarizedUser) => {
       const id = useStore((state) => state.me.id);
       const room = useRoomStore((state) => state.room);
       const community = useStore((state) => state.community);
-      const [hide, toggle] = useDialogStore((state) => [
-        state.hide,
-        state.toggle,
-      ]);
+      const hide = useDialogStore((state) => state.hide);
 
       const footerButtons: React.ReactNode[] = [];
       const level = getLevel(user.score);
@@ -36,7 +32,7 @@ export const createProfileDialog = (user: Database.SummarizedUser) => {
 
       if (user.id !== id) {
         footerButtons.push(
-          <button onClick={() => toggle(WhisperDialog)}>
+          <button onClick={() => toggleWhisperDialog(user)}>
             {L.get("whisper")}
           </button>
         );

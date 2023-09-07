@@ -1,5 +1,6 @@
 import { Database } from "common/Database";
 import { Game } from "common/Game";
+import { Whisper } from "front/@global/interfaces/Whisper";
 
 export namespace WebSocketMessage {
   export enum Type {
@@ -50,6 +51,7 @@ export namespace WebSocketMessage {
      */
     FriendRequest = "friendRequest",
     FriendRequestResponse = "friendRequestR",
+    Whisper = "whisper",
     /**
      * @sender Client.
      * @condition 접속 중이 아닌 유저의 정보가 필요한 경우.
@@ -116,6 +118,7 @@ export namespace WebSocketMessage {
       };
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
+      [Type.Whisper]: Whisper;
       [Type.QueryUser]: {
         user?: Database.SummarizedUser;
       };
@@ -169,6 +172,10 @@ export namespace WebSocketMessage {
          * 친구 요청 수락 여부.
          */
         accept: boolean;
+      };
+      [Type.Whisper]: {
+        target: string;
+        content: string;
       };
       [Type.QueryUser]: {
         userId: string;
