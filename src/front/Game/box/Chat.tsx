@@ -14,15 +14,16 @@ export default function ChatBox() {
     state.appendChat,
   ]);
   const [content, setContent] = useState("");
-  const $chatInput = useRef<HTMLInputElement>(null);
+  const $input = useRef<HTMLInputElement>(null);
   const $list = useRef<HTMLDivElement>(null);
+
   const send = useCallback(() => {
     if (content === "") return;
     socket.send(WebSocketMessage.Type.Chat, {
       content,
     });
     setContent("");
-    $chatInput.current?.focus();
+    $input.current?.focus();
   }, [socket, content]);
   const audioContext = AudioContext.instance;
 
@@ -37,14 +38,14 @@ export default function ChatBox() {
   }, []);
 
   useEffect(() => {
-    if ($chatInput.current)
-      $chatInput.current.onkeydown = (e) => {
+    if ($input.current)
+      $input.current.onkeydown = (e) => {
         if (e.code === "Enter" || e.code === "NumpadEnter") send();
       };
     return () => {
-      if ($chatInput.current) $chatInput.current.onkeydown = null;
+      if ($input.current) $input.current.onkeydown = null;
     };
-  }, [$chatInput.current, send]);
+  }, [send]);
 
   useEffect(() => {
     if ($list.current) $list.current.scrollTop = $list.current.scrollHeight;
@@ -69,7 +70,7 @@ export default function ChatBox() {
           className="input-chat"
           maxLength={200}
           value={content}
-          ref={$chatInput}
+          ref={$input}
           onChange={(e) => setContent(e.currentTarget.value)}
         />
         <button type="button" className="button-send" onClick={send}>

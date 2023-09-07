@@ -8,7 +8,7 @@ import { ChatType } from "front/@global/enums/ChatType";
 
 interface State {
   socket: WebSocket;
-  initializeSocket: (url: string) => WebSocket;
+  initializeSocket: (url: string) => void;
 
   me: Database.DetailedUser;
   updateMe: (me: Database.DetailedUser) => void;
@@ -31,13 +31,10 @@ interface State {
 
 export const useStore = create<State>((setState) => ({
   socket: undefined as any,
-  initializeSocket: (url: string) => {
-    const socket = new WebSocket(url);
+  initializeSocket: (url: string) =>
     setState({
-      socket,
-    });
-    return socket;
-  },
+      socket: new WebSocket(url),
+    }),
 
   me: undefined as any,
   updateMe: (me) =>

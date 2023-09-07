@@ -1,7 +1,7 @@
 import React from "react";
 
 import L from "front/@global/Language";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
 import { Database } from "common/Database";
 import Moremi from "front/@block/Moremi";
@@ -16,7 +16,7 @@ import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { toggleWhisperDialog } from "front/Game/dialogs/Whisper/index";
 
 export const createProfileDialog = (user: Database.SummarizedUser) => {
-  const dialog = new DialogTuple(
+  const dialog = new DialogData(
     () => <>{L.render("profile_title", user.nickname)}</>,
     () => {
       const socket = useStore((state) => state.socket);

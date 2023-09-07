@@ -7,17 +7,17 @@ import { Nest } from "common/Nest";
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
 import L from "front/@global/Language";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
-
-import DialogManager from "front/@global/Bayadere/dialog/Manager";
-import SpinnerManager from "front/@global/Bayadere/spinner/Manager";
-
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+
+import DialogManager from "front/@global/Bayadere/dialog/index";
+import NotificationManager from "./@global/Bayadere/notification";
+import SpinnerManager from "front/@global/Bayadere/spinner/index";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) =>
     new Promise<void>((resolve) => {
-      const dialog = new DialogTuple(L.get("alert"), () => {
+      const dialog = new DialogData(L.get("alert"), () => {
         const hide = useDialogStore((state) => state.hide);
 
         return (
@@ -42,7 +42,7 @@ if (typeof window !== "undefined") {
   // @ts-ignore
   window.prompt = (title: string, content: React.ReactNode) =>
     new Promise<string | null>((resolve) => {
-      const dialog = new DialogTuple(title, () => {
+      const dialog = new DialogData(title, () => {
         const hide = useDialogStore((state) => state.hide);
         const [input, setInput] = useState("");
 
@@ -83,7 +83,7 @@ if (typeof window !== "undefined") {
   // @ts-ignore
   window.confirm = (content: React.ReactNode) =>
     new Promise<boolean>((resolve) => {
-      const dialog = new DialogTuple(L.get("confirm"), () => {
+      const dialog = new DialogData(L.get("confirm"), () => {
         const hide = useDialogStore((state) => state.hide);
 
         return (
@@ -143,6 +143,7 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
         <img id="background" className="jt-image" />
         <div id="bayadere">
           <DialogManager />
+          <NotificationManager />
           <SpinnerManager />
         </div>
         <Header profile={this.props.session.profile} />

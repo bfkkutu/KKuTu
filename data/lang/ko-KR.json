@@ -192,7 +192,9 @@
 
     "notice_joinRoom": "{#0}님이 입장했습니다.",
     "notice_leaveRoom": "{#0}님이 퇴장했습니다.",
-    "notice_handover": "{#0}님으로 방장이 바뀌었습니다."
+    "notice_handover": "{#0}님으로 방장이 바뀌었습니다.",
+
+    "notification_whisper": "{#0}님의 새 메시지 {#1}개"
   },
   "Login": {
     "title": "BF끄투 - 로그인",

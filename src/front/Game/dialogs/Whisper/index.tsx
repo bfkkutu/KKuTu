@@ -1,13 +1,14 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import L from "front/@global/Language";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
 import { Database } from "common/Database";
 import { WebSocketMessage } from "../../../../common/WebSocket";
 import { useWhisperStore } from "front/Game/dialogs/Whisper/Store";
 import ClassName from "front/@global/ClassName";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import { EventListener } from "front/@global/WebSocket";
 
 export const showWhisperDialog = (user: Database.SummarizedUser) => {
   const { openWhisper: open } = useWhisperStore.getState();
@@ -37,28 +38,55 @@ export const toggleWhisperDialog = (user: Database.SummarizedUser) => {
 };
 
 export const createWhisperDialog = (user: Database.SummarizedUser) =>
-  new DialogTuple(
+  new DialogData(
     () => <>{L.render("whisper_title", user.nickname)}</>,
     () => {
       const socket = useStore((state) => state.socket);
       const [logs, appendLog] = useWhisperStore((state) => [
-        state.logs,
+        state.logs[user.id],
         state.appendLog,
       ]);
       const [content, setContent] = useState("");
+      const $input = useRef<HTMLInputElement>(null);
+
+      const send = useCallback(() => {
+        if (content === "") return;
+        socket.send(WebSocketMessage.Type.Whisper, {
+          target: user.id,
+          content,
+        });
+        setContent("");
+        $input.current?.focus();
+      }, [content]);
 
       useEffect(() => {
-        socket.messageReceiver.on(WebSocketMessage.Type.Whisper, () => {});
+        const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
+          sender,
+          content,
+        }) => {
+          appendLog(user.id, { sender, content });
+        };
+        socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
         return () => {
-          socket.messageReceiver.off(WebSocketMessage.Type.Whisper);
+          socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
         };
       }, []);
+
+      useEffect(() => {
+        if ($input.current)
+          $input.current.onkeydown = (e) => {
+            if (e.code === "Enter" || e.code === "NumpadEnter") send();
+          };
+        return () => {
+          if ($input.current) $input.current.onkeydown = null;
+        };
+      }, [content]);
 
       return (
         <div className="dialog-whisper">
           <div className="body">
             <ul className="log">
-              {logs[user.id].map((v) => {
+              {logs.map((v) => {
                 const className = new ClassName("item");
                 const fromOpposite = v.sender === user.id;
                 className.push(fromOpposite ? "left" : "right");
@@ -78,9 +106,10 @@ export const createWhisperDialog = (user: Database.SummarizedUser) =>
               className="input-whisper"
               maxLength={200}
               value={content}
+              ref={$input}
               onChange={(e) => setContent(e.currentTarget.value)}
             />
-            <button type="button" className="button-send" onClick={() => {}}>
+            <button type="button" className="button-send" onClick={send}>
               {L.get("send")}
             </button>
           </div>

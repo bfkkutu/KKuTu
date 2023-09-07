@@ -8,7 +8,7 @@ interface Point {
   y: number;
   move: (movementX: number, movementY: number) => void;
 }
-export default class DialogTuple {
+export default class DialogData {
   public title: string | React.FC;
   public content: React.FC;
   public usePoint!: UseBoundStore<StoreApi<Point>>;
@@ -16,11 +16,11 @@ export default class DialogTuple {
   /**
    * Clean up을 위한 함수.
    */
-  public onHide: OnHide = () => {};
+  public onHide?: OnHide;
   constructor(title: string | React.FC, content: React.FC, onHide?: OnHide) {
     this.title = title;
     this.content = content;
-    if (onHide) this.onHide = onHide;
+    this.onHide = onHide;
     this.initializeState();
   }
   public initializeState() {

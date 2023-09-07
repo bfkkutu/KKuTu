@@ -9,6 +9,7 @@ import ObjectMap from "../../common/ObjectMap";
 
 import User from "back/models/User";
 import FriendRequest from "back/models/FriendRequest";
+import { Whisper } from "front/@global/interfaces/Whisper";
 
 export default class Channel extends WebSocketServer {
   public static instances: Channel[] = [];
@@ -55,6 +56,8 @@ export default class Channel extends WebSocketServer {
             socket.send(WebSocketMessage.Type.UpdateSettings, {});
             break;
           case WebSocketMessage.Type.Chat:
+            if (message.content === "")
+              return socket.sendError(WebSocketError.Type.BadRequest, {});
             if (user.room === undefined)
               this.broadcast(
                 WebSocketMessage.Type.Chat,
@@ -224,6 +227,21 @@ export default class Channel extends WebSocketServer {
               }
               await user.updateCommunity();
               await sender.updateCommunity();
+            }
+            break;
+          case WebSocketMessage.Type.Whisper:
+            {
+              if (message.content === "")
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
+              const target = this.users.get(message.target);
+              if (target === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {});
+              const whisper: Whisper = {
+                sender: user.id,
+                content: message.content,
+              };
+              socket.send(WebSocketMessage.Type.Whisper, whisper);
+              target.socket.send(WebSocketMessage.Type.Whisper, whisper);
             }
             break;
           case WebSocketMessage.Type.QueryUser:

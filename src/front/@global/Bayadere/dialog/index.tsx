@@ -1,14 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 
 interface Props {
-  instance: DialogTuple;
+  instance: DialogData;
 }
-function Dialog(props: Props) {
+function Dialog({ instance }: Props) {
   const hide = useDialogStore((state) => state.hide);
-  const [x, y, move] = props.instance.usePoint((state) => [
+  const [x, y, move] = instance.usePoint((state) => [
     state.x,
     state.y,
     state.move,
@@ -22,13 +22,15 @@ function Dialog(props: Props) {
 
   useEffect(() => {
     // mount 이전에는 dialog의 크기를 알 수 없으므로 mount 직후 업데이트한다.
-    if ($.current) {
+    if ($.current)
       move(-$.current.clientWidth / 2, -$.current.clientHeight / 2);
-      $.current.onkeydown = (e) => {
-        if (e.code === "Escape") hide(props.instance);
-      };
-    }
-    window.setTimeout(() => setAnimation(""), 200);
+    window.setTimeout(() => {
+      setAnimation("");
+      if ($.current)
+        $.current.onkeydown = (e) => {
+          if (e.code === "Escape") hide(instance);
+        };
+    }, 200);
   }, []);
 
   useEffect(() => {
@@ -51,19 +53,19 @@ function Dialog(props: Props) {
     >
       <div className="head" onMouseDown={() => setIsMoving(true)}>
         <label>
-          {typeof props.instance.title === "string"
-            ? props.instance.title
-            : React.createElement(props.instance.title)}
+          {typeof instance.title === "string"
+            ? instance.title
+            : React.createElement(instance.title)}
         </label>
         <div
           className="button-close"
           onClick={() => {
             setAnimation("disappearing");
-            window.setTimeout(() => hide(props.instance), 200);
+            window.setTimeout(() => hide(instance), 200);
           }}
         />
       </div>
-      {React.createElement(props.instance.content)}
+      {React.createElement(instance.content)}
     </div>
   );
 }

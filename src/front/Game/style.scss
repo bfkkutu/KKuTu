@@ -977,6 +977,10 @@
         flex-direction: column-reverse;
         width: 100%;
         height: 100%;
+        overflow: {
+          x: hidden;
+          y: scroll;
+        }
 
         .item {
           width: fit-content;

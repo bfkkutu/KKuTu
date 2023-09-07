@@ -493,6 +493,36 @@ code {
     }
   }
 
+  #notification {
+    display: flex;
+    flex-direction: column-reverse;
+    width: 97.5%;
+    height: 100%;
+
+    .notification {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 5px;
+      border-bottom: 1px solid #cccccc;
+      border-radius: 10px;
+      margin-left: auto;
+      margin-bottom: 10px;
+      height: 20px;
+      width: 280px;
+      color: #222222;
+      font-size: 16px;
+      background-color: #dddddd;
+      cursor: pointer;
+      pointer-events: all;
+      z-index: 3;
+
+      .close {
+        margin-left: auto;
+      }
+    }
+  }
+
   .spinner-wrapper {
     position: fixed;
     top: 0;

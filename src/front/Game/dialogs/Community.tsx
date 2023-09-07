@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import L from "front/@global/Language";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
 import { getLevel, getOfflineUser } from "front/@global/Utility";
 import ProfileImage from "front/@block/ProfileImage";
@@ -10,7 +10,7 @@ import { Icon, IconType } from "front/@block/Icon";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { toggleWhisperDialog } from "./Whisper";
 
-export const CommunityDialog = new DialogTuple(
+export const CommunityDialog = new DialogData(
   () => {
     const friends = useStore((state) => state.community.friends);
 

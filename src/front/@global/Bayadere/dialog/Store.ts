@@ -1,12 +1,12 @@
 import { create } from "zustand";
 
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 
 interface State {
-  dialogs: DialogTuple[];
-  show: (dt: DialogTuple) => void;
-  hide: (dt: DialogTuple) => void;
-  toggle: (dt: DialogTuple) => void;
+  dialogs: DialogData[];
+  show: (dt: DialogData) => void;
+  hide: (dt: DialogData) => void;
+  toggle: (dt: DialogData) => void;
 }
 export const useDialogStore = create<State>((setState) => ({
   dialogs: [],
@@ -16,7 +16,7 @@ export const useDialogStore = create<State>((setState) => ({
     setState(({ dialogs }) => ({ dialogs: [...dialogs, dt] }));
   },
   hide: (dt) => {
-    if (dt.visible) dt.onHide();
+    if (dt.visible) dt.onHide?.();
     dt.visible = false;
     setState(({ dialogs }) => ({
       dialogs: dialogs.filter((dialog) => dialog !== dt),
@@ -24,7 +24,7 @@ export const useDialogStore = create<State>((setState) => ({
   },
   toggle: (dt) => {
     if (dt.visible) {
-      dt.onHide();
+      dt.onHide?.();
       setState(({ dialogs }) => ({
         dialogs: dialogs.filter((dialog) => dialog !== dt),
       }));

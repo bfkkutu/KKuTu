@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import sha256 from "sha256";
 
 import L from "front/@global/Language";
-import DialogTuple from "front/@global/Bayadere/dialog/DialogTuple";
+import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
@@ -11,7 +11,7 @@ import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { EnumValueIterator } from "../../../common/Utility";
 import { useRoomStore } from "front/Game/box/Room/Store";
 
-export const CreateRoomDialog = new DialogTuple(L.get("createRoom"), () => {
+export const CreateRoomDialog = new DialogData(L.get("createRoom"), () => {
   const nickname = useStore((state) => state.me.nickname);
   const socket = useStore((state) => state.socket);
   const updateRoom = useRoomStore((state) => state.updateRoom);

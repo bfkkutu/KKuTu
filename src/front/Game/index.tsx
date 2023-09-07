@@ -11,6 +11,10 @@ import { getRequiredScore } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
 import { useRoomStore } from "front/Game/box/Room/Store";
 import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
+import { useNotificationStore } from "front/@global/Bayadere/notification/Store";
+import { useWhisperStore } from "front/Game/dialogs/Whisper/Store";
+import { createWhisperNotification } from "front/Game/notifications/Whisper";
+import { EventListener } from "front/@global/WebSocket";
 
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
@@ -27,23 +31,35 @@ CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
 CLIENT_SETTINGS.expTable.push(Infinity);
 
 function Game(props: Nest.Page.Props<"Game">) {
-  const initializeSocket = useStore((state) => state.initializeSocket);
+  const [socket, initializeSocket] = useStore((state) => [
+    state.socket,
+    state.initializeSocket,
+  ]);
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const updateCommunity = useStore((state) => state.updateCommunity);
-  const [initializeUsers, appendUser, removeUser] = useStore((state) => [
+  const [users, initializeUsers, appendUser, removeUser] = useStore((state) => [
+    state.users,
     state.initializeUsers,
     state.appendUser,
     state.removeUser,
   ]);
   const room = useRoomStore((state) => state.room);
-  const hide = useSpinnerStore((state) => state.hide);
+  const hideSpinner = useSpinnerStore((state) => state.hide);
+  const showNotification = useNotificationStore((state) => state.show);
+  const [whisperDialogs, whisperLogs, appendWhisperLog] = useWhisperStore(
+    (state) => [state.dialogs, state.logs, state.appendLog]
+  );
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 
   const $intro = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const socket = initializeSocket(props.data.wsUrl);
+    initializeSocket(props.data.wsUrl);
+  }, []);
+
+  useEffect(() => {
+    if (socket === undefined) return;
     socket.on("open", async () => {
       const { me, users } = await socket.messageReceiver.wait(
         WebSocketMessage.Type.Initialize
@@ -73,14 +89,34 @@ function Game(props: Nest.Page.Props<"Game">) {
     socket.messageReceiver.on(
       WebSocketMessage.Type.Error,
       async ({ errorType }) => {
-        hide();
+        hideSpinner();
         alert(L.get(`error_${errorType}`));
       }
     );
     socket.on("close", (e) => {
       alert(L.get("error_closed", e.code));
     });
-  }, []);
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+    const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
+      sender,
+      content,
+    }) => {
+      if (sender !== me.id && whisperDialogs[sender] === undefined)
+        showNotification(
+          createWhisperNotification(
+            users[sender],
+            appendWhisperLog(sender, { sender, content })
+          )
+        );
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
+    };
+  }, [socket, users, whisperDialogs, whisperLogs, showNotification]);
 
   return (
     <article id="main">
