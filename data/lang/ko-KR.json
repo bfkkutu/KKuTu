@@ -134,17 +134,29 @@
     "game_mode_15": "훈민정음",
 
     "game_rule_manner": "매너",
+    "game_rule_manner_desc": "",
     "game_rule_wide": "어인정",
+    "game_rule_wide_desc": "",
     "game_rule_mission": "미션",
+    "game_rule_mission_desc": "",
     "game_rule_proverb": "속담",
+    "game_rule_proverb_desc": "",
     "game_rule_unlimited": "무제한",
+    "game_rule_unlimited_desc": "",
     "game_rule_short": "짧은 단어",
+    "game_rule_short_desc": "",
     "game_rule_noInitial": "두음 법칙 없음",
+    "game_rule_noInitial_desc": "",
     "game_rule_dismission": "글자 금지",
+    "game_rule_dismission_desc": "",
     "game_rule_newbie": "초보방",
+    "game_rule_newbie_desc": "",
     "game_rule_item": "아이템전",
+    "game_rule_item_desc": "",
     "game_rule_banDouble": "두 글자 금지",
+    "game_rule_banDouble_desc": "",
     "game_rule_joinWhileGaming": "게임 중 참여",
+    "game_rule_joinWhileGaming_desc": "",
 
     "menu_spectate": "관전하기",
     "menu_roomSettings": "방 설정",
@@ -194,7 +206,8 @@
     "notice_leaveRoom": "{#0}님이 퇴장했습니다.",
     "notice_handover": "{#0}님으로 방장이 바뀌었습니다.",
 
-    "notification_whisper": "{#0}님의 새 메시지 {#1}개"
+    "notification_whisper": "{#0}님의 새 메시지 {#1}개",
+    "notification_invite": "{#0}번 방에서 초대"
   },
   "Login": {
     "title": "BF끄투 - 로그인",

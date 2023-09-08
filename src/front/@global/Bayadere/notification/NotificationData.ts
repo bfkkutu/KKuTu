@@ -1,10 +1,12 @@
+import React from "react";
+
 type OnClick = () => void;
 
 export default class NotificationData {
-  public content: string;
+  public content: React.ComponentOrNode;
   public onClick?: OnClick;
 
-  constructor(content: string, onClick?: OnClick) {
+  constructor(content: React.ComponentOrNode, onClick?: OnClick) {
     this.content = content;
     this.onClick = onClick;
   }

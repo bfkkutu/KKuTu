@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import DialogData from "front/@global/Bayadere/dialog/DialogData";
+import { renderComponentOrNode } from "front/@global/Utility";
 
 interface Props {
   instance: DialogData;
@@ -52,11 +53,7 @@ function Dialog({ instance }: Props) {
       style={{ top: `${y}px`, left: `${x}px` }}
     >
       <div className="head" onMouseDown={() => setIsMoving(true)}>
-        <label>
-          {typeof instance.title === "string"
-            ? instance.title
-            : React.createElement(instance.title)}
-        </label>
+        <label>{renderComponentOrNode(instance.title)}</label>
         <div
           className="button-close"
           onClick={() => {

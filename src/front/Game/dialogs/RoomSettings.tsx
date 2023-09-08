@@ -9,6 +9,7 @@ import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { Game } from "../../../common/Game";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { EnumValueIterator } from "../../../common/Utility";
+import RuleSelector from "../blocks/RuleSelector";
 
 export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
   const dialog = new DialogData(L.get("roomSettings"), () => {
@@ -124,29 +125,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
             <label className="dialog-desc" htmlFor="createRoom-rules">
               {L.get("roomRules")}
             </label>
-            <div className="checkbox-wrapper">
-              {Game.modes[room.mode].rules.map((rule) => (
-                <label>
-                  <input
-                    type="checkbox"
-                    id={`createRoom-checkbox-${rule}`}
-                    checked={room.rules[rule]}
-                    onChange={(e) =>
-                      setRoom({
-                        ...room,
-                        rules: {
-                          ...room.rules,
-                          [rule]: e.currentTarget.checked,
-                        },
-                      })
-                    }
-                  />
-                  <label htmlFor={`createRoom-checkbox-${rule}`}>
-                    {L.get(`game_rule_${rule}`)}
-                  </label>
-                </label>
-              ))}
-            </div>
+            <RuleSelector room={room} setter={setRoom} />
           </label>
         </form>
         <div className="footer">

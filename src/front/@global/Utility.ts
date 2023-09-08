@@ -1,3 +1,5 @@
+import React from "react";
+
 import { CLIENT_SETTINGS, FRONT } from "back/utils/Utility";
 import { Database } from "common/Database";
 import { WebSocketMessage } from "../../common/WebSocket";
@@ -37,4 +39,16 @@ export function getOfflineUser(
     if (user) resolve(user);
     else reject();
   });
+}
+/**
+ * 컴포넌트인지 ReactNode인지 알 수 없는 객체를 랜더링한다.
+ *
+ * @param object React.FC 또는 typeof React.Component 또는 React.ReactNode.
+ * @returns React.ReactNode.
+ */
+export function renderComponentOrNode(
+  object: React.ComponentOrNode
+): React.ReactNode {
+  if (typeof object === "function") return React.createElement(object);
+  return object;
 }

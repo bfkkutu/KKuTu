@@ -3,6 +3,7 @@ import React from "react";
 import { useNotificationStore } from "front/@global/Bayadere/notification/Store";
 import NotificationData from "front/@global/Bayadere/notification/NotificationData";
 import { Icon, IconType } from "front/@block/Icon";
+import { renderComponentOrNode } from "front/@global/Utility";
 
 interface Props {
   instance: NotificationData;
@@ -19,7 +20,7 @@ function Notification({ instance }: Props) {
           hide(instance);
         }}
       >
-        {instance.content}
+        {renderComponentOrNode(instance.content)}
       </div>
       <div className="close" onClick={() => hide(instance)}>
         <Icon type={IconType.NORMAL} name="xmark" />

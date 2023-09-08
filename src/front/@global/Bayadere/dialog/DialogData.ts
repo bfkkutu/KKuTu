@@ -9,7 +9,7 @@ interface Point {
   move: (movementX: number, movementY: number) => void;
 }
 export default class DialogData {
-  public title: string | React.FC;
+  public title: React.ComponentOrNode;
   public content: React.FC;
   public usePoint!: UseBoundStore<StoreApi<Point>>;
   public visible = false;
@@ -17,7 +17,11 @@ export default class DialogData {
    * Clean up을 위한 함수.
    */
   public onHide?: OnHide;
-  constructor(title: string | React.FC, content: React.FC, onHide?: OnHide) {
+  constructor(
+    title: React.ComponentOrNode,
+    content: React.FC,
+    onHide?: OnHide
+  ) {
     this.title = title;
     this.content = content;
     this.onHide = onHide;
