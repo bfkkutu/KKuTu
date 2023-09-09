@@ -15,6 +15,7 @@ import { useNotificationStore } from "front/@global/Bayadere/notification/Store"
 import { useWhisperStore } from "front/Game/dialogs/Whisper/Store";
 import { createWhisperNotification } from "front/Game/notifications/Whisper";
 import { EventListener } from "front/@global/WebSocket";
+import { createInviteNotification } from "front/Game/notifications/Invite";
 
 import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
@@ -107,6 +108,31 @@ function Game(props: Nest.Page.Props<"Game">) {
 
   useEffect(() => {
     if (socket === undefined) return;
+    socket.messageReceiver.on(WebSocketMessage.Type.UpdateUser, ({ user }) =>
+      setUser(user.id, { ...user, roomId: user.roomId || undefined })
+    );
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUser);
+    };
+  }, [socket, users]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+    const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
+      userId,
+      roomId,
+    }) =>
+      showNotification(
+        createInviteNotification(roomId, users[userId].nickname)
+      );
+    socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
+    };
+  }, [socket, users, showNotification]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
     const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
       sender,
       content,
@@ -124,34 +150,6 @@ function Game(props: Nest.Page.Props<"Game">) {
       socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
     };
   }, [socket, users, whisperDialogs, whisperLogs, showNotification]);
-
-  useEffect(() => {
-    if (socket === undefined) return;
-    const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
-      userId,
-      roomId,
-    }) => {
-      if (
-        !(await confirm(
-          L.get("confirm_inviteResponse", users[userId].nickname, roomId)
-        ))
-      )
-        return;
-      socket.send(WebSocketMessage.Type.JoinRoom, { roomId });
-      const res = await socket.messageReceiver.wait(
-        WebSocketMessage.Type.InitializeRoom
-      );
-      updateRoom(res.room);
-    };
-    socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
-    socket.messageReceiver.on(WebSocketMessage.Type.UpdateUser, ({ user }) =>
-      setUser(user.id, user)
-    );
-    return () => {
-      socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
-      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUser);
-    };
-  }, [socket, users]);
 
   return (
     <article id="main">

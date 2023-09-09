@@ -33,6 +33,9 @@
     "alert": "알림",
     "confirm": "확인",
     "optional": "(선택)",
+    "remove": "삭제",
+    "accept": "수락",
+    "decline": "거절",
 
     "nickname": "닉네임",
     "exordial": "소개말",
@@ -208,9 +211,12 @@
     "confirm_invite": "{#0}님을 초대할까요?",
     "confirm_follow": "{#0}님이 있는 {#1}번 방으로 이동할까요?",
     "confirm_inviteResponse": "{#0}님으로부터 {#1}번 방의 초대를 받았습니다. 수락하시겠습니까?",
+    "confirm_friendRemove": "{#0}님을 친구 목록에서 삭제할까요?",
 
     "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈습니다.",
     "alert_localeChanged": "언어 변경 사항은 재접속 시 적용됩니다.",
+    "alert_friendRemove": "{#0}님을 친구 목록에서 삭제했습니다.",
+    "alert_invite": "{#0}님을 초대했습니다.",
 
     "notice_joinRoom": "{#0}님이 입장했습니다.",
     "notice_leaveRoom": "{#0}님이 퇴장했습니다.",

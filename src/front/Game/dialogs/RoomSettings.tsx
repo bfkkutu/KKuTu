@@ -9,7 +9,7 @@ import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { Game } from "../../../common/Game";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { EnumValueIterator } from "../../../common/Utility";
-import RuleSelector from "../blocks/RuleSelector";
+import RuleSelector from "front/Game/blocks/RuleSelector";
 
 export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
   const dialog = new DialogData(L.get("roomSettings"), () => {

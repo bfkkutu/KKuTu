@@ -22,9 +22,10 @@ export const CommunityDialog = new DialogData(
     const socket = useStore((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);
-    const [room, updateRoom] = useRoomStore((state) => [
+    const [room, updateRoom, leaveRoom] = useRoomStore((state) => [
       state.room,
       state.updateRoom,
+      state.leaveRoom,
     ]);
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = useTooltipStore(
       (state) => [
@@ -78,12 +79,18 @@ export const CommunityDialog = new DialogData(
                 <div className="right">
                   <div
                     className="accept"
+                    onMouseEnter={createOnMouseEnter(L.get("accept"))}
+                    onMouseMove={onMouseMove}
+                    onMouseLeave={onMouseLeave}
                     onClick={() => sendResponse(id, true)}
                   >
                     <Icon type={IconType.NORMAL} name="check" />
                   </div>
                   <div
                     className="decline"
+                    onMouseEnter={createOnMouseEnter(L.get("decline"))}
+                    onMouseMove={onMouseMove}
+                    onMouseLeave={onMouseLeave}
                     onClick={() => sendResponse(id, false)}
                   >
                     <Icon type={IconType.NORMAL} name="xmark" />
@@ -96,10 +103,14 @@ export const CommunityDialog = new DialogData(
             const friend = users[id];
             if (friend === undefined) return null;
             const isOnline = id in onlineUsers;
-            console.log(room?.id, friend);
             return (
               <li className="item">
                 <div className="left">
+                  <Icon
+                    className={isOnline ? "online" : "offline"}
+                    type={IconType.NORMAL}
+                    name="circle"
+                  />
                   <ProfileImage src={friend.image} width={20} height={20} />
                   <LevelIcon
                     className="image"
@@ -136,6 +147,7 @@ export const CommunityDialog = new DialogData(
                             socket.send(WebSocketMessage.Type.Invite, {
                               userId: friend.id,
                             });
+                            alert(L.get("alert_invite", friend.nickname));
                           }}
                         >
                           <Icon type={IconType.NORMAL} name="envelope" />
@@ -159,6 +171,13 @@ export const CommunityDialog = new DialogData(
                               ))
                             )
                               return;
+                            if (room === undefined) {
+                              socket.send(WebSocketMessage.Type.LeaveRoom, {});
+                              await socket.messageReceiver.wait(
+                                WebSocketMessage.Type.LeaveRoom
+                              );
+                              leaveRoom();
+                            }
                             socket.send(WebSocketMessage.Type.JoinRoom, {
                               roomId: friend.roomId,
                             });
@@ -171,6 +190,29 @@ export const CommunityDialog = new DialogData(
                           <Icon type={IconType.NORMAL} name="arrow-right" />
                         </div>
                       ) : null}
+                      <div
+                        className="remove"
+                        onMouseEnter={createOnMouseEnter(L.get("remove"))}
+                        onMouseMove={onMouseMove}
+                        onMouseLeave={onMouseLeave}
+                        onClick={async () => {
+                          if (
+                            !(await confirm(
+                              L.get("confirm_friendRemove", friend.nickname)
+                            ))
+                          )
+                            return;
+                          socket.send(WebSocketMessage.Type.FriendRemove, {
+                            userId: friend.id,
+                          });
+                          await socket.messageReceiver.wait(
+                            WebSocketMessage.Type.UpdateCommunity
+                          );
+                          alert(L.get("alert_friendRemove", friend.nickname));
+                        }}
+                      >
+                        <Icon type={IconType.NORMAL} name="xmark" />
+                      </div>
                     </>
                   ) : null}
                 </div>

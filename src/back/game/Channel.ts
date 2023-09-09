@@ -10,7 +10,6 @@ import ObjectMap from "../../common/ObjectMap";
 import User from "back/models/User";
 import FriendRequest from "back/models/FriendRequest";
 import { Whisper } from "front/@global/interfaces/Whisper";
-import { L } from "back/utils/Language";
 
 export default class Channel extends WebSocketServer {
   public static instances: Channel[] = [];
@@ -275,6 +274,31 @@ export default class Channel extends WebSocketServer {
               }
               await user.updateCommunity();
               await sender.updateCommunity();
+            }
+            break;
+          case WebSocketMessage.Type.FriendRemove:
+            {
+              const friend =
+                this.users.get(message.userId) ||
+                (await DB.Manager.createQueryBuilder(User<false>, "u")
+                  .where("u.id = :id", { id: message.userId })
+                  .getOne());
+              if (friend === null)
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              user.friends.splice(
+                user.friends.findIndex((v) => v === message.userId),
+                1
+              );
+              friend.friends.splice(
+                friend.friends.findIndex((v) => v === user.id),
+                1
+              );
+              await DB.Manager.save(user);
+              await DB.Manager.save(friend);
+              await user.updateCommunity();
+              await friend.updateCommunity();
             }
             break;
           case WebSocketMessage.Type.Whisper:

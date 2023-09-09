@@ -51,6 +51,7 @@ export namespace WebSocketMessage {
      */
     FriendRequest = "friendRequest",
     FriendRequestResponse = "friendRequestR",
+    FriendRemove = "friendRemove",
     Whisper = "whisper",
     Invite = "invite",
     UpdateUser = "updateUser",
@@ -120,6 +121,7 @@ export namespace WebSocketMessage {
       };
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
+      [Type.FriendRemove]: {};
       [Type.Whisper]: Whisper;
       [Type.Invite]: {
         /**
@@ -187,6 +189,9 @@ export namespace WebSocketMessage {
          * 친구 요청 수락 여부.
          */
         accept: boolean;
+      };
+      [Type.FriendRemove]: {
+        userId: string;
       };
       [Type.Whisper]: {
         target: string;
