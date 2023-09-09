@@ -34,7 +34,17 @@ export default class WebSocketServer extends _WebSocketServer<
       server.off("upgrade", listener as any);
     server.on("upgrade", async (req: IncomingMessage, socket, head) => {
       req.query = qs.parse(req.url.slice(2));
-      req.session = await redisStore.get(req.query.sid as string);
+      const sid = req.query.sid as string;
+      req.session = await redisStore.get(sid);
+      req.session.save = ((callback?: (err: any) => void) => {
+        if (callback !== undefined) {
+          redisStore.set(sid, req.session);
+          return req.session;
+        }
+        return new Promise<void>((resolve, reject) =>
+          redisStore.set(sid, req.session, (e) => (e ? reject(e) : resolve()))
+        );
+      }) as any;
       this.handleUpgrade(req, socket, head, (ws) =>
         this.emit("connection", ws, req)
       );

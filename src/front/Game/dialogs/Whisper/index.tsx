@@ -84,23 +84,21 @@ export const createWhisperDialog = (user: Database.SummarizedUser) =>
 
       return (
         <div className="dialog-whisper">
-          <div className="body">
-            <ul className="log">
-              {logs.map((v) => {
-                const className = new ClassName("item");
-                const fromOpposite = v.sender === user.id;
-                className.push(fromOpposite ? "left" : "right");
-                return (
-                  <li className={className.toString()}>
-                    {fromOpposite ? (
-                      <p className="sender">{user.nickname}</p>
-                    ) : null}
-                    <div className="content">{v.content}</div>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+          <ul className="body">
+            {logs.map((v) => {
+              const className = new ClassName("item");
+              const fromOpposite = v.sender === user.id;
+              className.push(fromOpposite ? "left" : "right");
+              return (
+                <li className={className.toString()}>
+                  {fromOpposite ? (
+                    <p className="sender">{user.nickname}</p>
+                  ) : null}
+                  <div className="content">{v.content}</div>
+                </li>
+              );
+            })}
+          </ul>
           <div className="footer">
             <input
               className="input-whisper"

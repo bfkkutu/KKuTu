@@ -24,21 +24,26 @@ export interface AuthModuleConfig {
 export interface AuthModule {
   config: AuthModuleConfig;
   options: Strategy.StrategyOptionsWithRequest;
-  createProfile: (profile: any) => Schema.Profile;
+  createProfile: (profile: any) => Schema.AuthProfile;
 }
 
 async function strategyProcess(
   req: Express.Request,
-  accessToken: string,
-  profile: Schema.Profile,
+  token: string,
+  _profile: Schema.AuthProfile,
   done: Strategy.VerifyCallback
 ) {
-  profile.token = accessToken;
-  profile.sid = req.session.id;
   const user = await DB.Manager.createQueryBuilder(User, "u")
-    .where("u.oid = :oid", { oid: profile.id })
+    .where("u.oid = :oid", { oid: _profile.id })
     .getOne();
-  if (user !== null) profile.name = profile.title = user.nickname;
+  if (user === null) return done(null, _profile);
+  const profile: Schema.Profile = {
+    ..._profile,
+    token,
+    sid: req.session.id,
+    locale: user.settings.locale,
+  };
+  profile.name = profile.title = user.nickname;
   done(null, profile);
 }
 

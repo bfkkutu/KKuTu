@@ -98,6 +98,25 @@ export const SettingsDialog = new DialogData(L.get("settings_title"), () => {
           </select>
         </label>
         <label>
+          <label className="dialog-desc" htmlFor="settings-select-locale">
+            {L.get("settings_locale")}
+          </label>
+          <select
+            id="settings-select-locale"
+            value={me.settings.locale}
+            onChange={(e) => {
+              updateSettings({
+                locale: e.currentTarget.value,
+              });
+              alert(L.get("alert_localeChanged"));
+            }}
+          >
+            {Object.entries(CLIENT_SETTINGS.languageSupport).map(([k, v]) => (
+              <option value={k}>{v}</option>
+            ))}
+          </select>
+        </label>
+        <label>
           <label className="dialog-desc">{L.get("settings_refuse")}</label>
           <div className="checkbox-wrapper">
             <label>

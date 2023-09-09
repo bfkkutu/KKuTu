@@ -58,7 +58,7 @@ export namespace Schema {
   }
   export type AuthConfig = Table<AuthClientConfig>;
 
-  export interface Profile {
+  export interface AuthProfile {
     authType: string;
     // 이 식별자는 인게임에서 사용하지 않는다.
     id: string;
@@ -66,8 +66,10 @@ export namespace Schema {
     title: string;
     image: string;
     exordial: string;
-
-    token?: string;
-    sid?: string;
+  }
+  export interface Profile extends AuthProfile {
+    token: string;
+    sid: string;
+    locale: string;
   }
 }

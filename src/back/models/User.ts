@@ -165,6 +165,7 @@ export default class User<Connected extends boolean = false>
       image: this.image,
       nickname: this.nickname,
       exordial: this.exordial,
+      roomId: this.room?.id,
       createdAt: this.createdAt,
     };
   }

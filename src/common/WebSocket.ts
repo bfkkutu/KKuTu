@@ -52,6 +52,8 @@ export namespace WebSocketMessage {
     FriendRequest = "friendRequest",
     FriendRequestResponse = "friendRequestR",
     Whisper = "whisper",
+    Invite = "invite",
+    UpdateUser = "updateUser",
     /**
      * @sender Client.
      * @condition 접속 중이 아닌 유저의 정보가 필요한 경우.
@@ -119,6 +121,19 @@ export namespace WebSocketMessage {
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
       [Type.Whisper]: Whisper;
+      [Type.Invite]: {
+        /**
+         * 초대를 보낸 유저 식별자.
+         */
+        userId: string;
+        /**
+         * 방 식별자.
+         */
+        roomId: number;
+      };
+      [Type.UpdateUser]: {
+        user: Database.SummarizedUser;
+      };
       [Type.QueryUser]: {
         user?: Database.SummarizedUser;
       };
@@ -177,6 +192,10 @@ export namespace WebSocketMessage {
         target: string;
         content: string;
       };
+      [Type.Invite]: {
+        userId: string;
+      };
+      [Type.UpdateUser]: {};
       [Type.QueryUser]: {
         userId: string;
       };
@@ -199,22 +218,34 @@ export namespace WebSocketError {
     BadRequest = 400,
     /**
      * @reason 게임 채널에 로그인하지 않은 채로 접속하려고 시도하면 발생한다.
-     * @action 소켓을 닫는다.
      */
     Unauthorized = 401,
     Forbidden = 403,
+    NotFound = 404,
+    /**
+     * @reason 세션이 만료되었을 때 발생한다.
+     */
+    Conflict = 409,
   }
 
   export interface Content {
     [Type.BadRequest]: {};
     [Type.Unauthorized]: {};
     [Type.Forbidden]: {};
+    [Type.NotFound]: {};
+    [Type.Conflict]: {};
   }
+
+  export type ContentWithFlags = {
+    [type in keyof Content]: {
+      isFatal: boolean;
+    } & Content[type];
+  };
 
   // 오류는 서버만 보낸다.
   export type Message = {
     [type in keyof Content]: {
       errorType: type;
-    } & Content[type];
+    } & ContentWithFlags[type];
   };
 }

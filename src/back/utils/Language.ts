@@ -34,7 +34,8 @@ export function getLanguageTable(locale: string, page: string): Table<string> {
  * @param req Express 요청 객체.
  */
 export function getLocale(req: Express.Request): string {
-  let R: string = req.cookies["dds.locale"];
+  let R: string =
+    req.session.profile === undefined ? "ko-KR" : req.session.profile.locale;
 
   if (!LANGUAGES || !SETTINGS.languageSupport[R]) {
     R =

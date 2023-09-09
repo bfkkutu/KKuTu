@@ -6,6 +6,7 @@ import L from "front/@global/Language";
 import { useRoomStore } from "front/Game/box/Room/Store";
 import Mode from "front/@block/Mode";
 import Member from "front/Game/box/Room/Member";
+import { EventListener } from "front/@global/WebSocket";
 
 export default function RoomBox() {
   const socket = useStore((state) => state.socket);

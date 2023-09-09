@@ -23,6 +23,7 @@ interface State {
   users: Table<Database.SummarizedUser>;
   initializeUsers: (list: Database.SummarizedUser[]) => void;
   appendUser: (user: Database.SummarizedUser) => void;
+  setUser: (id: string, user: Partial<Database.SummarizedUser>) => void;
   removeUser: (user: string) => void;
 
   rooms: Game.SummarizedRoom[];
@@ -88,6 +89,10 @@ export const useStore = create<State>((setState) => ({
         ...users,
         [user.id]: user,
       },
+    })),
+  setUser: (id, user) =>
+    setState(({ users }) => ({
+      users: { ...users, [id]: { ...users[id], ...user } },
     })),
   removeUser: (user) =>
     setState((state) => {

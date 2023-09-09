@@ -24,6 +24,7 @@ export namespace Database {
           bgmVolume: number;
           effectVolume: number;
           lobbyMusic: number;
+          locale: string;
           refuse: {
             invite: boolean;
             whisper: boolean;
@@ -45,6 +46,7 @@ export namespace Database {
           bgmVolume: 0.5,
           effectVolume: 0.5,
           lobbyMusic: 1,
+          locale: "ko-KR",
           refuse: {
             invite: false,
             whisper: false,
@@ -67,6 +69,7 @@ export namespace Database {
     image: string;
     nickname: string;
     exordial: string;
+    roomId?: number;
     createdAt: number;
   }
   export interface DetailedUser extends SummarizedUser {

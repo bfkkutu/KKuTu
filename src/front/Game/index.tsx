@@ -37,13 +37,19 @@ function Game(props: Nest.Page.Props<"Game">) {
   ]);
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const updateCommunity = useStore((state) => state.updateCommunity);
-  const [users, initializeUsers, appendUser, removeUser] = useStore((state) => [
-    state.users,
-    state.initializeUsers,
-    state.appendUser,
-    state.removeUser,
+  const [users, initializeUsers, appendUser, setUser, removeUser] = useStore(
+    (state) => [
+      state.users,
+      state.initializeUsers,
+      state.appendUser,
+      state.setUser,
+      state.removeUser,
+    ]
+  );
+  const [room, updateRoom] = useRoomStore((state) => [
+    state.room,
+    state.updateRoom,
   ]);
-  const room = useRoomStore((state) => state.room);
   const hideSpinner = useSpinnerStore((state) => state.hide);
   const showNotification = useNotificationStore((state) => state.show);
   const [whisperDialogs, whisperLogs, appendWhisperLog] = useWhisperStore(
@@ -88,9 +94,10 @@ function Game(props: Nest.Page.Props<"Game">) {
     );
     socket.messageReceiver.on(
       WebSocketMessage.Type.Error,
-      async ({ errorType }) => {
+      async ({ errorType, isFatal }) => {
         hideSpinner();
-        alert(L.get(`error_${errorType}`));
+        await alert(L.get(`error_${errorType}`));
+        if (isFatal) return socket.close();
       }
     );
     socket.on("close", (e) => {
@@ -117,6 +124,34 @@ function Game(props: Nest.Page.Props<"Game">) {
       socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
     };
   }, [socket, users, whisperDialogs, whisperLogs, showNotification]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+    const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
+      userId,
+      roomId,
+    }) => {
+      if (
+        !(await confirm(
+          L.get("confirm_inviteResponse", users[userId].nickname, roomId)
+        ))
+      )
+        return;
+      socket.send(WebSocketMessage.Type.JoinRoom, { roomId });
+      const res = await socket.messageReceiver.wait(
+        WebSocketMessage.Type.InitializeRoom
+      );
+      updateRoom(res.room);
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
+    socket.messageReceiver.on(WebSocketMessage.Type.UpdateUser, ({ user }) =>
+      setUser(user.id, user)
+    );
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUser);
+    };
+  }, [socket, users]);
 
   return (
     <article id="main">

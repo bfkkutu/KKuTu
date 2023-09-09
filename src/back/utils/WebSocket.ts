@@ -18,7 +18,7 @@ export default class WebSocket extends _WebSocket {
   }
   public sendError<T extends WebSocketError.Type>(
     errorType: T,
-    content: WebSocketError.Content[T]
+    content: WebSocketError.ContentWithFlags[T]
   ) {
     this._send(
       JSON.stringify({

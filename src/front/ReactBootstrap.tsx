@@ -11,8 +11,9 @@ import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 
 import DialogManager from "front/@global/Bayadere/dialog/index";
-import NotificationManager from "./@global/Bayadere/notification";
+import NotificationManager from "front/@global/Bayadere/notification";
 import SpinnerManager from "front/@global/Bayadere/spinner/index";
+import TooltipManager from "front/@global/Bayadere/tooltip";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) =>
@@ -145,6 +146,7 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
           <DialogManager />
           <NotificationManager />
           <SpinnerManager />
+          <TooltipManager />
         </div>
         <Header profile={this.props.session.profile} />
         {this.props.children}

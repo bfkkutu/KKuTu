@@ -15,6 +15,7 @@ import { SettingsDialog } from "front/Game/dialogs/Settings";
 import { CommunityDialog } from "front/Game/dialogs/Community";
 import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
 import { createRoomSettingsDialog } from "front/Game/dialogs/RoomSettings";
+import { InviteDialog } from "./dialogs/Invite";
 
 interface MenuItem {
   type: MenuType;
@@ -228,6 +229,9 @@ export function Menu() {
                 currentListBox === ListBoxType.SearchRoom
                   ? changeListBox(ListBoxType.RoomList)
                   : changeListBox(ListBoxType.SearchRoom);
+              break;
+            case MenuType.Invite:
+              props.onClick = () => toggle(InviteDialog);
               break;
             case MenuType.Spectate:
               if (

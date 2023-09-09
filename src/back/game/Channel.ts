@@ -10,6 +10,7 @@ import ObjectMap from "../../common/ObjectMap";
 import User from "back/models/User";
 import FriendRequest from "back/models/FriendRequest";
 import { Whisper } from "front/@global/interfaces/Whisper";
+import { L } from "back/utils/Language";
 
 export default class Channel extends WebSocketServer {
   public static instances: Channel[] = [];
@@ -51,13 +52,21 @@ export default class Channel extends WebSocketServer {
             });
             break;
           case WebSocketMessage.Type.UpdateSettings:
+            if (req.session.profile === undefined)
+              return socket.sendError(WebSocketError.Type.Conflict, {
+                isFatal: true,
+              });
             Object.assign(user.settings, message.settings);
             await DB.Manager.save(user);
+            req.session.profile.locale = user.settings.locale;
+            await req.session.save();
             socket.send(WebSocketMessage.Type.UpdateSettings, {});
             break;
           case WebSocketMessage.Type.Chat:
             if (message.content === "")
-              return socket.sendError(WebSocketError.Type.BadRequest, {});
+              return socket.sendError(WebSocketError.Type.BadRequest, {
+                isFatal: false,
+              });
             if (user.room === undefined)
               this.broadcast(
                 WebSocketMessage.Type.Chat,
@@ -85,15 +94,22 @@ export default class Channel extends WebSocketServer {
                 room: user.room.serialize(),
               });
               this.updateRoomList();
+              this.broadcast(WebSocketMessage.Type.UpdateUser, {
+                user: user.summarize(),
+              });
             }
             break;
           case WebSocketMessage.Type.UpdateRoom:
             {
               const room = user.room;
               if (room === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               if (room.master !== user.id)
-                return socket.sendError(WebSocketError.Type.Forbidden, {});
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
               room.configure(message.room);
               room.update();
               this.updateRoomList();
@@ -103,7 +119,9 @@ export default class Channel extends WebSocketServer {
             {
               const room = this.rooms.get(message.roomId);
               if (room === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               user.room = room;
               room.add(socket);
               Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
@@ -112,7 +130,9 @@ export default class Channel extends WebSocketServer {
               });
               const member = room.getMember(user.id);
               if (member === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               room.broadcast(
                 WebSocketMessage.Type.JoinRoom,
                 {
@@ -120,13 +140,18 @@ export default class Channel extends WebSocketServer {
                 },
                 (client) => client.uid !== user.id
               );
+              this.broadcast(WebSocketMessage.Type.UpdateUser, {
+                user: user.summarize(),
+              });
             }
             break;
           case WebSocketMessage.Type.LeaveRoom:
             {
               const room = user.room;
               if (room === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               room.broadcast(WebSocketMessage.Type.LeaveRoom, {
                 memberId: user.id,
               });
@@ -135,20 +160,29 @@ export default class Channel extends WebSocketServer {
               socket.send(WebSocketMessage.Type.UpdateRoomList, {
                 rooms: this.rooms.evaluate("summarize"),
               });
+              this.broadcast(WebSocketMessage.Type.UpdateUser, {
+                user: user.summarize(),
+              });
             }
             break;
           case WebSocketMessage.Type.HandoverRoom:
             {
               const room = user.room;
               if (room === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               if (room.master !== user.id)
-                return socket.sendError(WebSocketError.Type.Forbidden, {});
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
               room.master = message.master;
               const member = room.getMember(user.id);
               const newMaster = room.getMember(message.master);
               if (member === undefined || newMaster === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               member.isReady = false;
               newMaster.isReady = true;
               room.update();
@@ -159,10 +193,14 @@ export default class Channel extends WebSocketServer {
             {
               const room = user.room;
               if (room === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               const member = room.getMember(user.id);
               if (member === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               member.isSpectator = !member.isSpectator;
               member.isReady = member.isSpectator;
               room.broadcast(WebSocketMessage.Type.Spectate, {
@@ -174,10 +212,14 @@ export default class Channel extends WebSocketServer {
             {
               const room = user.room;
               if (room === undefined || room.master === user.id)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               const member = room.getMember(user.id);
               if (member === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               if (!member.isSpectator) member.isReady = !member.isReady;
               room.broadcast(WebSocketMessage.Type.Ready, {
                 member,
@@ -192,7 +234,9 @@ export default class Channel extends WebSocketServer {
                   .where("u.id = :id", { id: message.target })
                   .getOne());
               if (target === null)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               const friendRequest = new FriendRequest();
               friendRequest.sender = user.id;
               friendRequest.target = message.target;
@@ -211,14 +255,18 @@ export default class Channel extends WebSocketServer {
                 .where("fr.sender = :id", { id: message.sender })
                 .getOne();
               if (friendRequest === null || friendRequest.target !== user.id)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               const sender =
                 this.users.get(friendRequest.sender) ||
                 (await DB.Manager.createQueryBuilder(User<false>, "u")
                   .where("u.id = :id", { id: friendRequest.sender })
                   .getOne());
               if (sender === null)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               await DB.Manager.remove(friendRequest);
               if (message.accept) {
                 user.friends.push(sender.id);
@@ -232,16 +280,37 @@ export default class Channel extends WebSocketServer {
           case WebSocketMessage.Type.Whisper:
             {
               if (message.content === "")
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               const target = this.users.get(message.target);
               if (target === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {});
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
               const whisper: Whisper = {
                 sender: user.id,
                 content: message.content,
               };
               socket.send(WebSocketMessage.Type.Whisper, whisper);
               target.socket.send(WebSocketMessage.Type.Whisper, whisper);
+            }
+            break;
+          case WebSocketMessage.Type.Invite:
+            {
+              const target = this.users.get(message.userId);
+              if (target === undefined)
+                return socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
+              if (user.room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              target.socket.send(WebSocketMessage.Type.Invite, {
+                userId: user.id,
+                roomId: user.room.id,
+              });
             }
             break;
           case WebSocketMessage.Type.QueryUser:
