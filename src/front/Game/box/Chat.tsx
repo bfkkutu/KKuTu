@@ -1,24 +1,30 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Parser as HTMLParser } from "html-to-react";
 
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import AudioContext from "front/@global/AudioContext";
 import { ChatType } from "front/@global/enums/ChatType";
-import { Chat } from "front/@global/interfaces/Chat";
+import { Chat } from "../../../common/interfaces/Chat";
+import { createProfileDialog } from "front/Game/dialogs/Profile";
+import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+
+const htmlParser = HTMLParser();
 
 export default function ChatBox() {
   const socket = useStore((state) => state.socket);
+  const blackList = useStore((state) => state.community.blackList);
   const [chatLog, appendChat] = useStore((state) => [
     state.chatLog,
     state.appendChat,
   ]);
   const [content, setContent] = useState("");
-  const $input = useRef<HTMLInputElement>(null);
+  const $input = useRef<HTMLTextAreaElement>(null);
   const $list = useRef<HTMLDivElement>(null);
 
   const send = useCallback(() => {
-    if (content === "") return;
+    if (content.trim() === "") return;
     socket.send(WebSocketMessage.Type.Chat, {
       content,
     });
@@ -29,18 +35,23 @@ export default function ChatBox() {
 
   useEffect(() => {
     socket.messageReceiver.on(WebSocketMessage.Type.Chat, (message) => {
+      if (blackList.includes(message.sender)) return;
       audioContext.playEffect("chat");
       appendChat(message.sender, message.content);
     });
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Chat);
     };
-  }, []);
+  }, [blackList]);
 
   useEffect(() => {
     if ($input.current)
       $input.current.onkeydown = (e) => {
-        if (e.code === "Enter" || e.code === "NumpadEnter") send();
+        if (e.code === "Enter" || e.code === "NumpadEnter")
+          if (!e.shiftKey) {
+            e.preventDefault();
+            send();
+          }
       };
     return () => {
       if ($input.current) $input.current.onkeydown = null;
@@ -59,14 +70,16 @@ export default function ChatBox() {
           {chatLog.map((chat) => (
             <div className={`item ${chat.type}`}>
               <ChatHead {...chat} />
-              <div className="content">{chat.content}</div>
+              <div className="content">
+                {htmlParser.parse(chat.content.replaceAll("\n", "<br>"))}
+              </div>
               <div className="timestamp">
                 {chat.receivedAt.toLocaleTimeString()}
               </div>
             </div>
           ))}
         </div>
-        <input
+        <textarea
           className="input-chat"
           maxLength={200}
           value={content}
@@ -85,8 +98,16 @@ function ChatHead(chat: Chat) {
   const users = useStore((state) => state.users);
 
   switch (chat.type) {
-    case ChatType.Chat:
-      return <div className="head ellipse">{users[chat.sender].nickname}</div>;
+    case ChatType.Chat: {
+      const ProfileDialog = createProfileDialog(users[chat.sender]);
+      const toggle = useDialogStore((state) => state.toggle);
+
+      return (
+        <div className="head ellipse" onClick={() => toggle(ProfileDialog)}>
+          {users[chat.sender].nickname}
+        </div>
+      );
+    }
     case ChatType.Notice:
       return <div className="head head-notice ellipse">{L.get("alert")}</div>;
   }

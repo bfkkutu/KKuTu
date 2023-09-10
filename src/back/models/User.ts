@@ -1,12 +1,9 @@
 import * as TypeORM from "typeorm";
 
-import DB from "back/utils/Database";
 import WebSocket from "back/utils/WebSocket";
 import { Database } from "../../common/Database";
 import { WebSocketMessage } from "../../common/WebSocket";
 import Room from "back/game/Room";
-
-import FriendRequest from "back/models/FriendRequest";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User<Connected extends boolean = false>
@@ -97,8 +94,12 @@ export default class User<Connected extends boolean = false>
   })
   public password!: Database.Nullable<string>;
 
-  @TypeORM.Column({ name: "u_friends", type: "json", default: [] })
-  public friends!: string[];
+  @TypeORM.Column({
+    name: "u_community",
+    type: "json",
+    default: Database.JSON.Defaults.User.community,
+  })
+  public community!: Database.JSON.Types.User.community;
 
   @TypeORM.Column({
     name: "u_settings",
@@ -123,30 +124,15 @@ export default class User<Connected extends boolean = false>
    * @reference
    */
   public room?: Connected extends true ? Room : never;
-  public community = { ...Database.community };
 
   /**
    * 이 유저의 커뮤니티 관련 정보를 갱신한다.
-   *
-   * @param updateClient 클라이언트에 갱신된 정보를 보낼 지 여부.
    */
-  public async updateCommunity(updateClient: boolean = true): Promise<void> {
+  public async updateCommunity(): Promise<void> {
     if (this.socket === undefined) return;
-    this.community.friends = this.friends;
-    this.community.friendRequests.sent = (
-      await DB.Manager.createQueryBuilder(FriendRequest, "fr")
-        .where("fr.sender = :id", { id: this.id })
-        .getMany()
-    ).map((friendRequest) => friendRequest.target);
-    this.community.friendRequests.received = (
-      await DB.Manager.createQueryBuilder(FriendRequest, "fr")
-        .where("fr.target = :id", { id: this.id })
-        .getMany()
-    ).map((friendRequest) => friendRequest.sender);
-    if (updateClient)
-      this.socket.send(WebSocketMessage.Type.UpdateCommunity, {
-        community: this.community,
-      });
+    this.socket.send(WebSocketMessage.Type.UpdateCommunity, {
+      community: this.community,
+    });
   }
   /**
    * 현재 접속 중인 방이 있으면 나간다.

@@ -2,6 +2,7 @@ export enum MenuType {
   Help = "help",
   Settings = "settings",
   Community = "community",
+  BlackList = "blackList",
   Leaderboard = "leader",
   Spectate = "spectate",
   RoomSettings = "roomSettings",

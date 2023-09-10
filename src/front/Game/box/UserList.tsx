@@ -32,6 +32,7 @@ interface Props {
 }
 
 export default function UserListBox(props: Props) {
+  const blackList = useStore((state) => state.community.blackList);
   const users = useStore((state) => Object.values(state.users));
 
   return (
@@ -44,9 +45,11 @@ export default function UserListBox(props: Props) {
         )}
       </h5>
       <div className="product-body">
-        {users.map((user) => (
-          <UserItem {...user} />
-        ))}
+        {users
+          .filter(({ id }) => !blackList.includes(id))
+          .map((user) => (
+            <UserItem {...user} />
+          ))}
       </div>
     </section>
   );

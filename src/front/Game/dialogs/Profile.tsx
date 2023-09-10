@@ -17,7 +17,7 @@ import { toggleWhisperDialog } from "front/Game/dialogs/Whisper/index";
 
 export const createProfileDialog = (user: Database.SummarizedUser) => {
   const dialog = new DialogData(
-    () => <>{L.render("profile_title", user.nickname)}</>,
+    L.render("profile_title", user.nickname),
     () => {
       const socket = useStore((state) => state.socket);
       const id = useStore((state) => state.me.id);
@@ -77,6 +77,28 @@ export const createProfileDialog = (user: Database.SummarizedUser) => {
               }}
             >
               {L.get("friendRequest")}
+            </button>
+          );
+        if (!community.blackList.includes(user.id))
+          footerButtons.push(
+            <button
+              onClick={async () => {
+                if (
+                  !(await confirm(
+                    L.render("confirm_blackListAdd", user.nickname)
+                  ))
+                )
+                  return;
+                socket.send(WebSocketMessage.Type.BlackListAdd, {
+                  userId: user.id,
+                });
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.UpdateCommunity
+                );
+                alert(L.render("alert_blackListAdd", user.nickname));
+              }}
+            >
+              {L.get("blackListAdd")}
             </button>
           );
       }

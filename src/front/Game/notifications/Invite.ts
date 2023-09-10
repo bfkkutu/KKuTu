@@ -7,7 +7,7 @@ import { useRoomStore } from "front/Game/box/Room/Store";
 export const createInviteNotification = (roomId: number, nickname: string) =>
   new NotificationData(L.get("notification_invite", roomId), async () => {
     const { socket } = useStore.getState();
-    if (!(await confirm(L.get("confirm_inviteResponse", nickname, roomId))))
+    if (!(await confirm(L.render("confirm_inviteResponse", nickname, roomId))))
       return;
     const { room, updateRoom, leaveRoom } = useRoomStore.getState();
     if (room === undefined) {

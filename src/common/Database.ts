@@ -20,6 +20,14 @@ export namespace Database {
           chat?: PunishmentData;
           play?: PunishmentData;
         }
+        export interface community {
+          friends: string[];
+          friendRequests: {
+            sent: string[];
+            received: string[];
+          };
+          blackList: string[];
+        }
         export interface settings {
           bgmVolume: number;
           effectVolume: number;
@@ -42,6 +50,14 @@ export namespace Database {
         export const inventory: Types.User.inventory = {};
         export const equipment: Types.User.equipment = {};
         export const punishment: Types.User.punishment = {};
+        export const community: Types.User.community = {
+          friends: [],
+          friendRequests: {
+            sent: [],
+            received: [],
+          },
+          blackList: [],
+        };
         export const settings: Types.User.settings = {
           bgmVolume: 0.5,
           effectVolume: 0.5,
@@ -78,20 +94,6 @@ export namespace Database {
     punishment: JSON.Types.User.punishment;
     settings: JSON.Types.User.settings;
   }
-  export interface Community {
-    friends: string[];
-    friendRequests: {
-      sent: string[];
-      received: string[];
-    };
-  }
-  export const community: Community = {
-    friends: [],
-    friendRequests: {
-      sent: [],
-      received: [],
-    },
-  };
   export interface FriendRequest {
     id: number;
     sender: string;

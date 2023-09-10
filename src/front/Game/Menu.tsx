@@ -15,7 +15,8 @@ import { SettingsDialog } from "front/Game/dialogs/Settings";
 import { CommunityDialog } from "front/Game/dialogs/Community";
 import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
 import { createRoomSettingsDialog } from "front/Game/dialogs/RoomSettings";
-import { InviteDialog } from "./dialogs/Invite";
+import { InviteDialog } from "front/Game/dialogs/Invite";
+import { BlackListDialog } from "front/Game/dialogs/BlackList";
 
 interface MenuItem {
   type: MenuType;
@@ -52,6 +53,15 @@ const buttons: MenuItem[] = [
     isTiny: true,
     label: <Icon type={IconType.NORMAL} name="comments" />,
     badge: () => useStore.getState().community.friendRequests.received.length,
+    forLobby: true,
+    forRoom: true,
+    forMaster: true,
+    forGaming: true,
+  },
+  {
+    type: MenuType.BlackList,
+    isTiny: true,
+    label: <Icon type={IconType.NORMAL} name="ban" />,
     forLobby: true,
     forRoom: true,
     forMaster: true,
@@ -214,6 +224,9 @@ export function Menu() {
               break;
             case MenuType.Community:
               props.onClick = () => toggle(CommunityDialog);
+              break;
+            case MenuType.BlackList:
+              props.onClick = () => toggle(BlackListDialog);
               break;
             case MenuType.CreateRoom:
               props.onClick = () => toggle(CreateRoomDialog);

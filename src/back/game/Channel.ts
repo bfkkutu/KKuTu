@@ -1,3 +1,6 @@
+import marked from "marked";
+import sanitize from "sanitize-html";
+
 import WebSocketServer from "back/utils/WebSocketServer";
 import DB from "back/utils/Database";
 import Room from "back/game/Room";
@@ -6,10 +9,9 @@ import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
 import { Database } from "../../common/Database";
 import ObjectMap from "../../common/ObjectMap";
+import { Whisper } from "../../common/interfaces/Whisper";
 
 import User from "back/models/User";
-import FriendRequest from "back/models/FriendRequest";
-import { Whisper } from "front/@global/interfaces/Whisper";
 
 export default class Channel extends WebSocketServer {
   public static instances: Channel[] = [];
@@ -35,9 +37,10 @@ export default class Channel extends WebSocketServer {
       if (user === null) return socket.close();
       socket.uid = user.id;
       fillWithDefaults(user.settings, Database.JSON.Defaults.User.settings); // 옵션이 나중에 추가될 경우 오류 방지.
+      fillWithDefaults(user.community, Database.JSON.Defaults.User.community);
       this.users.set(user.id, user);
       user.socket = socket;
-      await user.updateCommunity(false);
+      await user.updateCommunity();
       socket.on("message", async (raw) => {
         const message: WebSocketMessage.Client[WebSocketMessage.Type] =
           JSON.parse(raw.toString());
@@ -66,6 +69,13 @@ export default class Channel extends WebSocketServer {
               return socket.sendError(WebSocketError.Type.BadRequest, {
                 isFatal: false,
               });
+            message.content = sanitize(
+              marked.parse(sanitize(message.content)),
+              {
+                allowedTags: ["strong", "em", "del", "code"],
+              }
+            ).trim();
+            if (message.content === "") return;
             if (user.room === undefined)
               this.broadcast(
                 WebSocketMessage.Type.Chat,
@@ -236,42 +246,42 @@ export default class Channel extends WebSocketServer {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              const friendRequest = new FriendRequest();
-              friendRequest.sender = user.id;
-              friendRequest.target = message.target;
-              await DB.Manager.save(friendRequest);
+              user.community.friendRequests.sent.push(target.id);
+              target.community.friendRequests.received.push(user.id);
               socket.send(WebSocketMessage.Type.FriendRequest, {});
+              await DB.Manager.save([user, target]);
               await user.updateCommunity();
               await target.updateCommunity();
             }
             break;
           case WebSocketMessage.Type.FriendRequestResponse:
             {
-              const friendRequest = await DB.Manager.createQueryBuilder(
-                FriendRequest,
-                "fr"
-              )
-                .where("fr.sender = :id", { id: message.sender })
-                .getOne();
-              if (friendRequest === null || friendRequest.target !== user.id)
-                return socket.sendError(WebSocketError.Type.BadRequest, {
-                  isFatal: false,
-                });
               const sender =
-                this.users.get(friendRequest.sender) ||
+                this.users.get(message.sender) ||
                 (await DB.Manager.createQueryBuilder(User<false>, "u")
-                  .where("u.id = :id", { id: friendRequest.sender })
+                  .where("u.id = :id", { id: message.sender })
                   .getOne());
               if (sender === null)
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              await DB.Manager.remove(friendRequest);
+              user.community.friendRequests.received.splice(
+                user.community.friendRequests.received.findIndex(
+                  (v) => v === sender.id
+                ),
+                1
+              );
+              sender.community.friendRequests.sent.splice(
+                sender.community.friendRequests.sent.findIndex(
+                  (v) => v === user.id
+                ),
+                1
+              );
               if (message.accept) {
-                user.friends.push(sender.id);
-                sender.friends.push(user.id);
-                await DB.Manager.save([user, sender]);
+                user.community.friends.push(sender.id);
+                sender.community.friends.push(user.id);
               }
+              await DB.Manager.save([user, sender]);
               await user.updateCommunity();
               await sender.updateCommunity();
             }
@@ -287,12 +297,12 @@ export default class Channel extends WebSocketServer {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              user.friends.splice(
-                user.friends.findIndex((v) => v === message.userId),
+              user.community.friends.splice(
+                user.community.friends.findIndex((v) => v === message.userId),
                 1
               );
-              friend.friends.splice(
-                friend.friends.findIndex((v) => v === user.id),
+              friend.community.friends.splice(
+                friend.community.friends.findIndex((v) => v === user.id),
                 1
               );
               await DB.Manager.save(user);
@@ -300,6 +310,31 @@ export default class Channel extends WebSocketServer {
               await user.updateCommunity();
               await friend.updateCommunity();
             }
+            break;
+          case WebSocketMessage.Type.BlackListAdd:
+            if (
+              (await DB.Manager.createQueryBuilder(User<false>, "u")
+                .where("u.id = :id", { id: message.userId })
+                .getCount()) === 0
+            )
+              return socket.sendError(WebSocketError.Type.NotFound, {
+                isFatal: false,
+              });
+            user.community.blackList.push(message.userId);
+            await DB.Manager.save(user);
+            await user.updateCommunity();
+            break;
+          case WebSocketMessage.Type.BlackListRemove:
+            if (!user.community.blackList.includes(message.userId))
+              return socket.sendError(WebSocketError.Type.BadRequest, {
+                isFatal: false,
+              });
+            user.community.blackList.splice(
+              user.community.blackList.findIndex((v) => v === message.userId),
+              1
+            );
+            await DB.Manager.save(user);
+            await user.updateCommunity();
             break;
           case WebSocketMessage.Type.Whisper:
             {

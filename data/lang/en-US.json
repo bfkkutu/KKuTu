@@ -96,6 +96,7 @@
     "invite": "Invite",
     "whisper": "1대1 채팅",
     "friendRequest": "친구 추가",
+    "blackListAdd": "블랙리스트 추가",
     "handover": "Handover room",
     "createRoom": "Create Room",
     "roomTitle": "Room Title",
@@ -175,7 +176,7 @@
     "menu_leave": "Leave",
     "menu_replay": "전적",
 
-    "settings_title": "Settings",
+    "settings_title": "<{FA|wrench}> Settings",
     "settings_bgmVolume": "BGM Volume",
     "settings_effectVolume": "Effect Volume",
     "settings_bgm": "BGM",
@@ -185,6 +186,8 @@
     "settings_etc": "기타",
 
     "community_title": "<{FA|users}> Friends ({#0} / 100)",
+
+    "blackList_title": "<{FA|ban}> 블랙리스트 관리",
 
     "createRoom_title_default": "{#0}'s room",
     "createRoom_password": "Password",
@@ -209,12 +212,16 @@
     "confirm_handover": "{#0}님께 방장을 인계할까요?",
     "confirm_invite": "{#0}님을 초대할까요?",
     "confirm_follow": "{#0}님이 있는 {#1}번 방으로 이동할까요?",
-    "confirm_inviteResponse": "{#0}님으로부터 {#1}번 방의 초대를 받았습니다. 수락하시겠습니까?",
+    "confirm_inviteResponse": "{#0}님으로부터 {#1}번 방의 초대를 받았습니다.<{BR}>수락하시겠습니까?",
     "confirm_friendRemove": "{#0}님을 친구 목록에서 삭제할까요?",
+    "confirm_blackListAdd": "{#0}님을 블랙리스트에 추가할까요?<{BR}>블랙리스트에 추가하면 유저 목록, 채팅에서 노출되지 않아요.",
+    "confirm_blackListRemove": "{#0}님을 블랙리스트에서 삭제할까요?",
 
     "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈습니다.",
     "alert_localeChanged": "Language change will take effect from the next connection.",
     "alert_friendRemove": "{#0}님을 친구 목록에서 삭제했습니다.",
+    "alert_blackListAdd": "{#0}님을 블랙리스트에 추가했어요.<{BR}>이제 {#0}님이 유저 목록, 채팅에서 노출되지 않아요.",
+    "alert_blackListRemove": "{#0}님을 블랙리스트에서 삭제했어요.",
     "alert_invite": "{#0}님을 초대했습니다.",
 
     "notice_joinRoom": "{#0}님이 입장했습니다.",

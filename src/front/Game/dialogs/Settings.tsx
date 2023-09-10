@@ -9,7 +9,7 @@ import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 
-export const SettingsDialog = new DialogData(L.get("settings_title"), () => {
+export const SettingsDialog = new DialogData(L.render("settings_title"), () => {
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const socket = useStore((state) => state.socket);
   const hide = useDialogStore((state) => state.hide);

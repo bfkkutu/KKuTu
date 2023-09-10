@@ -1,6 +1,6 @@
 import { Database } from "common/Database";
 import { Game } from "common/Game";
-import { Whisper } from "front/@global/interfaces/Whisper";
+import { Whisper } from "common/interfaces/Whisper";
 
 export namespace WebSocketMessage {
   export enum Type {
@@ -52,6 +52,8 @@ export namespace WebSocketMessage {
     FriendRequest = "friendRequest",
     FriendRequestResponse = "friendRequestR",
     FriendRemove = "friendRemove",
+    BlackListAdd = "blackListAdd",
+    BlackListRemove = "blackListRemove",
     Whisper = "whisper",
     Invite = "invite",
     UpdateUser = "updateUser",
@@ -76,7 +78,7 @@ export namespace WebSocketMessage {
       };
       [Type.UpdateSettings]: {};
       [Type.UpdateCommunity]: {
-        community: Database.Community;
+        community: Database.JSON.Types.User.community;
       };
       [Type.Join]: {
         user: Database.SummarizedUser;
@@ -122,6 +124,8 @@ export namespace WebSocketMessage {
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
       [Type.FriendRemove]: {};
+      [Type.BlackListAdd]: {};
+      [Type.BlackListRemove]: {};
       [Type.Whisper]: Whisper;
       [Type.Invite]: {
         /**
@@ -191,6 +195,12 @@ export namespace WebSocketMessage {
         accept: boolean;
       };
       [Type.FriendRemove]: {
+        userId: string;
+      };
+      [Type.BlackListAdd]: {
+        userId: string;
+      };
+      [Type.BlackListRemove]: {
         userId: string;
       };
       [Type.Whisper]: {

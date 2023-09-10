@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-import { Whisper } from "front/@global/interfaces/Whisper";
+import { Whisper } from "../../../../common/interfaces/Whisper";
 import DialogData from "front/@global/Bayadere/dialog/DialogData";
 
 interface State {

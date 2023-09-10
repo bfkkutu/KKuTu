@@ -1,5 +1,6 @@
 import React from "react";
 import { josa } from "josa";
+import { Parser as HTMLParser } from "html-to-react";
 
 import { Icon, IconType } from "front/@block/Icon";
 import { getTimeDistance } from "front/@global/Utility";
@@ -7,6 +8,7 @@ import { FRONT } from "back/utils/Utility";
 
 type PatternResolver = (key: number, ...args: string[]) => React.ReactNode;
 
+const htmlParser = HTMLParser();
 const PATTERN_RESOLVER: Table<PatternResolver> = {
   BR: (key) => <br key={key} />,
   FA: (key, name) => <Icon key={key} name={name} />,
@@ -36,6 +38,7 @@ const PATTERN_RESOLVER: Table<PatternResolver> = {
   HUMAN_N: (key, data) => (
     <React.Fragment key={key}>{getHumanNumber(Number(data))}</React.Fragment>
   ),
+  HTML: (key, data) => htmlParser.parse(data),
 };
 let TABLE: Table<string> = FRONT && eval("window.__LANGUAGE");
 
@@ -61,7 +64,7 @@ export default class L {
   }
   public static render(key: string, ...args: any[]): React.ReactNode {
     if (TABLE[key]) {
-      return L.parse(TABLE[key], ...args);
+      return L.parse(josa(TABLE[key]), ...args);
     } else {
       return `(L#${key})`;
     }
@@ -97,7 +100,7 @@ export default class L {
       }
       prevIndex = PATTERN.lastIndex;
     }
-    if (prevIndex < value.length) R.push(josa(value.slice(prevIndex)));
+    if (prevIndex < value.length) R.push(value.slice(prevIndex));
     return <>{R}</>;
   }
 }

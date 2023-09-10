@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 import { Database } from "../../common/Database";
-import { Chat } from "front/@global/interfaces/Chat";
+import { Chat } from "../../common/interfaces/Chat";
 import { Game } from "common/Game";
 import WebSocket from "front/@global/WebSocket";
 import { ChatType } from "front/@global/enums/ChatType";
@@ -13,8 +13,8 @@ interface State {
   me: Database.DetailedUser;
   updateMe: (me: Database.DetailedUser) => void;
 
-  community: Database.Community;
-  updateCommunity: (community: Database.Community) => void;
+  community: Database.JSON.Types.User.community;
+  updateCommunity: (community: Database.JSON.Types.User.community) => void;
 
   chatLog: Chat[];
   appendChat: (sender: string, content: string) => void;
@@ -43,7 +43,7 @@ export const useStore = create<State>((setState) => ({
       me,
     }),
 
-  community: { ...Database.community },
+  community: { ...Database.JSON.Defaults.User.community },
   updateCommunity: (community) => setState({ community }),
 
   chatLog: [],
