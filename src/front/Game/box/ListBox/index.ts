@@ -2,8 +2,9 @@ import React from "react";
 
 import { useListBox } from "front/Game/box/ListBox/Store";
 import { ListBoxType } from "front/@global/enums/ListBoxType";
-import RoomListBox from "./RoomList";
-import SearchRoom from "./SearchRoom";
+
+import RoomListBox from "front/Game/box/ListBox/RoomList";
+import SearchRoom from "front/Game/box/ListBox/SearchRoom";
 
 const TABLE: Record<ListBoxType, React.FC> = {
   [ListBoxType.RoomList]: RoomListBox,

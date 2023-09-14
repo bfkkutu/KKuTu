@@ -50,7 +50,7 @@ export default class Channel extends WebSocketServer {
               community: user.community,
             });
             socket.send(WebSocketMessage.Type.UpdateRoomList, {
-              rooms: this.rooms.evaluate("summarize"),
+              rooms: this.rooms.evaluate(Room.prototype.summarize),
             });
             break;
           case WebSocketMessage.Type.UpdateSettings:
@@ -167,7 +167,7 @@ export default class Channel extends WebSocketServer {
               user.leaveRoom();
               Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
               socket.send(WebSocketMessage.Type.UpdateRoomList, {
-                rooms: this.rooms.evaluate("summarize"),
+                rooms: this.rooms.evaluate(Room.prototype.summarize),
               });
               this.broadcast(WebSocketMessage.Type.UpdateUser, {
                 user: user.summarize(),
@@ -416,7 +416,7 @@ export default class Channel extends WebSocketServer {
     this.broadcast(
       WebSocketMessage.Type.UpdateRoomList,
       {
-        rooms: this.rooms.evaluate("summarize"),
+        rooms: this.rooms.evaluate(Room.prototype.summarize),
       },
       (client) => {
         const user = this.users.get(client.uid);

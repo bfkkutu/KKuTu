@@ -47,10 +47,7 @@ function Game(props: Nest.Page.Props<"Game">) {
       state.removeUser,
     ]
   );
-  const [room, updateRoom] = useRoomStore((state) => [
-    state.room,
-    state.updateRoom,
-  ]);
+  const room = useRoomStore((state) => state.room);
   const hideSpinner = useSpinnerStore((state) => state.hide);
   const showNotification = useNotificationStore((state) => state.show);
   const [whisperDialogs, whisperLogs, appendWhisperLog] = useWhisperStore(

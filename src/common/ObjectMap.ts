@@ -17,10 +17,10 @@ export default class ObjectMap<
       return prev;
     }, {} as Record<K, V>);
   }
-  public evaluate<T extends keyof V>(
-    method: T,
-    ...args: Parameters<V[T]>
-  ): ReturnType<V[T]>[] {
-    return this.valuesAsArray().map((v) => v[method](...args));
+  public evaluate<F extends (...args: any) => any>(
+    func: F,
+    ...args: Parameters<F>
+  ): ReturnType<F>[] {
+    return this.valuesAsArray().map((v) => func.call(v, ...args));
   }
 }
