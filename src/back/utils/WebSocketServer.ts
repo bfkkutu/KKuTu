@@ -18,7 +18,7 @@ export default class WebSocketServer extends _WebSocketServer<
   typeof WebSocket,
   IncomingMessage
 > {
-  private app: Express.Application;
+  private readonly app: Express.Application;
 
   constructor(port: number, isSecure: boolean = false) {
     const app = Express();

@@ -14,15 +14,15 @@ import { Whisper } from "../../common/interfaces/Whisper";
 import User from "back/models/User";
 
 export default class Channel extends WebSocketServer {
-  public static instances: Channel[] = [];
+  public static readonly instances: Channel[] = [];
   /**
    * 이 채널에 접속 중인 유저 맵.
    */
-  private users = new ObjectMap<string, User<true>>();
+  private readonly users = new ObjectMap<string, User<true>>();
   /**
    * 이 채널에 만들어진 방 맵.
    */
-  private rooms = new ObjectMap<number, Room>();
+  private readonly rooms = new ObjectMap<number, Room>();
 
   constructor(port: number, isSecure: boolean = false) {
     super(port, isSecure);

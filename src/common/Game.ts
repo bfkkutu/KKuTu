@@ -218,6 +218,7 @@ export namespace Game {
       themeSelect: false,
     },
   };
+  export interface Game {}
 
   export interface RoomSearchOptions {
     title: string;

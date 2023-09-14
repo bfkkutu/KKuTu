@@ -1,28 +1,30 @@
 import sha256 from "sha256";
 
 import WebSocketGroup from "back/utils/WebSocketGroup";
-import { Game } from "common/Game";
+import { Game as NSGame } from "common/Game";
 import Channel from "back/game/Channel";
 import WebSocket from "back/utils/WebSocket";
 import { WebSocketMessage } from "../../common/WebSocket";
 import ObjectMap from "../../common/ObjectMap";
+import Game from "back/game/Game";
 
-export default class Room extends WebSocketGroup implements Game.BaseRoom {
-  private static emptyPassword = sha256("");
+export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
+  private static readonly emptyPassword = sha256("");
   /**
    * @reference
    */
-  private channel: Channel;
-  private members = new ObjectMap<string, Game.RoomMember>();
+  private readonly channel: Channel;
+  private readonly members = new ObjectMap<string, NSGame.RoomMember>();
+  private game?: Game;
   public id: number;
-  public title: string;
-  public isLocked: boolean;
-  private password: string;
-  public limit: number;
-  public mode: Game.Mode;
-  public round: number;
-  public roundTime: number;
-  public rules: Record<Game.Rule, boolean>;
+  public title!: string;
+  public isLocked!: boolean;
+  private password!: string;
+  public limit!: number;
+  public mode!: NSGame.Mode;
+  public round!: number;
+  public roundTime!: number;
+  public rules!: Record<NSGame.Rule, boolean>;
   public master: string;
 
   private get isEmpty() {
@@ -33,7 +35,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     channel: Channel,
     id: number,
     master: string,
-    room: Game.RoomSettings
+    room: NSGame.RoomSettings
   ) {
     super();
 
@@ -41,17 +43,10 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
     this.id = id;
     this.master = master;
 
-    this.title = room.title;
-    this.isLocked = room.password !== Room.emptyPassword;
-    this.password = room.password;
-    this.limit = room.limit;
-    this.mode = room.mode;
-    this.round = room.round;
-    this.roundTime = room.roundTime;
-    this.rules = room.rules;
+    this.configure(room);
   }
 
-  public configure(room: Game.RoomSettings): void {
+  public configure(room: NSGame.RoomSettings): void {
     this.title = room.title;
     this.isLocked = room.password !== Room.emptyPassword;
     this.password &&= room.password;
@@ -88,7 +83,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
       this.update();
     }
   }
-  private getMembers(): Record<string, Game.RoomMember> {
+  private getMembers(): Record<string, NSGame.RoomMember> {
     return this.members.asRecord();
   }
   public getMember(id: string) {
@@ -103,7 +98,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
       room: this.serialize(),
     });
   }
-  public summarize(): Game.SummarizedRoom {
+  public summarize(): NSGame.SummarizedRoom {
     return {
       id: this.id,
       title: this.title,
@@ -117,7 +112,7 @@ export default class Room extends WebSocketGroup implements Game.BaseRoom {
       members: this.clients.size,
     };
   }
-  public serialize(): Game.DetailedRoom {
+  public serialize(): NSGame.DetailedRoom {
     return {
       id: this.id,
       title: this.title,

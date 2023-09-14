@@ -3,7 +3,7 @@ import ObjectMap from "../../common/ObjectMap";
 import { WebSocketMessage } from "common/WebSocket";
 
 export default class WebSocketGroup {
-  protected clients = new ObjectMap<string, WebSocket>();
+  protected readonly clients = new ObjectMap<string, WebSocket>();
 
   public add(socket: WebSocket) {
     this.clients.set(socket.uid, socket);
