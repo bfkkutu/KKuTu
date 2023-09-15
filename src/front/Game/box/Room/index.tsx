@@ -55,9 +55,14 @@ export default function RoomBox() {
     socket.messageReceiver.on(WebSocketMessage.Type.Ready, ({ member }) =>
       updateMember(member)
     );
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.Start,
+      () => room && updateRoom({ ...room, isGaming: true })
+    );
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
       socket.messageReceiver.off(WebSocketMessage.Type.Ready);
+      socket.messageReceiver.off(WebSocketMessage.Type.Start);
     };
   }, []);
 

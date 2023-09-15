@@ -5,7 +5,7 @@ import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { MenuType } from "front/@global/enums/MenuType";
-import { WebSocketMessage } from "../../common/WebSocket";
+import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { useRoomStore } from "front/Game/box/Room/Store";
 import ClassName from "front/@global/ClassName";
 import { useListBox } from "front/Game/box/ListBox/Store";
@@ -261,6 +261,33 @@ export function Menu() {
                 className.push("menu-toggled");
               props.onClick = () =>
                 socket.send(WebSocketMessage.Type.Ready, {});
+              break;
+            case MenuType.Start:
+              props.onClick = async () => {
+                socket.send(WebSocketMessage.Type.Start, {});
+                try {
+                  await socket.messageReceiver.wait(
+                    WebSocketMessage.Type.Start
+                  );
+                } catch (e) {
+                  const message =
+                    e as WebSocketError.Message[WebSocketError.Type];
+                  switch (message.errorType) {
+                    case WebSocketError.Type.BadRequest:
+                      alert(L.get("error_400"));
+                      break;
+                    case WebSocketError.Type.Forbidden:
+                      alert(L.get("error_403"));
+                      break;
+                    case WebSocketError.Type.Conflict:
+                      alert(L.get("error_startNotReady"));
+                      break;
+                    default:
+                      alert(L.get("error_unknown"));
+                      break;
+                  }
+                }
+              };
               break;
             case MenuType.Leave:
               props.onClick = () => {

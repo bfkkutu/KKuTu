@@ -1,3 +1,4 @@
+import { useStore } from "front/Game/Store";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 
@@ -42,15 +43,27 @@ class MessageReceiver {
   public wait<T extends WebSocketMessage.Type>(
     type: T
   ): Promise<WebSocketMessage.Server[T]> {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const { show, hide } = useSpinnerStore.getState();
       show();
-      const cb: EventListener<T> = (message) => {
-        this.off(type, cb);
+      const cleanup = () => {
+        this.off(type, callback);
+        this.off(WebSocketMessage.Type.Error, errorCallback);
         hide();
+      };
+      const callback: EventListener<T> = (message) => {
+        cleanup();
         resolve(message);
       };
-      this.on(type, cb);
+      const errorCallback: EventListener<WebSocketMessage.Type.Error> = (
+        message
+      ) => {
+        cleanup();
+        reject(message);
+        if (message.isFatal) useStore.getState().socket.close();
+      };
+      this.on(type, callback);
+      this.on(WebSocketMessage.Type.Error, errorCallback);
     });
   }
 }

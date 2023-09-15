@@ -245,13 +245,13 @@ export namespace Game {
   }
   export interface Room extends BaseRoom {
     id: number;
+    isGaming: boolean;
   }
   /**
    * 로비에서 확인할 수 있는 방 정보들.
    */
   export interface SummarizedRoom extends Room {
     isLocked: boolean;
-    isGaming: boolean;
     members: number;
   }
   /**

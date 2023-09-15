@@ -235,6 +235,24 @@ export default class Channel extends WebSocketServer {
               });
             }
             break;
+          case WebSocketMessage.Type.Start:
+            {
+              const room = user.room;
+              if (room === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              if (room.master !== user.id)
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              if (!room.isReady)
+                return socket.sendError(WebSocketError.Type.Conflict, {
+                  isFatal: false,
+                });
+              room.start();
+            }
+            break;
           case WebSocketMessage.Type.FriendRequest:
             {
               const target =

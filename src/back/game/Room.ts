@@ -30,6 +30,11 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
   private get isEmpty() {
     return this.clients.size === 0;
   }
+  public get isReady() {
+    for (const member of this.members.values())
+      if (!member.isReady) return false;
+    return true;
+  }
 
   constructor(
     channel: Channel,
@@ -98,6 +103,19 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
       room: this.serialize(),
     });
   }
+  /**
+   * 게임을 시작한다.
+   */
+  public start(): void {
+    this.game = new Game(
+      this,
+      this.members.entriesAsArray().reduce((prev, [id, { isSpectator }]) => {
+        if (isSpectator) prev.push(id);
+        return prev;
+      }, [] as string[])
+    );
+    this.broadcast(WebSocketMessage.Type.Start, {});
+  }
   public summarize(): NSGame.SummarizedRoom {
     return {
       id: this.id,
@@ -116,6 +134,7 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
     return {
       id: this.id,
       title: this.title,
+      isGaming: this.game !== undefined,
       limit: this.limit,
       mode: this.mode,
       round: this.round,

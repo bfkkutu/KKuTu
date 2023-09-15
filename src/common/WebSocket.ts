@@ -44,6 +44,7 @@ export namespace WebSocketMessage {
     LeaveRoom = "leaveRoom",
     Spectate = "spectate",
     Ready = "ready",
+    Start = "start",
     UpdateRoomList = "updateRoomList",
     /**
      * @sender Server & Client.
@@ -118,6 +119,7 @@ export namespace WebSocketMessage {
       [Type.Ready]: {
         member: Game.RoomMember;
       };
+      [Type.Start]: {};
       [Type.UpdateRoomList]: {
         rooms: Game.SummarizedRoom[];
       };
@@ -180,6 +182,7 @@ export namespace WebSocketMessage {
       [Type.LeaveRoom]: {};
       [Type.Spectate]: {};
       [Type.Ready]: {};
+      [Type.Start]: {};
       [Type.UpdateRoomList]: {};
       [Type.FriendRequest]: {
         /**

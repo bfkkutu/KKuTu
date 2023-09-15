@@ -10,7 +10,6 @@ import { useStore } from "front/Game/Store";
 import { getRequiredScore } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
 import { useRoomStore } from "front/Game/box/Room/Store";
-import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 import { useNotificationStore } from "front/@global/Bayadere/notification/Store";
 import { useWhisperStore } from "front/Game/dialogs/Whisper/Store";
 import { createWhisperNotification } from "front/Game/notifications/Whisper";
@@ -21,6 +20,7 @@ import UserListBox from "front/Game/box/UserList";
 import ProfileBox from "front/Game/box/Profile";
 import ChatBox from "front/Game/box/Chat";
 import RoomBox from "front/Game/box/Room/index";
+import GameBox from "front/Game/box/Game/index";
 import ListBox from "front/Game/box/ListBox";
 
 CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
@@ -48,7 +48,6 @@ function Game(props: Nest.Page.Props<"Game">) {
     ]
   );
   const room = useRoomStore((state) => state.room);
-  const hideSpinner = useSpinnerStore((state) => state.hide);
   const showNotification = useNotificationStore((state) => state.show);
   const [whisperDialogs, whisperLogs, appendWhisperLog] = useWhisperStore(
     (state) => [state.dialogs, state.logs, state.appendLog]
@@ -89,14 +88,6 @@ function Game(props: Nest.Page.Props<"Game">) {
     );
     socket.messageReceiver.on(WebSocketMessage.Type.Leave, ({ userId }) =>
       removeUser(userId)
-    );
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.Error,
-      async ({ errorType, isFatal }) => {
-        hideSpinner();
-        await alert(L.get(`error_${errorType}`));
-        if (isFatal) return socket.close();
-      }
     );
     socket.on("close", (e) => {
       alert(L.get("error_closed", e.code));
@@ -164,6 +155,10 @@ function Game(props: Nest.Page.Props<"Game">) {
                 <div className="lobby">
                   <UserListBox server={server} />
                   <ListBox />
+                </div>
+              ) : room.isGaming ? (
+                <div className="game">
+                  <GameBox />
                 </div>
               ) : (
                 <div className="room">

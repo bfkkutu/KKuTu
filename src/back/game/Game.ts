@@ -1,4 +1,4 @@
-import { Game } from "common/Game";
+import { Game } from "../../common/Game";
 import Room from "back/game/Room";
 import Mode from "back/game/Mode";
 
