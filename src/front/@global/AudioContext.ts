@@ -38,7 +38,7 @@ class AudioContext extends C {
       return false;
     }
   }
-  public play(id: string, loop: boolean = false) {
+  public play(id: string, loop: boolean = false): void {
     this.stop(id);
     const audioSource = this.createBufferSource();
     if (!(id in this.buffers)) return;
@@ -48,7 +48,13 @@ class AudioContext extends C {
     audioSource.start();
     this.playing[id] = audioSource;
   }
-  public stop(id: string) {
+  public playEffect(id: string): void {
+    const audioSource = this.createBufferSource();
+    audioSource.buffer = this.buffers[id];
+    audioSource.connect(this.effectGainNode);
+    audioSource.start();
+  }
+  public stop(id: string): boolean {
     if (id in this.playing) {
       this.playing[id].stop();
       this.playing[id].disconnect();
@@ -56,11 +62,12 @@ class AudioContext extends C {
     }
     return false;
   }
-  public playEffect(id: string) {
-    const audioSource = this.createBufferSource();
-    audioSource.buffer = this.buffers[id];
-    audioSource.connect(this.effectGainNode);
-    audioSource.start();
+  public stopAll(): void {
+    for (const id in this.playing) {
+      this.playing[id].stop();
+      this.playing[id].disconnect();
+    }
+    this.playing = {};
   }
 }
 export default AudioContext;

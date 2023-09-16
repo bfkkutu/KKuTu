@@ -14,7 +14,7 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
    * @reference
    */
   private readonly channel: Channel;
-  private readonly members = new ObjectMap<string, NSGame.RoomMember>();
+  private readonly _members = new ObjectMap<string, NSGame.RoomMember>();
   private game?: Game;
   public id: number;
   public title!: string;
@@ -31,9 +31,12 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
     return this.clients.size === 0;
   }
   public get isReady() {
-    for (const member of this.members.values())
+    for (const member of this._members.values())
       if (!member.isReady) return false;
     return true;
+  }
+  public get members() {
+    return this._members.size;
   }
 
   constructor(
@@ -65,7 +68,7 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
     const user = this.channel.getUser(socket.uid);
     if (user === undefined) return;
     super.add(socket);
-    this.members.set(user.id, {
+    this._members.set(user.id, {
       id: user.id,
       isReady: user.settings.game.autoReady || this.master === user.id,
       isSpectator: false,
@@ -78,7 +81,7 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
    */
   public override remove(socket: WebSocket): void {
     super.remove(socket);
-    this.members.delete(socket.uid);
+    this._members.delete(socket.uid);
     if (this.isEmpty) return this.channel.unloadRoom(this.id);
     if (this.master === socket.uid) {
       this.master = this.clients.valuesAsArray()[0].uid;
@@ -89,10 +92,10 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
     }
   }
   private getMembers(): Record<string, NSGame.RoomMember> {
-    return this.members.asRecord();
+    return this._members.asRecord();
   }
   public getMember(id: string) {
-    return this.members.get(id);
+    return this._members.get(id);
   }
   /**
    * 이 방에 접속 중인 유저들의 방 정보를 갱신한다.
@@ -109,7 +112,7 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
   public start(): void {
     this.game = new Game(
       this,
-      this.members.entriesAsArray().reduce((prev, [id, { isSpectator }]) => {
+      this._members.entriesAsArray().reduce((prev, [id, { isSpectator }]) => {
         if (isSpectator) prev.push(id);
         return prev;
       }, [] as string[])

@@ -246,7 +246,7 @@ export default class Channel extends WebSocketServer {
                 return socket.sendError(WebSocketError.Type.Forbidden, {
                   isFatal: false,
                 });
-              if (!room.isReady)
+              if (!room.isReady || room.members === 1)
                 return socket.sendError(WebSocketError.Type.Conflict, {
                   isFatal: false,
                 });

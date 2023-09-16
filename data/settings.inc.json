@@ -10,7 +10,9 @@
       "lobby_3": "/lobby/3.mp3",
       "lobby_4": "/lobby/4.mp3",
 
-      "chat": "/chat.mp3"
+      "chat": "/chat.mp3",
+
+      "gameStart": "/game_start.mp3"
     },
     "maxLevel": 360,
     "expTable": [],

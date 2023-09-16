@@ -260,19 +260,21 @@ export function Menu() {
               if (room && me.id in room.members && room.members[me.id].isReady)
                 className.push("menu-toggled");
               props.onClick = () =>
+                room !== undefined &&
                 socket.send(WebSocketMessage.Type.Ready, {});
               break;
             case MenuType.Start:
               props.onClick = async () => {
+                if (room === undefined) return;
                 socket.send(WebSocketMessage.Type.Start, {});
                 try {
                   await socket.messageReceiver.wait(
                     WebSocketMessage.Type.Start
                   );
                 } catch (e) {
-                  const message =
+                  const { errorType } =
                     e as WebSocketError.Message[WebSocketError.Type];
-                  switch (message.errorType) {
+                  switch (errorType) {
                     case WebSocketError.Type.BadRequest:
                       alert(L.get("error_400"));
                       break;
@@ -280,7 +282,13 @@ export function Menu() {
                       alert(L.get("error_403"));
                       break;
                     case WebSocketError.Type.Conflict:
-                      alert(L.get("error_startNotReady"));
+                      alert(
+                        L.get(
+                          Object.keys(room.members).length === 1
+                            ? "error_startAlone"
+                            : "error_startNotReady"
+                        )
+                      );
                       break;
                     default:
                       alert(L.get("error_unknown"));
@@ -291,6 +299,7 @@ export function Menu() {
               break;
             case MenuType.Leave:
               props.onClick = () => {
+                if (room === undefined) return;
                 socket.send(WebSocketMessage.Type.LeaveRoom, {});
                 socket.messageReceiver
                   .wait(WebSocketMessage.Type.LeaveRoom)

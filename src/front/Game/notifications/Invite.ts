@@ -10,7 +10,7 @@ export const createInviteNotification = (roomId: number, nickname: string) =>
     if (!(await confirm(L.render("confirm_inviteResponse", nickname, roomId))))
       return;
     const { room, updateRoom, leaveRoom } = useRoomStore.getState();
-    if (room === undefined) {
+    if (room !== undefined) {
       socket.send(WebSocketMessage.Type.LeaveRoom, {});
       await socket.messageReceiver.wait(WebSocketMessage.Type.LeaveRoom);
       leaveRoom();

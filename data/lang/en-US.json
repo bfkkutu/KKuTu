@@ -89,6 +89,7 @@
     "error_soundNotFound": "소리 리소스 {#0}#{을} 로드하지 못했어요.",
     "error_noResult": "검색 결과가 없어요.",
     "error_startNotReady": "모든 참가자가 준비해야 시작할 수 있어요.",
+    "error_startAlone": "혼자서는 게임을 시작할 수 없어요.",
     "error_unknown": "알 수 없는 오류가 발생했어요.",
     "error_400": "잘못된 요청이에요.",
     "error_403": "권한이 없어요.",

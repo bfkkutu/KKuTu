@@ -6,6 +6,7 @@ import L from "front/@global/Language";
 import { useRoomStore } from "front/Game/box/Room/Store";
 import Mode from "front/@block/Mode";
 import Member from "front/Game/box/Room/Member";
+import AudioContext from "front/@global/AudioContext";
 
 export default function RoomBox() {
   const socket = useStore((state) => state.socket);
@@ -55,14 +56,18 @@ export default function RoomBox() {
     socket.messageReceiver.on(WebSocketMessage.Type.Ready, ({ member }) =>
       updateMember(member)
     );
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.Start,
-      () => room && updateRoom({ ...room, isGaming: true })
-    );
+    const startListener = () => {
+      if (room === undefined) return;
+      const audioContext = AudioContext.instance;
+      audioContext.stopAll();
+      audioContext.playEffect("gameStart");
+      updateRoom({ ...room, isGaming: true });
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.Start, startListener);
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
       socket.messageReceiver.off(WebSocketMessage.Type.Ready);
-      socket.messageReceiver.off(WebSocketMessage.Type.Start);
+      socket.messageReceiver.off(WebSocketMessage.Type.Start, startListener);
     };
   }, []);
 

@@ -19,7 +19,8 @@ class MessageReceiver {
     message: WebSocketMessage.Server[T]
   ) {
     console.log(message);
-    for (const listener of this.listeners[message.type])
+    // 각 listener 호출 시 this.listeners[message.type] 배열의 내용이 바뀔 수 있으니 얕은 복사로 다음 listener가 무시되지 않도록 한다.
+    for (const listener of [...this.listeners[message.type]])
       await listener(message);
   }
   public on<T extends WebSocketMessage.Type>(
@@ -45,7 +46,6 @@ class MessageReceiver {
   ): Promise<WebSocketMessage.Server[T]> {
     return new Promise((resolve, reject) => {
       const { show, hide } = useSpinnerStore.getState();
-      show();
       const cleanup = () => {
         this.off(type, callback);
         this.off(WebSocketMessage.Type.Error, errorCallback);
@@ -62,6 +62,7 @@ class MessageReceiver {
         reject(message);
         if (message.isFatal) useStore.getState().socket.close();
       };
+      show();
       this.on(type, callback);
       this.on(WebSocketMessage.Type.Error, errorCallback);
     });
