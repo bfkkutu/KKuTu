@@ -70,7 +70,7 @@ export default class Channel extends WebSocketServer {
                 isFatal: false,
               });
             message.content = sanitize(
-              marked.parse(sanitize(message.content)),
+              await marked.parse(sanitize(message.content)),
               {
                 allowedTags: ["strong", "em", "del", "code"],
               }

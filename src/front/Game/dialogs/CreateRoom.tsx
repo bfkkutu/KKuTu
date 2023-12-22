@@ -2,21 +2,20 @@ import React, { useCallback, useState } from "react";
 import sha256 from "sha256";
 
 import L from "front/@global/Language";
-import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
-import { WebSocketMessage } from "../../../common/WebSocket";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { Game } from "../../../common/Game";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
-import { EnumValueIterator } from "../../../common/Utility";
-import { useRoomStore } from "front/Game/box/Room/Store";
 import RuleSelector from "front/Game/blocks/RuleSelector";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Room } from "front/Game/box/Room";
+import { WebSocketMessage } from "../../../common/WebSocket";
+import { Game } from "../../../common/Game";
+import { EnumValueIterator } from "../../../common/Utility";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
 
-export const CreateRoomDialog = new DialogData(L.get("createRoom"), () => {
+export const CreateRoomDialog = new Dialog(L.get("createRoom"), () => {
   const nickname = useStore((state) => state.me.nickname);
   const socket = useStore((state) => state.socket);
-  const updateRoom = useRoomStore((state) => state.updateRoom);
-  const hide = useDialogStore((state) => state.hide);
+  const updateRoom = Room.useStore((state) => state.updateRoom);
+  const hide = Dialog.useStore((state) => state.hide);
   const [room, setRoom] = useState<Game.RoomSettings>({
     title: L.get("createRoom_title_default", nickname),
     password: "",

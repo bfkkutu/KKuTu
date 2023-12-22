@@ -1,18 +1,18 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useStore } from "front/Game/Store";
-import { useRoomStore } from "front/Game/box/Room/Store";
 import { WebSocketMessage } from "../../../../common/WebSocket";
 import L from "front/@global/Language";
 import Mode from "front/@block/Mode";
 import { Icon, IconType } from "front/@block/Icon";
+import { Room } from "front/Game/box/Room";
 import { Game } from "../../../../common/Game";
 import { EnumValueIterator } from "../../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default function SearchRoom() {
   const socket = useStore((state) => state.socket);
-  const updateRoom = useRoomStore((state) => state.updateRoom);
+  const updateRoom = Room.useStore((state) => state.updateRoom);
   const [rooms, updateRoomList] = useStore((state) => [
     state.rooms,
     state.updateRoomList,

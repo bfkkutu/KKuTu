@@ -13,7 +13,7 @@ import {
 import { Logger } from "back/utils/Logger";
 import LoginRoute from "back/utils/LoginRoute";
 import { createSecureOptions } from "back/utils/Secure";
-import Channel from "./game/Channel";
+import Channel from "back/game/Channel";
 
 const App = Express();
 

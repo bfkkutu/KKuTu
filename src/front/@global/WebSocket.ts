@@ -1,6 +1,6 @@
 import { useStore } from "front/Game/Store";
+import { Spinner } from "front/@global/Bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
-import { useSpinnerStore } from "front/@global/Bayadere/spinner/Store";
 
 export type EventListener<T extends WebSocketMessage.Type> = (
   message: WebSocketMessage.Server[T]
@@ -45,7 +45,7 @@ class MessageReceiver {
     type: T
   ): Promise<WebSocketMessage.Server[T]> {
     return new Promise((resolve, reject) => {
-      const { show, hide } = useSpinnerStore.getState();
+      const { show, hide } = Spinner.useStore.getState();
       const cleanup = () => {
         this.off(type, callback);
         this.off(WebSocketMessage.Type.Error, errorCallback);

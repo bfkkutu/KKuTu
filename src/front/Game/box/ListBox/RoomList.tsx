@@ -2,12 +2,12 @@ import React, { useEffect } from "react";
 
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
-import { WebSocketMessage } from "../../../../common/WebSocket";
 import { Icon, IconType } from "front/@block/Icon";
-import { useRoomStore } from "front/Game/box/Room/Store";
 import Mode from "front/@block/Mode";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Room } from "front/Game/box/Room";
+import { WebSocketMessage } from "../../../../common/WebSocket";
 
 export default function RoomListBox() {
   const socket = useStore((state) => state.socket);
@@ -15,8 +15,8 @@ export default function RoomListBox() {
     state.rooms,
     state.updateRoomList,
   ]);
-  const updateRoom = useRoomStore((state) => state.updateRoom);
-  const toggle = useDialogStore((state) => state.toggle);
+  const updateRoom = Room.useStore((state) => state.updateRoom);
+  const toggle = Dialog.useStore((state) => state.toggle);
 
   useEffect(() => {
     socket.messageReceiver.on(

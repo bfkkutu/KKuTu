@@ -1,15 +1,15 @@
 import React from "react";
 
-import { Game } from "../../../common/Game";
 import L from "front/@global/Language";
-import { useTooltipStore } from "front/@global/Bayadere/tooltip/Store";
+import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import { Game } from "../../../common/Game";
 
 interface Props {
   room: Game.RoomSettings;
   setter: (room: Game.RoomSettings) => void;
 }
 export default function RuleSelector({ room, setter }: Props) {
-  const [createOnMouseEnter, onMouseMove, onMouseLeave] = useTooltipStore(
+  const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
     (state) => [state.createOnMouseEnter, state.onMouseMove, state.onMouseLeave]
   );
 

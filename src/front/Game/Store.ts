@@ -1,10 +1,10 @@
 import { create } from "zustand";
 
-import { Database } from "../../common/Database";
-import { Chat } from "../../common/interfaces/Chat";
-import { Game } from "common/Game";
 import WebSocket from "front/@global/WebSocket";
 import { ChatType } from "front/@global/enums/ChatType";
+import { Database } from "../../common/Database";
+import { Chat } from "../../common/interfaces/Chat";
+import { Game } from "../../common/Game";
 
 interface State {
   socket: WebSocket;

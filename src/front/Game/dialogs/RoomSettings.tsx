@@ -2,20 +2,19 @@ import React, { useCallback, useState } from "react";
 import sha256 from "sha256";
 
 import L from "front/@global/Language";
-import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
-import { WebSocketMessage } from "../../../common/WebSocket";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
-import { Game } from "../../../common/Game";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
-import { EnumValueIterator } from "../../../common/Utility";
 import RuleSelector from "front/Game/blocks/RuleSelector";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { WebSocketMessage } from "../../../common/WebSocket";
+import { Game } from "../../../common/Game";
+import { EnumValueIterator } from "../../../common/Utility";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
-  const dialog = new DialogData(L.get("roomSettings"), () => {
+  const dialog = new Dialog(L.get("roomSettings"), () => {
     const nickname = useStore((state) => state.me.nickname);
     const socket = useStore((state) => state.socket);
-    const hide = useDialogStore((state) => state.hide);
+    const hide = Dialog.useStore((state) => state.hide);
     const [room, setRoom] = useState(config);
 
     const update = useCallback(

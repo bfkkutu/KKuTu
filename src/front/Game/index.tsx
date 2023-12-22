@@ -1,27 +1,26 @@
 import React, { useEffect, useRef } from "react";
 
 import Bind from "front/ReactBootstrap";
-import { Nest } from "common/Nest";
-import { WebSocketMessage } from "../../common/WebSocket";
 import L from "front/@global/Language";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { Menu } from "front/Game/Menu";
 import { useStore } from "front/Game/Store";
 import { getRequiredScore } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
-import { useRoomStore } from "front/Game/box/Room/Store";
-import { useNotificationStore } from "front/@global/Bayadere/notification/Store";
-import { useWhisperStore } from "front/Game/dialogs/Whisper/Store";
 import { createWhisperNotification } from "front/Game/notifications/Whisper";
 import { EventListener } from "front/@global/WebSocket";
 import { createInviteNotification } from "front/Game/notifications/Invite";
+import { Notification } from "front/@global/Bayadere/Notification";
+import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { Nest } from "../../common/Nest";
+import { WebSocketMessage } from "../../common/WebSocket";
 
-import UserListBox from "front/Game/box/UserList";
-import ProfileBox from "front/Game/box/Profile";
-import ChatBox from "front/Game/box/Chat";
-import RoomBox from "front/Game/box/Room/index";
-import GameBox from "front/Game/box/Game/index";
-import ListBox from "front/Game/box/ListBox";
+import { Room } from "front/Game/box/Room";
+import { List } from "front/Game/box/ListBox";
+import { UserList } from "front/Game/box/UserList";
+import { Game } from "front/Game/box/Game";
+import { Profile } from "front/Game/box/Profile";
+import { Chat } from "front/Game/box/Chat";
 
 CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
 for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
@@ -31,7 +30,7 @@ for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
 CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
 CLIENT_SETTINGS.expTable.push(Infinity);
 
-function Game(props: Nest.Page.Props<"Game">) {
+function Component(props: Nest.Page.Props<"Game">) {
   const [socket, initializeSocket] = useStore((state) => [
     state.socket,
     state.initializeSocket,
@@ -47,11 +46,14 @@ function Game(props: Nest.Page.Props<"Game">) {
       state.removeUser,
     ]
   );
-  const room = useRoomStore((state) => state.room);
-  const showNotification = useNotificationStore((state) => state.show);
-  const [whisperDialogs, whisperLogs, appendWhisperLog] = useWhisperStore(
-    (state) => [state.dialogs, state.logs, state.appendLog]
-  );
+  const room = Room.useStore((state) => state.room);
+  const showNotification = Notification.useStore((state) => state.show);
+  const [whisperDialogs, whisperLogs, appendWhisperLog] =
+    WhisperDialog.useStore((state) => [
+      state.dialogs,
+      state.logs,
+      state.appendLog,
+    ]);
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 
@@ -153,21 +155,21 @@ function Game(props: Nest.Page.Props<"Game">) {
             <div id="box-grid">
               {room === undefined ? (
                 <div className="lobby">
-                  <UserListBox server={server} />
-                  <ListBox />
+                  <UserList.Box server={server} />
+                  <List.Box />
                 </div>
               ) : room.isGaming ? (
                 <div className="game">
-                  <GameBox />
+                  <Game.Box />
                 </div>
               ) : (
                 <div className="room">
-                  <RoomBox />
+                  <Room.Box />
                 </div>
               )}
               <div className="lobby">
-                <ProfileBox />
-                <ChatBox />
+                <Profile.Box />
+                <Chat.Box />
               </div>
             </div>
           </>
@@ -176,4 +178,4 @@ function Game(props: Nest.Page.Props<"Game">) {
     </article>
   );
 }
-Bind(Game);
+Bind(Component);

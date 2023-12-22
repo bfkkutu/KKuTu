@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
 
 import L from "front/@global/Language";
-import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
 import { getLevel, getOfflineUser } from "front/@global/Utility";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { Icon, IconType } from "front/@block/Icon";
+import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { Room } from "front/Game/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { toggleWhisperDialog } from "front/Game/dialogs/Whisper";
-import { useRoomStore } from "front/Game/box/Room/Store";
-import { useTooltipStore } from "front/@global/Bayadere/tooltip/Store";
 
-export const CommunityDialog = new DialogData(
+export const CommunityDialog = new Dialog(
   () => {
     const friends = useStore((state) => state.community.friends);
 
@@ -22,12 +22,12 @@ export const CommunityDialog = new DialogData(
     const socket = useStore((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);
-    const [room, updateRoom, leaveRoom] = useRoomStore((state) => [
+    const [room, updateRoom, leaveRoom] = Room.useStore((state) => [
       state.room,
       state.updateRoom,
       state.leaveRoom,
     ]);
-    const [createOnMouseEnter, onMouseMove, onMouseLeave] = useTooltipStore(
+    const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
       (state) => [
         state.createOnMouseEnter,
         state.onMouseMove,
@@ -127,7 +127,7 @@ export const CommunityDialog = new DialogData(
                         onMouseEnter={createOnMouseEnter(L.get("whisper"))}
                         onMouseMove={onMouseMove}
                         onMouseLeave={onMouseLeave}
-                        onClick={() => toggleWhisperDialog(friend)}
+                        onClick={() => WhisperDialog.toggle(friend)}
                       >
                         <Icon type={IconType.NORMAL} name="comment" />
                       </div>

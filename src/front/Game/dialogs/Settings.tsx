@@ -1,18 +1,17 @@
 import React, { useState } from "react";
 
 import L from "front/@global/Language";
-import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import { useStore } from "front/Game/Store";
-import { Database } from "common/Database";
 import AudioContext from "front/@global/AudioContext";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
+import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
+import { Database } from "../../../common/Database";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
 
-export const SettingsDialog = new DialogData(L.render("settings_title"), () => {
+export const SettingsDialog = new Dialog(L.render("settings_title"), () => {
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const socket = useStore((state) => state.socket);
-  const hide = useDialogStore((state) => state.hide);
+  const hide = Dialog.useStore((state) => state.hide);
   const [valueChanged, setValueChanged] = useState(false);
 
   const updateSettings = (

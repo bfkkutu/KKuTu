@@ -1,13 +1,12 @@
-import { Database } from "common/Database";
-import NotificationData from "front/@global/Bayadere/notification/NotificationData";
 import L from "front/@global/Language";
-import { toggleWhisperDialog } from "front/Game/dialogs/Whisper";
+import { Notification } from "front/@global/Bayadere/Notification";
+import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { Database } from "../../../common/Database";
 
 export const createWhisperNotification = (
   user: Database.SummarizedUser,
   length: number
 ) =>
-  new NotificationData(
-    L.get("notification_whisper", user.nickname, length),
-    () => toggleWhisperDialog(user)
+  new Notification(L.get("notification_whisper", user.nickname, length), () =>
+    WhisperDialog.toggle(user)
   );

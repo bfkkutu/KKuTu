@@ -1,7 +1,7 @@
 import React from "react";
 
-export default class ShopBox extends React.PureComponent {
-  public render(): React.ReactNode {
+export namespace Shop {
+  export function Box() {
     return (
       <section id="box-shop" className="product">
         shop box

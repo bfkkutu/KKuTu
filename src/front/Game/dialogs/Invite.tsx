@@ -1,14 +1,14 @@
 import React from "react";
 
-import DialogData from "front/@global/Bayadere/dialog/DialogData";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
+import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
-export const InviteDialog = new DialogData(L.get("invite_title"), () => {
+export const InviteDialog = new Dialog(L.get("invite_title"), () => {
   const socket = useStore((state) => state.socket);
   const users = useStore((state) => state.users);
 

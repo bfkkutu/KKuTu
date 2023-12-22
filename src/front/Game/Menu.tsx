@@ -3,13 +3,13 @@ import React from "react";
 import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 import { MenuType } from "front/@global/enums/MenuType";
-import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
-import { useRoomStore } from "front/Game/box/Room/Store";
 import ClassName from "front/@global/ClassName";
-import { useListBox } from "front/Game/box/ListBox/Store";
 import { ListBoxType } from "front/@global/enums/ListBoxType";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Room } from "front/Game/box/Room";
+import { List } from "front/Game/box/ListBox";
+import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
 import { SettingsDialog } from "front/Game/dialogs/Settings";
 import { CommunityDialog } from "front/Game/dialogs/Community";
@@ -189,12 +189,12 @@ const buttons: MenuItem[] = [
 export function Menu() {
   const socket = useStore((state) => state.socket);
   const me = useStore((state) => state.me);
-  const [room, leaveRoom] = useRoomStore((state) => [
+  const [room, leaveRoom] = Room.useStore((state) => [
     state.room,
     state.leaveRoom,
   ]);
-  const toggle = useDialogStore((state) => state.toggle);
-  const [currentListBox, changeListBox] = useListBox((state) => [
+  const toggle = Dialog.useStore((state) => state.toggle);
+  const [currentListBox, changeListBox] = List.useStore((state) => [
     state.current,
     state.change,
   ]);

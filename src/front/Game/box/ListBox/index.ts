@@ -1,17 +1,29 @@
 import React from "react";
+import { create } from "zustand";
 
-import { useListBox } from "front/Game/box/ListBox/Store";
 import { ListBoxType } from "front/@global/enums/ListBoxType";
 
 import RoomListBox from "front/Game/box/ListBox/RoomList";
 import SearchRoom from "front/Game/box/ListBox/SearchRoom";
 
-const TABLE: Record<ListBoxType, React.FC> = {
-  [ListBoxType.RoomList]: RoomListBox,
-  [ListBoxType.SearchRoom]: SearchRoom,
-  [ListBoxType.Shop]: () => null,
-};
+export namespace List {
+  const TABLE: Record<ListBoxType, React.FC> = {
+    [ListBoxType.RoomList]: RoomListBox,
+    [ListBoxType.SearchRoom]: SearchRoom,
+    [ListBoxType.Shop]: () => null,
+  };
 
-export default function ListBox() {
-  return React.createElement(TABLE[useListBox((state) => state.current)]);
+  export function Box() {
+    return React.createElement(TABLE[useStore((state) => state.current)]);
+  }
+
+  interface State {
+    current: ListBoxType;
+    change: (type: ListBoxType) => void;
+  }
+
+  export const useStore = create<State>((setState) => ({
+    current: ListBoxType.RoomList,
+    change: (type) => setState({ current: type }),
+  }));
 }

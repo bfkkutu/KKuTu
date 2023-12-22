@@ -1,5 +1,7 @@
 import React from "react";
 
-export default function GameBox() {
-  return <section id="box-game" className="product"></section>;
+export namespace Game {
+  export function Box() {
+    return <section id="box-game" className="product"></section>;
+  }
 }

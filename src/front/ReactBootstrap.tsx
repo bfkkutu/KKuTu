@@ -7,19 +7,17 @@ import { Nest } from "common/Nest";
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
 import L from "front/@global/Language";
-import DialogData from "front/@global/Bayadere/dialog/DialogData";
-import { useDialogStore } from "front/@global/Bayadere/dialog/Store";
 
-import DialogManager from "front/@global/Bayadere/dialog/index";
-import NotificationManager from "front/@global/Bayadere/notification";
-import SpinnerManager from "front/@global/Bayadere/spinner/index";
-import TooltipManager from "front/@global/Bayadere/tooltip";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Notification } from "front/@global/Bayadere/Notification";
+import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Tooltip } from "front/@global/Bayadere/Tooltip";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) =>
     new Promise<void>((resolve) => {
-      const dialog = new DialogData(L.get("alert"), () => {
-        const hide = useDialogStore((state) => state.hide);
+      const dialog = new Dialog(L.get("alert"), () => {
+        const hide = Dialog.useStore((state) => state.hide);
 
         return (
           <>
@@ -38,13 +36,13 @@ if (typeof window !== "undefined") {
           </>
         );
       });
-      useDialogStore.getState().show(dialog);
+      Dialog.useStore.getState().show(dialog);
     });
   // @ts-ignore
   window.prompt = (title: string, content: React.ReactNode) =>
     new Promise<string | null>((resolve) => {
-      const dialog = new DialogData(title, () => {
-        const hide = useDialogStore((state) => state.hide);
+      const dialog = new Dialog(title, () => {
+        const hide = Dialog.useStore((state) => state.hide);
         const [input, setInput] = useState("");
 
         return (
@@ -79,13 +77,13 @@ if (typeof window !== "undefined") {
           </>
         );
       });
-      useDialogStore.getState().show(dialog);
+      Dialog.useStore.getState().show(dialog);
     });
   // @ts-ignore
   window.confirm = (content: React.ReactNode) =>
     new Promise<boolean>((resolve) => {
-      const dialog = new DialogData(L.get("confirm"), () => {
-        const hide = useDialogStore((state) => state.hide);
+      const dialog = new Dialog(L.get("confirm"), () => {
+        const hide = Dialog.useStore((state) => state.hide);
 
         return (
           <>
@@ -113,7 +111,7 @@ if (typeof window !== "undefined") {
           </>
         );
       });
-      useDialogStore.getState().show(dialog);
+      Dialog.useStore.getState().show(dialog);
     });
   window.onselectstart = window.ondragstart = () => false;
 }
@@ -143,10 +141,10 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
       <>
         <img id="background" className="jt-image" />
         <div id="bayadere">
-          <DialogManager />
-          <NotificationManager />
-          <SpinnerManager />
-          <TooltipManager />
+          <Dialog.Manager />
+          <Notification.Manager />
+          <Spinner.Manager />
+          <Tooltip.Manager />
         </div>
         <Header profile={this.props.session.profile} />
         {this.props.children}
