@@ -47,7 +47,7 @@ const GUEST_PERMISSION = (exports.GUEST_PERMISSION = {
   wp: true,
 });
 const ENABLE_ROUND_TIME = (exports.ENABLE_ROUND_TIME = [
-  5, 10, 30, 60, 90, 120, 150, 200, 300, 9999999,
+  5, 15, 30, 60, 90, 120, 150, 180, 210, 9999999,
 ]);
 const ENABLE_FORM = (exports.ENABLE_FORM = ["S", "J"]);
 const MODE_LENGTH = (exports.MODE_LENGTH = Const.GAME_TYPE.length);
