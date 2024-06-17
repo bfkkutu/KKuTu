@@ -18,8 +18,9 @@ export namespace Nest {
       Register: {};
     };
     export type Metadata = {
+      ad: Schema.Settings["advertisement"];
+
       titleArgs?: string[];
-      ad?: Schema.Settings["advertisement"];
     };
     export interface Props<T extends Page.Type> {
       session: Session & Partial<SessionData>;

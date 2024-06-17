@@ -57,14 +57,13 @@ export function Engine<T extends Nest.Page.Type>(
     process.env["NODE_ENV"] === "production" ? "production.min" : "development";
   const KEY = `${$.locale}/${$.page}`;
   const SSR = $.ssr;
-  const ad_client = $.metadata!.ad?.client;
-  const GOOGLE_ADS = ad_client
-    ? `<script
+  const GOOGLE_ADS = `<script
   async
-  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ad_client}"
+  src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${
+    $.metadata!.ad?.google.client
+  }"
   crossorigin="anonymous"
-></script>`
-    : "";
+></script>`;
   let Index: any;
 
   $.title = L(`${KEY}#title`, ...($.metadata?.titleArgs || []));

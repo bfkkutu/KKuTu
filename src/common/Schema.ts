@@ -1,8 +1,8 @@
 export namespace Schema {
   export interface Settings {
     advertisement: {
-      client: string;
-      slot: string;
+      google: { client: string; slot: string };
+      kakao: string;
     };
     application: {
       sound: Table<string>;

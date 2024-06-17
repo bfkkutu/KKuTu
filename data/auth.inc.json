@@ -9,20 +9,10 @@
     "clientSecret": "",
     "callbackURL": "/login/naver/callback"
   },
-  "facebook": {
-    "clientID": "",
-    "clientSecret": "",
-    "callbackURL": "/login/facebook/callback"
-  },
   "google": {
     "clientID": "",
     "clientSecret": "",
     "callbackURL": "/login/google/callback"
-  },
-  "twitter": {
-    "consumerKey": "",
-    "consumerSecret": "",
-    "callbackURL": "/login/twitter/callback"
   },
   "kakao": {
     "clientID": "",
@@ -32,30 +22,5 @@
     "clientID": "",
     "clientSecret": "",
     "callbackURL": "/login/discord/callback"
-  },
-  "twitch": {
-    "clientID": "",
-    "clientSecret": "",
-    "callbackURL": "/login/twitch/callback"
-  },
-  "line": {
-    "clientID": "",
-    "clientSecret": "",
-    "callbackURL": "/login/line/callback"
-  },
-  "instagram": {
-    "clientID": "",
-    "clientSecret": "",
-    "callbackURL": "/login/instagram/callback"
-  },
-  "spotify": {
-    "clientID": "",
-    "clientSecret": "",
-    "callbackURL": "/login/spotify/callback"
-  },
-  "github": {
-    "clientID": "",
-    "clientSecret": "",
-    "callbackURL": "/login/github/callback"
   }
 }

@@ -1,7 +1,7 @@
 {
   "advertisement": {
-    "client": "",
-    "slot": ""
+    "google": { "client": "", "slot": "" },
+    "kakao": ""
   },
   "application": {
     "sound": {

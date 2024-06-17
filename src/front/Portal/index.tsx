@@ -181,8 +181,8 @@ export default class Portal extends React.PureComponent<
         </div>
         <ins
           className="adsbygoogle"
-          data-ad-client={this.props.metadata!.ad?.client}
-          data-ad-slot={this.props.metadata!.ad?.slot}
+          data-ad-client={this.props.metadata!.ad.google.client}
+          data-ad-slot={this.props.metadata!.ad.google.slot}
         />
       </article>
     );
