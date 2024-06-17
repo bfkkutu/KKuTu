@@ -38,6 +38,7 @@ export default function (App: Express.Application): void {
       max: SETTINGS.max[0],
     })
   );
+  App.get("//servers", (req, res) => res.redirect("/servers"));
   App.get("/admin/load-languages", (req, res) => {
     loadLanguages();
     return res.sendStatus(200);

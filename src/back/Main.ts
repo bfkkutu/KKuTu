@@ -26,13 +26,15 @@ const App = Express();
   Route(App);
   await LoginRoute(App);
   App.use((_, res) => res.sendStatus(404));
-  if (SETTINGS.secure.ssl)
+  if (SETTINGS.secure.ssl) {
     https
       .createServer(createSecureOptions(), App)
       .listen(SETTINGS.ports.https, () => {
         Logger.success("HTTPS Server").put(SETTINGS.ports.https).out();
       });
-  else App.listen(SETTINGS.ports.http);
+  } else {
+    App.listen(SETTINGS.ports.http);
+  }
   for (const idx in SETTINGS.ports.channel) {
     Channel.instances[idx] = new Channel(
       SETTINGS.ports.channel[idx],
