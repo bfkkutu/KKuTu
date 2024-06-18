@@ -107,7 +107,7 @@ export const SettingsDialog = new Dialog(L.render("settings_title"), () => {
               updateSettings({
                 locale: e.currentTarget.value,
               });
-              alert(L.get("alert_localeChanged"));
+              window.alert(L.get("alert_localeChanged"));
             }}
           >
             {Object.entries(CLIENT_SETTINGS.languageSupport).map(([k, v]) => (
@@ -201,7 +201,7 @@ export const SettingsDialog = new Dialog(L.render("settings_title"), () => {
       <div className="footer">
         <button
           type="button"
-          onClick={() => alert("이동 가능한 채널이 없습니다.")}
+          onClick={() => window.alert("이동 가능한 채널이 없습니다.")}
         >
           {L.get("moveServer")}
         </button>
@@ -216,7 +216,7 @@ export const SettingsDialog = new Dialog(L.render("settings_title"), () => {
               WebSocketMessage.Type.UpdateSettings
             );
             hide(SettingsDialog);
-            alert("변경 사항이 저장되었습니다.");
+            window.alert("변경 사항이 저장되었습니다.");
           }}
         >
           {L.get("save")}

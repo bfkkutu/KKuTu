@@ -71,7 +71,7 @@ export default class Header extends React.PureComponent<Props> {
             id="account-info"
             onClick={async () => {
               if (this.props.profile === undefined) location.href = "/login";
-              else if (await confirm(L.get("askLogout")))
+              else if (await window.confirm(L.get("askLogout")))
                 location.href = "/logout";
             }}
           >

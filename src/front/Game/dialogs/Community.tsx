@@ -139,7 +139,7 @@ export const CommunityDialog = new Dialog(
                           onMouseLeave={onMouseLeave}
                           onClick={async () => {
                             if (
-                              !(await confirm(
+                              !(await window.confirm(
                                 L.get("confirm_invite", friend.nickname)
                               ))
                             )
@@ -147,7 +147,9 @@ export const CommunityDialog = new Dialog(
                             socket.send(WebSocketMessage.Type.Invite, {
                               userId: friend.id,
                             });
-                            alert(L.get("alert_invite", friend.nickname));
+                            window.alert(
+                              L.get("alert_invite", friend.nickname)
+                            );
                           }}
                         >
                           <Icon type={IconType.NORMAL} name="envelope" />
@@ -162,7 +164,7 @@ export const CommunityDialog = new Dialog(
                           onClick={async () => {
                             if (
                               friend.roomId === undefined ||
-                              !(await confirm(
+                              !(await window.confirm(
                                 L.get(
                                   "confirm_follow",
                                   friend.nickname,
@@ -197,7 +199,7 @@ export const CommunityDialog = new Dialog(
                         onMouseLeave={onMouseLeave}
                         onClick={async () => {
                           if (
-                            !(await confirm(
+                            !(await window.confirm(
                               L.get("confirm_friendRemove", friend.nickname)
                             ))
                           )
@@ -208,7 +210,9 @@ export const CommunityDialog = new Dialog(
                           await socket.messageReceiver.wait(
                             WebSocketMessage.Type.UpdateCommunity
                           );
-                          alert(L.get("alert_friendRemove", friend.nickname));
+                          window.alert(
+                            L.get("alert_friendRemove", friend.nickname)
+                          );
                         }}
                       >
                         <Icon type={IconType.NORMAL} name="xmark" />

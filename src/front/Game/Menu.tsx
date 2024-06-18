@@ -200,7 +200,7 @@ export function Menu() {
   ]);
 
   const RoomSettingsDialog =
-    room && createRoomSettingsDialog({ ...room, password: "\0".repeat(20) });
+    room && createRoomSettingsDialog({ ...room, password: "" });
   let property: keyof MenuItem = "forLobby";
 
   if (room === undefined) property = "forLobby";
@@ -276,13 +276,13 @@ export function Menu() {
                     e as WebSocketError.Message[WebSocketError.Type];
                   switch (errorType) {
                     case WebSocketError.Type.BadRequest:
-                      alert(L.get("error_400"));
+                      window.alert(L.get("error_400"));
                       break;
                     case WebSocketError.Type.Forbidden:
-                      alert(L.get("error_403"));
+                      window.alert(L.get("error_403"));
                       break;
                     case WebSocketError.Type.Conflict:
-                      alert(
+                      window.alert(
                         L.get(
                           Object.keys(room.members).length === 1
                             ? "error_startAlone"
@@ -291,7 +291,7 @@ export function Menu() {
                       );
                       break;
                     default:
-                      alert(L.get("error_unknown"));
+                      window.alert(L.get("error_unknown"));
                       break;
                   }
                 }

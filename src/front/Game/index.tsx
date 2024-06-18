@@ -73,7 +73,7 @@ function Component(props: Nest.Page.Props<"Game">) {
       initializeUsers(users);
       for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound))
         if (!(await audioContext.register(id, `/media/sound${src}`)))
-          alert(L.get("error_soundNotFound", id));
+          window.alert(L.get("error_soundNotFound", id));
       audioContext.volume = me.settings.bgmVolume;
       audioContext.play(`lobby_${me.settings.lobbyMusic}`, true);
       const intro = $intro.current!;
@@ -92,7 +92,7 @@ function Component(props: Nest.Page.Props<"Game">) {
       removeUser(userId)
     );
     socket.on("close", (e) => {
-      alert(L.get("error_closed", e.code));
+      window.alert(L.get("error_closed", e.code));
     });
   }, [socket]);
 

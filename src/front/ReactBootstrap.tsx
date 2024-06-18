@@ -39,7 +39,11 @@ if (typeof window !== "undefined") {
       Dialog.useStore.getState().show(dialog);
     });
   // @ts-ignore
-  window.prompt = (title: string, content: React.ReactNode) =>
+  window.prompt = (
+    title: string,
+    content: React.ReactNode,
+    type: React.HTMLInputTypeAttribute = "text"
+  ) =>
     new Promise<string | null>((resolve) => {
       const dialog = new Dialog(title, () => {
         const hide = Dialog.useStore((state) => state.hide);
@@ -50,6 +54,7 @@ if (typeof window !== "undefined") {
             <div className="body dialog-prompt">
               {content}
               <input
+                type={type}
                 value={input}
                 onChange={(e) => setInput(e.currentTarget.value)}
               />

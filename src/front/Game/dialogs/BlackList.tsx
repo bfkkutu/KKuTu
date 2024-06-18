@@ -59,7 +59,7 @@ export const BlackListDialog = new Dialog(L.render("blackList_title"), () => {
                   onMouseLeave={onMouseLeave}
                   onClick={async () => {
                     if (
-                      !(await confirm(
+                      !(await window.confirm(
                         L.get("confirm_blackListRemove", blackedUser.nickname)
                       ))
                     )
@@ -70,7 +70,9 @@ export const BlackListDialog = new Dialog(L.render("blackList_title"), () => {
                     await socket.messageReceiver.wait(
                       WebSocketMessage.Type.UpdateCommunity
                     );
-                    alert(L.get("alert_blackListRemove", blackedUser.nickname));
+                    window.alert(
+                      L.get("alert_blackListRemove", blackedUser.nickname)
+                    );
                   }}
                 >
                   <Icon type={IconType.NORMAL} name="xmark" />

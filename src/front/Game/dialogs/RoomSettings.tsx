@@ -48,14 +48,23 @@ export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
             <label className="dialog-desc" htmlFor="createRoom-input-password">
               {L.get("createRoom_password")}
             </label>
-            <input
-              type="password"
-              id="createRoom-input-password"
-              name="password"
-              placeholder={L.get("createRoom_password")}
-              value={room.password}
-              onChange={update}
-            />
+            <button
+              type="button"
+              id="createRoom-button-password"
+              onClick={async () => {
+                const password = await window.prompt(
+                  L.render("prompt_title_changePassword"),
+                  L.render("prompt_changePassword"),
+                  "password"
+                );
+                if (password === null) {
+                  return;
+                }
+                setRoom({ ...room, password });
+              }}
+            >
+              {L.get("change")}
+            </button>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-input-limit">
@@ -134,9 +143,7 @@ export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
               socket.send(WebSocketMessage.Type.UpdateRoom, {
                 room: {
                   ...room,
-                  password: room.password.includes("\0")
-                    ? ""
-                    : sha256(room.password),
+                  password: sha256(room.password),
                 },
               });
               await socket.messageReceiver.wait(

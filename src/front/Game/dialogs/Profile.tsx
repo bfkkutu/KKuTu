@@ -37,7 +37,11 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
         footerButtons.push(
           <button
             onClick={async () => {
-              if (!(await confirm(L.render("confirm_handover", user.nickname))))
+              if (
+                !(await window.confirm(
+                  L.render("confirm_handover", user.nickname)
+                ))
+              )
                 return;
               socket.send(WebSocketMessage.Type.HandoverRoom, {
                 master: user.id,
@@ -57,7 +61,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
             disabled={community.friendRequests.sent.includes(user.id)}
             onClick={async () => {
               if (
-                !(await confirm(
+                !(await window.confirm(
                   L.render("confirm_friendRequest", user.nickname)
                 ))
               )
@@ -68,7 +72,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.FriendRequest
               );
-              alert(L.get("alert_friendRequest", user.nickname));
+              window.alert(L.get("alert_friendRequest", user.nickname));
             }}
           >
             {L.get("friendRequest")}
@@ -79,7 +83,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
           <button
             onClick={async () => {
               if (
-                !(await confirm(
+                !(await window.confirm(
                   L.render("confirm_blackListAdd", user.nickname)
                 ))
               )
@@ -90,7 +94,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.UpdateCommunity
               );
-              alert(L.render("alert_blackListAdd", user.nickname));
+              window.alert(L.render("alert_blackListAdd", user.nickname));
             }}
           >
             {L.get("blackListAdd")}

@@ -129,10 +129,10 @@ export default class Register extends React.PureComponent<
                   },
                 });
                 if (ok) {
-                  await alert(L.get("success"));
+                  await window.alert(L.get("success"));
                   location.href = "/";
                 } else
-                  alert(
+                  window.alert(
                     <>
                       <label>{L.get("fail")}</label>
                       <label>{L.get("error_409_nickname")}</label>

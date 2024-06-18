@@ -7,7 +7,11 @@ import { WebSocketMessage } from "../../../common/WebSocket";
 export const createInviteNotification = (roomId: number, nickname: string) =>
   new Notification(L.get("notification_invite", roomId), async () => {
     const { socket } = useStore.getState();
-    if (!(await confirm(L.render("confirm_inviteResponse", nickname, roomId))))
+    if (
+      !(await window.confirm(
+        L.render("confirm_inviteResponse", nickname, roomId)
+      ))
+    )
       return;
     const { room, updateRoom, leaveRoom } = Room.useStore.getState();
     if (room !== undefined) {

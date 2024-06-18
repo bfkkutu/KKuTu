@@ -42,7 +42,7 @@ export default class Portal extends React.PureComponent<
       });
     });
     setInterval(() => {
-      if (this.state.isRefreshing) return alert(L.get("serverWait"));
+      if (this.state.isRefreshing) return window.alert(L.get("serverWait"));
       this.setState({ isRefreshing: true });
       setTimeout(this.seekServers, 1000);
     }, 60000);
@@ -121,7 +121,7 @@ export default class Portal extends React.PureComponent<
                     id="server-refresh"
                     onClick={() => {
                       if (this.state.isRefreshing)
-                        return alert(L.get("serverWait"));
+                        return window.alert(L.get("serverWait"));
                       this.setState({ isRefreshing: true });
                       setTimeout(this.seekServers, 1000);
                     }}

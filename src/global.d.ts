@@ -25,7 +25,11 @@ declare global {
   interface Window {
     adsbygoogle: any;
     alert(content: React.ReactNode): Promise<void>;
-    prompt(title: string, content: React.ReactNode): Promise<string | null>;
+    prompt(
+      title: React.ReactNode,
+      content: React.ReactNode,
+      type: React.HTMLInputTypeAttribute = "text"
+    ): Promise<string | null>;
     confirm(content: React.ReactNode): Promise<boolean>;
   }
 }

@@ -21,12 +21,16 @@ export const InviteDialog = new Dialog(L.get("invite_title"), () => {
             <li
               className="item"
               onClick={async () => {
-                if (!(await confirm(L.get("confirm_invite", user.nickname))))
+                if (
+                  !(await window.confirm(
+                    L.get("confirm_invite", user.nickname)
+                  ))
+                )
                   return;
                 socket.send(WebSocketMessage.Type.Invite, {
                   userId: user.id,
                 });
-                alert(L.get("alert_invite", user.nickname));
+                window.alert(L.get("alert_invite", user.nickname));
               }}
             >
               <ProfileImage src={user.image} width={20} height={20} />
