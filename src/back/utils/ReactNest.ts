@@ -53,21 +53,25 @@ export function Engine<T extends Nest.Page.Type>(
   $: Nest.Page.Props<T>,
   callback: (err: any, content?: string) => void
 ): void {
-  const REACT_SUFFIX =
-    process.env["NODE_ENV"] === "production" ? "production.min" : "development";
+  const mode = process.env["NODE_ENV"] || "development";
+  const isProduction = mode === "production";
+  const REACT_SUFFIX = isProduction ? "production.min" : "development";
   const KEY = `${$.locale}/${$.page}`;
   const SSR = $.ssr;
-  const GOOGLE_ADS = `<script
+  const GOOGLE_ADS = isProduction
+    ? `<script
   async
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${
     $.metadata!.ad?.google.client
   }"
   crossorigin="anonymous"
-></script>`;
+></script>`
+    : "";
   let Index: any;
 
   $.title = L(`${KEY}#title`, ...($.metadata?.titleArgs || []));
   $.version = PACKAGE["version"];
+  $.mode = mode;
   // NOTE Express 내부적으로 정의한 정보가 외부에 노출되지 않도록 삭제
   delete ($ as any)["settings"];
   delete ($ as any)["cache"];

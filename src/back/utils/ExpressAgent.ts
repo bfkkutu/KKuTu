@@ -38,6 +38,9 @@ export default function (App: Express.Application): void {
   App.use("/favicon.ico", (req, res) =>
     res.sendFile(resolve("dist", "favicon.ico"))
   );
+  App.use("/robots.txt", (req, res) =>
+    res.sendFile(resolve("dist", "robots.txt"))
+  );
   App.use((req, res, next) => {
     req.address = req.ip || req.ips.join();
     if (req.xhr) {
@@ -68,6 +71,7 @@ export default function (App: Express.Application): void {
   App.use((req, res, next) => {
     req.agentInfo = `${req.address} (${req.header("User-Agent")})`;
     req.locale = getLocale(req);
+
     res.metadata = {
       ad: SETTINGS.advertisement,
     };

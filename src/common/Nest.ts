@@ -31,6 +31,7 @@ export namespace Nest {
 
       data: Page.DataTable[T];
       version: string;
+      mode: string;
 
       metadata?: Page.Metadata;
       ssr?: boolean;

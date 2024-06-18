@@ -13,9 +13,9 @@ Exession.Session.prototype.save = function (callback?: (err: any) => void) {
 RedisStore.prototype.getSync = RedisStore.prototype.get;
 RedisStore.prototype.get = function (
   sid: string,
-  cb?: (_err?: unknown, _data?: any) => void
+  callback?: (_err?: unknown, _data?: any) => void
 ) {
-  if (cb !== undefined) return this.getSync(sid, cb);
+  if (callback !== undefined) return this.getSync(sid, callback);
   return new Promise((resolve, reject) =>
     this.getSync(sid, (e, data) => (e ? reject(e) : resolve(data)))
   );

@@ -1,7 +1,7 @@
 export namespace Schema {
   export interface Settings {
     advertisement: {
-      google: { client: string; slot: string };
+      google: GoogleAdvertisement;
       kakao: string;
     };
     application: {
@@ -71,5 +71,10 @@ export namespace Schema {
     token: string;
     sid: string;
     locale: string;
+  }
+
+  export interface GoogleAdvertisement {
+    client: string;
+    slot: string;
   }
 }

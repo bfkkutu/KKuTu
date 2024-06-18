@@ -1,8 +1,9 @@
 import React from "react";
 
-import { Icon } from "front/@block/Icon";
 import Bind from "front/ReactBootstrap";
 import L from "front/@global/Language";
+import { Icon } from "front/@block/Icon";
+import GoogleAdvertisement from "front/@block/GoogleAdvertisement";
 import { Nest } from "common/Nest";
 import { Schema } from "common/Schema";
 
@@ -177,25 +178,23 @@ export default class Portal extends React.PureComponent<
           </div>
         </div>
         <div className="beta">
-          <h2>Q&A</h2>
-          <h3>1. 서버가 어떻게 된 건가요?</h3>
+          <h1>Q&A</h1>
+          <h2>1. 서버가 어떻게 된 건가요?</h2>
           <p>
             버전 관리 중 문제가 발생하여 기존 BF끄투 소스코드가 손상되었습니다.
             본 서버는 BFKKuTu Reatomized 프로젝트로 다시 개발 중입니다.
           </p>
-          <h3>2. 제 게임 데이터는 날아간 건가요?</h3>
+          <h2>2. 제 게임 데이터는 날아간 건가요?</h2>
           <p>
             BF끄투의 모든 데이터(전적, 핑, 아이템 등)는 데이터베이스에 보관
             중입니다. 추후 개발이 완료되면 복원할 예정입니다.
           </p>
-          <h3>3. 이 서버의 데이터는 어떻게 되는 건가요?</h3>
+          <h2>3. 이 서버의 데이터는 어떻게 되는 건가요?</h2>
           <p>정식 오픈 전에 모두 폐기됩니다.</p>
         </div>
-        <ins
-          className="adsbygoogle"
-          data-ad-client={this.props.metadata!.ad.google.client}
-          data-ad-slot={this.props.metadata!.ad.google.slot}
-        />
+        {this.props.mode === "production" ? (
+          <GoogleAdvertisement {...this.props.metadata!.ad.google} />
+        ) : null}
       </article>
     );
   }

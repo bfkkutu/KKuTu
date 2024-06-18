@@ -47,11 +47,13 @@
   flex: 0 1 auto;
   flex-direction: column;
   display: flex;
+  gap: 5px;
   width: calc(100% - 4px);
   height: 300px;
   border: 1px solid #ccc;
   margin-top: 10px;
   background-color: #eee;
+  color: black;
   border-radius: 10px;
 }
 
