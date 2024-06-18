@@ -52,7 +52,7 @@ export namespace WhisperDialog {
     },
   }));
 
-  export const show = (user: Database.SummarizedUser) => {
+  export const show = (user: Database.User.Summarized) => {
     const { openWhisper: open } = useStore.getState();
     const { show } = Dialog.useStore.getState();
 
@@ -61,7 +61,7 @@ export namespace WhisperDialog {
     open(user.id, dt);
     show(dt);
   };
-  export const hide = (user: Database.SummarizedUser) => {
+  export const hide = (user: Database.User.Summarized) => {
     const { dialogs, closeWhisper: close } = useStore.getState();
     const { hide } = Dialog.useStore.getState();
 
@@ -71,7 +71,7 @@ export namespace WhisperDialog {
       close(user.id);
     }
   };
-  export const toggle = (user: Database.SummarizedUser) => {
+  export const toggle = (user: Database.User.Summarized) => {
     const { dialogs } = useStore.getState();
 
     const dt = dialogs[user.id];
@@ -79,7 +79,7 @@ export namespace WhisperDialog {
     else hide(user);
   };
 
-  export const create = (user: Database.SummarizedUser) =>
+  export const create = (user: Database.User.Summarized) =>
     new Dialog(L.render("whisper_title", user.nickname), () => {
       const socket = useGlobalStore((state) => state.socket);
       const [logs, appendLog] = useStore((state) => [

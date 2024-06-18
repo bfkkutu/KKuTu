@@ -1,49 +1,53 @@
 import sha256 from "sha256";
 
 import WebSocketGroup from "back/utils/WebSocketGroup";
-import { Game as NSGame } from "common/Game";
 import Channel from "back/game/Channel";
-import WebSocket from "back/utils/WebSocket";
-import { WebSocketMessage } from "../../common/WebSocket";
-import ObjectMap from "../../common/ObjectMap";
 import Game from "back/game/Game";
+import { KKuTu } from "common/KKuTu";
+import { WebSocketMessage } from "../../common/WebSocket";
 
-export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
+export default class Room extends WebSocketGroup implements KKuTu.Room {
   private static readonly emptyPassword = sha256("");
+
   /**
    * @reference
    */
   private readonly channel: Channel;
-  private readonly _members = new ObjectMap<string, NSGame.RoomMember>();
   private game?: Game;
   public id: number;
-  public title!: string;
-  public isLocked!: boolean;
-  private password!: string;
-  public limit!: number;
-  public mode!: NSGame.Mode;
-  public round!: number;
-  public roundTime!: number;
-  public rules!: Record<NSGame.Rule, boolean>;
+  public title: string;
+  public isLocked: boolean;
+  private password: string;
+  public limit: number;
+  public mode: KKuTu.Game.Mode;
+  public round: number;
+  public roundTime: number;
+  public rules: Record<KKuTu.Game.Rule, boolean>;
   public master: string;
 
   private get isEmpty() {
     return this.clients.size === 0;
   }
   public get isReady() {
-    for (const member of this._members.values())
-      if (!member.isReady) return false;
+    for (const client of this.clients.values()) {
+      if (client.user.roomId === undefined) {
+        continue;
+      }
+      if (!client.user.isReady) {
+        return false;
+      }
+    }
     return true;
   }
-  public get members() {
-    return this._members.size;
+  public get size() {
+    return this.clients.size;
   }
 
   constructor(
     channel: Channel,
     id: number,
     master: string,
-    room: NSGame.RoomSettings
+    room: KKuTu.Room.Settings
   ) {
     super();
 
@@ -51,10 +55,17 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
     this.id = id;
     this.master = master;
 
-    this.configure(room);
+    this.title = room.title;
+    this.isLocked = room.password !== Room.emptyPassword;
+    this.password = room.password;
+    this.limit = room.limit;
+    this.mode = room.mode;
+    this.round = room.round;
+    this.roundTime = room.roundTime;
+    this.rules = room.rules;
   }
 
-  public configure(room: NSGame.RoomSettings): void {
+  public configure(room: KKuTu.Room.Settings): void {
     this.title = room.title;
     this.isLocked = room.password !== Room.emptyPassword;
     this.password &&= room.password;
@@ -64,38 +75,34 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
     this.roundTime = room.roundTime;
     this.rules = room.rules;
   }
-  public override add(socket: WebSocket): void {
-    const user = this.channel.getUser(socket.uid);
-    if (user === undefined) return;
-    super.add(socket);
-    this._members.set(user.id, {
-      id: user.id,
-      isReady: user.settings.game.autoReady || this.master === user.id,
-      isSpectator: false,
-    });
-  }
   /**
    * 방에서 특정 유저를 제거한다.
    *
    * @param id 유저 식별자.
    */
-  public override remove(socket: WebSocket): void {
-    super.remove(socket);
-    this._members.delete(socket.uid);
-    if (this.isEmpty) return this.channel.unloadRoom(this.id);
-    if (this.master === socket.uid) {
-      this.master = this.clients.valuesAsArray()[0].uid;
-      const member = this.getMember(this.master);
-      if (member === undefined) return;
-      member.isReady = true;
-      this.update();
+  public override remove(id: string): void {
+    super.remove(id);
+
+    if (this.isEmpty) {
+      return this.channel.unloadRoom(this.id);
     }
-  }
-  private getMembers(): Record<string, NSGame.RoomMember> {
-    return this._members.asRecord();
-  }
-  public getMember(id: string) {
-    return this._members.get(id);
+
+    if (this.master !== id) {
+      return;
+    }
+
+    this.master = this.clients.valuesAsArray()[0].user.id;
+    const client = this.clients.get(this.master);
+    if (client === undefined) {
+      // TODO: 오류 처리
+      return;
+    }
+    if (client.user.roomId === undefined) {
+      // TODO: 오류 처리
+      return;
+    }
+    client.user.isReady = true;
+    this.update();
   }
   /**
    * 이 방에 접속 중인 유저들의 방 정보를 갱신한다.
@@ -112,19 +119,25 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
   public start(): void {
     this.game = new Game(
       this,
-      this._members.entriesAsArray().reduce((prev, [id, { isSpectator }]) => {
-        if (isSpectator) prev.push(id);
+      this.clients.entriesAsArray().reduce((prev, [id, client]) => {
+        if (client.user.roomId === undefined) {
+          // TODO: 오류 처리
+          return prev;
+        }
+        if (client.user.isSpectator) {
+          prev.push(id);
+        }
         return prev;
       }, [] as string[])
     );
     this.broadcast(WebSocketMessage.Type.Start, {});
   }
-  public summarize(): NSGame.SummarizedRoom {
+  public summarize(): KKuTu.Room.Summarized {
     return {
       id: this.id,
       title: this.title,
       isLocked: this.isLocked,
-      isGaming: false,
+      isGaming: this.game !== undefined,
       limit: this.limit,
       mode: this.mode,
       round: this.round,
@@ -133,18 +146,22 @@ export default class Room extends WebSocketGroup implements NSGame.BaseRoom {
       members: this.clients.size,
     };
   }
-  public serialize(): NSGame.DetailedRoom {
+  public serialize(): KKuTu.Room.Detailed {
     return {
       id: this.id,
       title: this.title,
-      isGaming: this.game !== undefined,
       limit: this.limit,
       mode: this.mode,
       round: this.round,
       roundTime: this.roundTime,
       rules: this.rules,
       master: this.master,
-      members: this.getMembers(),
+      members: Object.fromEntries(
+        this.clients
+          .entriesAsArray()
+          .map(([id, client]) => [id, client.user.asRoomMember()])
+      ),
+      game: this.game?.serialize(),
     };
   }
 }

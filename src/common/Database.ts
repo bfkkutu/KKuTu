@@ -77,18 +77,20 @@ export namespace Database {
   }
 
   // table interfaces
-  export interface SummarizedUser {
-    id: string;
-    score: number;
-    record: JSON.Types.User.record;
-    equipment: JSON.Types.User.equipment;
-    image: string;
-    nickname: string;
-    exordial: string;
-    roomId?: number;
-    createdAt: number;
+  export namespace User {
+    export interface Summarized {
+      id: string;
+      score: number;
+      record: JSON.Types.User.record;
+      equipment: JSON.Types.User.equipment;
+      image: string;
+      nickname: string;
+      exordial: string;
+      roomId?: number;
+      createdAt: number;
+    }
   }
-  export interface DetailedUser extends SummarizedUser {
+  export interface User extends User.Summarized {
     money: number;
     inventory: JSON.Types.User.inventory;
     punishment: JSON.Types.User.punishment;

@@ -4,21 +4,24 @@ import sanitize from "sanitize-html";
 import WebSocketServer from "back/utils/WebSocketServer";
 import DB from "back/utils/Database";
 import Room from "back/game/Room";
-import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
+import WebSocket from "back/utils/WebSocket";
+import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Database } from "../../common/Database";
 import ObjectMap from "../../common/ObjectMap";
-import { Whisper } from "../../common/interfaces/Whisper";
+import { Whisper } from "common/interfaces/Whisper";
 
 import User from "back/models/User";
 
 export default class Channel extends WebSocketServer {
+  private static roomIdCount = 99;
   public static readonly instances: Channel[] = [];
+
   /**
    * 이 채널에 접속 중인 유저 맵.
    */
-  private readonly users = new ObjectMap<string, User<true>>();
+  private readonly users = new ObjectMap<string, WebSocket>();
   /**
    * 이 채널에 만들어진 방 맵.
    */
@@ -29,18 +32,16 @@ export default class Channel extends WebSocketServer {
 
     this.on("connection", async (socket, req) => {
       if (req.session.profile === undefined) return socket.close();
-      const user = await DB.Manager.createQueryBuilder(User<true>, "u")
+      const user = await DB.Manager.createQueryBuilder(User, "u")
         .where("u.oid = :oid", {
           oid: req.session.profile.id,
         })
         .getOne();
       if (user === null) return socket.close();
-      socket.uid = user.id;
+      socket.user = user;
       fillWithDefaults(user.settings, Database.JSON.Defaults.User.settings); // 옵션이 나중에 추가될 경우 오류 방지.
       fillWithDefaults(user.community, Database.JSON.Defaults.User.community);
-      this.users.set(user.id, user);
-      user.socket = socket;
-      await user.updateCommunity();
+      this.users.set(user.id, socket);
       socket.on("message", async (raw) => {
         const message: WebSocketMessage.Client[WebSocketMessage.Type] =
           JSON.parse(raw.toString());
@@ -58,6 +59,7 @@ export default class Channel extends WebSocketServer {
               return socket.sendError(WebSocketError.Type.Conflict, {
                 isFatal: true,
               });
+
             Object.assign(user.settings, message.settings);
             await DB.Manager.save(user);
             req.session.profile.locale = user.settings.locale;
@@ -65,42 +67,60 @@ export default class Channel extends WebSocketServer {
             socket.send(WebSocketMessage.Type.UpdateSettings, {});
             break;
           case WebSocketMessage.Type.Chat:
-            if (message.content === "")
+            if (message.content === "") {
               return socket.sendError(WebSocketError.Type.BadRequest, {
                 isFatal: false,
               });
+            }
+
             message.content = sanitize(
               await marked.parse(sanitize(message.content)),
               {
                 allowedTags: ["strong", "em", "del", "code"],
               }
             ).trim();
-            if (message.content === "") return;
-            if (user.room === undefined)
+
+            if (message.content === "") {
+              return;
+            }
+
+            if (user.roomId === undefined) {
               this.broadcast(
                 WebSocketMessage.Type.Chat,
                 {
                   sender: user.id,
                   content: message.content,
                 },
-                (client) => this.users.get(client.uid)?.room === undefined
+                (client) =>
+                  this.users.get(client.user.id)?.user.roomId === undefined
               );
-            else
-              user.room.broadcast(WebSocketMessage.Type.Chat, {
+            } else {
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
+                return;
+              }
+
+              room.broadcast(WebSocketMessage.Type.Chat, {
                 sender: user.id,
                 content: message.content,
               });
+            }
             break;
           case WebSocketMessage.Type.CreateRoom:
             {
-              let id = 99;
-              while (this.rooms.get(++id));
-              user.room = new Room(this, id, user.id, message.room);
-              user.room.add(socket);
-              this.rooms.set(id, user.room);
+              while (this.rooms.get(++Channel.roomIdCount));
+
+              const id = Channel.roomIdCount;
+              const room = new Room(this, id, user.id, message.room);
+              room.add(socket);
+              this.rooms.set(id, room);
+              user.joinRoom(id);
               Logger.info(`Room #${id} created by user #${user.id}.`).out();
               socket.send(WebSocketMessage.Type.CreateRoom, {
-                room: user.room.serialize(),
+                room: room.serialize(),
               });
               this.updateRoomList();
               this.broadcast(WebSocketMessage.Type.UpdateUser, {
@@ -110,15 +130,25 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.UpdateRoom:
             {
-              const room = user.room;
-              if (room === undefined)
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              if (room.master !== user.id)
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.master !== user.id) {
                 return socket.sendError(WebSocketError.Type.Forbidden, {
                   isFatal: false,
                 });
+              }
+
               room.configure(message.room);
               room.update();
               this.updateRoomList();
@@ -127,27 +157,24 @@ export default class Channel extends WebSocketServer {
           case WebSocketMessage.Type.JoinRoom:
             {
               const room = this.rooms.get(message.roomId);
-              if (room === undefined)
+              if (room === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              user.room = room;
+              }
+
+              user.joinRoom(room.id);
               room.add(socket);
               Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
               socket.send(WebSocketMessage.Type.InitializeRoom, {
                 room: room.serialize(),
               });
-              const member = room.getMember(user.id);
-              if (member === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {
-                  isFatal: false,
-                });
               room.broadcast(
                 WebSocketMessage.Type.JoinRoom,
                 {
-                  member,
+                  member: user.asRoomMember(),
                 },
-                (client) => client.uid !== user.id
+                (client) => client.user.id !== user.id
               );
               this.broadcast(WebSocketMessage.Type.UpdateUser, {
                 user: user.summarize(),
@@ -156,15 +183,26 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.LeaveRoom:
             {
-              const room = user.room;
-              if (room === undefined)
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
               room.broadcast(WebSocketMessage.Type.LeaveRoom, {
                 memberId: user.id,
               });
-              user.leaveRoom();
+              room.remove(user.id);
+              if (!user.leaveRoom()) {
+                // TODO: 오류 처리
+              }
               Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
               socket.send(WebSocketMessage.Type.UpdateRoomList, {
                 rooms: this.rooms.evaluate(Room.prototype.summarize),
@@ -176,113 +214,159 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.HandoverRoom:
             {
-              const room = user.room;
+              if (user.roomId === undefined)
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+
+              const room = this.rooms.get(user.roomId);
               if (room === undefined)
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+
               if (room.master !== user.id)
                 return socket.sendError(WebSocketError.Type.Forbidden, {
                   isFatal: false,
                 });
-              room.master = message.master;
-              const member = room.getMember(user.id);
-              const newMaster = room.getMember(message.master);
-              if (member === undefined || newMaster === undefined)
+
+              const master = room.get(message.master);
+              if (master === undefined || master.user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              member.isReady = false;
-              newMaster.isReady = true;
+              }
+
+              room.master = master.user.id;
+              user.isReady = false;
+              master.user.isReady = true;
               room.update();
               socket.send(WebSocketMessage.Type.HandoverRoom, {});
             }
             break;
           case WebSocketMessage.Type.Spectate:
             {
-              const room = user.room;
-              if (room === undefined)
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              const member = room.getMember(user.id);
-              if (member === undefined)
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              member.isSpectator = !member.isSpectator;
-              member.isReady = member.isSpectator;
+              }
+
+              user.isSpectator = !user.isSpectator;
+              user.isReady = user.isSpectator;
               room.broadcast(WebSocketMessage.Type.Spectate, {
-                member,
+                member: user.asRoomMember(),
               });
             }
             break;
           case WebSocketMessage.Type.Ready:
             {
-              const room = user.room;
-              if (room === undefined || room.master === user.id)
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              const member = room.getMember(user.id);
-              if (member === undefined)
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              if (!member.isSpectator) member.isReady = !member.isReady;
+              }
+
+              if (room.master === user.id) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (!user.isSpectator) {
+                user.isReady = !user.isReady;
+              }
               room.broadcast(WebSocketMessage.Type.Ready, {
-                member,
+                member: user.asRoomMember(),
               });
             }
             break;
           case WebSocketMessage.Type.Start:
             {
-              const room = user.room;
-              if (room === undefined)
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              if (room.master !== user.id)
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.master !== user.id) {
                 return socket.sendError(WebSocketError.Type.Forbidden, {
                   isFatal: false,
                 });
-              if (!room.isReady || room.members === 1)
+              }
+
+              if (!room.isReady || room.size === 1) {
                 return socket.sendError(WebSocketError.Type.Conflict, {
                   isFatal: false,
                 });
+              }
               room.start();
             }
             break;
           case WebSocketMessage.Type.FriendRequest:
             {
+              const targetClient = this.users.get(message.target);
               const target =
-                this.users.get(message.target) ||
-                (await DB.Manager.createQueryBuilder(User<false>, "u")
-                  .where("u.id = :id", { id: message.target })
-                  .getOne());
-              if (target === null)
+                targetClient === undefined
+                  ? await DB.Manager.createQueryBuilder(User, "u")
+                      .where("u.id = :id", { id: message.target })
+                      .getOne()
+                  : targetClient.user;
+              if (target === null) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+              }
+
               user.community.friendRequests.sent.push(target.id);
               target.community.friendRequests.received.push(user.id);
               socket.send(WebSocketMessage.Type.FriendRequest, {});
               await DB.Manager.save([user, target]);
-              await user.updateCommunity();
-              await target.updateCommunity();
+
+              socket.send(WebSocketMessage.Type.UpdateCommunity, {
+                community: user.community,
+              });
+              targetClient?.send(WebSocketMessage.Type.UpdateCommunity, {
+                community: target.community,
+              });
             }
             break;
           case WebSocketMessage.Type.FriendRequestResponse:
             {
+              const senderClient = this.users.get(message.sender);
               const sender =
-                this.users.get(message.sender) ||
-                (await DB.Manager.createQueryBuilder(User<false>, "u")
-                  .where("u.id = :id", { id: message.sender })
-                  .getOne());
-              if (sender === null)
+                senderClient === undefined
+                  ? await DB.Manager.createQueryBuilder(User, "u")
+                      .where("u.id = :id", { id: message.sender })
+                      .getOne()
+                  : senderClient.user;
+              if (sender === null) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+              }
+
               user.community.friendRequests.received.splice(
                 user.community.friendRequests.received.findIndex(
                   (v) => v === sender.id
@@ -295,110 +379,144 @@ export default class Channel extends WebSocketServer {
                 ),
                 1
               );
+
               if (message.accept) {
                 user.community.friends.push(sender.id);
                 sender.community.friends.push(user.id);
               }
               await DB.Manager.save([user, sender]);
-              await user.updateCommunity();
-              await sender.updateCommunity();
+
+              socket.send(WebSocketMessage.Type.UpdateCommunity, {
+                community: user.community,
+              });
+              senderClient?.send(WebSocketMessage.Type.UpdateCommunity, {
+                community: sender.community,
+              });
             }
             break;
           case WebSocketMessage.Type.FriendRemove:
             {
+              const friendClient = this.users.get(message.userId);
               const friend =
-                this.users.get(message.userId) ||
-                (await DB.Manager.createQueryBuilder(User<false>, "u")
-                  .where("u.id = :id", { id: message.userId })
-                  .getOne());
-              if (friend === null)
+                friendClient === undefined
+                  ? await DB.Manager.createQueryBuilder(User, "u")
+                      .where("u.id = :id", { id: message.userId })
+                      .getOne()
+                  : friendClient.user;
+              if (friend === null) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+              }
+
               user.community.friends.splice(
-                user.community.friends.findIndex((v) => v === message.userId),
+                user.community.friends.findIndex((v) => v === friend.id),
                 1
               );
               friend.community.friends.splice(
                 friend.community.friends.findIndex((v) => v === user.id),
                 1
               );
-              await DB.Manager.save(user);
-              await DB.Manager.save(friend);
-              await user.updateCommunity();
-              await friend.updateCommunity();
+              await DB.Manager.save([user, friend]);
+
+              socket.send(WebSocketMessage.Type.UpdateCommunity, {
+                community: user.community,
+              });
+              friendClient?.send(WebSocketMessage.Type.UpdateCommunity, {
+                community: friend.community,
+              });
             }
             break;
           case WebSocketMessage.Type.BlackListAdd:
             if (
-              (await DB.Manager.createQueryBuilder(User<false>, "u")
+              (await DB.Manager.createQueryBuilder(User, "u")
                 .where("u.id = :id", { id: message.userId })
-                .getCount()) === 0
-            )
+                .getOne()) === null
+            ) {
               return socket.sendError(WebSocketError.Type.NotFound, {
                 isFatal: false,
               });
+            }
+
             user.community.blackList.push(message.userId);
             await DB.Manager.save(user);
-            await user.updateCommunity();
+            socket.send(WebSocketMessage.Type.UpdateCommunity, {
+              community: user.community,
+            });
             break;
           case WebSocketMessage.Type.BlackListRemove:
-            if (!user.community.blackList.includes(message.userId))
+            if (!user.community.blackList.includes(message.userId)) {
               return socket.sendError(WebSocketError.Type.BadRequest, {
                 isFatal: false,
               });
+            }
+
             user.community.blackList.splice(
               user.community.blackList.findIndex((v) => v === message.userId),
               1
             );
             await DB.Manager.save(user);
-            await user.updateCommunity();
+            socket.send(WebSocketMessage.Type.UpdateCommunity, {
+              community: user.community,
+            });
             break;
           case WebSocketMessage.Type.Whisper:
             {
-              if (message.content === "")
+              if (message.content === "") {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+              }
+
               const target = this.users.get(message.target);
-              if (target === undefined)
+              if (target === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
+              }
+
               const whisper: Whisper = {
                 sender: user.id,
                 content: message.content,
               };
               socket.send(WebSocketMessage.Type.Whisper, whisper);
-              target.socket.send(WebSocketMessage.Type.Whisper, whisper);
+              target.send(WebSocketMessage.Type.Whisper, whisper);
             }
             break;
           case WebSocketMessage.Type.Invite:
             {
               const target = this.users.get(message.userId);
-              if (target === undefined)
+              if (target === undefined) {
                 return socket.sendError(WebSocketError.Type.NotFound, {
                   isFatal: false,
                 });
-              if (user.room === undefined)
+              }
+
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
-              target.socket.send(WebSocketMessage.Type.Invite, {
+              }
+
+              target.send(WebSocketMessage.Type.Invite, {
                 userId: user.id,
-                roomId: user.room.id,
+                roomId: user.roomId,
               });
             }
             break;
           case WebSocketMessage.Type.QueryUser:
             {
+              const targetClient = this.users.get(message.userId);
               const target =
-                this.users.get(message.userId) ||
-                (await DB.Manager.createQueryBuilder(User<false>, "u")
-                  .where("u.id = :id", { id: message.userId })
-                  .getOne());
-              if (target === null)
+                targetClient === undefined
+                  ? await DB.Manager.createQueryBuilder(User, "u")
+                      .where("u.id = :id", { id: message.userId })
+                      .getOne()
+                  : targetClient.user;
+              if (target === null) {
                 return socket.send(WebSocketMessage.Type.QueryUser, {});
+              }
+
               socket.send(WebSocketMessage.Type.QueryUser, {
                 user: target.summarize(),
               });
@@ -407,7 +525,23 @@ export default class Channel extends WebSocketServer {
         }
       });
       socket.on("close", () => {
-        if (user.room !== undefined) user.leaveRoom();
+        if (user.roomId !== undefined) {
+          const room = this.rooms.get(user.roomId);
+          if (room !== undefined) {
+            room.broadcast(WebSocketMessage.Type.LeaveRoom, {
+              memberId: user.id,
+            });
+            room.remove(user.id);
+            if (!user.leaveRoom()) {
+              // TODO: 오류 처리
+            }
+            Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
+            this.broadcast(WebSocketMessage.Type.UpdateUser, {
+              user: user.summarize(),
+            });
+          }
+        }
+
         this.users.delete(user.id);
         Logger.info(`User #${user.id} left.`).out();
         this.broadcast(WebSocketMessage.Type.Leave, {
@@ -417,12 +551,14 @@ export default class Channel extends WebSocketServer {
       Logger.info(`User #${user.id} joined.`).out();
       socket.send(WebSocketMessage.Type.Initialize, {
         me: user.serialize(),
-        users: this.users.valuesAsArray().map((user) => user.summarize()),
+        users: this.users
+          .valuesAsArray()
+          .map((client) => client.user.summarize()),
       });
       this.broadcast(
         WebSocketMessage.Type.Join,
         { user: user.summarize() },
-        (client) => client.uid !== user.id
+        (client) => client.user.id !== user.id
       );
     });
   }
@@ -436,10 +572,7 @@ export default class Channel extends WebSocketServer {
       {
         rooms: this.rooms.evaluate(Room.prototype.summarize),
       },
-      (client) => {
-        const user = this.users.get(client.uid);
-        return user !== undefined && user.room === undefined;
-      }
+      (client) => client.user.roomId === undefined
     );
   }
   /**
@@ -447,7 +580,9 @@ export default class Channel extends WebSocketServer {
    * @param id 방 식별자.
    */
   public unloadRoom(id: number): void {
-    if (this.rooms.delete(id)) this.updateRoomList();
+    if (this.rooms.delete(id)) {
+      this.updateRoomList();
+    }
   }
   /**
    * 현재 이 채널에 접속 중인 유저 수를 반환한다.
@@ -456,8 +591,5 @@ export default class Channel extends WebSocketServer {
    */
   public getActiveUserCount(): number {
     return this.users.size;
-  }
-  public getUser(id: string) {
-    return this.users.get(id);
   }
 }

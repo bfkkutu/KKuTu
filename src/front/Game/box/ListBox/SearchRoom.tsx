@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 import { useStore } from "front/Game/Store";
-import { WebSocketMessage } from "../../../../common/WebSocket";
 import L from "front/@global/Language";
 import Mode from "front/@block/Mode";
 import { Icon, IconType } from "front/@block/Icon";
 import { Room } from "front/Game/box/Room";
-import { Game } from "../../../../common/Game";
+import { WebSocketMessage } from "../../../../common/WebSocket";
+import { KKuTu } from "../../../../common/KKuTu";
 import { EnumValueIterator } from "../../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
@@ -17,15 +17,15 @@ export default function SearchRoom() {
     state.rooms,
     state.updateRoomList,
   ]);
-  const [room, setRoom] = useState<Game.RoomSearchOptions>({
+  const [room, setRoom] = useState<KKuTu.Room.SearchOptions>({
     title: "",
     mode: 0,
     round: [1, 10],
     roundTime: [10, 150],
-    rules: Object.values(Game.Rule).reduce((prev, curr) => {
+    rules: Object.values(KKuTu.Game.Rule).reduce((prev, curr) => {
       prev[curr] = false;
       return prev;
-    }, {} as Record<Game.Rule, boolean>),
+    }, {} as Record<KKuTu.Game.Rule, boolean>),
   });
 
   useEffect(() => {
@@ -37,8 +37,8 @@ export default function SearchRoom() {
       socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoomList);
   }, []);
 
-  const result = rooms.filter((v: Game.SummarizedRoom) => {
-    for (const key of Game.modes[v.mode].rules)
+  const result = rooms.filter((v: KKuTu.Room.Summarized) => {
+    for (const key of KKuTu.Game.modes[v.mode].rules)
       if (room.rules[key] && !v.rules[key]) return false;
     return (
       v.title.includes(room.title) &&
@@ -79,7 +79,7 @@ export default function SearchRoom() {
                   setRoom({ ...room, mode: parseInt(target.value) })
                 }
               >
-                {EnumValueIterator(Game.Mode).map((mode) => (
+                {EnumValueIterator(KKuTu.Game.Mode).map((mode) => (
                   <option value={mode}>{L.get(`game_mode_${mode}`)}</option>
                 ))}
               </select>
@@ -167,7 +167,7 @@ export default function SearchRoom() {
               {L.get("roomRules")}
             </label>
             <div className="checkbox-wrapper">
-              {Game.modes[room.mode].rules.map((rule) => (
+              {KKuTu.Game.modes[room.mode].rules.map((rule) => (
                 <label>
                   <input
                     type="checkbox"

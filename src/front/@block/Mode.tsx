@@ -1,9 +1,9 @@
 import React from "react";
 
-import { Game } from "common/Game";
+import { KKuTu } from "common/KKuTu";
 import L from "front/@global/Language";
 
-export default function Mode(room: Game.BaseRoom) {
+export default function Mode(room: KKuTu.Room) {
   return (
     <>
       {[

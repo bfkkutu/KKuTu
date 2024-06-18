@@ -37,7 +37,7 @@ export namespace UserList {
     );
   }
 
-  function Item(user: Database.SummarizedUser) {
+  function Item(user: Database.User.Summarized) {
     const toggle = Dialog.useStore((state) => state.toggle);
     const dialog = createProfileDialog(user);
 

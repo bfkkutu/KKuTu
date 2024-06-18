@@ -2,11 +2,11 @@ import React from "react";
 
 import L from "front/@global/Language";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
-import { Game } from "../../../common/Game";
+import { KKuTu } from "../../../common/KKuTu";
 
 interface Props {
-  room: Game.RoomSettings;
-  setter: (room: Game.RoomSettings) => void;
+  room: KKuTu.Room.Settings;
+  setter: (room: KKuTu.Room.Settings) => void;
 }
 export default function RuleSelector({ room, setter }: Props) {
   const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
@@ -15,7 +15,7 @@ export default function RuleSelector({ room, setter }: Props) {
 
   return (
     <div className="checkbox-wrapper">
-      {Game.modes[room.mode].rules.map((rule) => (
+      {KKuTu.Game.modes[room.mode].rules.map((rule) => (
         <label
           onMouseEnter={createOnMouseEnter(L.get(`game_rule_${rule}_desc`))}
           onMouseMove={onMouseMove}

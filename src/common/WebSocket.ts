@@ -1,5 +1,5 @@
 import { Database } from "common/Database";
-import { Game } from "common/Game";
+import { KKuTu } from "common/KKuTu";
 import { Whisper } from "common/interfaces/Whisper";
 
 export namespace WebSocketMessage {
@@ -74,15 +74,15 @@ export namespace WebSocketMessage {
      */
     export interface Server {
       [Type.Initialize]: {
-        me: Database.DetailedUser;
-        users: Database.SummarizedUser[];
+        me: Database.User;
+        users: Database.User.Summarized[];
       };
       [Type.UpdateSettings]: {};
       [Type.UpdateCommunity]: {
         community: Database.JSON.Types.User.community;
       };
       [Type.Join]: {
-        user: Database.SummarizedUser;
+        user: Database.User.Summarized;
       };
       [Type.Leave]: {
         userId: string;
@@ -98,30 +98,30 @@ export namespace WebSocketMessage {
         content: string;
       };
       [Type.CreateRoom]: {
-        room: Game.DetailedRoom;
+        room: KKuTu.Room.Detailed;
       };
       [Type.UpdateRoom]: {
-        room: Game.DetailedRoom;
+        room: KKuTu.Room.Detailed;
       };
       [Type.HandoverRoom]: {};
       [Type.InitializeRoom]: {
-        room: Game.DetailedRoom;
+        room: KKuTu.Room.Detailed;
       };
       [Type.JoinRoom]: {
-        member: Game.RoomMember;
+        member: KKuTu.Room.Member;
       };
       [Type.LeaveRoom]: {
         memberId: string;
       };
       [Type.Spectate]: {
-        member: Game.RoomMember;
+        member: KKuTu.Room.Member;
       };
       [Type.Ready]: {
-        member: Game.RoomMember;
+        member: KKuTu.Room.Member;
       };
       [Type.Start]: {};
       [Type.UpdateRoomList]: {
-        rooms: Game.SummarizedRoom[];
+        rooms: KKuTu.Room.Summarized[];
       };
       [Type.FriendRequest]: {};
       [Type.FriendRequestResponse]: {};
@@ -140,10 +140,10 @@ export namespace WebSocketMessage {
         roomId: number;
       };
       [Type.UpdateUser]: {
-        user: Database.SummarizedUser;
+        user: Database.User.Summarized;
       };
       [Type.QueryUser]: {
-        user?: Database.SummarizedUser;
+        user?: Database.User.Summarized;
       };
 
       [Type.Heartbeat]: {};
@@ -167,10 +167,10 @@ export namespace WebSocketMessage {
         content: string;
       };
       [Type.CreateRoom]: {
-        room: Game.RoomSettings;
+        room: KKuTu.Room.Settings;
       };
       [Type.UpdateRoom]: {
-        room: Game.RoomSettings;
+        room: KKuTu.Room.Settings;
       };
       [Type.HandoverRoom]: {
         master: string;

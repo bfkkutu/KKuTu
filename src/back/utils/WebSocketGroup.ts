@@ -6,17 +6,20 @@ export default class WebSocketGroup {
   protected readonly clients = new ObjectMap<string, WebSocket>();
 
   public add(socket: WebSocket) {
-    this.clients.set(socket.uid, socket);
+    this.clients.set(socket.user.id, socket);
   }
-  public remove(socket: WebSocket) {
-    this.clients.delete(socket.uid);
+  public get(id: string): WebSocket | undefined {
+    return this.clients.get(id);
+  }
+  public remove(id: string) {
+    this.clients.delete(id);
   }
   public broadcast<T extends WebSocketMessage.Type>(
     type: T,
     content: WebSocketMessage.Content.Server[T],
-    filter?: (member: WebSocket) => boolean
+    filter?: (socket: WebSocket) => boolean
   ) {
-    for (const member of this.clients.values())
-      if (filter === undefined || filter(member)) member.send(type, content);
+    for (const client of this.clients.values())
+      if (filter === undefined || filter(client)) client.send(type, content);
   }
 }

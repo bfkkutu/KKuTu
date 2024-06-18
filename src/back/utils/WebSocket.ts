@@ -1,10 +1,11 @@
-import { WebSocket as _WebSocket } from "ws";
+import { WebSocket as Socket } from "ws";
 
+import User from "back/models/User";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
-export default class WebSocket extends _WebSocket {
-  public uid!: string;
-  private _send = _WebSocket.prototype.send;
+export default class WebSocket extends Socket {
+  public user!: User;
+  private _send = Socket.prototype.send;
   public send<T extends WebSocketMessage.Type>(
     type: T,
     content: WebSocketMessage.Content.Server[T]

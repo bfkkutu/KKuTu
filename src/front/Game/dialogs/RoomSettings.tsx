@@ -6,11 +6,11 @@ import { useStore } from "front/Game/Store";
 import RuleSelector from "front/Game/blocks/RuleSelector";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { Game } from "../../../common/Game";
+import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
-export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
+export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
   const dialog = new Dialog(L.get("roomSettings"), () => {
     const nickname = useStore((state) => state.me.nickname);
     const socket = useStore((state) => state.socket);
@@ -81,7 +81,7 @@ export const createRoomSettingsDialog = (config: Game.RoomSettings) => {
               value={room.mode}
               onChange={update}
             >
-              {EnumValueIterator(Game.Mode).map((mode) => (
+              {EnumValueIterator(KKuTu.Game.Mode).map((mode) => (
                 <option value={mode}>{L.get(`game_mode_${mode}`)}</option>
               ))}
             </select>

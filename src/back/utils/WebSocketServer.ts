@@ -1,6 +1,6 @@
 import http from "http";
 import https from "https";
-import { WebSocketServer as _WebSocketServer } from "ws";
+import { WebSocketServer as SocketServer } from "ws";
 import Express from "express";
 import qs from "qs";
 
@@ -8,13 +8,14 @@ import { createSecureOptions } from "back/utils/Secure";
 import WebSocket from "back/utils/WebSocket";
 import { redisStore } from "back/utils/ExpressSession";
 import { WebSocketMessage } from "common/WebSocket";
+import ObjectMap from "common/ObjectMap";
 
 type IncomingMessage = Omit<typeof http.IncomingMessage, "constructor"> &
   Express.Request & {
     new (socket: NodeJS.Socket): IncomingMessage;
   };
 
-export default class WebSocketServer extends _WebSocketServer<
+export default class WebSocketServer extends SocketServer<
   typeof WebSocket,
   IncomingMessage
 > {
@@ -30,8 +31,9 @@ export default class WebSocketServer extends _WebSocketServer<
       WebSocket,
     });
 
-    for (const listener of server.listeners("upgrade"))
+    for (const listener of server.listeners("upgrade")) {
       server.off("upgrade", listener as any);
+    }
     server.on("upgrade", async (req: IncomingMessage, socket, head) => {
       req.query = qs.parse(req.url.slice(2));
       const sid = req.query.sid as string;

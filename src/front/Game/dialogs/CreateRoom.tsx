@@ -7,7 +7,7 @@ import RuleSelector from "front/Game/blocks/RuleSelector";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Room } from "front/Game/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { Game } from "../../../common/Game";
+import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
@@ -16,17 +16,17 @@ export const CreateRoomDialog = new Dialog(L.get("createRoom"), () => {
   const socket = useStore((state) => state.socket);
   const updateRoom = Room.useStore((state) => state.updateRoom);
   const hide = Dialog.useStore((state) => state.hide);
-  const [room, setRoom] = useState<Game.RoomSettings>({
+  const [room, setRoom] = useState<KKuTu.Room.Settings>({
     title: L.get("createRoom_title_default", nickname),
     password: "",
     limit: 8,
     mode: 0,
     round: 5,
     roundTime: 120,
-    rules: Object.values(Game.Rule).reduce((prev, curr) => {
+    rules: Object.values(KKuTu.Game.Rule).reduce((prev, curr) => {
       prev[curr] = false;
       return prev;
-    }, {} as Record<Game.Rule, boolean>),
+    }, {} as Record<KKuTu.Game.Rule, boolean>),
   });
 
   const update = useCallback(
@@ -93,7 +93,7 @@ export const CreateRoomDialog = new Dialog(L.get("createRoom"), () => {
             value={room.mode}
             onChange={update}
           >
-            {EnumValueIterator(Game.Mode).map((mode) => (
+            {EnumValueIterator(KKuTu.Game.Mode).map((mode) => (
               <option value={mode}>{L.get(`game_mode_${mode}`)}</option>
             ))}
           </select>

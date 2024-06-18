@@ -12,7 +12,7 @@ import { EventListener } from "front/@global/WebSocket";
 import { createInviteNotification } from "front/Game/notifications/Invite";
 import { Notification } from "front/@global/Bayadere/Notification";
 import { WhisperDialog } from "front/Game/dialogs/Whisper";
-import { Nest } from "../../common/Nest";
+import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
 
 import { Room } from "front/Game/box/Room";
@@ -158,13 +158,13 @@ function Component(props: Nest.Page.Props<"Game">) {
                   <UserList.Box server={server} />
                   <List.Box />
                 </div>
-              ) : room.isGaming ? (
-                <div className="game">
-                  <Game.Box />
-                </div>
-              ) : (
+              ) : room.game === undefined ? (
                 <div className="room">
                   <Room.Box />
+                </div>
+              ) : (
+                <div className="game">
+                  <Game.Box />
                 </div>
               )}
               <div className="lobby">

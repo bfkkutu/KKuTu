@@ -1,14 +1,10 @@
 import * as TypeORM from "typeorm";
 
-import WebSocket from "back/utils/WebSocket";
 import { Database } from "../../common/Database";
-import { WebSocketMessage } from "../../common/WebSocket";
-import Room from "back/game/Room";
+import { KKuTu } from "common/KKuTu";
 
 @TypeORM.Entity({ name: "kkutu_users" })
-export default class User<Connected extends boolean = false>
-  implements Serializable<Database.DetailedUser>
-{
+export default class User implements Serializable<Database.User> {
   @TypeORM.PrimaryGeneratedColumn({ name: "u_id", type: "int8" })
   public id!: string;
 
@@ -116,33 +112,24 @@ export default class User<Connected extends boolean = false>
   })
   public createdAt!: number;
 
-  /**
-   * @reference
-   */
-  public socket!: Connected extends true ? WebSocket : undefined;
-  /**
-   * @reference
-   */
-  public room?: Connected extends true ? Room : never;
+  public roomId?: number;
+  public isReady: boolean = false;
+  public isSpectator: boolean = false;
 
-  /**
-   * 이 유저의 커뮤니티 관련 정보를 갱신한다.
-   */
-  public async updateCommunity(): Promise<void> {
-    if (this.socket === undefined) return;
-    this.socket.send(WebSocketMessage.Type.UpdateCommunity, {
-      community: this.community,
-    });
+  public joinRoom(id: number): void {
+    this.roomId = id;
+    this.isReady = false;
+    this.isSpectator = false;
   }
-  /**
-   * 현재 접속 중인 방이 있으면 나간다.
-   */
-  public leaveRoom(): void {
-    if (this.room === undefined || this.socket === undefined) return;
-    this.room.remove(this.socket);
-    this.room = undefined;
+  public leaveRoom(): boolean {
+    if (this.roomId === undefined) {
+      return false;
+    }
+    this.roomId = undefined;
+    return true;
   }
-  public summarize(): Database.SummarizedUser {
+
+  public summarize(): Database.User.Summarized {
     return {
       id: this.id,
       score: this.score,
@@ -151,17 +138,24 @@ export default class User<Connected extends boolean = false>
       image: this.image,
       nickname: this.nickname,
       exordial: this.exordial,
-      roomId: this.room?.id,
+      roomId: this.roomId,
       createdAt: this.createdAt,
     };
   }
-  public serialize(): Database.DetailedUser {
+  public serialize(): Database.User {
     return {
       ...this.summarize(),
       money: this.money,
       inventory: this.inventory,
       punishment: this.punishment,
       settings: this.settings,
+    };
+  }
+  public asRoomMember(): KKuTu.Room.Member {
+    return {
+      id: this.id,
+      isReady: this.isReady,
+      isSpectator: this.isSpectator,
     };
   }
 }

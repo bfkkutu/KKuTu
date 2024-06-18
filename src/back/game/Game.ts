@@ -1,17 +1,14 @@
-import { Game } from "../../common/Game";
+import { KKuTu } from "../../common/KKuTu";
 import Room from "back/game/Room";
 import Mode from "back/game/Mode";
 
 import Relay from "back/game/modes/Relay";
 
 const MODES: Record<any, typeof Mode> = {
-  [Game.Mode.KoreanRelay]: Relay,
+  [KKuTu.Game.Mode.KoreanRelay]: Relay,
 };
 
-export default class {
-  /**
-   * @reference
-   */
+export default class Game implements KKuTu.Game {
   private readonly room: Room;
   public round: number;
   public players: string[];
@@ -24,7 +21,7 @@ export default class {
     this.mode = new MODES[this.room.mode]();
   }
 
-  public serialize() {
+  public serialize(): KKuTu.Game {
     return {
       round: this.round,
       players: this.players,

@@ -11,7 +11,7 @@ import Moremi from "front/@block/Moremi";
 import { getLevel } from "front/@global/Utility";
 import LevelIcon from "front/@block/LevelIcon";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { Game } from "../../../common/Game";
+import { KKuTu } from "common/KKuTu";
 
 export namespace Room {
   export function Box() {
@@ -71,7 +71,7 @@ export namespace Room {
         const audioContext = AudioContext.instance;
         audioContext.stopAll();
         audioContext.playEffect("gameStart");
-        updateRoom({ ...room, isGaming: true });
+        updateRoom(room);
       };
       socket.messageReceiver.on(WebSocketMessage.Type.Start, startListener);
       return () => {
@@ -111,7 +111,7 @@ export namespace Room {
     );
   }
 
-  export function Member(member: Game.RoomMember) {
+  export function Member(member: KKuTu.Room.Member) {
     const users = useGlobalStore((state) => state.users);
     const room = useStore((state) => state.room);
 
@@ -143,10 +143,10 @@ export namespace Room {
   }
 
   interface State {
-    room?: Game.DetailedRoom;
-    updateRoom: (room: Game.DetailedRoom) => void;
-    addMember: (member: Game.RoomMember) => void;
-    updateMember: (member: Partial<Game.RoomMember>) => void;
+    room?: KKuTu.Room.Detailed;
+    updateRoom: (room: KKuTu.Room.Detailed) => void;
+    addMember: (member: KKuTu.Room.Member) => void;
+    updateMember: (member: Partial<KKuTu.Room.Member>) => void;
     removeMember: (id: string) => void;
     leaveRoom: () => void;
   }

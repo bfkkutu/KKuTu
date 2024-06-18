@@ -3,15 +3,15 @@ import { create } from "zustand";
 import WebSocket from "front/@global/WebSocket";
 import { ChatType } from "front/@global/enums/ChatType";
 import { Database } from "../../common/Database";
-import { Chat } from "../../common/interfaces/Chat";
-import { Game } from "../../common/Game";
+import { Chat } from "common/interfaces/Chat";
+import { KKuTu } from "common/KKuTu";
 
 interface State {
   socket: WebSocket;
   initializeSocket: (url: string) => void;
 
-  me: Database.DetailedUser;
-  updateMe: (me: Database.DetailedUser) => void;
+  me: Database.User;
+  updateMe: (me: Database.User) => void;
 
   community: Database.JSON.Types.User.community;
   updateCommunity: (community: Database.JSON.Types.User.community) => void;
@@ -20,14 +20,14 @@ interface State {
   appendChat: (sender: string, content: string) => void;
   notice: (content: string) => void;
 
-  users: Table<Database.SummarizedUser>;
-  initializeUsers: (list: Database.SummarizedUser[]) => void;
-  appendUser: (user: Database.SummarizedUser) => void;
-  setUser: (id: string, user: Partial<Database.SummarizedUser>) => void;
+  users: Table<Database.User.Summarized>;
+  initializeUsers: (list: Database.User.Summarized[]) => void;
+  appendUser: (user: Database.User.Summarized) => void;
+  setUser: (id: string, user: Partial<Database.User.Summarized>) => void;
   removeUser: (user: string) => void;
 
-  rooms: Game.SummarizedRoom[];
-  updateRoomList: (rooms: Game.SummarizedRoom[]) => void;
+  rooms: KKuTu.Room.Summarized[];
+  updateRoomList: (rooms: KKuTu.Room.Summarized[]) => void;
 }
 
 export const useStore = create<State>((setState) => ({
@@ -79,7 +79,7 @@ export const useStore = create<State>((setState) => ({
   users: {},
   initializeUsers: (list) =>
     setState(() => {
-      const users: Table<Database.SummarizedUser> = {};
+      const users: Table<Database.User.Summarized> = {};
       for (const item of list) users[item.id] = item;
       return { users };
     }),

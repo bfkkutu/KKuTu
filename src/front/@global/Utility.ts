@@ -28,16 +28,19 @@ export function getLevel(score: number) {
 export function getOfflineUser(
   socket: WebSocket,
   id: string
-): Promise<Database.SummarizedUser> {
-  return new Promise<Database.SummarizedUser>(async (resolve, reject) => {
+): Promise<Database.User.Summarized> {
+  return new Promise<Database.User.Summarized>(async (resolve, reject) => {
     socket.send(WebSocketMessage.Type.QueryUser, {
       userId: id,
     });
     const { user } = await socket.messageReceiver.wait(
       WebSocketMessage.Type.QueryUser
     );
-    if (user) resolve(user);
-    else reject();
+    if (user) {
+      resolve(user);
+    } else {
+      reject();
+    }
   });
 }
 /**
@@ -49,6 +52,8 @@ export function getOfflineUser(
 export function renderComponentOrNode(
   object: React.ComponentOrNode
 ): React.ReactNode {
-  if (typeof object === "function") return React.createElement(object);
+  if (typeof object === "function") {
+    return React.createElement(object);
+  }
   return object;
 }

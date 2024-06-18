@@ -5,4 +5,5 @@ data/settings.json
 dist/*Main.js*
 dist/pages/*
 dist/strings/*
+dist/ads.txt
 .vscode

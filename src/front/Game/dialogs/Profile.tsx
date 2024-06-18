@@ -14,7 +14,7 @@ import { WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
-export const createProfileDialog = (user: Database.SummarizedUser) => {
+export const createProfileDialog = (user: Database.User.Summarized) => {
   const dialog = new Dialog(L.render("profile_title", user.nickname), () => {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
