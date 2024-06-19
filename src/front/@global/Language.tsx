@@ -101,7 +101,9 @@ export default class L {
       prevIndex = PATTERN.lastIndex;
     }
     if (prevIndex < value.length) R.push(value.slice(prevIndex));
-    return <>{R}</>;
+    return R.map((node, index) => (
+      <React.Fragment key={index}>{node}</React.Fragment>
+    ));
   }
 }
 export const getHumanDigitalSpace = (bytes: number) => {

@@ -29,8 +29,8 @@ export namespace UserList {
         <div className="product-body">
           {users
             .filter(({ id }) => !blackList.includes(id))
-            .map((user) => (
-              <Item {...user} />
+            .map((user, index) => (
+              <Item {...user} key={index} />
             ))}
         </div>
       </section>

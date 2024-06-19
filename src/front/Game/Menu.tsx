@@ -211,7 +211,7 @@ export function Menu() {
     <section className="top-menu">
       {buttons
         .filter((config) => config[property])
-        .map((config) => {
+        .map((config, index) => {
           const className = new ClassName(`menu-${config.type}`);
           if (config.isTiny) className.push("tiny-menu");
           const props: React.DetailedHTMLProps<
@@ -309,7 +309,12 @@ export function Menu() {
           }
           const badge = config.badge && config.badge();
           return (
-            <button type="button" {...props} className={className.toString()}>
+            <button
+              key={index}
+              type="button"
+              {...props}
+              className={className.toString()}
+            >
               {badge ? <span className="badge">{badge}</span> : null}
               {config.label}
             </button>

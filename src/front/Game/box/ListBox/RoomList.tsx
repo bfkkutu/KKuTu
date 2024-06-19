@@ -39,8 +39,9 @@ export default function RoomListBox() {
             {L.get("createRoom")}
           </div>
         ) : (
-          rooms.map((room) => (
+          rooms.map((room, index) => (
             <div
+              key={index}
               className={`item ${room.isGaming ? "gaming" : "waiting"}`}
               onClick={async () => {
                 socket.send(WebSocketMessage.Type.JoinRoom, {

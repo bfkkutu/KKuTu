@@ -6,9 +6,6 @@ import L from "front/@global/Language";
 interface Props {
   profile?: Schema.Profile;
 }
-interface State {
-  menuNode: React.ReactNode[];
-}
 
 interface MenuItem {
   key: string;
@@ -37,36 +34,31 @@ const Menu: MenuItem[] = [
     children: [],
   },
 ];
-const menuNode: React.ReactNode[] = [];
-for (const item of Menu) {
-  menuNode.push(
-    <a className="menu-btn" {...item.props}>
-      {L.render(item.key)}
-    </a>
-  );
-  if (item.children.length) {
-    const subMenuNode: React.ReactNode[] = [];
-    for (const subItem of item.children)
-      subMenuNode.push(
-        <a className="menu-btn" {...subItem.props}>
-          {L.render(subItem.key)}
-        </a>
-      );
-    menuNode.push(
-      <div id={`menu-item-${item.key}`} className="menu-btn">
-        {L.render(item.key)}
-        <div className="menu-sub-separator">{subMenuNode}</div>
-      </div>
-    );
-  }
-}
 
 export default class Header extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
       <header>
         <div id="menu">
-          {menuNode}
+          {Menu.map((item, index) => (
+            <React.Fragment key={index}>
+              <a className="menu-btn" {...item.props}>
+                {L.render(item.key)}
+              </a>
+              {item.children.length !== 0 ? (
+                <div id={`menu-item-${item.key}`} className="menu-btn">
+                  {L.render(item.key)}
+                  <div className="menu-sub-separator">
+                    {item.children.map((item, index) => (
+                      <a key={index} className="menu-btn" {...item.props}>
+                        {L.render(item.key)}
+                      </a>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+            </React.Fragment>
+          ))}
           <div
             id="account-info"
             onClick={async () => {

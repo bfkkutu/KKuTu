@@ -16,9 +16,10 @@ export default class Moremi extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
       <div className="moremi" {...omit(this.props, "equipment")}>
-        {CLIENT_SETTINGS.moremiPart.map((part) => (
+        {CLIENT_SETTINGS.moremiPart.map((part, index) => (
           <img
             className={`moremi-${part}`}
+            key={index}
             src={`/media/img/kkutu/moremi/${
               part.includes("hand") ? "hand" : part
             }/${this.props.equipment[part] || "def"}.png`}

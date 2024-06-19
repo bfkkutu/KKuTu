@@ -75,7 +75,7 @@ export namespace Chat {
         <div className="product-body">
           <div className="list" ref={$list}>
             {chatLog.map((chat, index) => (
-              <div className={`item ${chat.type}`} key={index}>
+              <div key={index} className={`item ${chat.type}`}>
                 {/* float: left */}
                 <Head {...chat} />
                 <Body {...chat} />
