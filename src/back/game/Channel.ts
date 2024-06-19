@@ -497,6 +497,11 @@ export default class Channel extends WebSocketServer {
                 content: message.content,
               };
               socket.send(WebSocketMessage.Type.Whisper, whisper);
+
+              // black list에 있는 경우 자동 거절
+              if (target.user.community.blackList.includes(user.id)) {
+                return;
+              }
               target.send(WebSocketMessage.Type.Whisper, whisper);
             }
             break;
@@ -515,6 +520,10 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
+              // black list에 있는 경우 자동 거절
+              if (target.user.community.blackList.includes(user.id)) {
+                return;
+              }
               target.send(WebSocketMessage.Type.Invite, {
                 userId: user.id,
                 roomId: user.roomId,

@@ -29,13 +29,17 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
 
     if (user.id !== id) {
       footerButtons.push(
-        <button onClick={() => WhisperDialog.toggle(user)}>
+        <button
+          key={footerButtons.length}
+          onClick={() => WhisperDialog.toggle(user)}
+        >
           {L.get("whisper")}
         </button>
       );
       if (room !== undefined && room.master === id)
         footerButtons.push(
           <button
+            key={footerButtons.length}
             onClick={async () => {
               if (
                 !(await window.confirm(
@@ -58,6 +62,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
       if (!community.friends.includes(user.id))
         footerButtons.push(
           <button
+            key={footerButtons.length}
             disabled={community.friendRequests.sent.includes(user.id)}
             onClick={async () => {
               if (
@@ -81,6 +86,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
       if (!community.blackList.includes(user.id))
         footerButtons.push(
           <button
+            key={footerButtons.length}
             onClick={async () => {
               if (
                 !(await window.confirm(

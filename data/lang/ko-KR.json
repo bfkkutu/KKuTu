@@ -225,7 +225,7 @@
     "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈어요.",
     "alert_localeChanged": "언어 변경 사항은 재접속 시 적용됩니다.",
     "alert_friendRemove": "{#0}님을 친구 목록에서 삭제했어요.",
-    "alert_blackListAdd": "{#0}님을 블랙리스트에 추가했어요.<{BR}>이제 {#0}님이 유저 목록, 채팅에서 노출되지 않아요.",
+    "alert_blackListAdd": "{#0}님을 블랙리스트에 추가했어요.",
     "alert_blackListRemove": "{#0}님을 블랙리스트에서 삭제했어요.",
     "alert_invite": "{#0}님을 초대했어요.",
 
@@ -235,7 +235,7 @@
     "confirm_follow": "{#0}님이 있는 {#1}번 방으로 이동할까요?",
     "confirm_inviteResponse": "{#0}님으로부터 {#1}번 방의 초대를 받았습니다.<{BR}>수락하시겠습니까?",
     "confirm_friendRemove": "{#0}님을 친구 목록에서 삭제할까요?",
-    "confirm_blackListAdd": "{#0}님을 블랙리스트에 추가할까요?<{BR}>블랙리스트에 추가하면 유저 목록, 채팅에서 노출되지 않아요.",
+    "confirm_blackListAdd": "{#0}님을 블랙리스트에 추가할까요?<{BR}>블랙리스트에 추가한 유저의 채팅은 자동 숨김 처리되고<{BR}>해당 유저로부터 1대1 채팅과 초대 요청을 받을 수 없어요.<{BR}>또한 해당 유저가 접속자 목록에 나타나지 않아요.",
     "confirm_blackListRemove": "{#0}님을 블랙리스트에서 삭제할까요?",
 
     "prompt_title_roomPassword": "<{FA|key}> 방 비밀번호",

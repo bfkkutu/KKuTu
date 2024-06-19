@@ -39,11 +39,11 @@ export const BlackListDialog = new Dialog(L.render("blackList_title"), () => {
   return (
     <div className="dialog-blackList">
       <ul className="body">
-        {community.blackList.map((id) => {
+        {community.blackList.map((id, index) => {
           const blackedUser = users[id];
           if (blackedUser === undefined) return null;
           return (
-            <li className="item">
+            <li key={index} className="item">
               <div className="left">
                 <ProfileImage src={blackedUser.image} width={20} height={20} />
                 <LevelIcon

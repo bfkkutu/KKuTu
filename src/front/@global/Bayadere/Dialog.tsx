@@ -143,8 +143,8 @@ export namespace Dialog {
 
     return (
       <div id="dialog">
-        {dialogs.map((dialog) => (
-          <Component instance={dialog} />
+        {dialogs.map((dialog, index) => (
+          <Component key={index} instance={dialog} />
         ))}
       </div>
     );

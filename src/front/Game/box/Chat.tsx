@@ -15,7 +15,6 @@ export namespace Chat {
   export function Box() {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
-    const blackList = useStore((state) => state.community.blackList);
     const [chatLog, appendChat, toggleChatVisibility] = useStore((state) => [
       state.chatLog,
       state.appendChat,
@@ -37,14 +36,13 @@ export namespace Chat {
 
     useEffect(() => {
       socket.messageReceiver.on(WebSocketMessage.Type.Chat, (message) => {
-        if (blackList.includes(message.sender)) return;
         audioContext.playEffect("chat");
         appendChat(message.sender, message.content);
       });
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Chat);
       };
-    }, [blackList]);
+    }, []);
 
     useEffect(() => {
       if ($input.current)
