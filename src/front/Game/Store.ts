@@ -1,9 +1,8 @@
 import { create } from "zustand";
 
 import WebSocket from "front/@global/WebSocket";
-import { ChatType } from "front/@global/enums/ChatType";
 import { Database } from "../../common/Database";
-import { Chat } from "common/interfaces/Chat";
+import { Chat } from "../../common/Chat";
 import { KKuTu } from "common/KKuTu";
 
 interface State {
@@ -16,8 +15,9 @@ interface State {
   community: Database.JSON.Types.User.community;
   updateCommunity: (community: Database.JSON.Types.User.community) => void;
 
-  chatLog: Chat[];
+  chatLog: Chat.Item[];
   appendChat: (sender: string, content: string) => void;
+  toggleChatVisibility: (index: number) => void;
   notice: (content: string) => void;
 
   users: Table<Database.User.Summarized>;
@@ -52,13 +52,25 @@ export const useStore = create<State>((setState) => ({
       const chatLog = [
         ...state.chatLog,
         {
-          type: ChatType.Chat,
+          type: Chat.Type.Chat,
           sender,
+          nickname: state.users[sender].nickname,
           content,
+          visible: !state.community.blackList.includes(sender),
           receivedAt: new Date(),
-        },
+        } satisfies Chat.Chat,
       ];
       if (chatLog.length > 100) chatLog.shift();
+      return { chatLog };
+    }),
+  toggleChatVisibility: (index: number) =>
+    setState((state) => {
+      const chatLog = [...state.chatLog];
+      const item = chatLog[index];
+      if (item === undefined || item.type !== Chat.Type.Chat) {
+        return { chatLog: state.chatLog };
+      }
+      item.visible = !item.visible;
       return { chatLog };
     }),
   notice: (content) =>
@@ -66,11 +78,10 @@ export const useStore = create<State>((setState) => ({
       const chatLog = [
         ...state.chatLog,
         {
-          type: ChatType.Notice,
-          sender: "",
+          type: Chat.Type.Notice,
           content,
           receivedAt: new Date(),
-        },
+        } satisfies Chat.Notice,
       ];
       if (chatLog.length > 100) chatLog.shift();
       return { chatLog };

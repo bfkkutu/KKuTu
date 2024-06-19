@@ -1,6 +1,7 @@
 import { useStore } from "front/Game/Store";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
+import { Database } from "common/Database";
 
 export type EventListener<T extends WebSocketMessage.Type> = (
   message: WebSocketMessage.Server[T]
@@ -95,6 +96,24 @@ class WebSocket extends C {
         ...content,
       } as WebSocketMessage.Client[T])
     );
+  }
+  /**
+   * 데이터베이스에서 유저 정보를 쿼리한다.
+   * 해당 유저가 접속 중이 아니거나
+   * 해당 유저의 접속 여부가 불확실할 때
+   * 사용한다.
+   *
+   * @param id 유저 식별자
+   * @returns 유저 정보의 Promise
+   */
+  public async queryUser(
+    id: string
+  ): Promise<Database.User.Summarized | undefined> {
+    this.send(WebSocketMessage.Type.QueryUser, {
+      userId: id,
+    });
+    return (await this.messageReceiver.wait(WebSocketMessage.Type.QueryUser))
+      .user;
   }
 }
 export default WebSocket;

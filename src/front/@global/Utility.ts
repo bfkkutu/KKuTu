@@ -1,8 +1,5 @@
 import React from "react";
 
-import WebSocket from "front/@global/WebSocket";
-import { Database } from "../../common/Database";
-import { WebSocketMessage } from "../../common/WebSocket";
 import { CLIENT_SETTINGS, FRONT } from "back/utils/Utility";
 
 export const PROPS = FRONT && eval("window['__PROPS']");
@@ -24,24 +21,6 @@ export function getLevel(score: number) {
   for (let i = 0; i <= CLIENT_SETTINGS.maxLevel; i++)
     if (score < CLIENT_SETTINGS.expTable[i]) return i + 1;
   return 1;
-}
-export function getOfflineUser(
-  socket: WebSocket,
-  id: string
-): Promise<Database.User.Summarized> {
-  return new Promise<Database.User.Summarized>(async (resolve, reject) => {
-    socket.send(WebSocketMessage.Type.QueryUser, {
-      userId: id,
-    });
-    const { user } = await socket.messageReceiver.wait(
-      WebSocketMessage.Type.QueryUser
-    );
-    if (user) {
-      resolve(user);
-    } else {
-      reject();
-    }
-  });
 }
 /**
  * 컴포넌트인지 ReactNode인지 알 수 없는 객체를 랜더링한다.

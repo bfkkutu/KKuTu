@@ -56,10 +56,10 @@ export default function RoomListBox() {
                     e as WebSocketError.Message[WebSocketError.Type];
                   switch (errorType) {
                     case WebSocketError.Type.NotFound:
-                      window.alert(L.get("alert_error_roomNotFound"));
+                      window.alert(L.get("error_roomNotFound"));
                       break;
                     case WebSocketError.Type.Conflict:
-                      window.alert(L.get("alert_error_roomFull"));
+                      window.alert(L.get("error_roomFull"));
                       break;
                     case WebSocketError.Type.Unauthorized:
                       const password = await window.prompt(
@@ -86,10 +86,10 @@ export default function RoomListBox() {
                           e as WebSocketError.Message[WebSocketError.Type];
                         switch (errorType) {
                           case WebSocketError.Type.NotFound:
-                            window.alert(L.get("alert_error_roomNotFound"));
+                            window.alert(L.get("error_roomNotFound"));
                             break;
                           case WebSocketError.Type.Forbidden:
-                            window.alert(L.get("alert_error_passwordMismatch"));
+                            window.alert(L.get("error_passwordMismatch"));
                             break;
                         }
                       }

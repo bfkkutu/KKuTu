@@ -587,14 +587,32 @@
 
       .content {
         float: left;
-        width: calc(100% - 190px);
+        width: calc(100% - 215px);
         min-height: 14px;
+
+        &.invisible {
+          color: #999;
+        }
+      }
+
+      button {
+        float: right;
+        border: none;
+        padding: 1px;
+        font-size: 11px;
+        color: #999;
+
+        &:active {
+          color: red;
+          background-color: unset;
+        }
       }
 
       .timestamp {
-        float: left;
+        float: right;
         padding-top: 2px;
-        width: 70px;
+        margin-right: 5px;
+        width: 65px;
         font-size: 11px;
         text-align: right;
         color: #999;

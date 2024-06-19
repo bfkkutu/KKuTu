@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
-import { getLevel, getOfflineUser } from "front/@global/Utility";
+import { getLevel } from "front/@global/Utility";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { Icon, IconType } from "front/@block/Icon";
@@ -43,7 +43,10 @@ export const CommunityDialog = new Dialog(
           ...community.friends,
         ])
           if (!(id in users)) {
-            const user = await getOfflineUser(socket, id);
+            const user = await socket.queryUser(id);
+            if (user === undefined) {
+              continue;
+            }
             setUsers((users) => ({ ...users, [id]: user }));
           }
       }
