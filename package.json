@@ -8,9 +8,9 @@
   ],
   "scripts": {
     "start": "node ./dist/Main.js",
+    "dev": "node ./dist/Main.js --mode development",
     "settle": "yarn install && node ./tools/setup.js && node ./tools/check-front.js && yarn build",
     "build": "webpack --mode production",
-    "dev": "webpack --mode development",
     "watch": "webpack -w --mode development"
   },
   "author": "Seunghoon Lee",

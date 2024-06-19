@@ -220,6 +220,10 @@
     "alert_blackListRemove": "{#0}님을 블랙리스트에서 삭제했어요.",
     "alert_invite": "{#0}님을 초대했어요.",
 
+    "alert_error_roomNotFound": "방을 찾을 수 없어요.",
+    "alert_error_roomFull": "방이 이미 꽉 찼어요.",
+    "alert_error_passwordMismatch": "잘못된 비밀번호예요.",
+
     "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?",
     "confirm_handover": "{#0}님께 방장을 인계할까요?",
     "confirm_invite": "{#0}님을 초대할까요?",
@@ -229,8 +233,10 @@
     "confirm_blackListAdd": "{#0}님을 블랙리스트에 추가할까요?<{BR}>블랙리스트에 추가하면 유저 목록, 채팅에서 노출되지 않아요.",
     "confirm_blackListRemove": "{#0}님을 블랙리스트에서 삭제할까요?",
 
+    "prompt_title_roomPassword": "<{FA|key}> 방 비밀번호",
+    "prompt_roomPassword": "비밀번호를 입력하세요.",
     "prompt_title_changePassword": "<{FA|key}> 방 비밀번호 변경",
-    "prompt_changePassword": "새 방 비밀번호를 입력하세요.<{BR}>방 설정을 저장하면 반영됩니다.",
+    "prompt_changePassword": "새 방 비밀번호를 입력하세요.<{BR}>방 설정을 저장하면 반영돼요.",
 
     "notice_joinRoom": "{#0}님이 입장했어요.",
     "notice_leaveRoom": "{#0}님이 퇴장했어요.",

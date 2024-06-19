@@ -117,7 +117,6 @@ export default class Channel extends WebSocketServer {
               const room = new Room(this, id, user.id, message.room);
               room.add(socket);
               this.rooms.set(id, room);
-              user.joinRoom(id);
               Logger.info(`Room #${id} created by user #${user.id}.`).out();
               socket.send(WebSocketMessage.Type.CreateRoom, {
                 room: room.serialize(),
@@ -158,12 +157,30 @@ export default class Channel extends WebSocketServer {
             {
               const room = this.rooms.get(message.roomId);
               if (room === undefined) {
-                return socket.sendError(WebSocketError.Type.BadRequest, {
+                return socket.sendError(WebSocketError.Type.NotFound, {
                   isFatal: false,
                 });
               }
 
-              user.joinRoom(room.id);
+              if (room.isFull) {
+                return socket.sendError(WebSocketError.Type.Conflict, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.isLocked) {
+                if (message.password === undefined) {
+                  return socket.sendError(WebSocketError.Type.Unauthorized, {
+                    isFatal: false,
+                  });
+                }
+                if (room.password !== message.password) {
+                  return socket.sendError(WebSocketError.Type.Forbidden, {
+                    isFatal: false,
+                  });
+                }
+              }
+
               room.add(socket);
               Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
               socket.send(WebSocketMessage.Type.InitializeRoom, {

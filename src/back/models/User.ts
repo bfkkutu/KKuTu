@@ -116,11 +116,6 @@ export default class User implements Serializable<Database.User> {
   public isReady: boolean = false;
   public isSpectator: boolean = false;
 
-  public joinRoom(id: number): void {
-    this.roomId = id;
-    this.isReady = false;
-    this.isSpectator = false;
-  }
   public leaveRoom(): boolean {
     if (this.roomId === undefined) {
       return false;

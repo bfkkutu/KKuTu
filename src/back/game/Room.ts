@@ -3,6 +3,7 @@ import sha256 from "sha256";
 import WebSocketGroup from "back/utils/WebSocketGroup";
 import Channel from "back/game/Channel";
 import Game from "back/game/Game";
+import WebSocket from "back/utils/WebSocket";
 import { KKuTu } from "common/KKuTu";
 import { WebSocketMessage } from "../../common/WebSocket";
 
@@ -17,7 +18,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
   public id: number;
   public title: string;
   public isLocked: boolean;
-  private password: string;
+  public password: string;
   public limit: number;
   public mode: KKuTu.Game.Mode;
   public round: number;
@@ -27,6 +28,9 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
 
   private get isEmpty() {
     return this.clients.size === 0;
+  }
+  public get isFull() {
+    return this.clients.size === this.limit;
   }
   public get isReady() {
     for (const client of this.clients.values()) {
@@ -74,6 +78,17 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
     this.round = room.round;
     this.roundTime = room.roundTime;
     this.rules = room.rules;
+  }
+  public override add(socket: WebSocket): void {
+    if (this.isFull) {
+      return;
+    }
+
+    super.add(socket);
+    socket.user.roomId = this.id;
+    socket.user.isReady = socket.user.settings.game.autoReady;
+    socket.user.isSpectator = false;
+    this.update();
   }
   /**
    * 방에서 특정 유저를 제거한다.

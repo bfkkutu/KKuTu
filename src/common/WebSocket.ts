@@ -178,6 +178,7 @@ export namespace WebSocketMessage {
       [Type.InitializeRoom]: {};
       [Type.JoinRoom]: {
         roomId: number;
+        password?: string;
       };
       [Type.LeaveRoom]: {};
       [Type.Spectate]: {};

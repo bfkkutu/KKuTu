@@ -1,4 +1,5 @@
 import React, { useEffect } from "react";
+import sha256 from "sha256";
 
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
@@ -7,7 +8,7 @@ import { Icon, IconType } from "front/@block/Icon";
 import Mode from "front/@block/Mode";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Room } from "front/Game/box/Room";
-import { WebSocketMessage } from "../../../../common/WebSocket";
+import { WebSocketError, WebSocketMessage } from "../../../../common/WebSocket";
 
 export default function RoomListBox() {
   const socket = useStore((state) => state.socket);
@@ -45,10 +46,56 @@ export default function RoomListBox() {
                 socket.send(WebSocketMessage.Type.JoinRoom, {
                   roomId: room.id,
                 });
-                const res = await socket.messageReceiver.wait(
-                  WebSocketMessage.Type.InitializeRoom
-                );
-                updateRoom(res.room);
+                try {
+                  const res = await socket.messageReceiver.wait(
+                    WebSocketMessage.Type.InitializeRoom
+                  );
+                  updateRoom(res.room);
+                } catch (e) {
+                  const { errorType } =
+                    e as WebSocketError.Message[WebSocketError.Type];
+                  switch (errorType) {
+                    case WebSocketError.Type.NotFound:
+                      window.alert(L.get("alert_error_roomNotFound"));
+                      break;
+                    case WebSocketError.Type.Conflict:
+                      window.alert(L.get("alert_error_roomFull"));
+                      break;
+                    case WebSocketError.Type.Unauthorized:
+                      const password = await window.prompt(
+                        L.render("prompt_title_roomPassword"),
+                        L.get("prompt_roomPassword"),
+                        "password"
+                      );
+
+                      if (password === null) {
+                        return;
+                      }
+
+                      socket.send(WebSocketMessage.Type.JoinRoom, {
+                        roomId: room.id,
+                        password: sha256(password),
+                      });
+                      try {
+                        const res = await socket.messageReceiver.wait(
+                          WebSocketMessage.Type.InitializeRoom
+                        );
+                        updateRoom(res.room);
+                      } catch (e) {
+                        const { errorType } =
+                          e as WebSocketError.Message[WebSocketError.Type];
+                        switch (errorType) {
+                          case WebSocketError.Type.NotFound:
+                            window.alert(L.get("alert_error_roomNotFound"));
+                            break;
+                          case WebSocketError.Type.Forbidden:
+                            window.alert(L.get("alert_error_passwordMismatch"));
+                            break;
+                        }
+                      }
+                      break;
+                  }
+                }
               }}
             >
               <div className="id">{room.id}</div>
