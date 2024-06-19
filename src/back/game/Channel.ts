@@ -351,6 +351,12 @@ export default class Channel extends WebSocketServer {
                       .getOne()
                   : targetClient.user;
               if (target === null) {
+                return socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
+              }
+
+              if (user.community.blackList.includes(message.target)) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
@@ -455,7 +461,23 @@ export default class Channel extends WebSocketServer {
               });
             }
 
+            if (user.community.friends.includes(message.userId)) {
+              return socket.sendError(WebSocketError.Type.BadRequest, {
+                isFatal: false,
+              });
+            }
+
             user.community.blackList.push(message.userId);
+            if (
+              user.community.friendRequests.received.includes(message.userId)
+            ) {
+              user.community.friendRequests.received.splice(
+                user.community.friendRequests.received.findIndex(
+                  (v) => v === message.userId
+                ),
+                1
+              );
+            }
             await DB.Manager.save(user);
             socket.send(WebSocketMessage.Type.UpdateCommunity, {
               community: user.community,

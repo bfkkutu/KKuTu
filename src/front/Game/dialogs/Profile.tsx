@@ -10,7 +10,7 @@ import Gauge from "front/@block/Gauge";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WhisperDialog } from "front/Game/dialogs/Whisper";
 import { Room } from "front/Game/box/Room";
-import { WebSocketMessage } from "../../../common/WebSocket";
+import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
@@ -74,9 +74,24 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
               socket.send(WebSocketMessage.Type.FriendRequest, {
                 target: user.id,
               });
-              await socket.messageReceiver.wait(
-                WebSocketMessage.Type.FriendRequest
-              );
+              try {
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.FriendRequest
+                );
+              } catch (e) {
+                const { errorType } =
+                  e as WebSocketError.Message[WebSocketError.Type];
+                switch (errorType) {
+                  case WebSocketError.Type.NotFound:
+                    window.alert(L.get("error_404"));
+                    break;
+                  case WebSocketError.Type.BadRequest:
+                    window.alert(
+                      L.get("error_friendRequestAlreadyInBlackList")
+                    );
+                    break;
+                }
+              }
               window.alert(L.get("alert_friendRequest", user.nickname));
             }}
           >
@@ -97,9 +112,22 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
               socket.send(WebSocketMessage.Type.BlackListAdd, {
                 userId: user.id,
               });
-              await socket.messageReceiver.wait(
-                WebSocketMessage.Type.UpdateCommunity
-              );
+              try {
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.UpdateCommunity
+                );
+              } catch (e) {
+                const { errorType } =
+                  e as WebSocketError.Message[WebSocketError.Type];
+                switch (errorType) {
+                  case WebSocketError.Type.NotFound:
+                    window.alert(L.get("error_404"));
+                    break;
+                  case WebSocketError.Type.BadRequest:
+                    window.alert(L.get("error_blackListAlreadyFriend"));
+                    break;
+                }
+              }
               window.alert(L.render("alert_blackListAdd", user.nickname));
             }}
           >
