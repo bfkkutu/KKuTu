@@ -45,7 +45,7 @@ export default function RoomListBox() {
               className={`item ${room.isGaming ? "gaming" : "waiting"}`}
               onClick={async () => {
                 socket.send(WebSocketMessage.Type.JoinRoom, {
-                  roomId: room.id,
+                  target: room.id,
                 });
                 try {
                   const res = await socket.messageReceiver.wait(
@@ -74,7 +74,7 @@ export default function RoomListBox() {
                       }
 
                       socket.send(WebSocketMessage.Type.JoinRoom, {
-                        roomId: room.id,
+                        target: room.id,
                         password: sha256(password),
                       });
                       try {

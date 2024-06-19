@@ -68,7 +68,7 @@ export const BlackListDialog = new Dialog(L.render("blackList_title"), () => {
                     )
                       return;
                     socket.send(WebSocketMessage.Type.BlackListRemove, {
-                      userId: blackedUser.id,
+                      target: blackedUser.id,
                     });
                     await socket.messageReceiver.wait(
                       WebSocketMessage.Type.UpdateCommunity

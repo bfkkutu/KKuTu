@@ -45,7 +45,7 @@ export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
             />
           </label>
           <label className="item-wrapper">
-            <label className="dialog-desc" htmlFor="createRoom-input-password">
+            <label className="dialog-desc" htmlFor="createRoom-button-password">
               {L.get("createRoom_password")}
             </label>
             <button

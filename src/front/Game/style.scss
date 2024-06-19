@@ -935,6 +935,40 @@
     }
   }
 
+  &-report {
+    .body {
+      display: flex;
+      flex-direction: column;
+      width: 350px;
+      font-size: 13px;
+
+      .item-wrapper {
+        display: flex;
+        align-items: center;
+        margin: 3px 0px;
+
+        input[type="text"],
+        input[type="password"],
+        input[type="number"] {
+          width: 187px;
+        }
+        select {
+          width: 199px;
+        }
+      }
+
+      .item-wrapper-center {
+        display: flex;
+        justify-content: center;
+        margin: 3px 0px;
+
+        textarea {
+          width: 300px;
+        }
+      }
+    }
+  }
+
   &-createRoom {
     .body {
       display: flex;

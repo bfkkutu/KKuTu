@@ -28,7 +28,7 @@ export const InviteDialog = new Dialog(L.get("invite_title"), () => {
                 )
                   return;
                 socket.send(WebSocketMessage.Type.Invite, {
-                  userId: user.id,
+                  target: user.id,
                 });
                 window.alert(L.get("alert_invite", user.nickname));
               }}

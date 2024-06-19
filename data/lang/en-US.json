@@ -103,6 +103,11 @@
     "error_404": "대상을 찾을 수 없어요.",
     "error_409": "세션이 만료되었어요. 다시 로그인해주세요.",
 
+    "report_reason_0": "욕설 및 비속어 사용",
+    "report_reason_1": "어뷰징 등 비매너 플레이",
+    "report_reason_2": "비인가 프로그램 사용",
+    "report_reason_3": "다른 이용자에게 불쾌감을 주는 행위",
+
     "icon_hide": "<{FA|eye}>",
     "icon_show": "<{FA|eye-slash}>",
     "icon_report": "<{FA|flag}>",
@@ -113,6 +118,8 @@
     "whisper": "1대1 채팅",
     "friendRequest": "친구 추가",
     "blackListAdd": "블랙리스트 추가",
+    "report": "신고",
+    "submit": "제출",
     "handover": "방장 인계",
     "createRoom": "방 만들기",
     "roomTitle": "방 제목",
@@ -214,6 +221,10 @@
 
     "invite_title": "<{FA|envelope}> 초대",
 
+    "report_title": "<{FA|flag}> 신고 - {#0}",
+    "report_target": "대상",
+    "report_reason": "사유",
+
     "userListBox_title": "<{FA|users}> <{#0}> 접속자 목록 [{#1}명]",
     "roomListBox_title": "<{FA|bars}> 방 목록 [{#0}개]",
     "searchRoomBox_title": "<{FA|bars}> 방 검색",
@@ -230,6 +241,7 @@
     "alert_blackListAdd": "{#0}님을 블랙리스트에 추가했어요.",
     "alert_blackListRemove": "{#0}님을 블랙리스트에서 삭제했어요.",
     "alert_invite": "{#0}님을 초대했어요.",
+    "alert_reportSubmitted": "신고가 제출되었습니다.",
 
     "confirm_friendRequest": "{#0}님께 친구 추가 요청을 보낼까요?",
     "confirm_handover": "{#0}님께 방장을 인계할까요?",

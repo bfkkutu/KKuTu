@@ -4,12 +4,12 @@ import { Notification } from "front/@global/Bayadere/Notification";
 import { Room } from "front/Game/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
-export const createInviteNotification = (roomId: number, nickname: string) =>
-  new Notification(L.get("notification_invite", roomId), async () => {
+export const createInviteNotification = (target: number, nickname: string) =>
+  new Notification(L.get("notification_invite", target), async () => {
     const { socket } = useStore.getState();
     if (
       !(await window.confirm(
-        L.render("confirm_inviteResponse", nickname, roomId)
+        L.render("confirm_inviteResponse", nickname, target)
       ))
     )
       return;
@@ -19,7 +19,7 @@ export const createInviteNotification = (roomId: number, nickname: string) =>
       await socket.messageReceiver.wait(WebSocketMessage.Type.LeaveRoom);
       leaveRoom();
     }
-    socket.send(WebSocketMessage.Type.JoinRoom, { roomId });
+    socket.send(WebSocketMessage.Type.JoinRoom, { target });
     const res = await socket.messageReceiver.wait(
       WebSocketMessage.Type.InitializeRoom
     );

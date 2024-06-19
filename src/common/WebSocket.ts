@@ -55,6 +55,7 @@ export namespace WebSocketMessage {
     FriendRemove = "friendRemove",
     BlackListAdd = "blackListAdd",
     BlackListRemove = "blackListRemove",
+    Report = "report",
     Whisper = "whisper",
     Invite = "invite",
     UpdateUser = "updateUser",
@@ -128,6 +129,7 @@ export namespace WebSocketMessage {
       [Type.FriendRemove]: {};
       [Type.BlackListAdd]: {};
       [Type.BlackListRemove]: {};
+      [Type.Report]: {};
       [Type.Whisper]: Whisper;
       [Type.Invite]: {
         /**
@@ -177,7 +179,7 @@ export namespace WebSocketMessage {
       };
       [Type.InitializeRoom]: {};
       [Type.JoinRoom]: {
-        roomId: number;
+        target: number;
         password?: string;
       };
       [Type.LeaveRoom]: {};
@@ -199,24 +201,29 @@ export namespace WebSocketMessage {
         accept: boolean;
       };
       [Type.FriendRemove]: {
-        userId: string;
+        target: string;
       };
       [Type.BlackListAdd]: {
-        userId: string;
+        target: string;
       };
       [Type.BlackListRemove]: {
-        userId: string;
+        target: string;
+      };
+      [Type.Report]: {
+        target: string;
+        reason: number;
+        comment: string;
       };
       [Type.Whisper]: {
         target: string;
         content: string;
       };
       [Type.Invite]: {
-        userId: string;
+        target: string;
       };
       [Type.UpdateUser]: {};
       [Type.QueryUser]: {
-        userId: string;
+        target: string;
       };
 
       [Type.Heartbeat]: {};

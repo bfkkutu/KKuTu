@@ -200,7 +200,7 @@ export default function SearchRoom() {
                 className={`item ${room.isGaming ? "gaming" : "waiting"}`}
                 onClick={async () => {
                   socket.send(WebSocketMessage.Type.JoinRoom, {
-                    roomId: room.id,
+                    target: room.id,
                   });
                   const res = await socket.messageReceiver.wait(
                     WebSocketMessage.Type.InitializeRoom

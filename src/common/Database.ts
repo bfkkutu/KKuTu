@@ -96,10 +96,12 @@ export namespace Database {
     punishment: JSON.Types.User.punishment;
     settings: JSON.Types.User.settings;
   }
-  export interface FriendRequest {
-    id: number;
-    sender: string;
+  export interface Report {
+    id: string;
+    submitter: string;
     target: string;
+    reason: number;
+    comment: string;
     createdAt: number;
   }
 }

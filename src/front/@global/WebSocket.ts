@@ -110,7 +110,7 @@ class WebSocket extends C {
     id: string
   ): Promise<Database.User.Summarized | undefined> {
     this.send(WebSocketMessage.Type.QueryUser, {
-      userId: id,
+      target: id,
     });
     return (await this.messageReceiver.wait(WebSocketMessage.Type.QueryUser))
       .user;

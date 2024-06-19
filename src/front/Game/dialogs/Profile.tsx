@@ -10,6 +10,7 @@ import Gauge from "front/@block/Gauge";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WhisperDialog } from "front/Game/dialogs/Whisper";
 import { Room } from "front/Game/box/Room";
+import { createReportDialog } from "front/Game/dialogs/Report";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
@@ -20,9 +21,14 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
     const community = useStore((state) => state.community);
-    const hide = Dialog.useStore((state) => state.hide);
+    const [toggle, hide] = Dialog.useStore((state) => [
+      state.toggle,
+      state.hide,
+    ]);
 
     const footerButtons: React.ReactNode[] = [];
+    const ReportDialog = createReportDialog(user);
+
     const level = getLevel(user.score);
     const prev = CLIENT_SETTINGS.expTable[level - 2] || 0;
     const goal = CLIENT_SETTINGS.expTable[level - 1];
@@ -34,6 +40,11 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
           onClick={() => WhisperDialog.toggle(user)}
         >
           {L.get("whisper")}
+        </button>
+      );
+      footerButtons.push(
+        <button key={footerButtons.length} onClick={() => toggle(ReportDialog)}>
+          {L.get("report")}
         </button>
       );
       if (room !== undefined && room.master === id)
@@ -110,7 +121,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
               )
                 return;
               socket.send(WebSocketMessage.Type.BlackListAdd, {
-                userId: user.id,
+                target: user.id,
               });
               try {
                 await socket.messageReceiver.wait(

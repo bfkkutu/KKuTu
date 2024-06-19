@@ -13,6 +13,7 @@ import ObjectMap from "../../common/ObjectMap";
 import { Whisper } from "common/interfaces/Whisper";
 
 import User from "back/models/User";
+import Report from "back/models/Report";
 
 export default class Channel extends WebSocketServer {
   private static roomIdCount = 99;
@@ -155,7 +156,7 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.JoinRoom:
             {
-              const room = this.rooms.get(message.roomId);
+              const room = this.rooms.get(message.target);
               if (room === undefined) {
                 return socket.sendError(WebSocketError.Type.NotFound, {
                   isFatal: false,
@@ -419,11 +420,11 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.FriendRemove:
             {
-              const friendClient = this.users.get(message.userId);
+              const friendClient = this.users.get(message.target);
               const friend =
                 friendClient === undefined
                   ? await DB.Manager.createQueryBuilder(User, "u")
-                      .where("u.id = :id", { id: message.userId })
+                      .where("u.id = :id", { id: message.target })
                       .getOne()
                   : friendClient.user;
               if (friend === null) {
@@ -453,7 +454,7 @@ export default class Channel extends WebSocketServer {
           case WebSocketMessage.Type.BlackListAdd:
             if (
               (await DB.Manager.createQueryBuilder(User, "u")
-                .where("u.id = :id", { id: message.userId })
+                .where("u.id = :id", { id: message.target })
                 .getOne()) === null
             ) {
               return socket.sendError(WebSocketError.Type.NotFound, {
@@ -461,19 +462,19 @@ export default class Channel extends WebSocketServer {
               });
             }
 
-            if (user.community.friends.includes(message.userId)) {
+            if (user.community.friends.includes(message.target)) {
               return socket.sendError(WebSocketError.Type.BadRequest, {
                 isFatal: false,
               });
             }
 
-            user.community.blackList.push(message.userId);
+            user.community.blackList.push(message.target);
             if (
-              user.community.friendRequests.received.includes(message.userId)
+              user.community.friendRequests.received.includes(message.target)
             ) {
               user.community.friendRequests.received.splice(
                 user.community.friendRequests.received.findIndex(
-                  (v) => v === message.userId
+                  (v) => v === message.target
                 ),
                 1
               );
@@ -484,20 +485,36 @@ export default class Channel extends WebSocketServer {
             });
             break;
           case WebSocketMessage.Type.BlackListRemove:
-            if (!user.community.blackList.includes(message.userId)) {
+            if (!user.community.blackList.includes(message.target)) {
               return socket.sendError(WebSocketError.Type.BadRequest, {
                 isFatal: false,
               });
             }
 
             user.community.blackList.splice(
-              user.community.blackList.findIndex((v) => v === message.userId),
+              user.community.blackList.findIndex((v) => v === message.target),
               1
             );
             await DB.Manager.save(user);
             socket.send(WebSocketMessage.Type.UpdateCommunity, {
               community: user.community,
             });
+            break;
+          case WebSocketMessage.Type.Report:
+            const target = await this.queryUser(message.target);
+            if (target === undefined) {
+              return socket.sendError(WebSocketError.Type.NotFound, {
+                isFatal: false,
+              });
+            }
+
+            const report = new Report();
+            report.submitter = user;
+            report.target = target;
+            report.reason = message.reason;
+            report.comment = message.comment;
+            await DB.Manager.save(report);
+            socket.send(WebSocketMessage.Type.Report, {});
             break;
           case WebSocketMessage.Type.Whisper:
             {
@@ -529,7 +546,7 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.Invite:
             {
-              const target = this.users.get(message.userId);
+              const target = this.users.get(message.target);
               if (target === undefined) {
                 return socket.sendError(WebSocketError.Type.NotFound, {
                   isFatal: false,
@@ -554,14 +571,8 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.QueryUser:
             {
-              const targetClient = this.users.get(message.userId);
-              const target =
-                targetClient === undefined
-                  ? await DB.Manager.createQueryBuilder(User, "u")
-                      .where("u.id = :id", { id: message.userId })
-                      .getOne()
-                  : targetClient.user;
-              if (target === null) {
+              const target = await this.queryUser(message.target);
+              if (target === undefined) {
                 return socket.send(WebSocketMessage.Type.QueryUser, {});
               }
 
@@ -622,6 +633,19 @@ export default class Channel extends WebSocketServer {
       },
       (client) => client.user.roomId === undefined
     );
+  }
+  private async queryUser(id: string): Promise<User | undefined> {
+    const client = this.users.get(id);
+    if (client !== undefined) {
+      return client.user;
+    }
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.id = :id", { id })
+      .getOne();
+    if (user !== null) {
+      return user;
+    }
+    return undefined;
   }
   /**
    * 더 이상 유효하지 않은 방을 메모리에서 제거한다.

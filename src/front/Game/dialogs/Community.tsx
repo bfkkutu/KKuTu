@@ -148,7 +148,7 @@ export const CommunityDialog = new Dialog(
                             )
                               return;
                             socket.send(WebSocketMessage.Type.Invite, {
-                              userId: friend.id,
+                              target: friend.id,
                             });
                             window.alert(
                               L.get("alert_invite", friend.nickname)
@@ -184,7 +184,7 @@ export const CommunityDialog = new Dialog(
                               leaveRoom();
                             }
                             socket.send(WebSocketMessage.Type.JoinRoom, {
-                              roomId: friend.roomId,
+                              target: friend.roomId,
                             });
                             const res = await socket.messageReceiver.wait(
                               WebSocketMessage.Type.InitializeRoom
@@ -208,7 +208,7 @@ export const CommunityDialog = new Dialog(
                           )
                             return;
                           socket.send(WebSocketMessage.Type.FriendRemove, {
-                            userId: friend.id,
+                            target: friend.id,
                           });
                           await socket.messageReceiver.wait(
                             WebSocketMessage.Type.UpdateCommunity
