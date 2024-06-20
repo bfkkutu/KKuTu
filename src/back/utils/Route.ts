@@ -4,12 +4,17 @@ import { loadLanguages } from "back/utils/Language";
 import { PageBuilder } from "back/utils/ReactNest";
 import { getLoginMethods } from "back/utils/LoginRoute";
 import Channel from "back/game/Channel";
-import { SETTINGS } from "back/utils/System";
+import { PACKAGE, SETTINGS } from "back/utils/System";
 import DB from "back/utils/Database";
 
 import User from "back/models/User";
 
 export default function (App: Express.Application): void {
+  const DEPENDENCIES = [
+    ...Object.entries(PACKAGE.devDependencies as Table<string>),
+    ...Object.entries(PACKAGE.dependencies as Table<string>),
+  ].sort();
+
   App.get("/", PageBuilder("Portal"));
   App.get("/game/:id", async (req, res, next) => {
     const id = parseInt(req.params.id);
@@ -31,6 +36,12 @@ export default function (App: Express.Application): void {
   });
   App.get("/login", (req, res, next) =>
     PageBuilder("Login", { loginMethods: getLoginMethods() })(req, res, next)
+  );
+  App.get(
+    "/docs/opensource",
+    PageBuilder("OpenSource", {
+      dependencies: DEPENDENCIES,
+    })
   );
   App.get("/servers", (req, res) =>
     res.send({

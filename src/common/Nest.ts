@@ -15,6 +15,9 @@ export namespace Nest {
         loginMethods: AuthModuleConfig[];
       };
       Portal: {};
+      OpenSource: {
+        dependencies: [name: string, version: string][];
+      };
       Register: {};
     };
     export type Metadata = {

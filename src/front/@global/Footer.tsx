@@ -49,6 +49,10 @@ export default class Footer extends React.PureComponent {
               {L.get("privacyPolicy")}
             </a>{" "}
             ·{" "}
+            <a href="/docs/opensource" target="_blank">
+              {L.get("opensource")}
+            </a>{" "}
+            ·{" "}
             <a href="/docs/policy" target="_blank">
               {L.get("policy")}
             </a>

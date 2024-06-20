@@ -1,0 +1,9 @@
+@import "../@global/global.scss";
+
+#stage {
+  #main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+}

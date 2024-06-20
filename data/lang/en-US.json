@@ -21,6 +21,7 @@
     "askLogout": "로그아웃 합니까?",
     "serviceTerms": "서비스 이용 약관",
     "privacyPolicy": "개인정보 처리방침",
+    "opensource": "오픈소스 고지",
     "policy": "운영 정책",
     "level": "레벨",
     "ok": "확인",
@@ -296,6 +297,9 @@
     "serverRefresh": "서버 목록을 다시 불러옵니다.",
     "serverWait": "잠시 기다려 주세요.",
     "serverEnter": "접속"
+  },
+  "OpenSource": {
+    "title": "BF끄투 - 오픈소스 고지"
   },
   "Register": {
     "title": "BF끄투 - 계정 등록",

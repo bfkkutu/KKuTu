@@ -2,7 +2,7 @@ import React from "react";
 
 import { Schema } from "common/Schema";
 
-export default class GoogleAdvertisement extends React.Component<Schema.GoogleAdvertisement> {
+export default class GoogleAdvertisement extends React.PureComponent<Schema.GoogleAdvertisement> {
   public render(): React.ReactNode {
     return (
       <ins

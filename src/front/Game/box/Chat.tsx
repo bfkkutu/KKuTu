@@ -101,11 +101,11 @@ export namespace Chat {
     );
   }
 
-  interface ChatProps {
+  interface Props {
     id: number;
     chat: ChatCommon.Chat;
   }
-  function Chat(props: ChatProps) {
+  function Chat(props: Props) {
     const id = useStore((state) => state.me.id);
     const users = useStore((state) => state.users);
     const socket = useStore((state) => state.socket);
