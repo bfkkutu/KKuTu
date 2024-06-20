@@ -86,10 +86,10 @@ export const SettingsDialog = new Dialog(L.render("settings_title"), () => {
           >
             {Object.keys(CLIENT_SETTINGS.sound)
               .filter((key) => key.startsWith("lobby_"))
-              .map((key, idx) => {
+              .map((key, index) => {
                 const id = key.split("_").at(-1);
                 return (
-                  <option value={id}>
+                  <option key={index} value={id}>
                     {id}. {L.get(`bgm_${key}`)}
                   </option>
                 );
@@ -110,9 +110,13 @@ export const SettingsDialog = new Dialog(L.render("settings_title"), () => {
               window.alert(L.get("alert_localeChanged"));
             }}
           >
-            {Object.entries(CLIENT_SETTINGS.languageSupport).map(([k, v]) => (
-              <option value={k}>{v}</option>
-            ))}
+            {Object.entries(CLIENT_SETTINGS.languageSupport).map(
+              ([k, v], index) => (
+                <option key={index} value={k}>
+                  {v}
+                </option>
+              )
+            )}
           </select>
         </label>
         <label>
