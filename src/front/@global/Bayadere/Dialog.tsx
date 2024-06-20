@@ -55,7 +55,9 @@ export namespace Dialog {
       setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
     },
     hide: (dialog) => {
-      if (dialog.visible) dialog.onHide?.();
+      if (dialog.visible) {
+        dialog.onHide?.();
+      }
       dialog.visible = false;
       setState(({ dialogs }) => ({
         dialogs: dialogs.filter((v) => v !== dialog),

@@ -6,13 +6,13 @@ import ClassName from "front/@global/ClassName";
 import { EventListener } from "front/@global/WebSocket";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { useStore as useGlobalStore } from "front/Game/Store";
-import { Database } from "../../../common/Database";
+import { Database } from "common/Database";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export namespace WhisperDialog {
   interface State {
-    openWhisper: (targetId: string, dt: Dialog) => void;
-    closeWhisper: (targetId: string) => void;
+    open: (targetId: string, dt: Dialog) => void;
+    close: (targetId: string) => void;
 
     dialogs: Table<Dialog | undefined>;
 
@@ -21,12 +21,12 @@ export namespace WhisperDialog {
   }
 
   export const useStore = createStoreHook<State>((setState, getState) => ({
-    openWhisper: (targetId, dt) =>
+    open: (targetId, dt) =>
       setState(({ dialogs, logs }) => ({
         dialogs: { ...dialogs, [targetId]: dt },
         logs: { ...logs, [targetId]: logs[targetId] || [] },
       })),
-    closeWhisper: (targetId) =>
+    close: (targetId) =>
       setState(({ dialogs, logs }) => {
         if (dialogs[targetId] === undefined) return {};
         const R = { ...dialogs };
@@ -52,7 +52,7 @@ export namespace WhisperDialog {
   }));
 
   export const show = (user: Database.User.Summarized) => {
-    const { openWhisper: open } = useStore.getState();
+    const { open } = useStore.getState();
     const { show } = Dialog.useStore.getState();
 
     hide(user);
@@ -61,7 +61,7 @@ export namespace WhisperDialog {
     show(dt);
   };
   export const hide = (user: Database.User.Summarized) => {
-    const { dialogs, closeWhisper: close } = useStore.getState();
+    const { dialogs, close } = useStore.getState();
     const { hide } = Dialog.useStore.getState();
 
     const dt = dialogs[user.id];
@@ -79,127 +79,131 @@ export namespace WhisperDialog {
   };
 
   export const create = (user: Database.User.Summarized) =>
-    new Dialog(L.render("whisper_title", user.nickname), () => {
-      const socket = useGlobalStore((state) => state.socket);
-      const [logs, appendLog] = useStore((state) => [
-        state.logs[user.id],
-        state.appendLog,
-      ]);
-      const [content, setContent] = useState("");
-      const $input = useRef<HTMLInputElement>(null);
+    new Dialog(
+      L.render("whisper_title", user.nickname),
+      () => {
+        const socket = useGlobalStore((state) => state.socket);
+        const [logs, appendLog] = useStore((state) => [
+          state.logs[user.id],
+          state.appendLog,
+        ]);
+        const [content, setContent] = useState("");
+        const $input = useRef<HTMLInputElement>(null);
 
-      const send = useCallback(() => {
-        if (content === "") {
-          return;
-        }
-        socket.send(WebSocketMessage.Type.Whisper, {
-          target: user.id,
-          content,
-        });
-        setContent("");
-        $input.current?.focus();
-      }, [content]);
+        const send = useCallback(() => {
+          if (content === "") {
+            return;
+          }
+          socket.send(WebSocketMessage.Type.Whisper, {
+            target: user.id,
+            content,
+          });
+          setContent("");
+          $input.current?.focus();
+        }, [content]);
 
-      useEffect(() => {
-        const listener: EventListener<WebSocketMessage.Type.Whisper> = (
-          whisper
-        ) => {
-          appendLog(user.id, whisper);
-        };
-        socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
-        return () => {
-          socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
-        };
-      }, []);
+        useEffect(() => {
+          const listener: EventListener<WebSocketMessage.Type.Whisper> = (
+            whisper
+          ) => {
+            appendLog(user.id, whisper);
+          };
+          socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
+          return () => {
+            socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
+          };
+        }, []);
 
-      useEffect(() => {
-        if ($input.current) {
-          $input.current.onkeydown = (e) => {
-            if (e.code === "Enter" || e.code === "NumpadEnter") {
-              if (e.isComposing) {
-                return;
+        useEffect(() => {
+          if ($input.current) {
+            $input.current.onkeydown = (e) => {
+              if (e.code === "Enter" || e.code === "NumpadEnter") {
+                if (e.isComposing) {
+                  return;
+                }
+                send();
               }
-              send();
+            };
+          }
+          return () => {
+            if ($input.current) {
+              $input.current.onkeydown = null;
             }
           };
-        }
-        return () => {
-          if ($input.current) {
-            $input.current.onkeydown = null;
-          }
-        };
-      }, [send]);
+        }, [send]);
 
-      return (
-        <div className="dialog-whisper">
-          <ul className="body">
-            {logs.map((v, index) => {
-              const className = new ClassName("item");
-              const fromOpposite = v.sender === user.id;
-              className.push(fromOpposite ? "left" : "right");
-              return (
-                <li key={index} className={className.toString()}>
-                  {fromOpposite ? (
-                    <p className="sender">{user.nickname}</p>
-                  ) : null}
-                  <div className="content-wrapper">
-                    <div className="content">{v.content}</div>
+        return (
+          <div className="dialog-whisper">
+            <ul className="body">
+              {logs.map((v, index) => {
+                const className = new ClassName("item");
+                const fromOpposite = v.sender === user.id;
+                className.push(fromOpposite ? "left" : "right");
+                return (
+                  <li key={index} className={className.toString()}>
                     {fromOpposite ? (
-                      <button
-                        className="report"
-                        onClick={async () => {
-                          if (
-                            !(await window.confirm(
-                              L.get("confirm_reportMessage")
-                            ))
-                          ) {
-                            return;
-                          }
-                          socket.send(WebSocketMessage.Type.ReportWhisper, {
-                            target: v.id,
-                          });
-                          try {
-                            await socket.messageReceiver.wait(
-                              WebSocketMessage.Type.ReportWhisper
-                            );
-                            window.alert(L.get("alert_reportSubmitted"));
-                          } catch (e) {
-                            const { errorType } =
-                              e as WebSocketError.Message[WebSocketError.Type];
-                            switch (errorType) {
-                              case WebSocketError.Type.NotFound:
-                                window.alert(L.get("error_404"));
-                                break;
-                              case WebSocketError.Type.Conflict:
-                                window.alert(
-                                  L.get("error_alreadyReportedMessage")
-                                );
-                                break;
-                            }
-                          }
-                        }}
-                      >
-                        {L.render("icon_report")}
-                      </button>
+                      <p className="sender">{user.nickname}</p>
                     ) : null}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
-          <div className="footer">
-            <input
-              className="input-whisper"
-              maxLength={200}
-              value={content}
-              ref={$input}
-              onChange={(e) => setContent(e.currentTarget.value)}
-            />
-            <button type="button" className="button-send" onClick={send}>
-              {L.get("send")}
-            </button>
+                    <div className="content-wrapper">
+                      <div className="content">{v.content}</div>
+                      {fromOpposite ? (
+                        <button
+                          className="report"
+                          onClick={async () => {
+                            if (
+                              !(await window.confirm(
+                                L.get("confirm_reportMessage")
+                              ))
+                            ) {
+                              return;
+                            }
+                            socket.send(WebSocketMessage.Type.ReportWhisper, {
+                              target: v.id,
+                            });
+                            try {
+                              await socket.messageReceiver.wait(
+                                WebSocketMessage.Type.ReportWhisper
+                              );
+                              window.alert(L.get("alert_reportSubmitted"));
+                            } catch (e) {
+                              const { errorType } =
+                                e as WebSocketError.Message[WebSocketError.Type];
+                              switch (errorType) {
+                                case WebSocketError.Type.NotFound:
+                                  window.alert(L.get("error_404"));
+                                  break;
+                                case WebSocketError.Type.Conflict:
+                                  window.alert(
+                                    L.get("error_alreadyReportedMessage")
+                                  );
+                                  break;
+                              }
+                            }
+                          }}
+                        >
+                          {L.render("icon_report")}
+                        </button>
+                      ) : null}
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="footer">
+              <input
+                className="input-whisper"
+                maxLength={200}
+                value={content}
+                ref={$input}
+                onChange={(e) => setContent(e.currentTarget.value)}
+              />
+              <button type="button" className="button-send" onClick={send}>
+                {L.get("send")}
+              </button>
+            </div>
           </div>
-        </div>
-      );
-    });
+        );
+      },
+      () => useStore.getState().close(user.id)
+    );
 }
