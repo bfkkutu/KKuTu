@@ -7,11 +7,11 @@ import { Menu } from "front/Game/Menu";
 import { useStore } from "front/Game/Store";
 import { getRequiredScore } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
-import { createWhisperNotification } from "front/Game/notifications/Whisper";
 import { EventListener } from "front/@global/WebSocket";
 import { createInviteNotification } from "front/Game/notifications/Invite";
 import { Notification } from "front/@global/Bayadere/Notification";
 import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { WhisperNotification } from "front/Game/notifications/Whisper";
 import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
 
@@ -47,7 +47,12 @@ function Component(props: Nest.Page.Props<"Game">) {
     ]
   );
   const room = Room.useStore((state) => state.room);
-  const showNotification = Notification.useStore((state) => state.show);
+  const [notifications, showNotification, hideNotification] =
+    Notification.useStore((state) => [
+      state.notifications,
+      state.show,
+      state.hide,
+    ]);
   const [whisperDialogs, whisperLogs, appendWhisperLog] =
     WhisperDialog.useStore((state) => [
       state.dialogs,
@@ -130,8 +135,16 @@ function Component(props: Nest.Page.Props<"Game">) {
         whisper.sender !== me.id &&
         whisperDialogs[whisper.sender] === undefined
       ) {
+        for (const notification of notifications) {
+          if (
+            notification instanceof WhisperNotification &&
+            notification.sender === whisper.sender
+          ) {
+            hideNotification(notification);
+          }
+        }
         showNotification(
-          createWhisperNotification(
+          new WhisperNotification(
             users[whisper.sender],
             appendWhisperLog(whisper.sender, whisper)
           )
