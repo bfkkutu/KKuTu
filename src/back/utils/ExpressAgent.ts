@@ -38,6 +38,9 @@ export default function (App: Express.Application): void {
   App.use("/favicon.ico", (req, res) =>
     res.sendFile(resolve("dist", "favicon.ico"))
   );
+  App.use("/docs/service_terms", (req, res) =>
+    res.sendFile(resolve("dist", "docs", "service_terms.htm"))
+  );
   App.use("/ads.txt", (req, res) => res.sendFile(resolve("dist", "ads.txt")));
   App.use("/robots.txt", (req, res) =>
     res.sendFile(resolve("dist", "robots.txt"))
