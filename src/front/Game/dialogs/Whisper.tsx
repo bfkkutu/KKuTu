@@ -89,7 +89,9 @@ export namespace WhisperDialog {
       const $input = useRef<HTMLInputElement>(null);
 
       const send = useCallback(() => {
-        if (content === "") return;
+        if (content === "") {
+          return;
+        }
         socket.send(WebSocketMessage.Type.Whisper, {
           target: user.id,
           content,
@@ -114,6 +116,9 @@ export namespace WhisperDialog {
         if ($input.current) {
           $input.current.onkeydown = (e) => {
             if (e.code === "Enter" || e.code === "NumpadEnter") {
+              if (e.isComposing) {
+                return;
+              }
               send();
             }
           };

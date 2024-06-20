@@ -23,7 +23,9 @@ export namespace Chat {
     const $list = useRef<HTMLDivElement>(null);
 
     const send = useCallback(() => {
-      if (content.trim() === "") return;
+      if (content.trim() === "") {
+        return;
+      }
       socket.send(WebSocketMessage.Type.Chat, {
         content,
       });
@@ -47,6 +49,9 @@ export namespace Chat {
       if ($input.current) {
         $input.current.onkeydown = (e) => {
           if (e.code === "Enter" || e.code === "NumpadEnter") {
+            if (e.isComposing) {
+              return;
+            }
             if (!e.shiftKey) {
               e.preventDefault();
               send();
