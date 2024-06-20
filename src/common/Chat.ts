@@ -5,6 +5,11 @@ export namespace Chat {
   }
   export interface Chat {
     type: Chat.Type.Chat;
+    /**
+     * 서버와 통신할 때 이 Chat 객체를
+     * 지정해야 하는 경우 사용한다.
+     */
+    id: string;
     sender: string;
     /**
      * 서버에서는 sender의 식별자만 전송하지만
@@ -14,12 +19,12 @@ export namespace Chat {
     nickname: string;
     content: string;
     visible: boolean;
-    receivedAt: Date;
+    createdAt: Date;
   }
   export interface Notice {
     type: Chat.Type.Notice;
     content: string;
-    receivedAt: Date;
+    createdAt: Date;
   }
   export type Item = Chat.Chat | Chat.Notice;
 }

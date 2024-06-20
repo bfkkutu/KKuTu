@@ -16,7 +16,7 @@ interface State {
   updateCommunity: (community: Database.JSON.Types.User.community) => void;
 
   chatLog: Chat.Item[];
-  appendChat: (sender: string, content: string) => void;
+  appendChat: (chat: Database.Chat) => void;
   toggleChatVisibility: (index: number) => void;
   notice: (content: string) => void;
 
@@ -47,17 +47,18 @@ export const useStore = create<State>((setState) => ({
   updateCommunity: (community) => setState({ community }),
 
   chatLog: [],
-  appendChat: (sender, content) =>
+  appendChat: (chat) =>
     setState((state) => {
       const chatLog = [
         ...state.chatLog,
         {
           type: Chat.Type.Chat,
-          sender,
-          nickname: state.users[sender].nickname,
-          content,
-          visible: !state.community.blackList.includes(sender),
-          receivedAt: new Date(),
+          id: chat.id,
+          sender: chat.sender,
+          nickname: state.users[chat.sender].nickname,
+          content: chat.content,
+          visible: !state.community.blackList.includes(chat.sender),
+          createdAt: new Date(chat.createdAt),
         } satisfies Chat.Chat,
       ];
       if (chatLog.length > 100) chatLog.shift();
@@ -80,7 +81,7 @@ export const useStore = create<State>((setState) => ({
         {
           type: Chat.Type.Notice,
           content,
-          receivedAt: new Date(),
+          createdAt: new Date(),
         } satisfies Chat.Notice,
       ];
       if (chatLog.length > 100) chatLog.shift();

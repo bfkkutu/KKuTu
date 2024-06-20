@@ -6,6 +6,8 @@ import { Database } from "common/Database";
 import { Logger } from "back/utils/Logger";
 
 import User from "back/models/User";
+import Chat from "back/models/Chat";
+import Whisper from "back/models/Whisper";
 import Report from "back/models/Report";
 
 export default class DB {
@@ -14,7 +16,7 @@ export default class DB {
     ...SETTINGS["database"],
     synchronize: true,
     logging: [],
-    entities: [User, Report],
+    entities: [User, Chat, Whisper, Report],
   });
 
   public static get Manager(): TypeORM.EntityManager {

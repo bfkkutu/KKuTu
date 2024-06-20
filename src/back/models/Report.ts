@@ -9,9 +9,11 @@ export default class Report implements Serializable<Database.Report> {
   public id!: string;
 
   @TypeORM.ManyToOne(() => User)
+  @TypeORM.JoinColumn({ name: "r_submitter" })
   public submitter!: User;
 
   @TypeORM.ManyToOne(() => User)
+  @TypeORM.JoinColumn({ name: "r_target" })
   public target!: User;
 
   @TypeORM.Column({ name: "r_reason", type: "int2" })

@@ -96,6 +96,7 @@
     "error_passwordMismatch": "잘못된 비밀번호예요.",
     "error_friendRequestAlreadyInBlackList": "블랙리스트에 있는 유저에게는 친구 추가 요청을 보낼 수 없어요.",
     "error_blackListAlreadyFriend": "친구는 블랙리스트에 추가할 수 없어요.",
+    "error_alreadyReportedMessage": "이미 신고한 메시지에요.",
     "error_unknown": "알 수 없는 오류가 발생했어요.",
 
     "error_400": "잘못된 요청이에요.",
@@ -251,6 +252,7 @@
     "confirm_friendRemove": "{#0}님을 친구 목록에서 삭제할까요?",
     "confirm_blackListAdd": "{#0}님을 블랙리스트에 추가할까요?<{BR}>블랙리스트에 추가한 유저의 채팅은 자동 숨김 처리되고<{BR}>해당 유저로부터 1대1 채팅과 초대 요청을 받을 수 없어요.<{BR}>또한 해당 유저가 접속자 목록에 나타나지 않아요.",
     "confirm_blackListRemove": "{#0}님을 블랙리스트에서 삭제할까요?",
+    "confirm_reportMessage": "이 메시지를 신고할까요?",
 
     "prompt_title_roomPassword": "<{FA|key}> 방 비밀번호",
     "prompt_roomPassword": "비밀번호를 입력하세요.",

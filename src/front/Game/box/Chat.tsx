@@ -7,18 +7,16 @@ import AudioContext from "front/@global/AudioContext";
 import { createProfileDialog } from "front/Game/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Chat as ChatCommon } from "../../../common/Chat";
-import { WebSocketMessage } from "../../../common/WebSocket";
+import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export namespace Chat {
   const htmlParser = HTMLParser();
 
   export function Box() {
     const socket = useStore((state) => state.socket);
-    const id = useStore((state) => state.me.id);
-    const [chatLog, appendChat, toggleChatVisibility] = useStore((state) => [
+    const [chatLog, appendChat] = useStore((state) => [
       state.chatLog,
       state.appendChat,
-      state.toggleChatVisibility,
     ]);
     const [content, setContent] = useState("");
     const $input = useRef<HTMLTextAreaElement>(null);
@@ -32,12 +30,13 @@ export namespace Chat {
       setContent("");
       $input.current?.focus();
     }, [socket, content]);
+
     const audioContext = AudioContext.instance;
 
     useEffect(() => {
-      socket.messageReceiver.on(WebSocketMessage.Type.Chat, (message) => {
+      socket.messageReceiver.on(WebSocketMessage.Type.Chat, (chat) => {
         audioContext.playEffect("chat");
-        appendChat(message.sender, message.content);
+        appendChat(chat);
       });
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Chat);
@@ -45,7 +44,7 @@ export namespace Chat {
     }, []);
 
     useEffect(() => {
-      if ($input.current)
+      if ($input.current) {
         $input.current.onkeydown = (e) => {
           if (e.code === "Enter" || e.code === "NumpadEnter") {
             if (!e.shiftKey) {
@@ -54,6 +53,7 @@ export namespace Chat {
             }
           }
         };
+      }
       return () => {
         if ($input.current) {
           $input.current.onkeydown = null;
@@ -72,33 +72,14 @@ export namespace Chat {
         <h5 className="product-title">{L.render("chatBox_title")}</h5>
         <div className="product-body">
           <div className="list" ref={$list}>
-            {chatLog.map((chat, index) => (
-              <div key={index} className={`item ${chat.type}`}>
-                {/* float: left */}
-                <Head {...chat} />
-                <Body {...chat} />
-
-                {/* float: right */}
-                <div className="timestamp">
-                  {chat.receivedAt.toLocaleTimeString()}
-                </div>
-                {chat.type === ChatCommon.Type.Chat && chat.sender !== id ? (
-                  <>
-                    <button className="report" onClick={() => {}}>
-                      {L.render("icon_report")}
-                    </button>
-                    <button
-                      className="visible-toggle"
-                      onClick={() => toggleChatVisibility(index)}
-                    >
-                      {chat.visible
-                        ? L.render("icon_hide")
-                        : L.render("icon_show")}
-                    </button>
-                  </>
-                ) : null}
-              </div>
-            ))}
+            {chatLog.map((chat, index) => {
+              switch (chat.type) {
+                case ChatCommon.Type.Chat:
+                  return <Chat key={index} id={index} chat={chat} />;
+                case ChatCommon.Type.Notice:
+                  return <Notice {...chat} key={index} />;
+              }
+            })}
           </div>
           <textarea
             className="input-chat"
@@ -115,51 +96,110 @@ export namespace Chat {
     );
   }
 
-  function Head(chat: ChatCommon.Item) {
-    switch (chat.type) {
-      case ChatCommon.Type.Chat: {
-        const users = useStore((state) => state.users);
-        const socket = useStore((state) => state.socket);
-        const toggle = Dialog.useStore((state) => state.toggle);
-
-        return (
-          <div
-            className="head ellipse"
-            onClick={async () => {
-              const sender =
-                chat.sender in users
-                  ? users[chat.sender]
-                  : await socket.queryUser(chat.sender);
-              if (sender === undefined) {
-                window.alert(L.get("error_404"));
-                return;
-              }
-              toggle(createProfileDialog(sender));
-            }}
-          >
-            {chat.nickname}
-          </div>
-        );
-      }
-      case ChatCommon.Type.Notice:
-        return <div className="head head-notice ellipse">{L.get("alert")}</div>;
-    }
+  interface ChatProps {
+    id: number;
+    chat: ChatCommon.Chat;
   }
-  function Body(chat: ChatCommon.Item) {
-    switch (chat.type) {
-      case ChatCommon.Type.Chat:
-        if (!chat.visible) {
-          return (
-            <div className="content invisible">
-              {L.get("notice_chatInvisible")}
-            </div>
-          );
-        }
-        break;
-    }
+  function Chat(props: ChatProps) {
+    const id = useStore((state) => state.me.id);
+    const users = useStore((state) => state.users);
+    const socket = useStore((state) => state.socket);
+    const toggleChatVisibility = useStore(
+      (state) => state.toggleChatVisibility
+    );
+    const toggle = Dialog.useStore((state) => state.toggle);
+
     return (
-      <div className="content">
-        {htmlParser.parse(chat.content.replaceAll("\n", "<br>"))}
+      <div className="item chat">
+        {/* float: left */}
+        <div
+          className="head ellipse"
+          onClick={async () => {
+            const sender =
+              props.chat.sender in users
+                ? users[props.chat.sender]
+                : await socket.queryUser(props.chat.sender);
+            if (sender === undefined) {
+              window.alert(L.get("error_404"));
+              return;
+            }
+            toggle(createProfileDialog(sender));
+          }}
+        >
+          {props.chat.nickname}
+        </div>
+        {props.chat.visible ? (
+          <div className="content">
+            {htmlParser.parse(props.chat.content.replaceAll("\n", "<br>"))}
+          </div>
+        ) : (
+          <div className="content invisible">
+            {L.get("notice_chatInvisible")}
+          </div>
+        )}
+
+        {/* float: right */}
+        <div className="timestamp">
+          {new Date(props.chat.createdAt).toLocaleTimeString()}
+        </div>
+        {props.chat.type === ChatCommon.Type.Chat &&
+        props.chat.sender !== id ? (
+          <div className="buttons">
+            <button
+              className="report"
+              onClick={async () => {
+                if (!(await window.confirm(L.get("confirm_reportMessage")))) {
+                  return;
+                }
+                socket.send(WebSocketMessage.Type.ReportChat, {
+                  target: props.chat.id,
+                });
+                try {
+                  await socket.messageReceiver.wait(
+                    WebSocketMessage.Type.ReportChat
+                  );
+                  window.alert(L.get("alert_reportSubmitted"));
+                } catch (e) {
+                  const { errorType } =
+                    e as WebSocketError.Message[WebSocketError.Type];
+                  switch (errorType) {
+                    case WebSocketError.Type.NotFound:
+                      window.alert(L.get("error_404"));
+                      break;
+                    case WebSocketError.Type.Conflict:
+                      window.alert(L.get("error_alreadyReportedMessage"));
+                      break;
+                  }
+                }
+              }}
+            >
+              {L.render("icon_report")}
+            </button>
+            <button
+              className="visible-toggle"
+              onClick={() => toggleChatVisibility(props.id)}
+            >
+              {props.chat.visible
+                ? L.render("icon_hide")
+                : L.render("icon_show")}
+            </button>
+          </div>
+        ) : null}
+      </div>
+    );
+  }
+
+  function Notice(notice: ChatCommon.Notice) {
+    return (
+      <div className="item notice">
+        {/* float: left */}
+        <div className="head head-notice ellipse">{L.get("alert")}</div>
+        <div className="content">
+          {htmlParser.parse(notice.content.replaceAll("\n", "<br>"))}
+        </div>
+
+        {/* float: right */}
+        <div className="timestamp">{notice.createdAt.toLocaleTimeString()}</div>
       </div>
     );
   }

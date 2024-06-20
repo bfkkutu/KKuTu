@@ -1,6 +1,5 @@
 import { Database } from "common/Database";
 import { KKuTu } from "common/KKuTu";
-import { Whisper } from "common/interfaces/Whisper";
 
 export namespace WebSocketMessage {
   export enum Type {
@@ -55,8 +54,10 @@ export namespace WebSocketMessage {
     FriendRemove = "friendRemove",
     BlackListAdd = "blackListAdd",
     BlackListRemove = "blackListRemove",
-    Report = "report",
     Whisper = "whisper",
+    Report = "report",
+    ReportChat = "reportChat",
+    ReportWhisper = "reportWhisper",
     Invite = "invite",
     UpdateUser = "updateUser",
     /**
@@ -88,16 +89,7 @@ export namespace WebSocketMessage {
       [Type.Leave]: {
         userId: string;
       };
-      [Type.Chat]: {
-        /**
-         * 채팅을 보낸 유저의 식별자.
-         */
-        sender: string;
-        /**
-         * 채팅 내용.
-         */
-        content: string;
-      };
+      [Type.Chat]: Database.Chat;
       [Type.CreateRoom]: {
         room: KKuTu.Room.Detailed;
       };
@@ -129,8 +121,10 @@ export namespace WebSocketMessage {
       [Type.FriendRemove]: {};
       [Type.BlackListAdd]: {};
       [Type.BlackListRemove]: {};
+      [Type.Whisper]: Database.Whisper;
       [Type.Report]: {};
-      [Type.Whisper]: Whisper;
+      [Type.ReportChat]: {};
+      [Type.ReportWhisper]: {};
       [Type.Invite]: {
         /**
          * 초대를 보낸 유저 식별자.
@@ -209,14 +203,29 @@ export namespace WebSocketMessage {
       [Type.BlackListRemove]: {
         target: string;
       };
+      [Type.Whisper]: {
+        target: string;
+        content: string;
+      };
       [Type.Report]: {
+        /**
+         * 신고 대상 유저의 식별자
+         */
         target: string;
         reason: number;
         comment: string;
       };
-      [Type.Whisper]: {
+      [Type.ReportChat]: {
+        /**
+         * 신고 대상 Chat 객체의 식별자
+         */
         target: string;
-        content: string;
+      };
+      [Type.ReportWhisper]: {
+        /**
+         * 신고 대상 Whisper 객체의 식별자
+         */
+        target: string;
       };
       [Type.Invite]: {
         target: string;

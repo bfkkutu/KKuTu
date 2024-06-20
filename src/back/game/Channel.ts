@@ -10,9 +10,10 @@ import WebSocket from "back/utils/WebSocket";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Database } from "../../common/Database";
 import ObjectMap from "../../common/ObjectMap";
-import { Whisper } from "common/interfaces/Whisper";
 
 import User from "back/models/User";
+import Whisper from "back/models/Whisper";
+import Chat from "back/models/Chat";
 import Report from "back/models/Report";
 
 export default class Channel extends WebSocketServer {
@@ -85,16 +86,19 @@ export default class Channel extends WebSocketServer {
               return;
             }
 
+            const chat = new Chat();
+            chat.sender = user;
+            chat.content = message.content;
+
             if (user.roomId === undefined) {
+              await DB.Manager.save(chat);
               this.broadcast(
                 WebSocketMessage.Type.Chat,
-                {
-                  sender: user.id,
-                  content: message.content,
-                },
+                chat.serialize(),
                 (client) =>
                   this.users.get(client.user.id)?.user.roomId === undefined
               );
+              Logger.info(`[Lobby] Chat #${user.id}: ${message.content}`).out();
             } else {
               const room = this.rooms.get(user.roomId);
               if (room === undefined) {
@@ -104,10 +108,12 @@ export default class Channel extends WebSocketServer {
                 return;
               }
 
-              room.broadcast(WebSocketMessage.Type.Chat, {
-                sender: user.id,
-                content: message.content,
-              });
+              chat.room = room.id;
+              await DB.Manager.save(chat);
+              room.broadcast(WebSocketMessage.Type.Chat, chat.serialize());
+              Logger.info(
+                `[Room #${room.id}] Chat #${user.id}: ${message.content}`
+              ).out();
             }
             break;
           case WebSocketMessage.Type.CreateRoom:
@@ -453,9 +459,9 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.BlackListAdd:
             if (
-              (await DB.Manager.createQueryBuilder(User, "u")
+              !(await DB.Manager.createQueryBuilder(User, "u")
                 .where("u.id = :id", { id: message.target })
-                .getOne()) === null
+                .getExists())
             ) {
               return socket.sendError(WebSocketError.Type.NotFound, {
                 isFatal: false,
@@ -500,6 +506,38 @@ export default class Channel extends WebSocketServer {
               community: user.community,
             });
             break;
+          case WebSocketMessage.Type.Whisper:
+            {
+              if (message.content === "") {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              const target = this.users.get(message.target);
+              if (target === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              const whisper = new Whisper();
+              whisper.sender = user;
+              whisper.target = target.user;
+              whisper.content = message.content;
+              await DB.Manager.save(whisper);
+              socket.send(WebSocketMessage.Type.Whisper, whisper.serialize());
+              Logger.info(
+                `Whisper #${user.id} → #${target.user.id}: ${whisper.content}`
+              ).out();
+
+              // black list에 있는 경우 자동 거절
+              if (target.user.community.blackList.includes(user.id)) {
+                return;
+              }
+              target.send(WebSocketMessage.Type.Whisper, whisper.serialize());
+            }
+            break;
           case WebSocketMessage.Type.Report:
             const target = await this.queryUser(message.target);
             if (target === undefined) {
@@ -516,32 +554,48 @@ export default class Channel extends WebSocketServer {
             await DB.Manager.save(report);
             socket.send(WebSocketMessage.Type.Report, {});
             break;
-          case WebSocketMessage.Type.Whisper:
+          case WebSocketMessage.Type.ReportChat:
             {
-              if (message.content === "") {
-                return socket.sendError(WebSocketError.Type.BadRequest, {
+              const chat = await DB.Manager.createQueryBuilder(Chat, "c")
+                .where("c.id = :id", { id: message.target })
+                .getOne();
+              if (chat === null) {
+                return socket.sendError(WebSocketError.Type.NotFound, {
                   isFatal: false,
                 });
               }
 
-              const target = this.users.get(message.target);
-              if (target === undefined) {
-                return socket.sendError(WebSocketError.Type.BadRequest, {
+              if (chat.reports.includes(user.id)) {
+                return socket.sendError(WebSocketError.Type.Conflict, {
                   isFatal: false,
                 });
               }
 
-              const whisper: Whisper = {
-                sender: user.id,
-                content: message.content,
-              };
-              socket.send(WebSocketMessage.Type.Whisper, whisper);
-
-              // black list에 있는 경우 자동 거절
-              if (target.user.community.blackList.includes(user.id)) {
-                return;
+              chat.reports.push(user.id);
+              await DB.Manager.save(chat);
+              socket.send(WebSocketMessage.Type.ReportChat, {});
+            }
+            break;
+          case WebSocketMessage.Type.ReportWhisper:
+            {
+              const whisper = await DB.Manager.createQueryBuilder(Whisper, "w")
+                .where("w.id = :id", { id: message.target })
+                .getOne();
+              if (whisper === null) {
+                return socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
               }
-              target.send(WebSocketMessage.Type.Whisper, whisper);
+
+              if (whisper.reports.includes(user.id)) {
+                return socket.sendError(WebSocketError.Type.Conflict, {
+                  isFatal: false,
+                });
+              }
+
+              whisper.reports.push(user.id);
+              await DB.Manager.save(whisper);
+              socket.send(WebSocketMessage.Type.ReportWhisper, {});
             }
             break;
           case WebSocketMessage.Type.Invite:

@@ -26,20 +26,20 @@ export function Transaction(): MethodDecorator {
     } as any;
   };
 }
-export class Transformer {
-  private static PARSER_POINT_FROM = /^POINT\((\S+) (\S+)\)$/;
+export namespace Transformer {
+  const PARSER_POINT_FROM = /^POINT\((\S+) (\S+)\)$/;
 
-  public static Boolean: ValueTransformer = {
+  export const Bool: ValueTransformer = {
     from: (v: number) => Boolean(v),
     to: (v: Boolean) => (v ? 1 : 0),
   };
-  public static List: ValueTransformer = {
+  export const List: ValueTransformer = {
     from: (v: string) => (v ? v.split(",") : []),
-    to: (v: string[]) => v.join(","),
+    to: (v: string[]) => (v ? v.join(",") : ""),
   };
-  public static Point: ValueTransformer = {
+  export const Point: ValueTransformer = {
     from: (v: string) => {
-      return v.match(Transformer.PARSER_POINT_FROM)!.slice(1).map(Number);
+      return v.match(PARSER_POINT_FROM)!.slice(1).map(Number);
     },
     to: (v: number[]) => {
       return v && `POINT(${v[0]} ${v[1]})`;

@@ -595,7 +595,17 @@
         }
       }
 
-      button {
+      .timestamp {
+        float: right;
+        padding-top: 2px;
+        margin-right: 5px;
+        width: 65px;
+        font-size: 11px;
+        text-align: right;
+        color: #999;
+      }
+
+      .buttons button {
         float: right;
         border: none;
         padding: 1px;
@@ -606,16 +616,6 @@
           color: red;
           background-color: unset;
         }
-      }
-
-      .timestamp {
-        float: right;
-        padding-top: 2px;
-        margin-right: 5px;
-        width: 65px;
-        font-size: 11px;
-        text-align: right;
-        color: #999;
       }
     }
   }
@@ -1098,16 +1098,34 @@
           font-size: 10pt;
         }
 
-        .content {
-          display: block;
-          font-family: inherit;
-          font-size: 10pt;
-          box-sizing: inherit;
-          padding: 5px;
-          border: 1px solid #aaa;
-          border-radius: 10px;
-          background-color: #fff;
-          transition: all 200ms ease;
+        .content-wrapper {
+          display: flex;
+          flex-direction: row;
+
+          .content {
+            display: block;
+            font-family: inherit;
+            font-size: 10pt;
+            box-sizing: inherit;
+            padding: 5px;
+            border: 1px solid #aaa;
+            border-radius: 10px;
+            background-color: #fff;
+            transition: all 200ms ease;
+          }
+
+          .report {
+            float: right;
+            border: none;
+            padding: 1px;
+            font-size: 11px;
+            color: #999;
+
+            &:active {
+              color: red;
+              background-color: unset;
+            }
+          }
         }
 
         &.left {

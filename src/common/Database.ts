@@ -96,6 +96,20 @@ export namespace Database {
     punishment: JSON.Types.User.punishment;
     settings: JSON.Types.User.settings;
   }
+  export interface Chat {
+    id: string;
+    room: Nullable<number>;
+    sender: string;
+    content: string;
+    createdAt: number;
+  }
+  export interface Whisper {
+    id: string;
+    sender: string;
+    target: string;
+    content: string;
+    createdAt: number;
+  }
   export interface Report {
     id: string;
     submitter: string;

@@ -7,8 +7,7 @@ import { EventListener } from "front/@global/WebSocket";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { useStore as useGlobalStore } from "front/Game/Store";
 import { Database } from "../../../common/Database";
-import { WebSocketMessage } from "../../../common/WebSocket";
-import { Whisper as WhisperData } from "common/interfaces/Whisper";
+import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export namespace WhisperDialog {
   interface State {
@@ -17,8 +16,8 @@ export namespace WhisperDialog {
 
     dialogs: Table<Dialog | undefined>;
 
-    logs: Table<WhisperData[]>;
-    appendLog: (userId: string, whisper: WhisperData) => number;
+    logs: Table<Database.Whisper[]>;
+    appendLog: (userId: string, whisper: Database.Whisper) => number;
   }
 
   export const useStore = createStoreHook<State>((setState, getState) => ({
@@ -100,11 +99,10 @@ export namespace WhisperDialog {
       }, [content]);
 
       useEffect(() => {
-        const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
-          sender,
-          content,
-        }) => {
-          appendLog(user.id, { sender, content });
+        const listener: EventListener<WebSocketMessage.Type.Whisper> = (
+          whisper
+        ) => {
+          appendLog(user.id, whisper);
         };
         socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
         return () => {
@@ -113,28 +111,73 @@ export namespace WhisperDialog {
       }, []);
 
       useEffect(() => {
-        if ($input.current)
+        if ($input.current) {
           $input.current.onkeydown = (e) => {
-            if (e.code === "Enter" || e.code === "NumpadEnter") send();
+            if (e.code === "Enter" || e.code === "NumpadEnter") {
+              send();
+            }
           };
+        }
         return () => {
-          if ($input.current) $input.current.onkeydown = null;
+          if ($input.current) {
+            $input.current.onkeydown = null;
+          }
         };
-      }, [content]);
+      }, [send]);
 
       return (
         <div className="dialog-whisper">
           <ul className="body">
-            {logs.map((v) => {
+            {logs.map((v, index) => {
               const className = new ClassName("item");
               const fromOpposite = v.sender === user.id;
               className.push(fromOpposite ? "left" : "right");
               return (
-                <li className={className.toString()}>
+                <li key={index} className={className.toString()}>
                   {fromOpposite ? (
                     <p className="sender">{user.nickname}</p>
                   ) : null}
-                  <div className="content">{v.content}</div>
+                  <div className="content-wrapper">
+                    <div className="content">{v.content}</div>
+                    {fromOpposite ? (
+                      <button
+                        className="report"
+                        onClick={async () => {
+                          if (
+                            !(await window.confirm(
+                              L.get("confirm_reportMessage")
+                            ))
+                          ) {
+                            return;
+                          }
+                          socket.send(WebSocketMessage.Type.ReportWhisper, {
+                            target: v.id,
+                          });
+                          try {
+                            await socket.messageReceiver.wait(
+                              WebSocketMessage.Type.ReportWhisper
+                            );
+                            window.alert(L.get("alert_reportSubmitted"));
+                          } catch (e) {
+                            const { errorType } =
+                              e as WebSocketError.Message[WebSocketError.Type];
+                            switch (errorType) {
+                              case WebSocketError.Type.NotFound:
+                                window.alert(L.get("error_404"));
+                                break;
+                              case WebSocketError.Type.Conflict:
+                                window.alert(
+                                  L.get("error_alreadyReportedMessage")
+                                );
+                                break;
+                            }
+                          }
+                        }}
+                      >
+                        {L.render("icon_report")}
+                      </button>
+                    ) : null}
+                  </div>
                 </li>
               );
             })}
