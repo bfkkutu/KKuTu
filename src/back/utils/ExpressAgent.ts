@@ -44,6 +44,9 @@ export default function (App: Express.Application): void {
   App.use("/docs/privacy_policy", (req, res) =>
     res.sendFile(resolve("dist", "docs", "privacy_policy.htm"))
   );
+  App.use("/docs/policy", (req, res) =>
+    res.sendFile(resolve("dist", "docs", "policy.htm"))
+  );
   App.use("/ads.txt", (req, res) => res.sendFile(resolve("dist", "ads.txt")));
   App.use("/robots.txt", (req, res) =>
     res.sendFile(resolve("dist", "robots.txt"))
