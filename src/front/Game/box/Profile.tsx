@@ -6,7 +6,7 @@ import Moremi from "front/@block/Moremi";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
-import { createProfileDialog } from "front/Game/dialogs/Profile";
+import ProfileDialog from "front/Game/dialogs/Profile";
 import Gauge from "front/@block/Gauge";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 
@@ -14,8 +14,8 @@ export namespace Profile {
   export function Box() {
     const me = useStore((state) => state.me);
     const toggle = Dialog.useStore((state) => state.toggle);
-    const dialog = createProfileDialog(me);
 
+    const dialog = new ProfileDialog(me);
     const level = getLevel(me.score);
     const prev = CLIENT_SETTINGS.expTable[level - 2] || 0;
     const goal = CLIENT_SETTINGS.expTable[level - 1];

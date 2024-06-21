@@ -6,7 +6,7 @@ import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
 import ProfileImage from "front/@block/ProfileImage";
 import { Database } from "common/Database";
-import { createProfileDialog } from "front/Game/dialogs/Profile";
+import ProfileDialog from "front/Game/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 
 export namespace UserList {
@@ -39,7 +39,8 @@ export namespace UserList {
 
   function Item(user: Database.User.Summarized) {
     const toggle = Dialog.useStore((state) => state.toggle);
-    const dialog = createProfileDialog(user);
+
+    const dialog = new ProfileDialog(user);
 
     return (
       <div className="item" onClick={() => toggle(dialog)}>

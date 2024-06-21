@@ -8,43 +8,50 @@ import { getLevel } from "front/@global/Utility";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
-export const InviteDialog = new Dialog(L.get("invite_title"), () => {
-  const socket = useStore((state) => state.socket);
-  const users = useStore((state) => state.users);
+export default class InviteDialog extends Dialog {
+  public static instance = new InviteDialog();
 
-  return (
-    <div className="dialog-invite">
-      <ul className="body">
-        {Object.values(users)
-          .filter((user) => user.roomId === undefined)
-          .map((user) => (
-            <li
-              className="item"
-              onClick={async () => {
-                if (
-                  !(await window.confirm(
-                    L.get("confirm_invite", user.nickname)
-                  ))
-                )
-                  return;
-                socket.send(WebSocketMessage.Type.Invite, {
-                  target: user.id,
-                });
-                window.alert(L.get("alert_invite", user.nickname));
-              }}
-            >
-              <ProfileImage src={user.image} width={20} height={20} />
-              <LevelIcon
-                className="image"
-                level={getLevel(user.score)}
-                width={20}
-                height={20}
-              />
-              <div className="name ellipse">{user.nickname}</div>
-            </li>
-          ))}
-      </ul>
-      <div className="footer"></div>
-    </div>
-  );
-});
+  public override head(): React.ReactElement {
+    return <>{L.get("invite_title")}</>;
+  }
+  public override body(): React.ReactElement {
+    const socket = useStore((state) => state.socket);
+    const users = useStore((state) => state.users);
+
+    return (
+      <div className="dialog-invite">
+        <ul className="body">
+          {Object.values(users)
+            .filter((user) => user.roomId === undefined)
+            .map((user) => (
+              <li
+                className="item"
+                onClick={async () => {
+                  if (
+                    !(await window.confirm(
+                      L.get("confirm_invite", user.nickname)
+                    ))
+                  )
+                    return;
+                  socket.send(WebSocketMessage.Type.Invite, {
+                    target: user.id,
+                  });
+                  window.alert(L.get("alert_invite", user.nickname));
+                }}
+              >
+                <ProfileImage src={user.image} width={20} height={20} />
+                <LevelIcon
+                  className="image"
+                  level={getLevel(user.score)}
+                  width={20}
+                  height={20}
+                />
+                <div className="name ellipse">{user.nickname}</div>
+              </li>
+            ))}
+        </ul>
+        <div className="footer"></div>
+      </div>
+    );
+  }
+}

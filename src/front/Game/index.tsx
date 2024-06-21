@@ -10,7 +10,7 @@ import AudioContext from "front/@global/AudioContext";
 import { EventListener } from "front/@global/WebSocket";
 import { createInviteNotification } from "front/Game/notifications/Invite";
 import { Notification } from "front/@global/Bayadere/Notification";
-import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { Whisper } from "front/Game/dialogs/Whisper";
 import { WhisperNotification } from "front/Game/notifications/Whisper";
 import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
@@ -53,12 +53,9 @@ function Component(props: Nest.Page.Props<"Game">) {
       state.show,
       state.hide,
     ]);
-  const [whisperDialogs, whisperLogs, appendWhisperLog] =
-    WhisperDialog.useStore((state) => [
-      state.dialogs,
-      state.logs,
-      state.appendLog,
-    ]);
+  const [whisperDialogs, whisperLogs, appendWhisper] = Whisper.useStore(
+    (state) => [state.dialogs, state.logs, state.append]
+  );
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 
@@ -146,7 +143,7 @@ function Component(props: Nest.Page.Props<"Game">) {
         showNotification(
           new WhisperNotification(
             users[whisper.sender],
-            appendWhisperLog(whisper.sender, whisper)
+            appendWhisper(whisper.sender, whisper)
           )
         );
       }

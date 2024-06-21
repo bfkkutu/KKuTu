@@ -6,7 +6,7 @@ import L from "front/@global/Language";
 import Mode from "front/@block/Mode";
 import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { createProfileDialog } from "front/Game/dialogs/Profile";
+import ProfileDialog from "front/Game/dialogs/Profile";
 import Moremi from "front/@block/Moremi";
 import { getLevel } from "front/@global/Utility";
 import LevelIcon from "front/@block/LevelIcon";
@@ -119,8 +119,8 @@ export namespace Room {
 
     const user = users[member.id];
     const toggle = Dialog.useStore((state) => state.toggle);
-    const dialog = createProfileDialog(user);
 
+    const dialog = new ProfileDialog(user);
     const stats: React.ReactNode[] = [];
 
     if (room.master === member.id)

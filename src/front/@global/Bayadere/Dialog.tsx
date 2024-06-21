@@ -1,29 +1,31 @@
 import React, { useState, useRef, useEffect } from "react";
 import { create, UseBoundStore, StoreApi } from "zustand";
 
-import { renderComponentOrNode } from "front/@global/Utility";
 import { Point } from "front/@global/Point";
 
-export class Dialog {
-  public title: React.ComponentOrNode;
-  public content: React.FC;
-  public usePoint!: UseBoundStore<StoreApi<Point>>;
+export abstract class Dialog {
+  public usePoint: UseBoundStore<StoreApi<Point>>;
   public visible = false;
   /**
    * Clean up을 위한 함수.
    */
   public onHide?: Dialog.OnHide;
 
-  constructor(
-    title: React.ComponentOrNode,
-    content: React.FC,
-    onHide?: Dialog.OnHide
-  ) {
-    this.title = title;
-    this.content = content;
+  constructor(onHide?: Dialog.OnHide) {
     this.onHide = onHide;
-    this.initializeState();
+    this.usePoint = create<Point>((setState) => ({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2,
+      move: (movementX, movementY) =>
+        setState(({ x, y }) => ({
+          x: x + movementX,
+          y: y + movementY,
+        })),
+    }));
   }
+
+  public abstract head(): React.ReactElement;
+  public abstract body(): React.ReactElement;
 
   public initializeState() {
     this.usePoint = create<Point>((setState) => ({
@@ -77,10 +79,25 @@ export namespace Dialog {
     },
   }));
 
+  type Resolve<T> = (object: T | PromiseLike<T>) => void;
+  type Reject = (reason: any) => void;
+  export abstract class Asynchronous<T> extends Dialog {
+    protected resolve: Resolve<T> = () => {};
+    protected reject: Reject = () => {};
+    public wait = new Promise<T>((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+
+    constructor(onHide?: OnHide) {
+      super(onHide);
+    }
+  }
+
   interface Props {
     instance: Dialog;
   }
-  export function Component({ instance }: Props) {
+  function Component({ instance }: Props) {
     const hide = useStore((state) => state.hide);
     const [x, y, move] = instance.usePoint((state) => [
       state.x,
@@ -126,7 +143,7 @@ export namespace Dialog {
         style={{ top: `${y}px`, left: `${x}px` }}
       >
         <div className="head" onMouseDown={() => setIsMoving(true)}>
-          <label>{renderComponentOrNode(instance.title)}</label>
+          <label>{React.createElement(instance.head.bind(instance))}</label>
           <div
             className="button-close"
             onClick={() => {
@@ -135,7 +152,7 @@ export namespace Dialog {
             }}
           />
         </div>
-        {React.createElement(instance.content)}
+        {React.createElement(instance.body.bind(instance))}
       </div>
     );
   }

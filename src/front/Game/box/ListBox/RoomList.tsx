@@ -3,7 +3,7 @@ import sha256 from "sha256";
 
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
-import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
+import CreateRoomDialog from "front/Game/dialogs/CreateRoom";
 import { Icon, IconType } from "front/@block/Icon";
 import Mode from "front/@block/Mode";
 import { Dialog } from "front/@global/Bayadere/Dialog";
@@ -35,7 +35,10 @@ export default function RoomListBox() {
       </h5>
       <div className="product-body">
         {rooms.length === 0 ? (
-          <div className="item create" onClick={() => toggle(CreateRoomDialog)}>
+          <div
+            className="item create"
+            onClick={() => toggle(CreateRoomDialog.instance)}
+          >
             {L.get("createRoom")}
           </div>
         ) : (

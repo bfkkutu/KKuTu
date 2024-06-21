@@ -6,8 +6,19 @@ import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { useStore } from "front/Game/Store";
 
-export const createReportDialog = (target: Database.User.Summarized) => {
-  const dialog = new Dialog(L.render("report_title", target.nickname), () => {
+export default class ReportDialog extends Dialog {
+  private target: Database.User.Summarized;
+
+  constructor(target: Database.User.Summarized) {
+    super();
+
+    this.target = target;
+  }
+
+  public override head(): React.ReactElement {
+    return <>{L.render("report_title", this.target.nickname)}</>;
+  }
+  public override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const hide = Dialog.useStore((state) => state.hide);
     const [reason, setReason] = useState(0);
@@ -20,7 +31,7 @@ export const createReportDialog = (target: Database.User.Summarized) => {
             <label className="dialog-desc" htmlFor="report-label-target">
               {L.get("report_target")}
             </label>
-            <label id="report-label-target">{target.nickname}</label>
+            <label id="report-label-target">{this.target.nickname}</label>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="report-select-reason">
@@ -52,13 +63,13 @@ export const createReportDialog = (target: Database.User.Summarized) => {
           <button
             onClick={async () => {
               socket.send(WebSocketMessage.Type.Report, {
-                target: target.id,
+                target: this.target.id,
                 reason,
                 comment,
               });
               await socket.messageReceiver.wait(WebSocketMessage.Type.Report);
               window.alert(L.get("alert_reportSubmitted"));
-              hide(dialog);
+              hide(this);
             }}
           >
             {L.get("submit")}
@@ -66,6 +77,5 @@ export const createReportDialog = (target: Database.User.Summarized) => {
         </div>
       </div>
     );
-  });
-  return dialog;
-};
+  }
+}

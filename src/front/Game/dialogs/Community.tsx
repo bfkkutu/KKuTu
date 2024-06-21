@@ -8,17 +8,19 @@ import LevelIcon from "front/@block/LevelIcon";
 import { Icon, IconType } from "front/@block/Icon";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { Whisper } from "front/Game/dialogs/Whisper";
 import { Room } from "front/Game/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
-export const CommunityDialog = new Dialog(
-  () => {
+export default class CommunityDialog extends Dialog {
+  public static instance = new CommunityDialog();
+
+  public override head(): React.ReactElement {
     const friends = useStore((state) => state.community.friends);
 
     return <>{L.render("community_title", friends.length)}</>;
-  },
-  () => {
+  }
+  public override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);
@@ -130,7 +132,7 @@ export const CommunityDialog = new Dialog(
                         onMouseEnter={createOnMouseEnter(L.get("whisper"))}
                         onMouseMove={onMouseMove}
                         onMouseLeave={onMouseLeave}
-                        onClick={() => WhisperDialog.toggle(friend)}
+                        onClick={() => Whisper.toggle(friend)}
                       >
                         <Icon type={IconType.NORMAL} name="comment" />
                       </div>
@@ -231,4 +233,4 @@ export const CommunityDialog = new Dialog(
       </div>
     );
   }
-);
+}

@@ -10,12 +10,23 @@ import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
-export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
-  const dialog = new Dialog(L.get("roomSettings"), () => {
+export default class RoomSettingsDialog extends Dialog {
+  private settings: KKuTu.Room.Settings;
+
+  constructor(settings: KKuTu.Room.Settings) {
+    super();
+
+    this.settings = settings;
+  }
+
+  public override head(): React.ReactElement {
+    return <>{L.get("roomSettings")}</>;
+  }
+  public override body(): React.ReactElement {
     const nickname = useStore((state) => state.me.nickname);
     const socket = useStore((state) => state.socket);
     const hide = Dialog.useStore((state) => state.hide);
-    const [room, setRoom] = useState(config);
+    const [room, setRoom] = useState(this.settings);
 
     const update = useCallback(
       (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -149,7 +160,7 @@ export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.UpdateRoom
               );
-              hide(dialog);
+              hide(this);
             }}
           >
             {L.get("ok")}
@@ -157,6 +168,5 @@ export const createRoomSettingsDialog = (config: KKuTu.Room.Settings) => {
         </div>
       </div>
     );
-  });
-  return dialog;
-};
+  }
+}

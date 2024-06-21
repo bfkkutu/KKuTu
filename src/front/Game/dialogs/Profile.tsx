@@ -8,15 +8,26 @@ import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
 import Gauge from "front/@block/Gauge";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { WhisperDialog } from "front/Game/dialogs/Whisper";
+import { Whisper } from "front/Game/dialogs/Whisper";
 import { Room } from "front/Game/box/Room";
-import { createReportDialog } from "front/Game/dialogs/Report";
+import ReportDialog from "front/Game/dialogs/Report";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
-export const createProfileDialog = (user: Database.User.Summarized) => {
-  const dialog = new Dialog(L.render("profile_title", user.nickname), () => {
+export default class ProfileDialog extends Dialog {
+  private user: Database.User.Summarized;
+
+  constructor(user: Database.User.Summarized) {
+    super();
+
+    this.user = user;
+  }
+
+  public override head(): React.ReactElement {
+    return <>{L.render("profile_title", this.user.nickname)}</>;
+  }
+  public override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
@@ -27,23 +38,23 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
     ]);
 
     const footerButtons: React.ReactNode[] = [];
-    const ReportDialog = createReportDialog(user);
+    const reportDialog = new ReportDialog(this.user);
 
-    const level = getLevel(user.score);
+    const level = getLevel(this.user.score);
     const prev = CLIENT_SETTINGS.expTable[level - 2] || 0;
     const goal = CLIENT_SETTINGS.expTable[level - 1];
 
-    if (user.id !== id) {
+    if (this.user.id !== id) {
       footerButtons.push(
         <button
           key={footerButtons.length}
-          onClick={() => WhisperDialog.toggle(user)}
+          onClick={() => Whisper.toggle(this.user)}
         >
           {L.get("whisper")}
         </button>
       );
       footerButtons.push(
-        <button key={footerButtons.length} onClick={() => toggle(ReportDialog)}>
+        <button key={footerButtons.length} onClick={() => toggle(reportDialog)}>
           {L.get("report")}
         </button>
       );
@@ -54,36 +65,36 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
             onClick={async () => {
               if (
                 !(await window.confirm(
-                  L.render("confirm_handover", user.nickname)
+                  L.render("confirm_handover", this.user.nickname)
                 ))
               )
                 return;
               socket.send(WebSocketMessage.Type.HandoverRoom, {
-                master: user.id,
+                master: this.user.id,
               });
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.HandoverRoom
               );
-              hide(dialog);
+              hide(this);
             }}
           >
             {L.get("handover")}
           </button>
         );
-      if (!community.friends.includes(user.id))
+      if (!community.friends.includes(this.user.id))
         footerButtons.push(
           <button
             key={footerButtons.length}
-            disabled={community.friendRequests.sent.includes(user.id)}
+            disabled={community.friendRequests.sent.includes(this.user.id)}
             onClick={async () => {
               if (
                 !(await window.confirm(
-                  L.render("confirm_friendRequest", user.nickname)
+                  L.render("confirm_friendRequest", this.user.nickname)
                 ))
               )
                 return;
               socket.send(WebSocketMessage.Type.FriendRequest, {
-                target: user.id,
+                target: this.user.id,
               });
               try {
                 await socket.messageReceiver.wait(
@@ -103,25 +114,25 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
                     break;
                 }
               }
-              window.alert(L.get("alert_friendRequest", user.nickname));
+              window.alert(L.get("alert_friendRequest", this.user.nickname));
             }}
           >
             {L.get("friendRequest")}
           </button>
         );
-      if (!community.blackList.includes(user.id))
+      if (!community.blackList.includes(this.user.id))
         footerButtons.push(
           <button
             key={footerButtons.length}
             onClick={async () => {
               if (
                 !(await window.confirm(
-                  L.render("confirm_blackListAdd", user.nickname)
+                  L.render("confirm_blackListAdd", this.user.nickname)
                 ))
               )
                 return;
               socket.send(WebSocketMessage.Type.BlackListAdd, {
-                target: user.id,
+                target: this.user.id,
               });
               try {
                 await socket.messageReceiver.wait(
@@ -139,7 +150,7 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
                     break;
                 }
               }
-              window.alert(L.render("alert_blackListAdd", user.nickname));
+              window.alert(L.render("alert_blackListAdd", this.user.nickname));
             }}
           >
             {L.get("blackListAdd")}
@@ -151,11 +162,11 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
       <div className="dialog-profile">
         <div className="body">
           <section className="profile">
-            <Moremi equipment={user.equipment} />
+            <Moremi equipment={this.user.equipment} />
             <div>
               <div className="item">
-                <ProfileImage src={user.image} width={20} height={20} />
-                <div className="nickname ellipse">{user.nickname}</div>
+                <ProfileImage src={this.user.image} width={20} height={20} />
+                <div className="nickname ellipse">{this.user.nickname}</div>
               </div>
               <div className="item">
                 <div className="level">
@@ -168,12 +179,12 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
                   {L.get("unitLevel", level)}
                 </div>
                 <div className="score">
-                  {user.score.toLocaleString()} / {goal.toLocaleString()}점
+                  {this.user.score.toLocaleString()} / {goal.toLocaleString()}점
                 </div>
               </div>
               <div className="item gauge-wrapper">
                 <Gauge
-                  value={user.score - prev}
+                  value={this.user.score - prev}
                   max={goal - prev}
                   width={250}
                   height={20}
@@ -186,6 +197,5 @@ export const createProfileDialog = (user: Database.User.Summarized) => {
         <div className="footer">{footerButtons}</div>
       </div>
     );
-  });
-  return dialog;
-};
+  }
+}

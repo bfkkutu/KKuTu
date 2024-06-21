@@ -4,7 +4,7 @@ import { Parser as HTMLParser } from "html-to-react";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
 import AudioContext from "front/@global/AudioContext";
-import { createProfileDialog } from "front/Game/dialogs/Profile";
+import ProfileDialog from "front/Game/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Chat as ChatCommon } from "../../../common/Chat";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
@@ -128,7 +128,7 @@ export namespace Chat {
               window.alert(L.get("error_404"));
               return;
             }
-            toggle(createProfileDialog(sender));
+            toggle(new ProfileDialog(sender));
           }}
         >
           {props.chat.nickname}

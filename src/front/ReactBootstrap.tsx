@@ -1,123 +1,43 @@
-import React, { useState } from "react";
+import React from "react";
 import ReactDOM from "react-dom/client";
 
 import { PROPS } from "front/@global/Utility";
+import L from "front/@global/Language";
+import AlertDialog from "front/Game/dialogs/Alert";
+import PromptDialog from "front/Game/dialogs/Prompt";
 import { Nest } from "common/Nest";
 
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
-import L from "front/@global/Language";
 
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Notification } from "front/@global/Bayadere/Notification";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import ConfirmDialog from "./Game/dialogs/Confirm";
 
 if (typeof window !== "undefined") {
-  window.alert = (content: React.ReactNode) =>
-    new Promise<void>((resolve) => {
-      const dialog = new Dialog(L.get("alert"), () => {
-        const hide = Dialog.useStore((state) => state.hide);
-
-        return (
-          <>
-            <div className="body dialog-alert">{content}</div>
-            <div className="footer">
-              <button
-                type="button"
-                onClick={() => {
-                  hide(dialog);
-                  resolve();
-                }}
-              >
-                {L.get("ok")}
-              </button>
-            </div>
-          </>
-        );
-      });
-      Dialog.useStore.getState().show(dialog);
-    });
+  window.alert = (content: React.ReactNode) => {
+    const dialog = new AlertDialog(content);
+    Dialog.useStore.getState().show(dialog);
+    return dialog.wait;
+  };
   // @ts-ignore
   window.prompt = (
     title: string,
     content: React.ReactNode,
     type: React.HTMLInputTypeAttribute = "text"
-  ) =>
-    new Promise<string | null>((resolve) => {
-      const dialog = new Dialog(title, () => {
-        const hide = Dialog.useStore((state) => state.hide);
-        const [input, setInput] = useState("");
-
-        return (
-          <>
-            <div className="body dialog-prompt">
-              {content}
-              <input
-                type={type}
-                value={input}
-                onChange={(e) => setInput(e.currentTarget.value)}
-              />
-            </div>
-            <div className="footer">
-              <button
-                type="button"
-                onClick={() => {
-                  hide(dialog);
-                  resolve(input);
-                }}
-              >
-                {L.get("ok")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  hide(dialog);
-                  resolve(null);
-                }}
-              >
-                {L.get("cancel")}
-              </button>
-            </div>
-          </>
-        );
-      });
-      Dialog.useStore.getState().show(dialog);
-    });
+  ) => {
+    const dialog = new PromptDialog(title, content, type);
+    Dialog.useStore.getState().show(dialog);
+    return dialog.wait;
+  };
   // @ts-ignore
-  window.confirm = (content: React.ReactNode) =>
-    new Promise<boolean>((resolve) => {
-      const dialog = new Dialog(L.get("confirm"), () => {
-        const hide = Dialog.useStore((state) => state.hide);
-
-        return (
-          <>
-            <div className="body dialog-confirm">{content}</div>
-            <div className="footer">
-              <button
-                type="button"
-                onClick={() => {
-                  hide(dialog);
-                  resolve(true);
-                }}
-              >
-                {L.get("yes")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  hide(dialog);
-                  resolve(false);
-                }}
-              >
-                {L.get("no")}
-              </button>
-            </div>
-          </>
-        );
-      });
-      Dialog.useStore.getState().show(dialog);
-    });
+  window.confirm = (content: React.ReactNode) => {
+    const dialog = new ConfirmDialog(content);
+    Dialog.useStore.getState().show(dialog);
+    return dialog.wait;
+  };
   window.onselectstart = window.ondragstart = () => false;
 }
 

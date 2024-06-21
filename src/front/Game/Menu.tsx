@@ -11,12 +11,12 @@ import { Room } from "front/Game/box/Room";
 import { List } from "front/Game/box/ListBox";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
-import { SettingsDialog } from "front/Game/dialogs/Settings";
-import { CommunityDialog } from "front/Game/dialogs/Community";
-import { CreateRoomDialog } from "front/Game/dialogs/CreateRoom";
-import { createRoomSettingsDialog } from "front/Game/dialogs/RoomSettings";
-import { InviteDialog } from "front/Game/dialogs/Invite";
-import { BlackListDialog } from "front/Game/dialogs/BlackList";
+import SettingsDialog from "front/Game/dialogs/Settings";
+import CommunityDialog from "front/Game/dialogs/Community";
+import CreateRoomDialog from "front/Game/dialogs/CreateRoom";
+import RoomSettingsDialog from "front/Game/dialogs/RoomSettings";
+import InviteDialog from "front/Game/dialogs/Invite";
+import BlackListDialog from "front/Game/dialogs/BlackList";
 
 interface MenuItem {
   type: MenuType;
@@ -199,8 +199,8 @@ export function Menu() {
     state.change,
   ]);
 
-  const RoomSettingsDialog =
-    room && createRoomSettingsDialog({ ...room, password: "" });
+  const roomSettingsDialog =
+    room && new RoomSettingsDialog({ ...room, password: "" });
   let property: keyof MenuItem = "forLobby";
 
   if (room === undefined) property = "forLobby";
@@ -220,20 +220,20 @@ export function Menu() {
           > = {};
           switch (config.type) {
             case MenuType.Settings:
-              props.onClick = () => toggle(SettingsDialog);
+              props.onClick = () => toggle(SettingsDialog.instance);
               break;
             case MenuType.Community:
-              props.onClick = () => toggle(CommunityDialog);
+              props.onClick = () => toggle(CommunityDialog.instance);
               break;
             case MenuType.BlackList:
-              props.onClick = () => toggle(BlackListDialog);
+              props.onClick = () => toggle(BlackListDialog.instance);
               break;
             case MenuType.CreateRoom:
-              props.onClick = () => toggle(CreateRoomDialog);
+              props.onClick = () => toggle(CreateRoomDialog.instance);
               break;
             case MenuType.RoomSettings:
               props.onClick = () =>
-                RoomSettingsDialog && toggle(RoomSettingsDialog);
+                roomSettingsDialog && toggle(roomSettingsDialog);
               break;
             case MenuType.SearchRoom:
               if (currentListBox === ListBoxType.SearchRoom)
@@ -244,7 +244,7 @@ export function Menu() {
                   : changeListBox(ListBoxType.SearchRoom);
               break;
             case MenuType.Invite:
-              props.onClick = () => toggle(InviteDialog);
+              props.onClick = () => toggle(InviteDialog.instance);
               break;
             case MenuType.Spectate:
               if (
