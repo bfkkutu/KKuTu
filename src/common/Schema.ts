@@ -1,4 +1,17 @@
 export namespace Schema {
+  export interface Package {
+    name: string;
+    version: string;
+    description: string;
+    repository: string;
+    keywords: string[];
+    scripts: Table<string>;
+    author: string;
+    frontDependencies: Table<string>;
+    devDependencies: Table<string>;
+    dependencies: Table<string>;
+    license: string;
+  }
   export interface Settings {
     advertisement: {
       google: GoogleAdvertisement;

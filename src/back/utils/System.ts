@@ -27,7 +27,7 @@ export const AUTH_CONFIG: Schema.AuthConfig = Object.assign(
 /**
  * `package.json` 파일 객체.
  */
-export const PACKAGE: Table<any> = JSON.parse(
+export const PACKAGE: Schema.Package = JSON.parse(
   getProjectData("../package.json").toString()
 );
 

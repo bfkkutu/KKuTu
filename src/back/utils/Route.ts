@@ -11,8 +11,8 @@ import User from "back/models/User";
 
 export default function (App: Express.Application): void {
   const DEPENDENCIES = [
-    ...Object.entries(PACKAGE.devDependencies as Table<string>),
-    ...Object.entries(PACKAGE.dependencies as Table<string>),
+    ...Object.entries(PACKAGE.devDependencies),
+    ...Object.entries(PACKAGE.dependencies),
   ].sort();
 
   App.get("/", PageBuilder("Portal"));
