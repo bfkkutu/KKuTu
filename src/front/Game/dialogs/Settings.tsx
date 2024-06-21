@@ -212,6 +212,25 @@ export default class SettingsDialog extends Dialog {
               </label>
             </div>
           </label>
+          <label>
+            <label className="dialog-desc">
+              {L.get("settings_chatCensorship")}
+            </label>
+            <div className="checkbox-wrapper">
+              <label>
+                <input
+                  type="checkbox"
+                  id="settings-checkbox-chatCensorship"
+                  checked={me.settings.chatCensorship}
+                  onChange={(e) =>
+                    updateSettings({
+                      chatCensorship: e.currentTarget.checked,
+                    })
+                  }
+                />
+              </label>
+            </div>
+          </label>
         </form>
         <div className="footer">
           <button

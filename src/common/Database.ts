@@ -41,6 +41,7 @@ export namespace Database {
           game: {
             autoReady: boolean;
           };
+          chatCensorship: boolean;
         }
       }
     }
@@ -71,6 +72,7 @@ export namespace Database {
           game: {
             autoReady: false,
           },
+          chatCensorship: true,
         };
       }
     }

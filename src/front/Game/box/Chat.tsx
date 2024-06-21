@@ -6,6 +6,7 @@ import { useStore } from "front/Game/Store";
 import AudioContext from "front/@global/AudioContext";
 import ProfileDialog from "front/Game/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import { filterProfanities } from "front/@global/Utility";
 import { Chat as ChatCommon } from "../../../common/Chat";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
@@ -107,12 +108,21 @@ export namespace Chat {
   }
   function Chat(props: Props) {
     const id = useStore((state) => state.me.id);
+    const censorshipEnabled = useStore(
+      (state) => state.me.settings.chatCensorship
+    );
     const users = useStore((state) => state.users);
     const socket = useStore((state) => state.socket);
     const toggleChatVisibility = useStore(
       (state) => state.toggleChatVisibility
     );
+    const [content, setContent] = useState("");
     const toggle = Dialog.useStore((state) => state.toggle);
+
+    useEffect(() => {
+      const content = props.chat.content.replaceAll("\n", "<br>");
+      setContent(censorshipEnabled ? filterProfanities(content) : content);
+    }, [censorshipEnabled]);
 
     return (
       <div className="item chat">
@@ -134,9 +144,7 @@ export namespace Chat {
           {props.chat.nickname}
         </div>
         {props.chat.visible ? (
-          <div className="content">
-            {htmlParser.parse(props.chat.content.replaceAll("\n", "<br>"))}
-          </div>
+          <div className="content">{htmlParser.parse(content)}</div>
         ) : (
           <div className="content invisible">
             {L.get("notice_chatInvisible")}

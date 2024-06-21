@@ -8,6 +8,7 @@ import { Dialog } from "front/@global/Bayadere/Dialog";
 import { useStore as useGlobalStore } from "front/Game/Store";
 import { Database } from "common/Database";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
+import { filterProfanities } from "front/@global/Utility";
 
 export default class WhisperDialog extends Dialog {
   private user: Database.User.Summarized;
@@ -23,6 +24,9 @@ export default class WhisperDialog extends Dialog {
   }
   public override body(): React.ReactElement {
     const socket = useGlobalStore((state) => state.socket);
+    const censorshipEnabled = useGlobalStore(
+      (state) => state.me.settings.chatCensorship
+    );
     const [logs, append] = Whisper.useStore((state) => [
       state.logs[this.user.id],
       state.append,
@@ -85,7 +89,11 @@ export default class WhisperDialog extends Dialog {
                   <p className="sender">{this.user.nickname}</p>
                 ) : null}
                 <div className="content-wrapper">
-                  <div className="content">{v.content}</div>
+                  <div className="content">
+                    {censorshipEnabled
+                      ? filterProfanities(v.content)
+                      : v.content}
+                  </div>
                   {fromOpposite ? (
                     <button
                       className="report"
