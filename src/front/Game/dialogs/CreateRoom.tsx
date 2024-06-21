@@ -133,8 +133,8 @@ export default class CreateRoomDialog extends Dialog {
               value={room.roundTime}
               onChange={update}
             >
-              {CLIENT_SETTINGS.roundTimes.map((roundTime) => (
-                <option value={roundTime}>
+              {CLIENT_SETTINGS.roundTimes.map((roundTime, index) => (
+                <option key={index} value={roundTime}>
                   {L.get("unitSecond", roundTime)}
                 </option>
               ))}

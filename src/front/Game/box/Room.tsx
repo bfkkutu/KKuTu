@@ -102,8 +102,8 @@ export namespace Room {
         </h5>
         <div className="product-body">
           <div className="user-list">
-            {Object.values(room.members).map((member) => (
-              <Member {...member} />
+            {Object.values(room.members).map((member, index) => (
+              <Member {...member} key={index} />
             ))}
           </div>
         </div>
@@ -123,12 +123,26 @@ export namespace Room {
     const dialog = new ProfileDialog(user);
     const stats: React.ReactNode[] = [];
 
-    if (room.master === member.id)
-      stats.push(<div className="master">{L.get("master")}</div>);
-    else if (member.isReady)
-      stats.push(<div className="ready">{L.get("ready")}</div>);
-    if (member.isSpectator)
-      stats.push(<div className="spectator">{L.get("spectator")}</div>);
+    if (room.master === member.id) {
+      stats.push(
+        <div key={stats.length} className="master">
+          {L.get("master")}
+        </div>
+      );
+    } else if (member.isReady) {
+      stats.push(
+        <div key={stats.length} className="ready">
+          {L.get("ready")}
+        </div>
+      );
+    }
+    if (member.isSpectator) {
+      stats.push(
+        <div key={stats.length} className="spectator">
+          {L.get("spectator")}
+        </div>
+      );
+    }
 
     return (
       <div className="user" onClick={() => toggle(dialog)}>
