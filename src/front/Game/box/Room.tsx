@@ -84,7 +84,7 @@ export namespace Room {
     if (room === undefined) return null;
     return (
       <section id="box-room" className="product">
-        <h5 className="product-title">
+        <div className="product-title">
           <h5 className="id">[{room.id}]</h5>
           <h5 className="title">{room.title}</h5>
           <h5 className="mode">
@@ -99,7 +99,7 @@ export namespace Room {
           </h5>
           <h5 className="round">{L.get("unitRound", room.round)}</h5>
           <h5 className="roundTime">{L.get("unitSecond", room.roundTime)}</h5>
-        </h5>
+        </div>
         <div className="product-body">
           <div className="user-list">
             {Object.values(room.members).map((member, index) => (
