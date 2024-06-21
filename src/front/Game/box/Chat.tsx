@@ -108,8 +108,8 @@ export namespace Chat {
   }
   function Chat(props: Props) {
     const id = useStore((state) => state.me.id);
-    const censorshipEnabled = useStore(
-      (state) => state.me.settings.chatCensorship
+    const filterEnabled = useStore(
+      (state) => state.me.settings.filterProfanities
     );
     const users = useStore((state) => state.users);
     const socket = useStore((state) => state.socket);
@@ -121,8 +121,8 @@ export namespace Chat {
 
     useEffect(() => {
       const content = props.chat.content.replaceAll("\n", "<br>");
-      setContent(censorshipEnabled ? filterProfanities(content) : content);
-    }, [censorshipEnabled]);
+      setContent(filterEnabled ? filterProfanities(content) : content);
+    }, [filterEnabled]);
 
     return (
       <div className="item chat">

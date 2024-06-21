@@ -41,7 +41,7 @@ export namespace Database {
           game: {
             autoReady: boolean;
           };
-          chatCensorship: boolean;
+          filterProfanities: boolean;
         }
       }
     }
@@ -72,7 +72,7 @@ export namespace Database {
           game: {
             autoReady: false,
           },
-          chatCensorship: true,
+          filterProfanities: true,
         };
       }
     }

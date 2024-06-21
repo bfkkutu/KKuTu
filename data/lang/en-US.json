@@ -208,7 +208,7 @@
     "settings_locale": "언어(Language)",
     "settings_refuse": "자동 거절",
     "settings_game": "게임",
-    "settings_chatCensorship": "욕설 필터링",
+    "settings_filterProfanities": "욕설 필터링",
     "settings_etc": "기타",
 
     "community_title": "<{FA|users}> 친구 ({#0} / 100)",

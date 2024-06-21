@@ -214,17 +214,17 @@ export default class SettingsDialog extends Dialog {
           </label>
           <label>
             <label className="dialog-desc">
-              {L.get("settings_chatCensorship")}
+              {L.get("settings_settings_filterProfanities")}
             </label>
             <div className="checkbox-wrapper">
               <label>
                 <input
                   type="checkbox"
-                  id="settings-checkbox-chatCensorship"
-                  checked={me.settings.chatCensorship}
+                  id="settings-checkbox-settings_filterProfanities"
+                  checked={me.settings.filterProfanities}
                   onChange={(e) =>
                     updateSettings({
-                      chatCensorship: e.currentTarget.checked,
+                      filterProfanities: e.currentTarget.checked,
                     })
                   }
                 />

@@ -24,8 +24,8 @@ export default class WhisperDialog extends Dialog {
   }
   public override body(): React.ReactElement {
     const socket = useGlobalStore((state) => state.socket);
-    const censorshipEnabled = useGlobalStore(
-      (state) => state.me.settings.chatCensorship
+    const filterEnabled = useGlobalStore(
+      (state) => state.me.settings.filterProfanities
     );
     const [logs, append] = Whisper.useStore((state) => [
       state.logs[this.user.id],
@@ -90,9 +90,7 @@ export default class WhisperDialog extends Dialog {
                 ) : null}
                 <div className="content-wrapper">
                   <div className="content">
-                    {censorshipEnabled
-                      ? filterProfanities(v.content)
-                      : v.content}
+                    {filterEnabled ? filterProfanities(v.content) : v.content}
                   </div>
                   {fromOpposite ? (
                     <button
