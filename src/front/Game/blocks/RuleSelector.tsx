@@ -15,8 +15,9 @@ export default function RuleSelector({ room, setter }: Props) {
 
   return (
     <div className="checkbox-wrapper">
-      {KKuTu.Game.modes[room.mode].rules.map((rule) => (
+      {KKuTu.Game.modes[room.mode].rules.map((rule, index) => (
         <label
+          key={index}
           onMouseEnter={createOnMouseEnter(L.get(`game_rule_${rule}_desc`))}
           onMouseMove={onMouseMove}
           onMouseLeave={onMouseLeave}
