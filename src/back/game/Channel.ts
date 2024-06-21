@@ -98,7 +98,7 @@ export default class Channel extends WebSocketServer {
                 (client) =>
                   this.users.get(client.user.id)?.user.roomId === undefined
               );
-              Logger.info(`[Lobby] Chat #${user.id}: ${message.content}`).out();
+              Logger.info(`Lobby Chat #${user.id}: ${message.content}`).out();
             } else {
               const room = this.rooms.get(user.roomId);
               if (room === undefined) {
@@ -112,7 +112,7 @@ export default class Channel extends WebSocketServer {
               await DB.Manager.save(chat);
               room.broadcast(WebSocketMessage.Type.Chat, chat.serialize());
               Logger.info(
-                `[Room #${room.id}] Chat #${user.id}: ${message.content}`
+                `Room #${room.id} Chat #${user.id}: ${message.content}`
               ).out();
             }
             break;
@@ -265,6 +265,9 @@ export default class Channel extends WebSocketServer {
               user.isReady = false;
               master.user.isReady = true;
               room.update();
+              Logger.info(
+                `Room #${room.id}: handover #${user.id} → #${master.user.id}`
+              ).out();
               socket.send(WebSocketMessage.Type.HandoverRoom, {});
             }
             break;
@@ -346,6 +349,7 @@ export default class Channel extends WebSocketServer {
                 });
               }
               room.start();
+              Logger.info(`Room #${room.id}: game started`).out();
             }
             break;
           case WebSocketMessage.Type.FriendRequest:
