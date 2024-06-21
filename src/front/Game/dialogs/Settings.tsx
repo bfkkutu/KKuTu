@@ -214,13 +214,13 @@ export default class SettingsDialog extends Dialog {
           </label>
           <label>
             <label className="dialog-desc">
-              {L.get("settings_settings_filterProfanities")}
+              {L.get("settings_filterProfanities")}
             </label>
             <div className="checkbox-wrapper">
               <label>
                 <input
                   type="checkbox"
-                  id="settings-checkbox-settings_filterProfanities"
+                  id="settings-checkbox-filterProfanities"
                   checked={me.settings.filterProfanities}
                   onChange={(e) =>
                     updateSettings({
