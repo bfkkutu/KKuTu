@@ -43,7 +43,7 @@ export default class CommunityDialog extends Dialog {
         for (const id of [
           ...community.friendRequests.received,
           ...community.friends,
-        ])
+        ]) {
           if (!(id in users)) {
             const user = await socket.queryUser(id);
             if (user === undefined) {
@@ -51,6 +51,7 @@ export default class CommunityDialog extends Dialog {
             }
             setUsers((users) => ({ ...users, [id]: user }));
           }
+        }
       }
       loadOfflineUsers();
     }, [community]);
@@ -66,11 +67,11 @@ export default class CommunityDialog extends Dialog {
     return (
       <div className="dialog-community">
         <ul className="body">
-          {community.friendRequests.received.map((id) => {
+          {community.friendRequests.received.map((id, index) => {
             const user = users[id];
             if (user === undefined) return null;
             return (
-              <li className="item request">
+              <li key={index} className="item request">
                 <div className="left">
                   <ProfileImage src={user.image} width={20} height={20} />
                   <LevelIcon
@@ -104,12 +105,12 @@ export default class CommunityDialog extends Dialog {
               </li>
             );
           })}
-          {community.friends.map((id) => {
+          {community.friends.map((id, index) => {
             const friend = users[id];
             if (friend === undefined) return null;
             const isOnline = id in onlineUsers;
             return (
-              <li className="item">
+              <li key={index} className="item">
                 <div className="left">
                   <Icon
                     className={isOnline ? "online" : "offline"}
