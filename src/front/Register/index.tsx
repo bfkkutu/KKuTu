@@ -8,10 +8,10 @@ interface State {
   page: number;
 
   serviceTerms: string;
-  personalPolicy: string;
+  privacyPolicy: string;
 
   agreeServiceTerms: boolean;
-  agreePersonalPolicy: boolean;
+  agreePrivacyPolicy: boolean;
 
   nickname: string;
   exordial: string;
@@ -25,26 +25,22 @@ export default class Register extends React.PureComponent<
     page: 0,
 
     serviceTerms: L.get("loading"),
-    personalPolicy: L.get("loading"),
+    privacyPolicy: L.get("loading"),
 
     agreeServiceTerms: false,
-    agreePersonalPolicy: false,
+    agreePrivacyPolicy: false,
 
     nickname: "",
     exordial: "",
   };
   public async componentDidMount(): Promise<void> {
     try {
-      const serviceTerms = await (
-        await fetch("/media/documents/service_terms.html")
-      ).text();
-      const personalPolicy = await (
-        await fetch("/media/documents/personal_policy.html")
-      ).text();
+      const serviceTerms = await (await fetch("/docs/service_terms")).text();
+      const privacyPolicy = await (await fetch("/docs/privacy_policy")).text();
       if (this.props.session.profile === undefined) return console.log("error");
       this.setState({
         serviceTerms,
-        personalPolicy,
+        privacyPolicy,
 
         nickname: this.props.session.profile.name,
         exordial: this.props.session.profile.exordial,
@@ -78,23 +74,23 @@ export default class Register extends React.PureComponent<
               />
               {L.get("agree")}
             </label>
-            <h1>{L.get("personalPolicy")}</h1>
+            <h1>{L.get("privacyPolicy")}</h1>
             <div
               className="document-box"
-              dangerouslySetInnerHTML={{ __html: this.state.personalPolicy }}
+              dangerouslySetInnerHTML={{ __html: this.state.privacyPolicy }}
             />
             <label
-              htmlFor="checkbox-personal-policy"
+              htmlFor="checkbox-privacy-policy"
               className="checkbox-wrapper"
             >
               <input
                 type="checkbox"
-                id="checkbox-personal-policy"
+                id="checkbox-privacy-policy"
                 className="checkbox"
-                checked={this.state.agreePersonalPolicy}
+                checked={this.state.agreePrivacyPolicy}
                 onClick={() =>
                   this.setState({
-                    agreePersonalPolicy: !this.state.agreePersonalPolicy,
+                    agreePrivacyPolicy: !this.state.agreePrivacyPolicy,
                   })
                 }
               />
@@ -104,7 +100,7 @@ export default class Register extends React.PureComponent<
               type="button"
               onClick={() => this.setState({ page: 1 })}
               disabled={
-                !this.state.agreeServiceTerms || !this.state.agreePersonalPolicy
+                !this.state.agreeServiceTerms || !this.state.agreePrivacyPolicy
               }
             >
               {L.get("next")}
