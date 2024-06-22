@@ -36,7 +36,9 @@ async function strategyProcess(
   const user = await DB.Manager.createQueryBuilder(User, "u")
     .where("u.oid = :oid", { oid: _profile.id })
     .getOne();
-  if (user === null) return done(null, _profile);
+  if (user === null) {
+    return done(null, _profile);
+  }
   const profile: Schema.Profile = {
     ..._profile,
     token,
@@ -60,29 +62,50 @@ export default async function LoginRoute(App: Express.Application) {
   });
 
   App.get("/register", async (req, res, next) => {
-    if (req.session.profile === undefined) return res.sendStatus(400);
-    if (
-      (await DB.Manager.createQueryBuilder(User, "u")
-        .where("u.oid = :oid", { oid: req.session.profile.id })
-        .getCount()) !== 0
-    )
+    if (req.session.profile === undefined) {
       return res.sendStatus(400);
+    }
+    // Discord 로그인 실패 handling
+    if (
+      typeof req.session.profile === "boolean" &&
+      req.session.profile === false
+    ) {
+      req.session.profile = undefined;
+      await req.session.save();
+      return res.redirect("/login");
+    }
+
+    if (
+      await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.oid = :oid", { oid: req.session.profile.id })
+        .getExists()
+    ) {
+      return res.sendStatus(400);
+    }
+
     return PageBuilder("Register")(req, res, next);
   });
   App.post("/register", async (req, res) => {
-    if (req.session.profile === undefined) return res.sendStatus(400);
-    if (
-      (await DB.Manager.createQueryBuilder(User, "u")
-        .where("u.oid = :oid", { oid: req.session.profile.id })
-        .getCount()) !== 0
-    )
+    if (req.session.profile === undefined) {
       return res.sendStatus(400);
+    }
+
     if (
-      (await DB.Manager.createQueryBuilder(User, "u")
+      await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.oid = :oid", { oid: req.session.profile.id })
+        .getExists()
+    ) {
+      return res.sendStatus(400);
+    }
+
+    if (
+      await DB.Manager.createQueryBuilder(User, "u")
         .where("u.nickname = :nickname", { nickname: req.body.nickname })
-        .getCount()) !== 0
-    )
+        .getExists()
+    ) {
       return res.sendStatus(409);
+    }
+
     const user = new User();
     user.oid = req.session.profile.id;
     user.image = req.session.profile.image;
@@ -92,7 +115,7 @@ export default async function LoginRoute(App: Express.Application) {
     return res.sendStatus(200);
   });
 
-  for (const vendor in AUTH_CONFIG)
+  for (const vendor in AUTH_CONFIG) {
     try {
       const { config, options, createProfile }: AuthModule = await import(
         `back/auth/${vendor}`
@@ -102,15 +125,17 @@ export default async function LoginRoute(App: Express.Application) {
         passport.authenticate(
           vendor,
           async (e: unknown, profile: Schema.Profile, _: never, __: never) => {
-            if (e) return res.redirect("/login/fail");
+            if (e) {
+              return res.redirect("/login/fail");
+            }
             req.session.profile = profile;
             await req.session.save();
             return res.redirect(
               (await DB.Manager.createQueryBuilder(User, "u")
                 .where("u.oid = :oid", { oid: profile.id })
-                .getCount()) === 0
-                ? "/register"
-                : "/"
+                .getExists())
+                ? "/"
+                : "/register"
             );
           }
         )(req, res, next)
@@ -130,11 +155,17 @@ export default async function LoginRoute(App: Express.Application) {
       Logger.info(`OAuth Strategy ${vendor} loaded successfully.`).out();
     } catch (e) {
       Logger.error(`OAuth Strategy ${vendor} is not loaded`).out();
-      if (e instanceof Error) Logger.error(e.message).out();
+      if (e instanceof Error) {
+        Logger.error(e.message).out();
+      }
     }
+  }
 
   App.get("/logout", (req, res) => {
-    if (req.session.profile === undefined) return res.redirect("/");
-    else req.session.destroy(() => res.redirect("/"));
+    if (req.session.profile === undefined) {
+      return res.redirect("/");
+    } else {
+      req.session.destroy(() => res.redirect("/"));
+    }
   });
 }

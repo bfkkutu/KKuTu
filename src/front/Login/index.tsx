@@ -16,7 +16,7 @@ export default class Login extends React.PureComponent<
   public componentDidMount() {
     const loginButtons: React.ReactNode[] = [];
     for (const config of this.props.data.loginMethods)
-      if (config.useOAuthButtons)
+      if (config.useOAuthButtons) {
         loginButtons.push(
           <a href={`/login/${config.vendor}`}>
             <div
@@ -28,7 +28,7 @@ export default class Login extends React.PureComponent<
             </div>
           </a>
         );
-      else
+      } else {
         loginButtons.push(
           <a href={`/login/${config.vendor}`}>
             <button
@@ -43,6 +43,7 @@ export default class Login extends React.PureComponent<
             </button>
           </a>
         );
+      }
     this.setState({ loginButtons });
   }
   public render() {
@@ -55,14 +56,14 @@ export default class Login extends React.PureComponent<
         {this.state.loginButtons}
         <div className="login-legal">
           로그인이 이루어지면 BFKKuTu가 공지하는{" "}
-          <a href="http://agreement.bfkkutu.ze.am" target="_blank">
+          <a href="/docs/service_terms" target="_blank">
             {L.get("serviceTerms")}
           </a>{" "}
           및{" "}
-          <a href="http://privacy.bfkkutu.ze.am" target="_blank">
-            {L.get("personalPolicy")}
+          <a href="/docs/privacy_policy" target="_blank">
+            {L.get("privacyPolicy")}
           </a>
-          에 동의하는 것으로 간주 합니다.
+          에 동의하는 것으로 간주합니다.
         </div>
         <link
           rel="stylesheet"

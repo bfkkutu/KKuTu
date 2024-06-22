@@ -37,7 +37,10 @@ export default class Register extends React.PureComponent<
     try {
       const serviceTerms = await (await fetch("/docs/service_terms")).text();
       const privacyPolicy = await (await fetch("/docs/privacy_policy")).text();
-      if (this.props.session.profile === undefined) return console.log("error");
+      if (this.props.session.profile === undefined) {
+        location.href = "/login";
+        return;
+      }
       this.setState({
         serviceTerms,
         privacyPolicy,
@@ -66,9 +69,9 @@ export default class Register extends React.PureComponent<
                 id="checkbox-service-terms"
                 className="checkbox"
                 checked={this.state.agreeServiceTerms}
-                onClick={() =>
+                onChange={(e) =>
                   this.setState({
-                    agreeServiceTerms: !this.state.agreeServiceTerms,
+                    agreeServiceTerms: e.currentTarget.checked,
                   })
                 }
               />
@@ -88,9 +91,9 @@ export default class Register extends React.PureComponent<
                 id="checkbox-privacy-policy"
                 className="checkbox"
                 checked={this.state.agreePrivacyPolicy}
-                onClick={() =>
+                onChange={(e) =>
                   this.setState({
-                    agreePrivacyPolicy: !this.state.agreePrivacyPolicy,
+                    agreePrivacyPolicy: e.currentTarget.checked,
                   })
                 }
               />
@@ -127,13 +130,14 @@ export default class Register extends React.PureComponent<
                 if (ok) {
                   await window.alert(L.get("success"));
                   location.href = "/";
-                } else
+                } else {
                   window.alert(
                     <>
                       <label>{L.get("fail")}</label>
                       <label>{L.get("error_409_nickname")}</label>
                     </>
                   );
+                }
               }}
             >
               <label className="form-item-wrapper">
