@@ -120,6 +120,7 @@
     "whisper": "1대1 채팅",
     "friendRequest": "친구 추가",
     "blackListAdd": "블랙리스트 추가",
+    "open": "열기",
     "report": "신고",
     "submit": "제출",
     "handover": "방장 인계",
@@ -214,6 +215,14 @@
     "community_title": "<{FA|users}> 친구 ({#0} / 100)",
 
     "blackList_title": "<{FA|ban}> 블랙리스트 관리",
+
+    "administration_title": "<{FA|user-tie}> BF끄투 관리 도구",
+    "administration_management": "유저 관리",
+    "administration_databaseWord": "단어 관리",
+    "administration_databaseShop": "상점 관리",
+    "administration_connecting": "관리 도구와 연결 중...",
+    "administration_closed": "관리 도구와 연결이 끊어졌어요.",
+    "administration_failedToConnect": "관리 도구와 연결에 실패했어요.",
 
     "createRoom_title_default": "{#0}님의 방",
     "createRoom_password": "비밀번호",

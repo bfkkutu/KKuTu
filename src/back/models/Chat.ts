@@ -16,7 +16,7 @@ export default class Chat implements Serializable<Database.Chat> {
   @TypeORM.JoinColumn({ name: "c_sender" })
   public sender!: User;
 
-  @TypeORM.Column({ name: "c_content", type: "text" })
+  @TypeORM.Column({ name: "c_content", type: "text", nullable: false })
   public content!: string;
 
   @TypeORM.Column({

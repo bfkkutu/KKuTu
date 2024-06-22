@@ -62,11 +62,14 @@ function Component(props: Nest.Page.Props<"Game">) {
   const $intro = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    initializeSocket(props.data.wsUrl);
+    initializeSocket(props.data.ws);
   }, []);
 
   useEffect(() => {
-    if (socket === undefined) return;
+    if (socket === undefined) {
+      return;
+    }
+
     socket.on("open", async () => {
       const { me, users } = await socket.messageReceiver.wait(
         WebSocketMessage.Type.Initialize
@@ -164,7 +167,7 @@ function Component(props: Nest.Page.Props<"Game">) {
         </div>
         {me ? (
           <>
-            <Menu />
+            <Menu.Component />
             <div id="box-grid">
               {room === undefined ? (
                 <div className="lobby">

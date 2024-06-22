@@ -4,6 +4,8 @@ import { create, UseBoundStore, StoreApi } from "zustand";
 import { Point } from "front/@global/Point";
 
 export abstract class Dialog {
+  public mHead: React.FC<{}>;
+  public mBody: React.FC<{}>;
   public usePoint: UseBoundStore<StoreApi<Point>>;
   public visible = false;
   /**
@@ -12,6 +14,8 @@ export abstract class Dialog {
   public onHide?: Dialog.OnHide;
 
   constructor(onHide?: Dialog.OnHide) {
+    this.mHead = React.memo(this.head.bind(this));
+    this.mBody = React.memo(this.body.bind(this));
     this.onHide = onHide;
     this.usePoint = create<Point>((setState) => ({
       x: window.innerWidth / 2,
@@ -143,7 +147,9 @@ export namespace Dialog {
         style={{ top: `${y}px`, left: `${x}px` }}
       >
         <div className="head" onMouseDown={() => setIsMoving(true)}>
-          <label>{React.createElement(instance.head.bind(instance))}</label>
+          <label>
+            <instance.mHead />
+          </label>
           <div
             className="button-close"
             onClick={() => {
@@ -152,7 +158,7 @@ export namespace Dialog {
             }}
           />
         </div>
-        {React.createElement(instance.body.bind(instance))}
+        <instance.mBody />
       </div>
     );
   }

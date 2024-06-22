@@ -33,13 +33,19 @@ export default class Channel extends WebSocketServer {
     super(port, isSecure);
 
     this.on("connection", async (socket, req) => {
-      if (req.session.profile === undefined) return socket.close();
+      if (req.session.profile === undefined) {
+        return socket.close();
+      }
+
       const user = await DB.Manager.createQueryBuilder(User, "u")
         .where("u.oid = :oid", {
           oid: req.session.profile.id,
         })
         .getOne();
-      if (user === null) return socket.close();
+      if (user === null) {
+        return socket.close();
+      }
+
       socket.user = user;
       fillWithDefaults(user.settings, Database.JSON.Defaults.User.settings); // 옵션이 나중에 추가될 경우 오류 방지.
       fillWithDefaults(user.community, Database.JSON.Defaults.User.community);

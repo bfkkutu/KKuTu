@@ -2,6 +2,7 @@ import * as TypeORM from "typeorm";
 
 import { Database } from "../../common/Database";
 import { KKuTu } from "common/KKuTu";
+import { Transformer } from "back/utils/DatabaseAgent";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User implements Serializable<Database.User> {
@@ -76,19 +77,18 @@ export default class User implements Serializable<Database.User> {
   public exordial!: string;
 
   @TypeORM.Column({
+    name: "u_departures",
+    type: "int2",
+    default: Database.Departure.None,
+  })
+  public departures!: number;
+
+  @TypeORM.Column({
     name: "u_punishment",
     type: "json",
     default: Database.JSON.Defaults.User.punishment,
   })
   public punishment!: Database.JSON.Types.User.punishment;
-
-  @TypeORM.Column({
-    name: "u_password",
-    type: "varchar",
-    length: 32,
-    nullable: true,
-  })
-  public password!: Database.Nullable<string>;
 
   @TypeORM.Column({
     name: "u_community",
@@ -133,6 +133,8 @@ export default class User implements Serializable<Database.User> {
       image: this.image,
       nickname: this.nickname,
       exordial: this.exordial,
+      isAdmin: this.departures !== Database.Departure.None,
+      departures: this.departures,
       roomId: this.roomId,
       createdAt: this.createdAt,
     };

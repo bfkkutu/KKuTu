@@ -117,6 +117,9 @@
     &-leader {
       background-color: rgb(70, 232, 91);
     }
+    &-admin {
+      background-color: rgb(76, 167, 251);
+    }
     &-spectate {
       background-color: rgb(209, 157, 255);
     }
@@ -932,6 +935,16 @@
           }
         }
       }
+    }
+  }
+
+  &-administration {
+    width: 300px;
+    height: 300px;
+
+    li {
+      display: flex;
+      flex-direction: row;
     }
   }
 

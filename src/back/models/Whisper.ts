@@ -17,7 +17,7 @@ export default class Whisper implements Serializable<Database.Whisper> {
   @TypeORM.JoinColumn({ name: "w_target" })
   public target!: User;
 
-  @TypeORM.Column({ name: "w_content", type: "text" })
+  @TypeORM.Column({ name: "w_content", type: "text", nullable: false })
   public content!: string;
 
   @TypeORM.Column({

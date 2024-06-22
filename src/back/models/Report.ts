@@ -16,10 +16,10 @@ export default class Report implements Serializable<Database.Report> {
   @TypeORM.JoinColumn({ name: "r_target" })
   public target!: User;
 
-  @TypeORM.Column({ name: "r_reason", type: "int2" })
+  @TypeORM.Column({ name: "r_reason", type: "int2", nullable: false })
   public reason!: number;
 
-  @TypeORM.Column({ name: "r_comment", type: "text" })
+  @TypeORM.Column({ name: "r_comment", type: "text", nullable: false })
   public comment!: string;
 
   @TypeORM.Column({

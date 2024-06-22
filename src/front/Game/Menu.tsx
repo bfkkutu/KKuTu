@@ -3,7 +3,6 @@ import React from "react";
 import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
 import { useStore } from "front/Game/Store";
-import { MenuType } from "front/@global/enums/MenuType";
 import ClassName from "front/@global/ClassName";
 import { ListBoxType } from "front/@global/enums/ListBoxType";
 import { Dialog } from "front/@global/Bayadere/Dialog";
@@ -17,309 +16,311 @@ import CreateRoomDialog from "front/Game/dialogs/CreateRoom";
 import RoomSettingsDialog from "front/Game/dialogs/RoomSettings";
 import InviteDialog from "front/Game/dialogs/Invite";
 import BlackListDialog from "front/Game/dialogs/BlackList";
+import AdministrationDialog from "front/Game/dialogs/administration";
 
-interface MenuItem {
-  type: MenuType;
-  isTiny: boolean;
-  label: React.ReactNode;
-  badge?: () => number;
-  forLobby: boolean;
-  forRoom: boolean;
-  forMaster: boolean;
-  forGaming: boolean;
-}
+export namespace Menu {
+  export enum Type {
+    Help = "help",
+    Settings = "settings",
+    Community = "community",
+    BlackList = "blackList",
+    Leaderboard = "leader",
+    Administration = "admin",
+    Spectate = "spectate",
+    RoomSettings = "roomSettings",
+    CreateRoom = "createRoom",
+    SearchRoom = "searchRoom",
+    Shop = "shop",
+    Dictionary = "dict",
+    Invite = "invite",
+    Practice = "practice",
+    Ready = "ready",
+    Start = "start",
+    Leave = "leave",
+    Replay = "replay",
+  }
 
-const buttons: MenuItem[] = [
-  {
-    type: MenuType.Help,
-    isTiny: true,
-    label: <Icon type={IconType.NORMAL} name="question-circle" />,
-    forLobby: true,
-    forRoom: true,
-    forMaster: true,
-    forGaming: true,
-  },
-  {
-    type: MenuType.Settings,
-    isTiny: true,
-    label: <Icon type={IconType.NORMAL} name="wrench" />,
-    forLobby: true,
-    forRoom: true,
-    forMaster: true,
-    forGaming: true,
-  },
-  {
-    type: MenuType.Community,
-    isTiny: true,
-    label: <Icon type={IconType.NORMAL} name="comments" />,
-    badge: () => useStore.getState().community.friendRequests.received.length,
-    forLobby: true,
-    forRoom: true,
-    forMaster: true,
-    forGaming: true,
-  },
-  {
-    type: MenuType.BlackList,
-    isTiny: true,
-    label: <Icon type={IconType.NORMAL} name="ban" />,
-    forLobby: true,
-    forRoom: true,
-    forMaster: true,
-    forGaming: true,
-  },
-  {
-    type: MenuType.Leaderboard,
-    isTiny: true,
-    label: <Icon type={IconType.NORMAL} name="trophy" />,
-    forLobby: true,
-    forRoom: false,
-    forMaster: false,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Spectate,
-    isTiny: false,
-    label: L.get("menu_spectate"),
-    forLobby: false,
-    forRoom: true,
-    forMaster: true,
-    forGaming: false,
-  },
-  {
-    type: MenuType.RoomSettings,
-    isTiny: false,
-    label: L.get("menu_roomSettings"),
-    forLobby: false,
-    forRoom: false,
-    forMaster: true,
-    forGaming: false,
-  },
-  {
-    type: MenuType.CreateRoom,
-    isTiny: false,
-    label: L.get("createRoom"),
-    forLobby: true,
-    forRoom: false,
-    forMaster: false,
-    forGaming: false,
-  },
-  {
-    type: MenuType.SearchRoom,
-    isTiny: false,
-    label: L.get("menu_searchRoom"),
-    forLobby: true,
-    forRoom: false,
-    forMaster: false,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Shop,
-    isTiny: false,
-    label: L.get("menu_shop"),
-    forLobby: true,
-    forRoom: false,
-    forMaster: false,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Dictionary,
-    isTiny: false,
-    label: L.get("menu_dict"),
-    forLobby: true,
-    forRoom: true,
-    forMaster: true,
-    forGaming: true,
-  },
-  {
-    type: MenuType.Invite,
-    isTiny: false,
-    label: L.get("menu_invite"),
-    forLobby: false,
-    forRoom: true,
-    forMaster: true,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Practice,
-    isTiny: false,
-    label: L.get("menu_practice"),
-    forLobby: false,
-    forRoom: true,
-    forMaster: true,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Ready,
-    isTiny: false,
-    label: L.get("menu_ready"),
-    forLobby: false,
-    forRoom: true,
-    forMaster: false,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Start,
-    isTiny: false,
-    label: L.get("menu_start"),
-    forLobby: false,
-    forRoom: false,
-    forMaster: true,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Leave,
-    isTiny: false,
-    label: L.get("menu_leave"),
-    forLobby: false,
-    forRoom: true,
-    forMaster: true,
-    forGaming: false,
-  },
-  {
-    type: MenuType.Replay,
-    isTiny: false,
-    label: L.get("menu_replay"),
-    forLobby: true,
-    forRoom: false,
-    forMaster: false,
-    forGaming: false,
-  },
-];
+  enum Context {
+    Lobby,
+    Room,
+    Master,
+    Gaming,
+  }
 
-export function Menu() {
-  const socket = useStore((state) => state.socket);
-  const me = useStore((state) => state.me);
-  const [room, leaveRoom] = Room.useStore((state) => [
-    state.room,
-    state.leaveRoom,
-  ]);
-  const toggle = Dialog.useStore((state) => state.toggle);
-  const [currentListBox, changeListBox] = List.useStore((state) => [
-    state.current,
-    state.change,
-  ]);
+  interface Item {
+    type: Type;
+    isTiny: boolean;
+    label: React.ReactNode;
+    badge?: () => number;
+    contexts: Context[];
+  }
 
-  const roomSettingsDialog =
-    room && new RoomSettingsDialog({ ...room, password: "" });
-  let property: keyof MenuItem = "forLobby";
+  const buttons: Item[] = [
+    {
+      type: Type.Help,
+      isTiny: true,
+      label: <Icon type={IconType.NORMAL} name="question-circle" />,
+      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
+    },
+    {
+      type: Type.Settings,
+      isTiny: true,
+      label: <Icon type={IconType.NORMAL} name="wrench" />,
+      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
+    },
+    {
+      type: Type.Community,
+      isTiny: true,
+      label: <Icon type={IconType.NORMAL} name="comments" />,
+      badge: () => useStore.getState().community.friendRequests.received.length,
+      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
+    },
+    {
+      type: Type.BlackList,
+      isTiny: true,
+      label: <Icon type={IconType.NORMAL} name="ban" />,
+      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
+    },
+    {
+      type: Type.Leaderboard,
+      isTiny: true,
+      label: <Icon type={IconType.NORMAL} name="trophy" />,
+      contexts: [Context.Lobby],
+    },
+    {
+      type: Type.Administration,
+      isTiny: true,
+      label: <Icon type={IconType.NORMAL} name="user-tie" />,
+      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
+    },
+    {
+      type: Type.Spectate,
+      isTiny: false,
+      label: L.get("menu_spectate"),
+      contexts: [Context.Room, Context.Master],
+    },
+    {
+      type: Type.RoomSettings,
+      isTiny: false,
+      label: L.get("menu_roomSettings"),
+      contexts: [Context.Master],
+    },
+    {
+      type: Type.CreateRoom,
+      isTiny: false,
+      label: L.get("createRoom"),
+      contexts: [Context.Lobby],
+    },
+    {
+      type: Type.SearchRoom,
+      isTiny: false,
+      label: L.get("menu_searchRoom"),
+      contexts: [Context.Lobby],
+    },
+    {
+      type: Type.Shop,
+      isTiny: false,
+      label: L.get("menu_shop"),
+      contexts: [Context.Lobby],
+    },
+    {
+      type: Type.Dictionary,
+      isTiny: false,
+      label: L.get("menu_dict"),
+      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
+    },
+    {
+      type: Type.Invite,
+      isTiny: false,
+      label: L.get("menu_invite"),
+      contexts: [Context.Room, Context.Master],
+    },
+    {
+      type: Type.Practice,
+      isTiny: false,
+      label: L.get("menu_practice"),
+      contexts: [Context.Room, Context.Master],
+    },
+    {
+      type: Type.Ready,
+      isTiny: false,
+      label: L.get("menu_ready"),
+      contexts: [Context.Room],
+    },
+    {
+      type: Type.Start,
+      isTiny: false,
+      label: L.get("menu_start"),
+      contexts: [Context.Master],
+    },
+    {
+      type: Type.Leave,
+      isTiny: false,
+      label: L.get("menu_leave"),
+      contexts: [Context.Room, Context.Master],
+    },
+    {
+      type: Type.Replay,
+      isTiny: false,
+      label: L.get("menu_replay"),
+      contexts: [Context.Lobby],
+    },
+  ];
 
-  if (room === undefined) property = "forLobby";
-  else if (room.master === me.id) property = "forMaster";
-  else property = "forRoom";
+  export function Component() {
+    const socket = useStore((state) => state.socket);
+    const me = useStore((state) => state.me);
+    const [room, leaveRoom] = Room.useStore((state) => [
+      state.room,
+      state.leaveRoom,
+    ]);
+    const toggle = Dialog.useStore((state) => state.toggle);
+    const [currentListBox, changeListBox] = List.useStore((state) => [
+      state.current,
+      state.change,
+    ]);
 
-  return (
-    <section className="top-menu">
-      {buttons
-        .filter((config) => config[property])
-        .map((config, index) => {
-          const className = new ClassName(`menu-${config.type}`);
-          if (config.isTiny) className.push("tiny-menu");
-          const props: React.DetailedHTMLProps<
-            React.ButtonHTMLAttributes<HTMLButtonElement>,
-            HTMLButtonElement
-          > = {};
-          switch (config.type) {
-            case MenuType.Settings:
-              props.onClick = () => toggle(SettingsDialog.instance);
-              break;
-            case MenuType.Community:
-              props.onClick = () => toggle(CommunityDialog.instance);
-              break;
-            case MenuType.BlackList:
-              props.onClick = () => toggle(BlackListDialog.instance);
-              break;
-            case MenuType.CreateRoom:
-              props.onClick = () => toggle(CreateRoomDialog.instance);
-              break;
-            case MenuType.RoomSettings:
-              props.onClick = () =>
-                roomSettingsDialog && toggle(roomSettingsDialog);
-              break;
-            case MenuType.SearchRoom:
-              if (currentListBox === ListBoxType.SearchRoom)
-                className.push("menu-toggled");
-              props.onClick = () =>
-                currentListBox === ListBoxType.SearchRoom
-                  ? changeListBox(ListBoxType.RoomList)
-                  : changeListBox(ListBoxType.SearchRoom);
-              break;
-            case MenuType.Invite:
-              props.onClick = () => toggle(InviteDialog.instance);
-              break;
-            case MenuType.Spectate:
-              if (
-                room &&
-                me.id in room.members &&
-                room.members[me.id].isSpectator
-              )
-                className.push("menu-toggled");
-              props.onClick = () =>
-                socket.send(WebSocketMessage.Type.Spectate, {});
-              break;
-            case MenuType.Ready:
-              if (room && me.id in room.members && room.members[me.id].isReady)
-                className.push("menu-toggled");
-              props.onClick = () =>
-                room !== undefined &&
-                socket.send(WebSocketMessage.Type.Ready, {});
-              break;
-            case MenuType.Start:
-              props.onClick = async () => {
-                if (room === undefined) return;
-                socket.send(WebSocketMessage.Type.Start, {});
-                try {
-                  await socket.messageReceiver.wait(
-                    WebSocketMessage.Type.Start
-                  );
-                } catch (e) {
-                  const { errorType } =
-                    e as WebSocketError.Message[WebSocketError.Type];
-                  switch (errorType) {
-                    case WebSocketError.Type.BadRequest:
-                      window.alert(L.get("error_400"));
-                      break;
-                    case WebSocketError.Type.Forbidden:
-                      window.alert(L.get("error_403"));
-                      break;
-                    case WebSocketError.Type.Conflict:
-                      window.alert(
-                        L.get(
-                          Object.keys(room.members).length === 1
-                            ? "error_startAlone"
-                            : "error_startNotReady"
-                        )
-                      );
-                      break;
-                    default:
-                      window.alert(L.get("error_unknown"));
-                      break;
+    const roomSettingsDialog =
+      room && new RoomSettingsDialog({ ...room, password: "" });
+    let context = Context.Lobby;
+
+    if (room === undefined) {
+      context = Context.Lobby;
+    } else if (room.master === me.id) {
+      context = Context.Master;
+    } else {
+      context = Context.Room;
+    }
+
+    return (
+      <section className="top-menu">
+        {buttons
+          .filter((config) => config.contexts.includes(context))
+          .map((config, index) => {
+            if (config.type === Type.Administration && !me.isAdmin) {
+              return null;
+            }
+
+            const className = new ClassName(`menu-${config.type}`);
+            if (config.isTiny) {
+              className.push("tiny-menu");
+            }
+            const props: React.DetailedHTMLProps<
+              React.ButtonHTMLAttributes<HTMLButtonElement>,
+              HTMLButtonElement
+            > = {};
+            switch (config.type) {
+              case Type.Settings:
+                props.onClick = () => toggle(SettingsDialog.instance);
+                break;
+              case Type.Community:
+                props.onClick = () => toggle(CommunityDialog.instance);
+                break;
+              case Type.BlackList:
+                props.onClick = () => toggle(BlackListDialog.instance);
+                break;
+              case Type.Administration:
+                props.onClick = () => toggle(AdministrationDialog.instance);
+                break;
+              case Type.CreateRoom:
+                props.onClick = () => toggle(CreateRoomDialog.instance);
+                break;
+              case Type.RoomSettings:
+                props.onClick = () =>
+                  roomSettingsDialog && toggle(roomSettingsDialog);
+                break;
+              case Type.SearchRoom:
+                if (currentListBox === ListBoxType.SearchRoom)
+                  className.push("menu-toggled");
+                props.onClick = () =>
+                  currentListBox === ListBoxType.SearchRoom
+                    ? changeListBox(ListBoxType.RoomList)
+                    : changeListBox(ListBoxType.SearchRoom);
+                break;
+              case Type.Invite:
+                props.onClick = () => toggle(InviteDialog.instance);
+                break;
+              case Type.Spectate:
+                if (
+                  room &&
+                  me.id in room.members &&
+                  room.members[me.id].isSpectator
+                )
+                  className.push("menu-toggled");
+                props.onClick = () =>
+                  socket.send(WebSocketMessage.Type.Spectate, {});
+                break;
+              case Type.Ready:
+                if (
+                  room &&
+                  me.id in room.members &&
+                  room.members[me.id].isReady
+                )
+                  className.push("menu-toggled");
+                props.onClick = () =>
+                  room !== undefined &&
+                  socket.send(WebSocketMessage.Type.Ready, {});
+                break;
+              case Type.Start:
+                props.onClick = async () => {
+                  if (room === undefined) {
+                    return;
                   }
-                }
-              };
-              break;
-            case MenuType.Leave:
-              props.onClick = () => {
-                if (room === undefined) return;
-                socket.send(WebSocketMessage.Type.LeaveRoom, {});
-                socket.messageReceiver
-                  .wait(WebSocketMessage.Type.LeaveRoom)
-                  .then(() => leaveRoom());
-              };
-              break;
-          }
-          const badge = config.badge && config.badge();
-          return (
-            <button
-              key={index}
-              type="button"
-              {...props}
-              className={className.toString()}
-            >
-              {badge ? <span className="badge">{badge}</span> : null}
-              {config.label}
-            </button>
-          );
-        })}
-    </section>
-  );
+                  socket.send(WebSocketMessage.Type.Start, {});
+                  try {
+                    await socket.messageReceiver.wait(
+                      WebSocketMessage.Type.Start
+                    );
+                  } catch (e) {
+                    const { errorType } =
+                      e as WebSocketError.Message[WebSocketError.Type];
+                    switch (errorType) {
+                      case WebSocketError.Type.BadRequest:
+                        window.alert(L.get("error_400"));
+                        break;
+                      case WebSocketError.Type.Forbidden:
+                        window.alert(L.get("error_403"));
+                        break;
+                      case WebSocketError.Type.Conflict:
+                        window.alert(
+                          L.get(
+                            Object.keys(room.members).length === 1
+                              ? "error_startAlone"
+                              : "error_startNotReady"
+                          )
+                        );
+                        break;
+                      default:
+                        window.alert(L.get("error_unknown"));
+                        break;
+                    }
+                  }
+                };
+                break;
+              case Type.Leave:
+                props.onClick = () => {
+                  if (room === undefined) return;
+                  socket.send(WebSocketMessage.Type.LeaveRoom, {});
+                  socket.messageReceiver
+                    .wait(WebSocketMessage.Type.LeaveRoom)
+                    .then(() => leaveRoom());
+                };
+                break;
+            }
+            const badge = config.badge && config.badge();
+            return (
+              <button
+                key={index}
+                type="button"
+                {...props}
+                className={className.toString()}
+              >
+                {badge ? <span className="badge">{badge}</span> : null}
+                {config.label}
+              </button>
+            );
+          })}
+      </section>
+    );
+  }
 }

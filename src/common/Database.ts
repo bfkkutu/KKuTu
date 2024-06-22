@@ -78,6 +78,13 @@ export namespace Database {
     }
   }
 
+  export enum Departure {
+    None = 0b000,
+    Management = 0b001,
+    DatabaseWord = 0b010,
+    DatabaseShop = 0b100,
+  }
+
   // table interfaces
   export namespace User {
     export interface Summarized {
@@ -88,6 +95,8 @@ export namespace Database {
       image: string;
       nickname: string;
       exordial: string;
+      isAdmin: boolean;
+      departures: number;
       roomId?: number;
       createdAt: number;
     }

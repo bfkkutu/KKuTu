@@ -12,6 +12,13 @@ export namespace Schema {
     dependencies: Table<string>;
     license: string;
   }
+  export interface ProxiedServerConfiguration {
+    hostname: string;
+    ports: {
+      external: number;
+      internal: number;
+    };
+  }
   export interface Settings {
     advertisement: {
       google: GoogleAdvertisement;
@@ -49,7 +56,14 @@ export namespace Schema {
     ports: {
       http: number;
       https: number;
-      channel: number[];
+    };
+    sockets: {
+      channel: ProxiedServerConfiguration[];
+      administration: {
+        management: ProxiedServerConfiguration;
+        databaseWord: ProxiedServerConfiguration;
+        databaseShop: ProxiedServerConfiguration;
+      };
     };
     secure: {
       ssl: boolean;
@@ -62,7 +76,6 @@ export namespace Schema {
       pfxPass: string;
       httpsOnly: boolean;
     };
-    wsHostname: string;
   }
   export interface AuthClientConfig {
     clientID: string;

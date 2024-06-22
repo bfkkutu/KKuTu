@@ -9,7 +9,7 @@ export namespace Nest {
     export type DataTable = {
       Game: {
         id: string;
-        wsUrl: string;
+        ws: string;
       };
       Login: {
         loginMethods: AuthModuleConfig[];
