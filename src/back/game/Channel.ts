@@ -686,7 +686,7 @@ export default class Channel extends WebSocketServer {
     });
     setInterval(
       () => this.broadcast(WebSocketMessage.Type.Heartbeat, {}),
-      30000
+      95000 // CloudFlare timeout (100 seconds)
     );
   }
 
