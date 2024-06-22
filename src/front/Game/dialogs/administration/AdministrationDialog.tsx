@@ -9,7 +9,14 @@ export default abstract class AdministrationDialog extends Dialog {
   protected socket?: WebSocket;
 
   constructor(url: string) {
-    super();
+    super(() => {
+      if (this.socket === undefined) {
+        return;
+      }
+      if (this.socket.readyState === WebSocket.OPEN) {
+        this.socket.close();
+      }
+    });
 
     this.url = url;
   }
@@ -28,7 +35,9 @@ export default abstract class AdministrationDialog extends Dialog {
       this.socket = socket;
       setSocket(socket);
       return () => {
-        socket.close();
+        if (socket.readyState === WebSocket.OPEN) {
+          socket.close();
+        }
       };
     }, []);
 
