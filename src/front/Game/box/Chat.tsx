@@ -7,11 +7,39 @@ import AudioContext from "front/@global/AudioContext";
 import ProfileDialog from "front/Game/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { filterProfanities } from "front/@global/Utility";
-import { Chat as ChatCommon } from "../../../common/Chat";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export namespace Chat {
   const htmlParser = HTMLParser();
+
+  export enum Type {
+    Chat = "chat",
+    Notice = "notice",
+  }
+  export interface Chat {
+    type: Chat.Type.Chat;
+    /**
+     * 서버와 통신할 때 이 Chat 객체를
+     * 지정해야 하는 경우 사용한다.
+     */
+    id: string;
+    sender: string;
+    /**
+     * 서버에서는 sender의 식별자만 전송하지만
+     * sender가 게임을 종료한 이후 채팅을 랜더링할 때
+     * 서버에 쿼리하지 않기 위해 별명도 기록한다.
+     */
+    nickname: string;
+    content: string;
+    visible: boolean;
+    createdAt: Date;
+  }
+  export interface Notice {
+    type: Chat.Type.Notice;
+    content: string;
+    createdAt: Date;
+  }
+  export type Item = Chat.Chat | Chat.Notice;
 
   export function Box() {
     const socket = useStore((state) => state.socket);
@@ -80,9 +108,9 @@ export namespace Chat {
           <div className="list" ref={$list}>
             {chatLog.map((chat, index) => {
               switch (chat.type) {
-                case ChatCommon.Type.Chat:
+                case Type.Chat:
                   return <Chat key={index} id={index} chat={chat} />;
-                case ChatCommon.Type.Notice:
+                case Type.Notice:
                   return <Notice {...chat} key={index} />;
               }
             })}
@@ -104,7 +132,7 @@ export namespace Chat {
 
   interface Props {
     id: number;
-    chat: ChatCommon.Chat;
+    chat: Chat;
   }
   function Chat(props: Props) {
     const id = useStore((state) => state.me.id);
@@ -155,8 +183,7 @@ export namespace Chat {
         <div className="timestamp">
           {new Date(props.chat.createdAt).toLocaleTimeString()}
         </div>
-        {props.chat.type === ChatCommon.Type.Chat &&
-        props.chat.sender !== id ? (
+        {props.chat.type === Type.Chat && props.chat.sender !== id ? (
           <div className="buttons">
             <button
               className="report"
@@ -202,7 +229,7 @@ export namespace Chat {
     );
   }
 
-  function Notice(notice: ChatCommon.Notice) {
+  function Notice(notice: Notice) {
     return (
       <div className="item notice">
         {/* float: left */}

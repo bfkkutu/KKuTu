@@ -1,8 +1,8 @@
 import { create } from "zustand";
 
 import WebSocket from "front/@global/WebSocket";
+import { Chat } from "front/Game/box/Chat";
 import { Database } from "../../common/Database";
-import { Chat } from "../../common/Chat";
 import { KKuTu } from "common/KKuTu";
 
 interface State {
