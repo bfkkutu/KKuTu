@@ -79,8 +79,10 @@ export default function SearchRoom() {
                   setRoom({ ...room, mode: parseInt(target.value) })
                 }
               >
-                {EnumValueIterator(KKuTu.Game.Mode).map((mode) => (
-                  <option value={mode}>{L.get(`game_mode_${mode}`)}</option>
+                {EnumValueIterator(KKuTu.Game.Mode).map((mode, index) => (
+                  <option key={index} value={mode}>
+                    {L.get(`game_mode_${mode}`)}
+                  </option>
                 ))}
               </select>
             </label>
@@ -135,8 +137,8 @@ export default function SearchRoom() {
                 >
                   {CLIENT_SETTINGS.roundTimes
                     .filter((v) => v <= room.roundTime[1])
-                    .map((roundTime) => (
-                      <option value={roundTime}>
+                    .map((roundTime, index) => (
+                      <option key={index} value={roundTime}>
                         {L.get("unitSecond", roundTime)}
                       </option>
                     ))}
@@ -153,8 +155,8 @@ export default function SearchRoom() {
                 >
                   {CLIENT_SETTINGS.roundTimes
                     .filter((v) => room.roundTime[0] <= v)
-                    .map((roundTime) => (
-                      <option value={roundTime}>
+                    .map((roundTime, index) => (
+                      <option key={index} value={roundTime}>
                         {L.get("unitSecond", roundTime)}
                       </option>
                     ))}
@@ -166,9 +168,9 @@ export default function SearchRoom() {
             <label className="dialog-desc" htmlFor="searchRoom-rules">
               {L.get("roomRules")}
             </label>
-            <div className="checkbox-wrapper">
-              {KKuTu.Game.modes[room.mode].rules.map((rule) => (
-                <label>
+            <div id="searchRoom-rules" className="checkbox-wrapper">
+              {KKuTu.Game.modes[room.mode].rules.map((rule, index) => (
+                <label key={index}>
                   <input
                     type="checkbox"
                     id={`searchRoom-checkbox-${rule}`}
@@ -195,8 +197,9 @@ export default function SearchRoom() {
           {result.length === 0 ? (
             <div>{L.get("error_noResult")}</div>
           ) : (
-            result.map((room) => (
+            result.map((room, index) => (
               <div
+                key={index}
                 className={`item ${room.isGaming ? "gaming" : "waiting"}`}
                 onClick={async () => {
                   socket.send(WebSocketMessage.Type.JoinRoom, {
