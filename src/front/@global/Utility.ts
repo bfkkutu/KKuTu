@@ -42,3 +42,34 @@ export function renderComponentOrNode(
 export function filterProfanities(raw: string) {
   return raw.replace(PROFANITIES, (s) => "*".repeat(s.length));
 }
+
+export type Chain = (f: () => void) => void;
+type ChainCondition<P extends Array<any>> = (...args: P) => boolean;
+export class ChainedFunction<P extends Array<any>> {
+  private stack: Chain[] = [];
+  private condition: ChainCondition<P>;
+
+  constructor(condition: ChainCondition<P>) {
+    this.condition = condition;
+  }
+
+  public push(f: Chain): void {
+    this.stack.push(f);
+  }
+  /**
+   * Initial call
+   */
+  public call(...args: P): void {
+    if (!this.condition(...args)) {
+      return;
+    }
+    this.continue();
+  }
+  public continue(): void {
+    const f = this.stack.pop();
+    if (f === undefined) {
+      return;
+    }
+    f(this.continue.bind(this));
+  }
+}

@@ -3,8 +3,6 @@ import ReactDOM from "react-dom/client";
 
 import { PROPS } from "front/@global/Utility";
 import L from "front/@global/Language";
-import AlertDialog from "front/Game/dialogs/Alert";
-import PromptDialog from "front/Game/dialogs/Prompt";
 import { Nest } from "common/Nest";
 
 import Footer from "front/@global/Footer";
@@ -14,7 +12,10 @@ import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Notification } from "front/@global/Bayadere/Notification";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
-import ConfirmDialog from "./Game/dialogs/Confirm";
+
+import AlertDialog from "front/Game/dialogs/Alert";
+import PromptDialog from "front/Game/dialogs/Prompt";
+import ConfirmDialog from "front/Game/dialogs/Confirm";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) => {
@@ -38,6 +39,7 @@ if (typeof window !== "undefined") {
     Dialog.useStore.getState().show(dialog);
     return dialog.wait;
   };
+  window.addEventListener("keydown", (e) => Dialog.hideActive.call(e));
   window.onselectstart = window.ondragstart = () => false;
 }
 

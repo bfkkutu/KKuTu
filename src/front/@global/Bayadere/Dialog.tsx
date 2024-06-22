@@ -2,8 +2,16 @@ import React, { useState, useRef, useEffect } from "react";
 import { create, UseBoundStore, StoreApi } from "zustand";
 
 import { Point } from "front/@global/Point";
+import { Chain, ChainedFunction } from "front/@global/Utility";
 
 export abstract class Dialog {
+  private static id = 0;
+  /**
+   * Dialog는 생성 순서의 역순으로
+   * 소멸한다는 보장이 없다.
+   * 따라서 Dialog마다 고유값을 부여한다.
+   */
+  public id: number;
   public mHead: React.FC<{}>;
   public mBody: React.FC<{}>;
   public usePoint: UseBoundStore<StoreApi<Point>>;
@@ -14,6 +22,7 @@ export abstract class Dialog {
   public onHide?: Dialog.OnHide;
 
   constructor(onHide?: Dialog.OnHide) {
+    this.id = Dialog.id++;
     this.mHead = React.memo(this.head.bind(this));
     this.mBody = React.memo(this.body.bind(this));
     this.onHide = onHide;
@@ -45,6 +54,20 @@ export abstract class Dialog {
 }
 
 export namespace Dialog {
+  type Resolve<T> = (object: T | PromiseLike<T>) => void;
+  type Reject = (reason: any) => void;
+  export abstract class Asynchronous<T> extends Dialog {
+    protected resolve: Resolve<T> = () => {};
+    protected reject: Reject = () => {};
+    public wait = new Promise<T>((resolve, reject) => {
+      this.resolve = resolve;
+      this.reject = reject;
+    });
+  }
+
+  export const hideActive = new ChainedFunction<[KeyboardEvent]>(
+    (e) => e.code === "Escape"
+  );
   export type OnHide = () => void;
 
   interface State {
@@ -56,6 +79,7 @@ export namespace Dialog {
   export const useStore = create<State>((setState) => ({
     dialogs: [],
     show: (dialog) => {
+      hideActive.push(createChain(dialog));
       dialog.initializeState();
       dialog.visible = true;
       setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
@@ -76,26 +100,21 @@ export namespace Dialog {
           dialogs: dialogs.filter((v) => v !== dialog),
         }));
       } else {
+        hideActive.push(createChain(dialog));
         dialog.initializeState();
         setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
       }
       dialog.visible = !dialog.visible;
     },
   }));
-
-  type Resolve<T> = (object: T | PromiseLike<T>) => void;
-  type Reject = (reason: any) => void;
-  export abstract class Asynchronous<T> extends Dialog {
-    protected resolve: Resolve<T> = () => {};
-    protected reject: Reject = () => {};
-    public wait = new Promise<T>((resolve, reject) => {
-      this.resolve = resolve;
-      this.reject = reject;
-    });
-
-    constructor(onHide?: OnHide) {
-      super(onHide);
-    }
+  function createChain(dialog: Dialog): Chain {
+    return (pass) => {
+      if (dialog.visible) {
+        Dialog.useStore.getState().hide(dialog);
+        return;
+      }
+      return pass();
+    };
   }
 
   interface Props {
@@ -117,15 +136,10 @@ export namespace Dialog {
 
     useEffect(() => {
       // mount 이전에는 dialog의 크기를 알 수 없으므로 mount 직후 업데이트한다.
-      if ($.current)
+      if ($.current) {
         move(-$.current.clientWidth / 2, -$.current.clientHeight / 2);
-      window.setTimeout(() => {
-        setAnimation("");
-        if ($.current)
-          $.current.onkeydown = (e) => {
-            if (e.code === "Escape") hide(instance);
-          };
-      }, 200);
+      }
+      window.setTimeout(() => setAnimation(""), 200);
     }, []);
 
     useEffect(() => {
@@ -168,8 +182,8 @@ export namespace Dialog {
 
     return (
       <div id="dialog">
-        {dialogs.map((dialog, index) => (
-          <Component key={index} instance={dialog} />
+        {dialogs.map((dialog) => (
+          <Component key={dialog.id} instance={dialog} />
         ))}
       </div>
     );
