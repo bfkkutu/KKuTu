@@ -16,7 +16,6 @@ import CreateRoomDialog from "front/Game/dialogs/CreateRoom";
 import RoomSettingsDialog from "front/Game/dialogs/RoomSettings";
 import InviteDialog from "front/Game/dialogs/Invite";
 import BlackListDialog from "front/Game/dialogs/BlackList";
-import AdministrationDialog from "front/Game/dialogs/administration";
 
 export namespace Menu {
   export enum Type {
@@ -25,7 +24,6 @@ export namespace Menu {
     Community = "community",
     BlackList = "blackList",
     Leaderboard = "leader",
-    Administration = "admin",
     Spectate = "spectate",
     RoomSettings = "roomSettings",
     CreateRoom = "createRoom",
@@ -86,12 +84,6 @@ export namespace Menu {
       isTiny: true,
       label: <Icon type={IconType.NORMAL} name="trophy" />,
       contexts: [Context.Lobby],
-    },
-    {
-      type: Type.Administration,
-      isTiny: true,
-      label: <Icon type={IconType.NORMAL} name="user-tie" />,
-      contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Spectate,
@@ -197,10 +189,6 @@ export namespace Menu {
         {buttons
           .filter((config) => config.contexts.includes(context))
           .map((config, index) => {
-            if (config.type === Type.Administration && !me.isAdmin) {
-              return null;
-            }
-
             const className = new ClassName(`menu-${config.type}`);
             if (config.isTiny) {
               className.push("tiny-menu");
@@ -218,9 +206,6 @@ export namespace Menu {
                 break;
               case Type.BlackList:
                 props.onClick = () => toggle(BlackListDialog.instance);
-                break;
-              case Type.Administration:
-                props.onClick = () => toggle(AdministrationDialog.instance);
                 break;
               case Type.CreateRoom:
                 props.onClick = () => toggle(CreateRoomDialog.instance);

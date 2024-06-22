@@ -8,7 +8,6 @@ import { createSecureOptions } from "back/utils/Secure";
 import WebSocket from "back/utils/WebSocket";
 import { redisStore } from "back/utils/ExpressSession";
 import { WebSocketMessage } from "common/WebSocket";
-import ObjectMap from "common/ObjectMap";
 
 type IncomingMessage = Omit<typeof http.IncomingMessage, "constructor"> &
   Express.Request & {

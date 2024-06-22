@@ -15,10 +15,6 @@ import LoginRoute from "back/utils/LoginRoute";
 import { createSecureOptions } from "back/utils/Secure";
 import Channel from "back/game/Channel";
 
-import ManagementServer from "back/administration/ManagementServer";
-import DatabaseWordServer from "back/administration/DatabaseWordServer";
-import DatabaseShopServer from "back/administration/DatabaseShopServer";
-
 const App = Express();
 
 (async () => {
@@ -46,21 +42,6 @@ const App = Express();
     );
     Logger.info(`Channel #${idx} ready.`).out();
   }
-  ManagementServer.instance = new ManagementServer(
-    SETTINGS.sockets.administration.management.ports.internal,
-    SETTINGS.secure.ssl
-  );
-  Logger.info(`Admin Socket for management ready.`).out();
-  DatabaseWordServer.instance = new DatabaseWordServer(
-    SETTINGS.sockets.administration.databaseWord.ports.internal,
-    SETTINGS.secure.ssl
-  );
-  Logger.info(`Admin Socket for word ready.`).out();
-  DatabaseShopServer.instance = new DatabaseShopServer(
-    SETTINGS.sockets.administration.databaseShop.ports.internal,
-    SETTINGS.secure.ssl
-  );
-  Logger.info(`Admin Socket for shop ready.`).out();
 })();
 process.on("unhandledRejection", (err) => {
   const content = err instanceof Error ? err.stack : String(err);
