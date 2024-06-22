@@ -101,8 +101,10 @@ export default class RoomSettingsDialog extends Dialog {
               value={room.mode}
               onChange={update}
             >
-              {EnumValueIterator(KKuTu.Game.Mode).map((mode) => (
-                <option value={mode}>{L.get(`game_mode_${mode}`)}</option>
+              {EnumValueIterator(KKuTu.Game.Mode).map((mode, index) => (
+                <option key={index} value={mode}>
+                  {L.get(`game_mode_${mode}`)}
+                </option>
               ))}
             </select>
           </label>
@@ -133,8 +135,8 @@ export default class RoomSettingsDialog extends Dialog {
               value={room.roundTime}
               onChange={update}
             >
-              {CLIENT_SETTINGS.roundTimes.map((roundTime) => (
-                <option value={roundTime}>
+              {CLIENT_SETTINGS.roundTimes.map((roundTime, index) => (
+                <option key={index} value={roundTime}>
                   {L.get("unitSecond", roundTime)}
                 </option>
               ))}
