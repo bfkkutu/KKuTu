@@ -684,6 +684,10 @@ export default class Channel extends WebSocketServer {
         (client) => client.user.id !== user.id
       );
     });
+    setInterval(
+      () => this.broadcast(WebSocketMessage.Type.Heartbeat, {}),
+      30000
+    );
   }
 
   /**
