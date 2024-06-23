@@ -190,6 +190,8 @@
     "game_rule_joinWhileGaming": "게임 중 참여",
     "game_rule_joinWhileGaming_desc": "게임 도중 참여를 허용해요.",
 
+    "game_input_placeholder": "당신의 차례! 아래의 채팅 창에서 입력하세요.",
+
     "menu_spectate": "관전하기",
     "menu_roomSettings": "방 설정",
     "menu_searchRoom": "방 검색",

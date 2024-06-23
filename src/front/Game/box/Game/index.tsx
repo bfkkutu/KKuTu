@@ -21,20 +21,33 @@ export namespace Game {
         <RoomTitle {...room} />
         <div className="product-body">
           <div className="head">
-            <div className="hints"></div>
+            <div className="hint"></div>
             <div className="stage">
-              <img className="eye-left" src="/media/image/ui/jjoeyeL.png" />
-              <img className="nose" src="/media/image/ui/jjonose.png" />
-              <img className="eye-right" src="/media/image/ui/jjoeyeR.png" />
-              <div className="display-bar">
+              <div className="top">
+                <div className="rounds">제 시 어</div>
+                <div className="character">
+                  <img className="eye-left" src="/media/image/ui/jjoeyeL.png" />
+                  <img className="nose" src="/media/image/ui/jjonose.png" />
+                  <img
+                    className="eye-right"
+                    src="/media/image/ui/jjoeyeR.png"
+                  />
+                </div>
+              </div>
+              <div className="bottom">
                 <div className="display ellipse">DISPLAY</div>
                 <div className="graph turn-time"></div>
                 <div className="graph round-time"></div>
               </div>
             </div>
             <div className="chain"></div>
-            <div className="rounds"></div>
+          </div>
+          <div className="neck">
             <div className="history"></div>
+            <input
+              className="input"
+              placeholder={L.get("game_input_placeholder")}
+            />
           </div>
           <div className="body">
             {Object.keys(room.members).map((id, index) => {
@@ -46,10 +59,6 @@ export namespace Game {
               );
             })}
           </div>
-          <input
-            className="input"
-            placeholder={L.get("game-input-placeholder")}
-          />
         </div>
       </section>
     );
