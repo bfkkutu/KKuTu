@@ -20,7 +20,7 @@ export default class Moremi extends React.PureComponent<Props> {
           <img
             className={`moremi-${part}`}
             key={index}
-            src={`/media/img/kkutu/moremi/${
+            src={`/media/image/kkutu/moremi/${
               part.includes("hand") ? "hand" : part
             }/${this.props.equipment[part] || "def"}.png`}
           />

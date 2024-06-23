@@ -6,10 +6,8 @@ import { getLoginMethods } from "back/utils/LoginRoute";
 import Channel from "back/game/Channel";
 import { PACKAGE, SETTINGS } from "back/utils/System";
 import DB from "back/utils/Database";
-import { Database } from "../../common/Database";
 
 import User from "back/models/User";
-import { Schema } from "common/Schema";
 
 export default function (App: Express.Application): void {
   const WEBSOCKET_PROTOCOL = SETTINGS.secure.ssl ? "wss" : "ws";
@@ -38,8 +36,8 @@ export default function (App: Express.Application): void {
     return PageBuilder("Game", {
       id: user.id,
       ws: `${WEBSOCKET_PROTOCOL}://${
-        SETTINGS.sockets.channel[id].hostname || req.hostname
-      }:${SETTINGS.sockets.channel[id].ports.external}/?sid=${req.session.id}`,
+        SETTINGS.channel[id].hostname || req.hostname
+      }:${SETTINGS.channel[id].ports.external}/?sid=${req.session.id}`,
     })(req, res, next);
   });
   App.get("/login", (req, res, next) =>
@@ -51,81 +49,6 @@ export default function (App: Express.Application): void {
       dependencies: DEPENDENCIES,
     })
   );
-  App.get("/administration/management", async (req, res) => {
-    if (req.session.profile === undefined) {
-      return res.sendStatus(401);
-    }
-
-    const user = await DB.Manager.createQueryBuilder(User, "u")
-      .where("u.oid = :oid", { oid: req.session.profile.id })
-      .getOne();
-    if (user === null) {
-      return res.sendStatus(401);
-    }
-
-    if (!(user.departures & Database.Departure.Management)) {
-      return res.sendStatus(403);
-    }
-
-    return res.send({
-      ws: `${WEBSOCKET_PROTOCOL}://${
-        SETTINGS.sockets.administration.management.hostname ||
-        "management" + req.hostname
-      }:${SETTINGS.sockets.administration.management.ports.external}/?sid=${
-        req.session.id
-      }`,
-    });
-  });
-  App.get("/administration/word", async (req, res) => {
-    if (req.session.profile === undefined) {
-      return res.sendStatus(401);
-    }
-
-    const user = await DB.Manager.createQueryBuilder(User, "u")
-      .where("u.oid = :oid", { oid: req.session.profile.id })
-      .getOne();
-    if (user === null) {
-      return res.sendStatus(401);
-    }
-
-    if (!(user.departures & Database.Departure.DatabaseWord)) {
-      return res.sendStatus(403);
-    }
-
-    return res.send({
-      ws: `${WEBSOCKET_PROTOCOL}://${
-        SETTINGS.sockets.administration.databaseWord.hostname ||
-        "word" + req.hostname
-      }:${SETTINGS.sockets.administration.databaseWord.ports.external}/?sid=${
-        req.session.id
-      }`,
-    });
-  });
-  App.get("/administration/shop", async (req, res) => {
-    if (req.session.profile === undefined) {
-      return res.sendStatus(401);
-    }
-
-    const user = await DB.Manager.createQueryBuilder(User, "u")
-      .where("u.oid = :oid", { oid: req.session.profile.id })
-      .getOne();
-    if (user === null) {
-      return res.sendStatus(401);
-    }
-
-    if (!(user.departures & Database.Departure.DatabaseShop)) {
-      return res.sendStatus(403);
-    }
-
-    return res.send({
-      ws: `${WEBSOCKET_PROTOCOL}://${
-        SETTINGS.sockets.administration.databaseShop.hostname ||
-        "shop" + req.hostname
-      }:${SETTINGS.sockets.administration.databaseShop.ports.external}/?sid=${
-        req.session.id
-      }`,
-    });
-  });
   App.get("/servers", (req, res) =>
     res.send({
       list: Channel.instances.map((v) => v.getActiveUserCount()),

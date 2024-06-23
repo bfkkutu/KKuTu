@@ -112,7 +112,9 @@ export namespace WebSocketMessage {
       [Type.Ready]: {
         member: KKuTu.Room.Member;
       };
-      [Type.Start]: {};
+      [Type.Start]: {
+        game: KKuTu.Game;
+      };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
       };

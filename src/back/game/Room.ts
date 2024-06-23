@@ -43,8 +43,14 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
     }
     return true;
   }
-  public get size() {
-    return this.clients.size;
+  /**
+   * 관전자를 제외한 member의 수
+   * (player의 수)
+   */
+  public get count() {
+    return this.clients
+      .valuesAsArray()
+      .filter((client) => !client.user.isSpectator).length;
   }
 
   constructor(
@@ -134,18 +140,20 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
   public start(): void {
     this.game = new Game(
       this,
-      this.clients.entriesAsArray().reduce((prev, [id, client]) => {
+      this.clients.valuesAsArray().reduce((prev, client) => {
         if (client.user.roomId === undefined) {
-          // TODO: 오류 처리
+          this.remove(client.user.id);
           return prev;
         }
-        if (client.user.isSpectator) {
-          prev.push(id);
+        if (!client.user.isSpectator) {
+          prev.push(client);
         }
         return prev;
-      }, [] as string[])
+      }, [] as WebSocket[])
     );
-    this.broadcast(WebSocketMessage.Type.Start, {});
+    this.broadcast(WebSocketMessage.Type.Start, {
+      game: this.game.serialize(),
+    });
   }
   public summarize(): KKuTu.Room.Summarized {
     return {

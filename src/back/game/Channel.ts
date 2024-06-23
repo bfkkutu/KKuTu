@@ -129,6 +129,7 @@ export default class Channel extends WebSocketServer {
               const id = Channel.roomIdCount;
               const room = new Room(this, id, user.id, message.room);
               room.add(socket);
+              user.isReady = true;
               this.rooms.set(id, room);
               Logger.info(`Room #${id} created by user #${user.id}.`).out();
               socket.send(WebSocketMessage.Type.CreateRoom, {
@@ -349,7 +350,7 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
-              if (!room.isReady || room.size === 1) {
+              if (!room.isReady || room.count === 1) {
                 return socket.sendError(WebSocketError.Type.Conflict, {
                   isFatal: false,
                 });

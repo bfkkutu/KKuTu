@@ -1,7 +1,7 @@
 {
   "advertisement": {
     "google": { "client": "", "slot": "" },
-    "kakao": ""
+    "kakao": { "unit": "" }
   },
   "application": {
     "sound": {
@@ -68,40 +68,15 @@
     "http": 80,
     "https": 443
   },
-  "sockets": {
-    "channel": [
-      {
-        "hostname": "localhost",
-        "ports": {
-          "external": 8080,
-          "internal": 8080
-        }
-      }
-    ],
-    "administration": {
-      "management": {
-        "hostname": "localhost",
-        "ports": {
-          "external": 8090,
-          "internal": 8090
-        }
-      },
-      "databaseWord": {
-        "hostname": "localhost",
-        "ports": {
-          "external": 8091,
-          "internal": 8091
-        }
-      },
-      "databaseShop": {
-        "hostname": "localhost",
-        "ports": {
-          "external": 8092,
-          "internal": 8092
-        }
+  "channel": [
+    {
+      "hostname": "localhost",
+      "ports": {
+        "external": 8080,
+        "internal": 8080
       }
     }
-  },
+  ],
   "secure": {
     "ssl": false,
     "isPFX": false,

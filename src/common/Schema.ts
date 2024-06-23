@@ -22,7 +22,7 @@ export namespace Schema {
   export interface Settings {
     advertisement: {
       google: GoogleAdvertisement;
-      kakao: string;
+      kakao: KakaoAdvertisement;
     };
     application: {
       sound: Table<string>;
@@ -57,14 +57,7 @@ export namespace Schema {
       http: number;
       https: number;
     };
-    sockets: {
-      channel: ProxiedServerConfiguration[];
-      administration: {
-        management: ProxiedServerConfiguration;
-        databaseWord: ProxiedServerConfiguration;
-        databaseShop: ProxiedServerConfiguration;
-      };
-    };
+    channel: ProxiedServerConfiguration[];
     secure: {
       ssl: boolean;
       isPFX: boolean;
@@ -102,5 +95,8 @@ export namespace Schema {
   export interface GoogleAdvertisement {
     client: string;
     slot: string;
+  }
+  export interface KakaoAdvertisement {
+    unit: string;
   }
 }

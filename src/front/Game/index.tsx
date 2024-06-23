@@ -2,18 +2,20 @@ import React, { useEffect, useRef } from "react";
 
 import Bind from "front/ReactBootstrap";
 import L from "front/@global/Language";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
+import AudioContext from "front/@global/AudioContext";
+import { getRequiredScore } from "front/@global/Utility";
+import { EventListener } from "front/@global/WebSocket";
+import { Notification } from "front/@global/Bayadere/Notification";
+import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/Game/Menu";
 import { useStore } from "front/Game/Store";
-import { getRequiredScore } from "front/@global/Utility";
-import AudioContext from "front/@global/AudioContext";
-import { EventListener } from "front/@global/WebSocket";
 import { createInviteNotification } from "front/Game/notifications/Invite";
-import { Notification } from "front/@global/Bayadere/Notification";
 import { Whisper } from "front/Game/dialogs/Whisper";
 import { WhisperNotification } from "front/Game/notifications/Whisper";
 import { Nest } from "common/Nest";
+import { KKuTu } from "../../common/KKuTu";
 import { WebSocketMessage } from "../../common/WebSocket";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 import { Room } from "front/Game/box/Room";
 import { List } from "front/Game/box/ListBox";
@@ -161,7 +163,7 @@ function Component(props: Nest.Page.Props<"Game">) {
     <article id="main">
       <div id="game">
         <div id="intro" ref={$intro}>
-          <img className="image" src="/media/img/kkutu/intro.png" />
+          <img className="image" src="/media/image/kkutu/intro.png" />
           <div className="version">{props.version}</div>
           <div className="text">{L.get("welcome")}</div>
         </div>
@@ -180,7 +182,9 @@ function Component(props: Nest.Page.Props<"Game">) {
                 </div>
               ) : (
                 <div className="game">
-                  <Game.Box />
+                  {React.createElement(
+                    Game.GRAPHICS[KKuTu.Game.modes[room.mode].graphic]
+                  )}
                 </div>
               )}
               <div className="lobby">
@@ -191,6 +195,7 @@ function Component(props: Nest.Page.Props<"Game">) {
           </>
         ) : null}
       </div>
+      <KakaoAdvertisement unit={props.metadata!.ad.kakao.unit} />
     </article>
   );
 }

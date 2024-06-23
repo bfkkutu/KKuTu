@@ -118,18 +118,18 @@ export namespace KKuTu {
        */
       JoinWhileGaming = "joinWhileGaming",
     }
-    export enum ScreenType {
+    export enum Graphic {
       Normal,
       Huge,
     }
     export interface IMode {
-      screenType: ScreenType;
+      graphic: Graphic;
       rules: Rule[];
       themeSelect: boolean;
     }
     export const modes: Record<Mode, IMode> = {
       [Mode.KoreanRelay]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [
           Rule.Manner,
           Rule.WideTheme,
@@ -142,79 +142,79 @@ export namespace KKuTu {
         themeSelect: false,
       },
       [Mode.KoreanRelayReversed]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanThree]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanKKuTu]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanConsonantQuiz]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanTypingCompetition]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanWordCompetition]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanSock]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanDrawingQuiz]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: true,
       },
 
       [Mode.EnglishRelay]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishKKuTu]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishTypingCompetition]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishWordCompetition]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishSock]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishDrawingQuiz]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: true,
       },
 
       [Mode.Hunmin]: {
-        screenType: ScreenType.Normal,
+        graphic: Graphic.Normal,
         rules: [],
         themeSelect: false,
       },

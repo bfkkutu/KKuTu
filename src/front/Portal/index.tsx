@@ -67,7 +67,7 @@ export default class Portal extends React.PureComponent<
         }}
       >
         <div className="flex">
-          <img id="logo" src="/media/img/kkutu/short_logo.png" alt="Logo" />
+          <img id="logo" src="/media/image/kkutu/short_logo.png" alt="Logo" />
           <div id="start-button">
             <button
               className="game-start"

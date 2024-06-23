@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import { create } from "zustand";
 
-import { useStore as useGlobalStore } from "front/Game/Store";
 import L from "front/@global/Language";
-import Mode from "front/@block/Mode";
 import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import ProfileDialog from "front/Game/dialogs/Profile";
-import Moremi from "front/@block/Moremi";
 import { getLevel } from "front/@global/Utility";
+import RoomTitle from "front/@block/RoomTitle";
+import Moremi from "front/@block/Moremi";
 import LevelIcon from "front/@block/LevelIcon";
+import { useStore as useGlobalStore } from "front/Game/Store";
+import ProfileDialog from "front/Game/dialogs/Profile";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "common/KKuTu";
 
@@ -66,40 +66,24 @@ export namespace Room {
       socket.messageReceiver.on(WebSocketMessage.Type.Ready, ({ member }) =>
         updateMember(member)
       );
-      const startListener = () => {
+      socket.messageReceiver.on(WebSocketMessage.Type.Start, ({ game }) => {
         if (room === undefined) return;
         const audioContext = AudioContext.instance;
         audioContext.stopAll();
         audioContext.playEffect("gameStart");
-        updateRoom(room);
-      };
-      socket.messageReceiver.on(WebSocketMessage.Type.Start, startListener);
+        updateRoom({ ...room, game });
+      });
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
         socket.messageReceiver.off(WebSocketMessage.Type.Ready);
-        socket.messageReceiver.off(WebSocketMessage.Type.Start, startListener);
+        socket.messageReceiver.off(WebSocketMessage.Type.Start);
       };
     }, []);
 
     if (room === undefined) return null;
     return (
       <section id="box-room" className="product">
-        <div className="product-title">
-          <h5 className="id">[{room.id}]</h5>
-          <h5 className="title">{room.title}</h5>
-          <h5 className="mode">
-            <Mode {...room} />
-          </h5>
-          <h5 className="limit">
-            {L.get(
-              "stat_roomLimit",
-              Object.keys(room.members).length,
-              room.limit
-            )}
-          </h5>
-          <h5 className="round">{L.get("unitRound", room.round)}</h5>
-          <h5 className="roundTime">{L.get("unitSecond", room.roundTime)}</h5>
-        </div>
+        <RoomTitle {...room} />
         <div className="product-body">
           <div className="user-list">
             {Object.values(room.members).map((member, index) => (

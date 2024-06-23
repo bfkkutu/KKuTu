@@ -35,9 +35,9 @@ const App = Express();
   } else {
     App.listen(SETTINGS.ports.http);
   }
-  for (const idx in SETTINGS.sockets.channel) {
+  for (const idx in SETTINGS.channel) {
     Channel.instances[idx] = new Channel(
-      SETTINGS.sockets.channel[idx].ports.internal,
+      SETTINGS.channel[idx].ports.internal,
       SETTINGS.secure.ssl
     );
     Logger.info(`Channel #${idx} ready.`).out();
