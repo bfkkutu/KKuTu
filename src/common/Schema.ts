@@ -45,6 +45,15 @@ export namespace Schema {
       connectTimeout: number;
       maxQueryExecutionTime: number;
     };
+    migration: {
+      host: string;
+      port: number;
+      username: string;
+      password: string;
+      database: string;
+      connectTimeout: number;
+      maxQueryExecutionTime: number;
+    };
     gameServerHost: string;
     gameServerRetry: number;
     languageSupport: Table<string>;

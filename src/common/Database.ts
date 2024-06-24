@@ -98,7 +98,6 @@ export namespace Database {
       isAdmin: boolean;
       departures: number;
       roomId?: number;
-      createdAt: number;
     }
   }
   export interface User extends User.Summarized {
@@ -127,6 +126,10 @@ export namespace Database {
     target: string;
     reason: number;
     comment: string;
-    createdAt: number;
+  }
+  export interface Word {
+    id: string;
+    data: string;
+    means: Record<string, string>;
   }
 }

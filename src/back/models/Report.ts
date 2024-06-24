@@ -37,7 +37,6 @@ export default class Report implements Serializable<Database.Report> {
       target: this.target.id,
       reason: this.reason,
       comment: this.comment,
-      createdAt: this.createdAt,
     };
   }
 }

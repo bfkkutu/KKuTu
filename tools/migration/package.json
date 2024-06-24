@@ -1,0 +1,17 @@
+{
+  "name": "kkutu-tools-migration",
+  "version": "0.1.0",
+  "description": "Rule the words! KKuTu Online Core",
+  "scripts": {
+    "start": "node ./dist/Main.js",
+    "build": "tsc"
+  },
+  "author": "Seunghoon Lee",
+  "devDependencies": {
+    "@types/cli-progress": "^3.11.5"
+  },
+  "dependencies": {
+    "cli-progress": "^3.12.0"
+  },
+  "license": "GPL-3.0"
+}

@@ -53,6 +53,13 @@
     "password": "",
     "database": ""
   },
+  "migration": {
+    "host": "",
+    "port": 0,
+    "username": "",
+    "password": "",
+    "database": ""
+  },
   "gameServerHost": "127.0.0.2",
   "gameServerRetry": 5,
   "languageSupport": {

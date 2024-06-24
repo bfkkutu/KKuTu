@@ -2,7 +2,6 @@ import * as TypeORM from "typeorm";
 
 import { Database } from "../../common/Database";
 import { KKuTu } from "common/KKuTu";
-import { Transformer } from "back/utils/DatabaseAgent";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User implements Serializable<Database.User> {
@@ -136,7 +135,6 @@ export default class User implements Serializable<Database.User> {
       isAdmin: this.departures !== Database.Departure.None,
       departures: this.departures,
       roomId: this.roomId,
-      createdAt: this.createdAt,
     };
   }
   public serialize(): Database.User {

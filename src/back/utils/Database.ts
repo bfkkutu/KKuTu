@@ -9,6 +9,7 @@ import User from "back/models/User";
 import Chat from "back/models/Chat";
 import Whisper from "back/models/Whisper";
 import Report from "back/models/Report";
+import { WordKo, WordEn } from "back/models/Word";
 
 export default class DB {
   private static dataSource = new TypeORM.DataSource({
@@ -16,7 +17,7 @@ export default class DB {
     ...SETTINGS["database"],
     synchronize: true,
     logging: [],
-    entities: [User, Chat, Whisper, Report],
+    entities: [User, Chat, Whisper, Report, WordKo, WordEn],
   });
 
   public static get Manager(): TypeORM.EntityManager {
