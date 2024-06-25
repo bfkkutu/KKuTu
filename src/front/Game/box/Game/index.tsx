@@ -46,6 +46,9 @@ export namespace Game {
         <div className="body">
           {game.players.map((id, index) => {
             const member = users[id];
+            if (member === undefined) {
+              return null;
+            }
             return (
               <div key={index} className="member">
                 {member.nickname}
