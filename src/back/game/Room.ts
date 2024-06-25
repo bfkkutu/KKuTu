@@ -122,6 +122,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
       client.user.isReady = true;
     }
 
+    this.game?.remove(id);
     this.update();
   }
   /**
