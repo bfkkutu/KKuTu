@@ -108,21 +108,20 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
       return this.channel.unloadRoom(this.id);
     }
 
-    if (this.master !== id) {
-      return;
+    if (this.master === id) {
+      this.master = this.clients.valuesAsArray()[0].user.id;
+      const client = this.clients.get(this.master);
+      if (client === undefined) {
+        // TODO: 오류 처리
+        return;
+      }
+      if (client.user.roomId === undefined) {
+        // TODO: 오류 처리
+        return;
+      }
+      client.user.isReady = true;
     }
 
-    this.master = this.clients.valuesAsArray()[0].user.id;
-    const client = this.clients.get(this.master);
-    if (client === undefined) {
-      // TODO: 오류 처리
-      return;
-    }
-    if (client.user.roomId === undefined) {
-      // TODO: 오류 처리
-      return;
-    }
-    client.user.isReady = true;
     this.update();
   }
   /**

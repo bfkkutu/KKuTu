@@ -176,15 +176,9 @@ function Component(props: Nest.Page.Props<"Game">) {
                   <UserList.Box server={server} />
                   <List.Box />
                 </div>
-              ) : room.game === undefined ? (
+              ) : (
                 <div className="room">
                   <Room.Box />
-                </div>
-              ) : (
-                <div className="game">
-                  {React.createElement(
-                    Game.GRAPHICS[KKuTu.Game.modes[room.mode].graphic]
-                  )}
                 </div>
               )}
               <div className="lobby">

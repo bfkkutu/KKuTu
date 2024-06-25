@@ -654,12 +654,9 @@
 }
 
 #box-room {
-  width: 1000px;
-  height: 360px;
-
   .product-title {
-    height: 12px;
     position: fixed;
+    height: 12px;
 
     h5 {
       float: left;
@@ -701,281 +698,247 @@
     }
   }
 
-  .product-body {
-    .user-list {
-      margin-top: 20px;
+  &.room {
+    width: 1000px;
+    height: 360px;
 
-      .user {
-        float: left;
-        padding: 3px;
-        border-radius: 10px;
-        margin: 3px;
-        width: 224px;
-        height: 151px;
-        box-shadow: 0px 1px 1px #777777;
-        background-color: #e4e4e4;
+    .product-body {
+      .user-list {
+        margin-top: 20px;
 
-        &:hover {
-          cursor: pointer;
-          background-color: #eeeeee;
-        }
-
-        div {
+        .user {
           float: left;
-        }
-
-        .image {
-          margin: 3px;
-          width: 100px;
-          height: 100px;
-        }
-
-        .stat {
           padding: 3px;
-          width: 112px;
-          height: 100px;
-          font-size: 15px;
+          border-radius: 10px;
+          margin: 3px;
+          width: 224px;
+          height: 151px;
+          box-shadow: 0px 1px 1px #777777;
+          background-color: #e4e4e4;
+
+          &:hover {
+            cursor: pointer;
+            background-color: #eeeeee;
+          }
 
           div {
-            padding-left: 2px;
-            margin-bottom: 4px;
-            font-weight: bold;
-            float: right;
-          }
-
-          .master {
-            color: #e14e2d;
-          }
-          .spectator {
-            color: #8160ff;
-          }
-          .ready {
-            color: #3a8bdf;
-          }
-        }
-
-        .title {
-          padding: 6px 4px;
-          width: 216px;
-          font-size: 15px;
-
-          .level {
             float: left;
-            width: 30px;
-            height: 30px;
           }
 
-          .nickname {
-            padding: 6px 0px 0px 8px;
-            font-weight: bold;
+          .image {
+            margin: 3px;
+            width: 100px;
+            height: 100px;
+          }
+
+          .stat {
+            padding: 3px;
+            width: 112px;
+            height: 100px;
+            font-size: 15px;
+
+            div {
+              padding-left: 2px;
+              margin-bottom: 4px;
+              font-weight: bold;
+              float: right;
+            }
+
+            .master {
+              color: #e14e2d;
+            }
+            .spectator {
+              color: #8160ff;
+            }
+            .ready {
+              color: #3a8bdf;
+            }
+          }
+
+          .title {
+            padding: 6px 4px;
+            width: 216px;
+            font-size: 15px;
+
+            .level {
+              float: left;
+              width: 30px;
+              height: 30px;
+            }
+
+            .nickname {
+              padding: 6px 0px 0px 8px;
+              font-weight: bold;
+            }
           }
         }
       }
     }
   }
-}
+  &.game {
+    width: 1000px;
+    height: 410px;
+    background-image: url("/media/image/kkutu/gamebg.png");
 
-#box-game {
-  width: 1000px;
-  height: 410px;
-  background-image: url("/media/image/kkutu/gamebg.png");
+    .product-body {
+      &.normal {
+        margin-top: 25px;
+        padding-top: 0px;
 
-  .product-title {
-    height: 12px;
+        .head {
+          display: flex;
+          flex-direction: row;
 
-    h5 {
-      float: left;
-    }
-
-    .id {
-      width: 35px;
-      text-align: center;
-    }
-
-    .title {
-      font-weight: bold;
-      width: 450px;
-    }
-
-    .mode {
-      margin-right: 5px;
-      width: 340px;
-      text-align: right;
-    }
-
-    .limit {
-      width: 60px;
-      text-align: center;
-    }
-
-    .round {
-      width: 60px;
-      text-align: center;
-    }
-
-    .roundTime {
-      width: 40px;
-      text-align: center;
-    }
-  }
-
-  div {
-    float: left;
-  }
-
-  .product-body {
-    padding-top: 0px;
-
-    .head {
-      display: flex;
-      flex-direction: row;
-
-      .hint {
-        padding-top: 55px;
-        margin: 50px 105px 0px 40px;
-        width: 100px;
-        height: 45px;
-        font-size: 24px;
-        color: #eeeeee;
-        font-weight: bold;
-        text-align: center;
-        text-shadow: 0px 1px 5px #141414;
-      }
-
-      .stage {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: flex-end;
-        width: 500px;
-
-        .top {
-          height: 40px;
-          width: 500px;
-
-          .rounds {
-            position: absolute;
-            width: 500px;
-            color: #ffffff;
-            text-align: center;
-            text-shadow: 0px 1px 1px #141414;
-          }
-
-          .character {
-            display: flex;
-            flex-direction: row;
-            justify-content: space-between;
-            align-items: flex-end;
-            width: 500px;
-
-            img {
-              position: sticky;
-            }
-          }
-        }
-
-        .bottom {
-          padding: 20px 5px 5px 5px;
-          border: 2px solid #000000;
-          border-bottom-left-radius: 10px;
-          border-bottom-right-radius: 10px;
-          margin-top: -10px;
-          width: 486px;
-          height: 80px;
-          background-color: #deaf56;
-
-          .display {
-            padding: 8px 5px;
-            border-radius: 10px;
-            border-bottom: {
-              left-radius: 0px;
-              right-radius: 0px;
-            }
-            width: 476px;
-            height: 23px;
-            font-size: 20px;
-            text-align: center;
+          .hint {
+            padding-top: 55px;
+            margin: 50px 105px 0px 40px;
+            width: 100px;
+            height: 45px;
+            font-size: 24px;
             color: #eeeeee;
-            background-image: url("/media/image/kkutu/gamestart.png");
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0px 1px 5px #141414;
           }
 
-          .graph {
-            border-left: 1px solid rgba(0, 0, 0, 0.7);
-            border-right: 1px solid rgba(0, 0, 0, 0.7);
-            width: 484px;
-            height: 20px;
-            color: #ffffff;
-            box-shadow: none;
-            text-align: right;
-            text-shadow: 0px 1px 3px #141414;
-            overflow: hidden;
+          .stage {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            width: 500px;
 
-            &.turn-time {
-              background-color: #70712d;
+            .top {
+              height: 40px;
+              width: 500px;
+
+              .rounds {
+                position: absolute;
+                width: 500px;
+                color: #ffffff;
+                text-align: center;
+                text-shadow: 0px 1px 1px #141414;
+              }
+
+              .character {
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: flex-end;
+                width: 500px;
+
+                img {
+                  position: sticky;
+                }
+              }
             }
-            &.round-time {
-              border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+
+            .bottom {
+              padding: 20px 5px 5px 5px;
+              border: 2px solid #000000;
               border-bottom-left-radius: 10px;
               border-bottom-right-radius: 10px;
-              background-color: #223c6c;
+              margin-top: -10px;
+              width: 486px;
+              height: 80px;
+              background-color: #deaf56;
+
+              .display {
+                padding: 8px 5px;
+                border-radius: 10px;
+                border-bottom: {
+                  left-radius: 0px;
+                  right-radius: 0px;
+                }
+                width: 476px;
+                height: 23px;
+                font-size: 20px;
+                text-align: center;
+                color: #eeeeee;
+                background-image: url("/media/image/kkutu/gamestart.png");
+              }
+
+              .graph {
+                border-left: 1px solid rgba(0, 0, 0, 0.7);
+                border-right: 1px solid rgba(0, 0, 0, 0.7);
+                width: 484px;
+                height: 20px;
+                color: #ffffff;
+                box-shadow: none;
+                text-align: right;
+                text-shadow: 0px 1px 3px #141414;
+                overflow: hidden;
+
+                &.turn-time {
+                  background-color: #70712d;
+                }
+                &.round-time {
+                  border-bottom: 1px solid rgba(0, 0, 0, 0.7);
+                  border-bottom-left-radius: 10px;
+                  border-bottom-right-radius: 10px;
+                  background-color: #223c6c;
+                }
+              }
             }
           }
+
+          .chain {
+            padding-top: 55px;
+            margin: 50px 105px 0px 40px;
+            width: 100px;
+            height: 45px;
+            font-size: 24px;
+            color: #eeeeee;
+            font-weight: bold;
+            text-align: center;
+            text-shadow: 0px 1px 5px #141414;
+            background-image: url("/media/image/kkutu/righthand.png");
+          }
         }
-      }
 
-      .chain {
-        padding-top: 55px;
-        margin: 50px 105px 0px 40px;
-        width: 100px;
-        height: 45px;
-        font-size: 24px;
-        color: #eeeeee;
-        font-weight: bold;
-        text-align: center;
-        text-shadow: 0px 1px 5px #141414;
-        background-image: url("/media/image/kkutu/righthand.png");
-      }
-    }
+        .neck {
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
 
-    .neck {
-      display: flex;
-      flex-direction: row;
-      justify-content: center;
+          .history {
+            display: flex;
+            flex-direction: row;
+            width: 990px;
+            height: 40px;
+            overflow: hidden;
+          }
 
-      .history {
-        display: flex;
-        flex-direction: row;
-        width: 990px;
-        height: 40px;
-        overflow: hidden;
-      }
+          .input {
+            position: absolute;
+            padding: 5px;
+            border-radius: 10px;
+            background-color: rgba(0, 0, 0, 0.7);
+            width: 478px;
+            height: 40px;
+            font-size: 20px;
+          }
+        }
 
-      .input {
-        position: absolute;
-        padding: 5px;
-        border-radius: 10px;
-        background-color: rgba(0, 0, 0, 0.7);
-        width: 478px;
-        height: 40px;
-        font-size: 20px;
-      }
-    }
+        .body {
+          display: flex;
+          flex-direction: row;
+          margin: 0px -1px;
+          width: 992px;
+          height: 180px;
 
-    .body {
-      margin: 0px -1px;
-      width: 992px;
-      height: 180px;
-
-      .member {
-        padding: 1px;
-        border: 3px solid #dddddd;
-        border-radius: 10px;
-        margin: 13px 3px 3px 3px;
-        width: 110px;
-        height: 167px;
-        box-shadow: 0px 1px 1px #141414;
-        background-color: #dddddd;
-        transition: all 300ms ease;
+          .member {
+            padding: 1px;
+            border: 3px solid #dddddd;
+            border-radius: 10px;
+            margin: 13px 3px 3px 3px;
+            width: 110px;
+            height: 167px;
+            box-shadow: 0px 1px 1px #141414;
+            background-color: #dddddd;
+            transition: all 300ms ease;
+          }
+        }
       }
     }
   }

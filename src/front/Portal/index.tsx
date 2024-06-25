@@ -141,7 +141,7 @@ export default class Portal extends React.PureComponent<
                 </label>
               </h3>
               <div id="server-list">
-                {this.state.list.map((v, i) => {
+                {this.state.list.map((v, index) => {
                   let status = v === null ? "x" : "o";
                   const people = status == "x" ? "-" : v + " / " + 100;
                   const limp = (v / 100) * 100;
@@ -151,14 +151,15 @@ export default class Portal extends React.PureComponent<
                     else if (limp >= 90) status = "p";
                   return (
                     <div
+                      key={index}
                       className="server"
                       onClick={() => {
-                        if (status != "x") location.href = `/game/${i}`;
+                        if (status != "x") location.href = `/game/${index}`;
                       }}
                     >
                       <div className={`server-status ss-${status}`} />
                       <div className="server-name">
-                        {L.render(`server_${i}`)}
+                        {L.render(`server_${index}`)}
                       </div>
                       <div className="server-people graph">
                         <div

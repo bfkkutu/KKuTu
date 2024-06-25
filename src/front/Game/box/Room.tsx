@@ -5,13 +5,14 @@ import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { getLevel } from "front/@global/Utility";
-import RoomTitle from "front/@block/RoomTitle";
 import Moremi from "front/@block/Moremi";
 import LevelIcon from "front/@block/LevelIcon";
+import Mode from "front/@block/Mode";
 import { useStore as useGlobalStore } from "front/Game/Store";
+import { Game } from "front/Game/box/Game";
 import ProfileDialog from "front/Game/dialogs/Profile";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { KKuTu } from "common/KKuTu";
+import { KKuTu } from "../../../common/KKuTu";
 
 export namespace Room {
   export function Box() {
@@ -20,7 +21,7 @@ export namespace Room {
     const notice = useGlobalStore((state) => state.notice);
     const [room, updateRoom, addMember, updateMember, removeMember] = useStore(
       (state) => [
-        state.room,
+        state.room!,
         state.updateRoom,
         state.addMember,
         state.updateMember,
@@ -52,6 +53,7 @@ export namespace Room {
           removeMember(memberId);
         }
       );
+
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.JoinRoom);
         socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom);
@@ -67,30 +69,56 @@ export namespace Room {
         updateMember(member)
       );
       socket.messageReceiver.on(WebSocketMessage.Type.Start, ({ game }) => {
-        if (room === undefined) return;
         const audioContext = AudioContext.instance;
         audioContext.stopAll();
         audioContext.playEffect("gameStart");
         updateRoom({ ...room, game });
       });
+      const unload = () => socket.send(WebSocketMessage.Type.LeaveRoom, {});
+      window.addEventListener("beforeunload", unload);
+
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
         socket.messageReceiver.off(WebSocketMessage.Type.Ready);
         socket.messageReceiver.off(WebSocketMessage.Type.Start);
+        window.removeEventListener("beforeunload", unload);
       };
     }, []);
 
-    if (room === undefined) return null;
     return (
-      <section id="box-room" className="product">
-        <RoomTitle {...room} />
-        <div className="product-body">
-          <div className="user-list">
-            {Object.values(room.members).map((member, index) => (
-              <Member {...member} key={index} />
-            ))}
-          </div>
+      <section
+        id="box-room"
+        className={`product ${room.game === undefined ? "room" : "game"}`}
+      >
+        <div className="product-title">
+          <h5 className="id">[{room.id}]</h5>
+          <h5 className="title">{room.title}</h5>
+          <h5 className="mode">
+            <Mode room={room} />
+          </h5>
+          <h5 className="limit">
+            {L.get(
+              "stat_roomLimit",
+              Object.keys(room.members).length,
+              room.limit
+            )}
+          </h5>
+          <h5 className="round">{L.get("unitRound", room.round)}</h5>
+          <h5 className="roundTime">{L.get("unitSecond", room.roundTime)}</h5>
         </div>
+        {room.game === undefined ? (
+          <div className="product-body">
+            <div className="user-list">
+              {Object.values(room.members).map((member, index) => (
+                <Member {...member} key={index} />
+              ))}
+            </div>
+          </div>
+        ) : (
+          React.createElement(
+            Game.GRAPHICS[KKuTu.Game.modes[room.mode].graphic]
+          )
+        )}
       </section>
     );
   }
@@ -99,7 +127,9 @@ export namespace Room {
     const users = useGlobalStore((state) => state.users);
     const room = useStore((state) => state.room);
 
-    if (room === undefined) return null;
+    if (room === undefined) {
+      return null;
+    }
 
     const user = users[member.id];
     const toggle = Dialog.useStore((state) => state.toggle);

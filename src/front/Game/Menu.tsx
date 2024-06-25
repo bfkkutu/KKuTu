@@ -149,7 +149,7 @@ export namespace Menu {
       type: Type.Leave,
       isTiny: false,
       label: L.get("menu_leave"),
-      contexts: [Context.Room, Context.Master],
+      contexts: [Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Replay,
@@ -174,20 +174,28 @@ export namespace Menu {
 
     const roomSettingsDialog =
       room && new RoomSettingsDialog({ ...room, password: "" });
-    let context = Context.Lobby;
+    let contexts = [];
 
     if (room === undefined) {
-      context = Context.Lobby;
-    } else if (room.master === me.id) {
-      context = Context.Master;
+      contexts.push(Context.Lobby);
     } else {
-      context = Context.Room;
+      contexts.push(room.master === me.id ? Context.Master : Context.Room);
+      if (room.game !== undefined) {
+        contexts.push(Context.Gaming);
+      }
     }
 
     return (
       <section className="top-menu">
         {buttons
-          .filter((config) => config.contexts.includes(context))
+          .filter((config) => {
+            for (const context of contexts) {
+              if (!config.contexts.includes(context)) {
+                return false;
+              }
+            }
+            return true;
+          })
           .map((config, index) => {
             const className = new ClassName(`menu-${config.type}`);
             if (config.isTiny) {
@@ -284,7 +292,9 @@ export namespace Menu {
                 break;
               case Type.Leave:
                 props.onClick = () => {
-                  if (room === undefined) return;
+                  if (room === undefined) {
+                    return;
+                  }
                   socket.send(WebSocketMessage.Type.LeaveRoom, {});
                   socket.messageReceiver
                     .wait(WebSocketMessage.Type.LeaveRoom)

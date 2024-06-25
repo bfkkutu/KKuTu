@@ -109,7 +109,7 @@ export default function RoomListBox() {
               </div>
               <div className="game-settings">
                 <div className="mode">
-                  <Mode {...room} />
+                  <Mode room={room} />
                 </div>
                 <div className="round">{L.get("unitRound", room.round)}</div>
                 <div className="time">

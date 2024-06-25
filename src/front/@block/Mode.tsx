@@ -3,7 +3,10 @@ import React from "react";
 import { KKuTu } from "common/KKuTu";
 import L from "front/@global/Language";
 
-export default function Mode(room: KKuTu.Room) {
+interface Props {
+  room: KKuTu.Room;
+}
+export default function Mode({ room }: Props) {
   return (
     <>
       {[
