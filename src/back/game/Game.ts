@@ -21,11 +21,21 @@ export default class Game implements Serializable<KKuTu.Game> {
   private readonly room: Room;
   /**
    * Room::clients의 sub map.
+   * 로봇은 포함하지 않는다.
    */
   private readonly clients: ImprovedMap<string, WebSocket>;
+  /**
+   * 로봇을 포함한 모든 player의 id : score Mapping.
+   */
   private readonly scores: ImprovedMap<string, number>;
   private readonly mode: Mode;
+  /**
+   * 제시어.
+   */
   private prompt: string = "①②③④⑤⑥⑦⑧⑨⑩";
+  /**
+   * 현재 진행 중인 round index.
+   */
   private round: number;
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {

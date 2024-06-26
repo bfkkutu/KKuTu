@@ -29,12 +29,23 @@ export default class Room
   public rules: Record<KKuTu.Game.Rule, boolean>;
   public master: string;
 
+  /**
+   * 방이 비어있는지 여부.
+   * 로봇은 제외한다.
+   */
   private get isEmpty() {
     return this.clients.size === 0;
   }
+  /**
+   * 방이 꽉 찼는지 여부.
+   * 로봇을 포함한다.
+   */
   public get isFull() {
     return this.size === this.limit;
   }
+  /**
+   * 게임을 시작할 수 있는지 여부.
+   */
   public get isReady() {
     for (const client of this.clients.values()) {
       if (client.user.roomId === undefined) {
@@ -85,6 +96,10 @@ export default class Room
     this.rules = room.rules;
   }
 
+  /**
+   * 방 설정을 업데이트한다.
+   * @param room 방 설정 객체.
+   */
   public configure(room: KKuTu.Room.Settings): void {
     this.title = room.title;
     this.isLocked = room.password !== Room.EMPTY_PASSWORD;
@@ -95,6 +110,11 @@ export default class Room
     this.roundTime = room.roundTime;
     this.rules = room.rules;
   }
+  /**
+   * 방에 클라이언트를 추가한다.
+   *
+   * @param socket 웹 소켓.
+   */
   public override add(socket: WebSocket): void {
     if (this.isFull) {
       return;
@@ -106,6 +126,11 @@ export default class Room
     socket.user.isSpectator = false;
     this.update();
   }
+  /**
+   * 방에 로봇을 추가한다.
+   *
+   * @param robot 로봇 객체.
+   */
   public addRobot(robot: Robot): void {
     if (this.isFull) {
       return;
