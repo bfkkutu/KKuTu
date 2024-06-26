@@ -6,15 +6,17 @@ import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { getLevel } from "front/@global/Utility";
 import ClassName from "front/@global/ClassName";
+import { EventListener } from "front/@global/WebSocket";
 import Moremi from "front/@block/Moremi";
+import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
 import Mode from "front/@block/Mode";
 import { useStore as useGlobalStore } from "front/Game/Store";
 import { Game } from "front/Game/box/Game";
 import ProfileDialog from "front/Game/dialogs/Profile";
+import RobotProfileDialog from "front/Game/dialogs/RobotProfile";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
-import { EventListener } from "front/@global/WebSocket";
 
 export namespace Room {
   export function Box() {
@@ -66,9 +68,9 @@ export namespace Room {
       );
       socket.messageReceiver.on(
         WebSocketMessage.Type.LeaveRoom,
-        ({ memberId }) => {
-          notice(L.get("notice_leaveRoom", users[memberId].nickname));
-          removeMember(memberId);
+        ({ member }) => {
+          notice(L.get("notice_leaveRoom", users[member].nickname));
+          removeMember(member);
         }
       );
 
@@ -194,7 +196,7 @@ export namespace Room {
           <div className="product-body">
             <div className="user-list">
               {Object.values(room.members).map((member, index) => (
-                <Member {...member} key={index} />
+                <Member key={index} member={member} />
               ))}
             </div>
           </div>
@@ -207,18 +209,13 @@ export namespace Room {
     );
   }
 
-  export function Member(member: KKuTu.Room.Member) {
-    const users = useGlobalStore((state) => state.users);
-    const room = useStore((state) => state.room);
-
-    if (room === undefined) {
-      return null;
-    }
-
-    const user = users[member.id];
+  interface Props {
+    member: KKuTu.Room.Member;
+  }
+  export function Member({ member }: Props) {
+    const room = useStore((state) => state.room!);
     const toggle = Dialog.useStore((state) => state.toggle);
 
-    const dialog = new ProfileDialog(user);
     const stats: React.ReactNode[] = [];
 
     if (room.master === member.id) {
@@ -241,6 +238,26 @@ export namespace Room {
         </div>
       );
     }
+
+    if (member.isRobot) {
+      const dialog = new RobotProfileDialog(member.id);
+
+      return (
+        <div className="user" onClick={() => toggle(dialog)}>
+          <Robot className="moremi image" />
+          <div className="stat">{stats}</div>
+          <div className="title">
+            <LevelIcon className="level" level={1} />
+            <div className="nickname">{L.get("robot")}</div>
+          </div>
+        </div>
+      );
+    }
+
+    const users = useGlobalStore((state) => state.users);
+
+    const user = users[member.id];
+    const dialog = new ProfileDialog(user);
 
     return (
       <div className="user" onClick={() => toggle(dialog)}>

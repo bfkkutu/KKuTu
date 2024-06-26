@@ -1,5 +1,6 @@
 import * as TypeORM from "typeorm";
 
+import Robot from "back/game/Robot";
 import { Database } from "../../common/Database";
 import { KKuTu } from "common/KKuTu";
 
@@ -115,6 +116,10 @@ export default class User implements Serializable<Database.User> {
   public isReady: boolean = false;
   public isSpectator: boolean = false;
 
+  public isRobot(): this is Robot {
+    return false;
+  }
+
   public leaveRoom(): boolean {
     if (this.roomId === undefined) {
       return false;
@@ -149,6 +154,7 @@ export default class User implements Serializable<Database.User> {
   public asRoomMember(): KKuTu.Room.Member {
     return {
       id: this.id,
+      isRobot: this.isRobot(),
       isReady: this.isReady,
       isSpectator: this.isSpectator,
     };

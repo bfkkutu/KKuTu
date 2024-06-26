@@ -29,6 +29,8 @@ export default class BlackListDialog extends Dialog {
     );
     const [users, setUsers] = useState({ ...onlineUsers });
 
+    const tooltipRemove = new Tooltip(L.get("remove"));
+
     useEffect(() => {
       async function loadOfflineUsers() {
         for (const id of [
@@ -71,7 +73,7 @@ export default class BlackListDialog extends Dialog {
                 <div className="right">
                   <div
                     className="remove"
-                    onMouseEnter={createOnMouseEnter(L.get("remove"))}
+                    onMouseEnter={createOnMouseEnter(tooltipRemove)}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
                     onClick={async () => {

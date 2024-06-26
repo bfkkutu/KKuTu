@@ -4,12 +4,13 @@ import sanitize from "sanitize-html";
 import WebSocketServer from "back/utils/WebSocketServer";
 import DB from "back/utils/Database";
 import Room from "back/game/Room";
+import Robot from "back/game/Robot";
 import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
 import WebSocket from "back/utils/WebSocket";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Database } from "../../common/Database";
-import ObjectMap from "../../common/ObjectMap";
+import ImprovedMap from "../../common/ImprovedMap";
 
 import User from "back/models/User";
 import Whisper from "back/models/Whisper";
@@ -23,11 +24,11 @@ export default class Channel extends WebSocketServer {
   /**
    * 이 채널에 접속 중인 유저 맵.
    */
-  private readonly users = new ObjectMap<string, WebSocket>();
+  private readonly users = new ImprovedMap<string, WebSocket>();
   /**
    * 이 채널에 만들어진 방 맵.
    */
-  private readonly rooms = new ObjectMap<number, Room>();
+  private readonly rooms = new ImprovedMap<number, Room>();
 
   constructor(port: number, isSecure: boolean = false) {
     super(port, isSecure);
@@ -228,7 +229,7 @@ export default class Channel extends WebSocketServer {
               }
 
               room.broadcast(WebSocketMessage.Type.LeaveRoom, {
-                memberId: user.id,
+                member: user.id,
               });
               room.remove(user.id);
               if (!user.leaveRoom()) {
@@ -629,9 +630,34 @@ export default class Channel extends WebSocketServer {
                 return;
               }
               target.send(WebSocketMessage.Type.Invite, {
-                userId: user.id,
-                roomId: user.roomId,
+                user: user.id,
+                room: user.roomId,
               });
+            }
+            break;
+          case WebSocketMessage.Type.AddRobot:
+            {
+              if (user.roomId === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.isFull) {
+                return socket.sendError(WebSocketError.Type.Conflict, {
+                  isFatal: false,
+                });
+              }
+
+              room.addRobot(new Robot());
+              socket.send(WebSocketMessage.Type.AddRobot, {});
             }
             break;
           case WebSocketMessage.Type.QueryUser:
@@ -653,7 +679,7 @@ export default class Channel extends WebSocketServer {
           const room = this.rooms.get(user.roomId);
           if (room !== undefined) {
             room.broadcast(WebSocketMessage.Type.LeaveRoom, {
-              memberId: user.id,
+              member: user.id,
             });
             room.remove(user.id);
             if (!user.leaveRoom()) {
@@ -669,7 +695,7 @@ export default class Channel extends WebSocketServer {
         this.users.delete(user.id);
         Logger.info(`User #${user.id} left.`).out();
         this.broadcast(WebSocketMessage.Type.Leave, {
-          userId: user.id,
+          user: user.id,
         });
       });
       Logger.info(`User #${user.id} joined.`).out();

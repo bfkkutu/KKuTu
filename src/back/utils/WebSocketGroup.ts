@@ -1,9 +1,9 @@
 import WebSocket from "back/utils/WebSocket";
-import ObjectMap from "../../common/ObjectMap";
+import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "common/WebSocket";
 
 export default class WebSocketGroup {
-  protected readonly clients = new ObjectMap<string, WebSocket>();
+  protected readonly clients = new ImprovedMap<string, WebSocket>();
 
   public add(socket: WebSocket) {
     this.clients.set(socket.user.id, socket);

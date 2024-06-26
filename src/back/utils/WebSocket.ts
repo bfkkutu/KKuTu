@@ -5,6 +5,7 @@ import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
 export default class WebSocket extends Socket {
   public user!: User;
+
   private _send = Socket.prototype.send;
   public send<T extends WebSocketMessage.Type>(
     type: T,

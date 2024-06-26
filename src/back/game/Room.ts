@@ -1,21 +1,24 @@
 import sha256 from "sha256";
 
+import WebSocket from "back/utils/WebSocket";
 import WebSocketGroup from "back/utils/WebSocketGroup";
 import Channel from "back/game/Channel";
 import Game from "back/game/Game";
-import WebSocket from "back/utils/WebSocket";
+import Robot from "back/game/Robot";
 import { KKuTu } from "common/KKuTu";
+import ImprovedSet from "../../common/ImprovedSet";
 import { WebSocketMessage } from "../../common/WebSocket";
 
-export default class Room extends WebSocketGroup implements KKuTu.Room {
-  private static readonly emptyPassword = sha256("");
+export default class Room
+  extends WebSocketGroup
+  implements Serializable<KKuTu.Room>
+{
+  private static readonly EMPTY_PASSWORD = sha256("");
 
-  /**
-   * @reference
-   */
   private readonly channel: Channel;
+  private readonly robots = new ImprovedSet<Robot>();
   private game?: Game;
-  public id: number;
+  public readonly id: number;
   public title: string;
   public isLocked: boolean;
   public password: string;
@@ -30,7 +33,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
     return this.clients.size === 0;
   }
   public get isFull() {
-    return this.clients.size === this.limit;
+    return this.size === this.limit;
   }
   public get isReady() {
     for (const client of this.clients.values()) {
@@ -44,13 +47,20 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
     return true;
   }
   /**
+   * 일반 유저, 로봇 전부 포함한 전체 member의 수
+   */
+  private get size() {
+    return this.clients.size + this.robots.size;
+  }
+  /**
    * 관전자를 제외한 member의 수
    * (player의 수)
    */
   public get count() {
-    return this.clients
-      .valuesAsArray()
-      .filter((client) => !client.user.isSpectator).length;
+    return (
+      this.clients.valuesAsArray().filter((client) => !client.user.isSpectator)
+        .length + this.robots.size
+    );
   }
 
   constructor(
@@ -66,7 +76,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
     this.master = master;
 
     this.title = room.title;
-    this.isLocked = room.password !== Room.emptyPassword;
+    this.isLocked = room.password !== Room.EMPTY_PASSWORD;
     this.password = room.password;
     this.limit = room.limit;
     this.mode = room.mode;
@@ -77,7 +87,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
 
   public configure(room: KKuTu.Room.Settings): void {
     this.title = room.title;
-    this.isLocked = room.password !== Room.emptyPassword;
+    this.isLocked = room.password !== Room.EMPTY_PASSWORD;
     this.password = room.password;
     this.limit = room.limit;
     this.mode = room.mode;
@@ -94,6 +104,17 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
     socket.user.roomId = this.id;
     socket.user.isReady = socket.user.settings.game.autoReady;
     socket.user.isSpectator = false;
+    this.update();
+  }
+  public addRobot(robot: Robot): void {
+    if (this.isFull) {
+      return;
+    }
+
+    this.robots.add(robot);
+    robot.roomId = this.id;
+    robot.isReady = true;
+    robot.isSpectator = false;
     this.update();
   }
   /**
@@ -149,7 +170,8 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
           prev.push(client);
         }
         return prev;
-      }, [] as WebSocket[])
+      }, [] as WebSocket[]),
+      this.robots.valuesAsArray().map((robot) => robot.id)
     );
     this.game.initialize();
   }
@@ -164,7 +186,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
       round: this.round,
       roundTime: this.roundTime,
       rules: this.rules,
-      members: this.clients.size,
+      members: this.size,
     };
   }
   public serialize(): KKuTu.Room.Detailed {
@@ -177,11 +199,15 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
       roundTime: this.roundTime,
       rules: this.rules,
       master: this.master,
-      members: Object.fromEntries(
-        this.clients
+      members: Object.fromEntries([
+        ...this.clients
           .entriesAsArray()
-          .map(([id, client]) => [id, client.user.asRoomMember()])
-      ),
+          .map(([id, client]) => [id, client.user.asRoomMember()]),
+        ...[...this.robots.values()].map((robot) => [
+          robot.id,
+          robot.asRoomMember(),
+        ]),
+      ]),
       game: this.game?.serialize(),
     };
   }

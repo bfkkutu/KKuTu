@@ -1,46 +1,55 @@
 import React, { useRef } from "react";
 import { create } from "zustand";
 
+export class Tooltip {
+  public content: string;
+
+  constructor(content: string) {
+    this.content = content;
+  }
+}
 export namespace Tooltip {
   interface State {
-    visible: boolean;
     x: number;
     y: number;
-    content: string;
-    createOnMouseEnter: (content: string) => React.MouseEventHandler;
+    instance?: Tooltip;
+    createOnMouseEnter: (instance: Tooltip) => React.MouseEventHandler;
     onMouseMove: React.MouseEventHandler;
     onMouseLeave: React.MouseEventHandler;
+    hide: () => void;
   }
 
-  export const useStore = create<State>((setState) => ({
-    visible: false,
-    x: 0,
-    y: 0,
-    content: "",
-    createOnMouseEnter:
-      (content) =>
-      ({ clientX, clientY }) =>
-        setState({
-          visible: true,
-          x: clientX,
-          y: clientY,
-          content,
-        }),
-    onMouseMove: ({ movementX, movementY }) =>
-      setState(({ x, y }) => ({ x: x + movementX, y: y + movementY })),
-    onMouseLeave: () => setState({ visible: false }),
-  }));
+  export const useStore = create<State>((setState) => {
+    const hide = () => setState({ instance: undefined });
+
+    return {
+      x: 0,
+      y: 0,
+      instance: undefined,
+      createOnMouseEnter:
+        (instance) =>
+        ({ clientX, clientY }) =>
+          setState({
+            x: clientX,
+            y: clientY,
+            instance,
+          }),
+      onMouseMove: ({ movementX, movementY }) =>
+        setState(({ x, y }) => ({ x: x + movementX, y: y + movementY })),
+      onMouseLeave: hide,
+      hide,
+    };
+  });
 
   export function Manager() {
-    const [visible, x, y, content] = useStore((state) => [
-      state.visible,
+    const [x, y, instance] = useStore((state) => [
       state.x,
       state.y,
-      state.content,
+      state.instance,
     ]);
     const $ = useRef<HTMLDivElement>(null);
 
-    return visible ? (
+    return instance === undefined ? null : (
       <div
         id="tooltip"
         style={
@@ -53,8 +62,8 @@ export namespace Tooltip {
         }
         ref={$}
       >
-        {content}
+        {instance.content}
       </div>
-    ) : null;
+    );
   }
 }

@@ -4,7 +4,7 @@ import WebSocket from "back/utils/WebSocket";
 import DB from "back/utils/Database";
 import Word, { WordEn, WordKo } from "back/models/Word";
 import { KKuTu } from "../../common/KKuTu";
-import ObjectMap from "../../common/ObjectMap";
+import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
 import Relay from "back/game/modes/Relay";
@@ -22,15 +22,22 @@ export default class Game implements Serializable<KKuTu.Game> {
   /**
    * Room::clients의 sub map.
    */
-  private readonly clients: ObjectMap<string, WebSocket>;
+  private readonly clients: ImprovedMap<string, WebSocket>;
+  private readonly scores: ImprovedMap<string, number>;
   private readonly mode: Mode;
   private prompt: string = "①②③④⑤⑥⑦⑧⑨⑩";
   private round: number;
 
-  constructor(room: Room, clients: WebSocket[]) {
+  constructor(room: Room, clients: WebSocket[], robots: string[]) {
     this.room = room;
-    this.clients = new ObjectMap(
+    this.clients = new ImprovedMap(
       clients.map((client) => [client.user.id, client])
+    );
+    this.scores = new ImprovedMap(
+      [...clients.map((client) => client.user.id), ...robots].map((id) => [
+        id,
+        0,
+      ])
     );
     this.mode = new MODES[this.room.mode]();
     this.round = 0;
@@ -72,8 +79,7 @@ export default class Game implements Serializable<KKuTu.Game> {
   public serialize(): KKuTu.Game {
     return {
       prompt: this.prompt,
-      round: this.round,
-      players: this.clients.keysAsArray(),
+      players: this.scores.asRecord(),
     };
   }
 }

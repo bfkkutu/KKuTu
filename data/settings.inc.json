@@ -12,7 +12,8 @@
 
       "chat": "/chat.mp3",
 
-      "gameStart": "/game_start.mp3"
+      "gameStart": "/game_start.mp3",
+      "roundStart": "/round_start.mp3"
     },
     "maxLevel": 360,
     "expTable": [],

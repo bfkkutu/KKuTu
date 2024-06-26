@@ -1,6 +1,6 @@
-export default class ObjectMap<
+export default class ImprovedMap<
   K extends string | number | symbol,
-  V extends object
+  V
 > extends Map<K, V> {
   public keysAsArray(): K[] {
     return Array.from(this.keys());

@@ -38,6 +38,14 @@ export default class CommunityDialog extends Dialog {
     );
     const [users, setUsers] = useState({ ...onlineUsers });
 
+    const tooltipAccept = new Tooltip(L.get("accept"));
+    const tooltipDecline = new Tooltip(L.get("decline"));
+
+    const tooltipWhisper = new Tooltip(L.get("whisper"));
+    const tooltipInvite = new Tooltip(L.get("invite"));
+    const tooltipFollow = new Tooltip(L.get("follow"));
+    const tooltipRemove = new Tooltip(L.get("remove"));
+
     useEffect(() => {
       async function loadOfflineUsers() {
         for (const id of [
@@ -85,7 +93,7 @@ export default class CommunityDialog extends Dialog {
                 <div className="right">
                   <div
                     className="accept"
-                    onMouseEnter={createOnMouseEnter(L.get("accept"))}
+                    onMouseEnter={createOnMouseEnter(tooltipAccept)}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
                     onClick={() => sendResponse(id, true)}
@@ -94,7 +102,7 @@ export default class CommunityDialog extends Dialog {
                   </div>
                   <div
                     className="decline"
-                    onMouseEnter={createOnMouseEnter(L.get("decline"))}
+                    onMouseEnter={createOnMouseEnter(tooltipDecline)}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
                     onClick={() => sendResponse(id, false)}
@@ -130,7 +138,7 @@ export default class CommunityDialog extends Dialog {
                   {isOnline ? (
                     <>
                       <div
-                        onMouseEnter={createOnMouseEnter(L.get("whisper"))}
+                        onMouseEnter={createOnMouseEnter(tooltipWhisper)}
                         onMouseMove={onMouseMove}
                         onMouseLeave={onMouseLeave}
                         onClick={() => Whisper.toggle(friend)}
@@ -140,7 +148,7 @@ export default class CommunityDialog extends Dialog {
                       {room === undefined ||
                       friend.roomId === room.id ? null : (
                         <div
-                          onMouseEnter={createOnMouseEnter(L.get("invite"))}
+                          onMouseEnter={createOnMouseEnter(tooltipInvite)}
                           onMouseMove={onMouseMove}
                           onMouseLeave={onMouseLeave}
                           onClick={async () => {
@@ -164,7 +172,7 @@ export default class CommunityDialog extends Dialog {
                       {friend.roomId !== undefined &&
                       friend.roomId !== room?.id ? (
                         <div
-                          onMouseEnter={createOnMouseEnter(L.get("follow"))}
+                          onMouseEnter={createOnMouseEnter(tooltipFollow)}
                           onMouseMove={onMouseMove}
                           onMouseLeave={onMouseLeave}
                           onClick={async () => {
@@ -200,7 +208,7 @@ export default class CommunityDialog extends Dialog {
                       ) : null}
                       <div
                         className="remove"
-                        onMouseEnter={createOnMouseEnter(L.get("remove"))}
+                        onMouseEnter={createOnMouseEnter(tooltipRemove)}
                         onMouseMove={onMouseMove}
                         onMouseLeave={onMouseLeave}
                         onClick={async () => {

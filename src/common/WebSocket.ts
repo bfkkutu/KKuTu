@@ -61,6 +61,7 @@ export namespace WebSocketMessage {
     ReportChat = "reportChat",
     ReportWhisper = "reportWhisper",
     Invite = "invite",
+    AddRobot = "addRobot",
     UpdateUser = "updateUser",
     /**
      * @sender Client.
@@ -89,7 +90,10 @@ export namespace WebSocketMessage {
         user: Database.User.Summarized;
       };
       [Type.Leave]: {
-        userId: string;
+        /**
+         * 접속을 종료한 유저 식별자
+         */
+        user: string;
       };
       [Type.Chat]: Database.Chat;
       [Type.CreateRoom]: {
@@ -106,7 +110,10 @@ export namespace WebSocketMessage {
         member: KKuTu.Room.Member;
       };
       [Type.LeaveRoom]: {
-        memberId: string;
+        /**
+         * 방을 나간 member 식별자
+         */
+        member: string;
       };
       [Type.Spectate]: {
         member: KKuTu.Room.Member;
@@ -142,12 +149,13 @@ export namespace WebSocketMessage {
         /**
          * 초대를 보낸 유저 식별자.
          */
-        userId: string;
+        user: string;
         /**
          * 방 식별자.
          */
-        roomId: number;
+        room: number;
       };
+      [Type.AddRobot]: {};
       [Type.UpdateUser]: {
         user: Database.User.Summarized;
       };
@@ -245,6 +253,7 @@ export namespace WebSocketMessage {
       [Type.Invite]: {
         target: string;
       };
+      [Type.AddRobot]: {};
       [Type.UpdateUser]: {};
       [Type.QueryUser]: {
         target: string;

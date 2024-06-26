@@ -6,7 +6,7 @@ import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { WebSocketMessage } from "../../../common/WebSocket";
+import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export default class InviteDialog extends Dialog {
   public static instance = new InviteDialog();
@@ -50,7 +50,31 @@ export default class InviteDialog extends Dialog {
               </li>
             ))}
         </ul>
-        <div className="footer"></div>
+        <div className="footer">
+          <button
+            onClick={async () => {
+              socket.send(WebSocketMessage.Type.AddRobot, {});
+              try {
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.AddRobot
+                );
+              } catch (e) {
+                const { errorType } =
+                  e as WebSocketError.Message[WebSocketError.Type];
+                switch (errorType) {
+                  case WebSocketError.Type.BadRequest:
+                    window.alert(L.get("error_400"));
+                    break;
+                  case WebSocketError.Type.Conflict:
+                    window.alert(L.get("error_roomFull"));
+                    break;
+                }
+              }
+            }}
+          >
+            {L.get("invite_addRobot")}
+          </button>
+        </div>
       </div>
     );
   }

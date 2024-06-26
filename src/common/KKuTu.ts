@@ -270,8 +270,7 @@ export namespace KKuTu {
   }
   export interface Game {
     prompt: string;
-    round: number;
-    players: string[];
+    players: Record<string, number>;
   }
 
   export namespace Room {
@@ -293,6 +292,7 @@ export namespace KKuTu {
     }
     export interface Member {
       id: string;
+      isRobot: boolean;
       isReady: boolean;
       isSpectator: boolean;
     }

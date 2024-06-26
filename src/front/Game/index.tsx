@@ -13,14 +13,12 @@ import { createInviteNotification } from "front/Game/notifications/Invite";
 import { Whisper } from "front/Game/dialogs/Whisper";
 import { WhisperNotification } from "front/Game/notifications/Whisper";
 import { Nest } from "common/Nest";
-import { KKuTu } from "../../common/KKuTu";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 import { Room } from "front/Game/box/Room";
 import { List } from "front/Game/box/ListBox";
 import { UserList } from "front/Game/box/UserList";
-import { Game } from "front/Game/box/Game";
 import { Profile } from "front/Game/box/Profile";
 import { Chat } from "front/Game/box/Chat";
 
@@ -80,7 +78,16 @@ function Component(props: Nest.Page.Props<"Game">) {
       initializeUsers(users);
       for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound)) {
         try {
-          await audioContext.register(id, `/media/sound${src}`);
+          if (Array.isArray(src)) {
+            for (const index in src) {
+              await audioContext.register(
+                id + index,
+                `/media/sound${src[index]}`
+              );
+            }
+          } else {
+            await audioContext.register(id, `/media/sound${src}`);
+          }
         } catch (e) {
           window.alert(L.get("error_soundNotFound", id));
         }
@@ -99,8 +106,8 @@ function Component(props: Nest.Page.Props<"Game">) {
     socket.messageReceiver.on(WebSocketMessage.Type.Join, ({ user }) =>
       appendUser(user)
     );
-    socket.messageReceiver.on(WebSocketMessage.Type.Leave, ({ userId }) =>
-      removeUser(userId)
+    socket.messageReceiver.on(WebSocketMessage.Type.Leave, ({ user }) =>
+      removeUser(user)
     );
     socket.on("close", (e) => {
       window.alert(L.get("error_closed", e.code));
@@ -120,12 +127,10 @@ function Component(props: Nest.Page.Props<"Game">) {
   useEffect(() => {
     if (socket === undefined) return;
     const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
-      userId,
-      roomId,
+      user,
+      room,
     }) =>
-      showNotification(
-        createInviteNotification(roomId, users[userId].nickname)
-      );
+      showNotification(createInviteNotification(room, users[user].nickname));
     socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
