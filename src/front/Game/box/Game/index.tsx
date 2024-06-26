@@ -103,7 +103,9 @@ export namespace Game {
                     />
                     <div className="nickname ellipse">{L.get("robot")}</div>
                   </div>
-                  <div className="score">00000</div>
+                  <div className="score">
+                    {score.toString().padStart(5, "0")}
+                  </div>
                 </div>
               );
             }
@@ -130,7 +132,7 @@ export namespace Game {
                   />
                   <div className="nickname ellipse">{member.nickname}</div>
                 </div>
-                <div className="score">00000</div>
+                <div className="score">{score.toString().padStart(5, "0")}</div>
               </div>
             );
           })}
