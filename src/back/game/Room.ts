@@ -151,9 +151,7 @@ export default class Room extends WebSocketGroup implements KKuTu.Room {
         return prev;
       }, [] as WebSocket[])
     );
-    this.broadcast(WebSocketMessage.Type.Start, {
-      game: this.game.serialize(),
-    });
+    this.game.initialize();
   }
   public summarize(): KKuTu.Room.Summarized {
     return {

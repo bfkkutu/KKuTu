@@ -1,1 +1,1 @@
-export default class Mode {}
+export default abstract class Mode {}

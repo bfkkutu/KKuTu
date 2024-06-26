@@ -1,6 +1,7 @@
 import React from "react";
 
 import L from "front/@global/Language";
+import ClassName from "front/@global/ClassName";
 import { useStore } from "front/Game/Store";
 import { Room } from "front/Game/box/Room";
 import { KKuTu } from "../../../../common/KKuTu";
@@ -21,7 +22,18 @@ export namespace Game {
           <div className="hint"></div>
           <div className="stage">
             <div className="top">
-              <div className="rounds">제 시 어</div>
+              <div className="rounds">
+                {[...game.prompt].map((character, index) => (
+                  <div
+                    key={index}
+                    className={new ClassName("item")
+                      .if(game.round === index, "current")
+                      .toString()}
+                  >
+                    {character}
+                  </div>
+                ))}
+              </div>
               <div className="character">
                 <img className="eye-left" src="/media/image/ui/jjoeyeL.png" />
                 <img className="nose" src="/media/image/ui/jjonose.png" />

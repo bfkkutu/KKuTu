@@ -44,6 +44,8 @@ export namespace WebSocketMessage {
     Spectate = "spectate",
     Ready = "ready",
     Start = "start",
+    RoundStart = "roundStart",
+    TurnStart = "turnStart",
     UpdateRoomList = "updateRoomList",
     /**
      * @sender Server & Client.
@@ -115,6 +117,15 @@ export namespace WebSocketMessage {
       [Type.Start]: {
         game: KKuTu.Game;
       };
+      [Type.RoundStart]: {
+        /**
+         * 현재 라운드.
+         */
+        round: number;
+      };
+      [Type.TurnStart]: {
+        player: string;
+      };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
       };
@@ -182,6 +193,8 @@ export namespace WebSocketMessage {
       [Type.Spectate]: {};
       [Type.Ready]: {};
       [Type.Start]: {};
+      [Type.RoundStart]: {};
+      [Type.TurnStart]: {};
       [Type.UpdateRoomList]: {};
       [Type.FriendRequest]: {
         /**

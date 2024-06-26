@@ -710,6 +710,7 @@ export default class Channel extends WebSocketServer {
     }
     const user = await DB.Manager.createQueryBuilder(User, "u")
       .where("u.id = :id", { id })
+      .limit(1)
       .getOne();
     if (user !== null) {
       return user;

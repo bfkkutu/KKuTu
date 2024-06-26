@@ -78,9 +78,13 @@ function Component(props: Nest.Page.Props<"Game">) {
       );
       updateMe(me);
       initializeUsers(users);
-      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound))
-        if (!(await audioContext.register(id, `/media/sound${src}`)))
+      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound)) {
+        try {
+          await audioContext.register(id, `/media/sound${src}`);
+        } catch (e) {
           window.alert(L.get("error_soundNotFound", id));
+        }
+      }
       audioContext.volume = me.settings.bgmVolume;
       audioContext.play(`lobby_${me.settings.lobbyMusic}`, true);
       const intro = $intro.current!;
