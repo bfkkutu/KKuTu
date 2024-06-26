@@ -98,6 +98,7 @@ export default class Room
 
   /**
    * 방 설정을 업데이트한다.
+   *
    * @param room 방 설정 객체.
    */
   public configure(room: KKuTu.Room.Settings): void {
@@ -224,15 +225,12 @@ export default class Room
       roundTime: this.roundTime,
       rules: this.rules,
       master: this.master,
-      members: Object.fromEntries([
-        ...this.clients
-          .entriesAsArray()
-          .map(([id, client]) => [id, client.user.asRoomMember()]),
-        ...[...this.robots.values()].map((robot) => [
-          robot.id,
-          robot.asRoomMember(),
-        ]),
-      ]),
+      members: Object.fromEntries(
+        [
+          ...this.clients.valuesAsArray().map((client) => client.user),
+          ...this.robots,
+        ].map((user) => [user.id, user.asRoomMember()])
+      ),
       game: this.game?.serialize(),
     };
   }
