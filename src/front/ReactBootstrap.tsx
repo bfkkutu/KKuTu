@@ -39,7 +39,10 @@ if (typeof window !== "undefined") {
     Dialog.useStore.getState().show(dialog);
     return dialog.wait;
   };
-  window.addEventListener("keydown", (e) => Dialog.hideActive.call(e));
+  window.addEventListener("keydown", (e) => {
+    Dialog.hideActive.call(e);
+    Tooltip.useStore.getState().hide();
+  });
   window.onselectstart = window.ondragstart = () => false;
 }
 
