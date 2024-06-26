@@ -23,8 +23,9 @@ export default class InviteDialog extends Dialog {
         <ul className="body">
           {Object.values(users)
             .filter((user) => user.roomId === undefined)
-            .map((user) => (
+            .map((user, index) => (
               <li
+                key={index}
                 className="item"
                 onClick={async () => {
                   if (
