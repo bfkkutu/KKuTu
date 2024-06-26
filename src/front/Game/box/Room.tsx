@@ -21,6 +21,7 @@ import { KKuTu } from "../../../common/KKuTu";
 export namespace Room {
   export function Box() {
     const socket = useGlobalStore((state) => state.socket);
+    const id = useGlobalStore((state) => state.me.id);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
     const [room, updateRoom, addMember, updateMember, removeMember] = useStore(
@@ -70,6 +71,12 @@ export namespace Room {
         WebSocketMessage.Type.LeaveRoom,
         ({ member }) => {
           notice(L.get("notice_leaveRoom", users[member].nickname));
+          // 나간 유저가 본인이라면
+          // 곧 room은 undefined가 될 것이므로
+          // room 객체를 업데이트할 이유가 없다.
+          if (id === member) {
+            return;
+          }
           removeMember(member);
         }
       );
