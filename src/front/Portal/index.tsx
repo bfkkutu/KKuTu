@@ -9,7 +9,7 @@ import { Schema } from "common/Schema";
 
 interface State {
   profile?: Schema.Profile;
-  list: any[];
+  list: number[];
   isRefreshing: boolean;
   isListInitialized: boolean;
   sum: number;
@@ -32,7 +32,6 @@ export default class Portal extends React.PureComponent<
   };
   public componentDidMount() {
     this.seekServers = this.seekServers.bind(this);
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
 
     this.setState({ profile: this.props.session.profile });
     window.addEventListener("resize", () => {
@@ -42,7 +41,9 @@ export default class Portal extends React.PureComponent<
       });
     });
     setInterval(() => {
-      if (this.state.isRefreshing) return window.alert(L.get("serverWait"));
+      if (this.state.isRefreshing) {
+        return;
+      }
       this.setState({ isRefreshing: true });
       setTimeout(this.seekServers, 1000);
     }, 60000);
@@ -50,13 +51,14 @@ export default class Portal extends React.PureComponent<
   }
   public async seekServers() {
     const { list } = await (await fetch("/servers")).json();
-    if (list && list.length)
+    if (list && list.length) {
       this.setState({
         list,
         sum: list.reduce((partialSum: number, i: number) => partialSum + i, 0),
         isRefreshing: false,
         isListInitialized: true,
       });
+    }
   }
   public render() {
     return (
@@ -73,12 +75,16 @@ export default class Portal extends React.PureComponent<
               className="game-start"
               type="button"
               onClick={() => {
-                if (this.state.profile === undefined)
+                if (this.state.profile === undefined) {
                   return (location.href = "/game/0");
-                for (let i = 0.9; i < 1; i += 0.01)
-                  for (let j in this.state.list)
-                    if (this.state.list[j] < i * 100)
+                }
+                for (let i = 90; i < 100; ++i) {
+                  for (let j in this.state.list) {
+                    if (this.state.list[j] < i) {
                       return (location.href = `/game/${j}`);
+                    }
+                  }
+                }
               }}
               disabled={!this.state.isListInitialized}
             >
@@ -146,15 +152,21 @@ export default class Portal extends React.PureComponent<
                   const people = status == "x" ? "-" : v + " / " + 100;
                   const limp = (v / 100) * 100;
 
-                  if (status == "o")
-                    if (limp >= 99) status = "q";
-                    else if (limp >= 90) status = "p";
+                  if (status == "o") {
+                    if (limp >= 99) {
+                      status = "q";
+                    } else if (limp >= 90) {
+                      status = "p";
+                    }
+                  }
                   return (
                     <div
                       key={index}
                       className="server"
                       onClick={() => {
-                        if (status != "x") location.href = `/game/${index}`;
+                        if (status != "x") {
+                          location.href = `/game/${index}`;
+                        }
                       }}
                     >
                       <div className={`server-status ss-${status}`} />

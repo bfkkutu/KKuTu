@@ -23,7 +23,6 @@ declare global {
   declare function confirm(content: React.ReactNode): Promise<boolean>;
 
   interface Window {
-    adsbygoogle: any;
     alert(content: React.ReactNode): Promise<void>;
     prompt(
       title: React.ReactNode,
