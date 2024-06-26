@@ -65,8 +65,33 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
   }
   public state: State = {};
   public render() {
-    if (this.state.error !== undefined)
-      return L.render("ERROR", this.state.error.message);
+    if (this.state.error !== undefined) {
+      if (this.props.mode === "production") {
+        window.setTimeout(() => location.reload(), 3000);
+        return (
+          <article id="main" className="error-production">
+            {L.render("error_production")}
+          </article>
+        );
+      }
+      return (
+        <article id="main" className="error-development">
+          {this.state.error.stack ? (
+            <ul>
+              {this.state.error.stack.split(" at ").map((v, i) => (
+                <li>
+                  {i !== 0 ? "at " : null}
+                  {v}
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>{this.state.error.message}</p>
+          )}
+        </article>
+      );
+    }
+
     return (
       <>
         <img id="background" className="jt-image" />

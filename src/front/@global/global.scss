@@ -55,6 +55,19 @@ body {
   #main {
     position: relative;
     z-index: 2;
+
+    &.error-production {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 300px;
+      color: black;
+    }
+    &.error-development {
+      display: flex;
+      justify-content: flex-start;
+      color: black;
+    }
   }
 
   header {
