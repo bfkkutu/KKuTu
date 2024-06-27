@@ -1,5 +1,5 @@
 export default class ClassName extends Array<string> {
-  constructor(name: string) {
+  constructor(name: string = "") {
     super(...name.split(" "));
   }
   public if(condition: boolean | (() => boolean), name: string): this {

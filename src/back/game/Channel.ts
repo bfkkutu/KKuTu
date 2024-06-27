@@ -93,12 +93,12 @@ export default class Channel extends WebSocketServer {
               return;
             }
 
-            const chat = new Chat();
-            chat.sender = user;
-            chat.content = message.content;
-
             if (user.roomId === undefined) {
+              const chat = new Chat();
+              chat.sender = user;
+              chat.content = message.content;
               await DB.Manager.save(chat);
+
               this.broadcast(
                 WebSocketMessage.Type.Chat,
                 chat.serialize(),
@@ -115,8 +115,17 @@ export default class Channel extends WebSocketServer {
                 return;
               }
 
+              if (room.isSubmitable(message.content)) {
+                room.submit(message.content);
+                return;
+              }
+
+              const chat = new Chat();
+              chat.sender = user;
+              chat.content = message.content;
               chat.room = room.id;
               await DB.Manager.save(chat);
+
               room.broadcast(WebSocketMessage.Type.Chat, chat.serialize());
               Logger.info(
                 `Room #${room.id} Chat #${user.id}: ${message.content}`

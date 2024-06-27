@@ -853,6 +853,10 @@
               background-color: #deaf56;
 
               .display {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
                 padding: 8px 5px;
                 border-radius: 10px;
                 border-bottom: {
@@ -865,6 +869,20 @@
                 text-align: center;
                 color: #eeeeee;
                 background-image: url("/media/image/kkutu/gamestart.png");
+
+                div {
+                  width: 20px;
+                }
+
+                .hidden {
+                  visibility: hidden;
+                }
+                .submitting {
+                  animation: Submitting 100ms linear;
+                }
+                .submitted {
+                  animation: Submitted 100ms linear;
+                }
               }
 
               .graph {
@@ -947,6 +965,17 @@
             background-color: #dddddd;
             transition: all 300ms ease;
             cursor: default;
+
+            &.current {
+              animation: CurrentBlink 2s linear infinite;
+              margin-top: 0px;
+              height: 177px;
+              background-color: #ddffdd;
+            }
+
+            &.timeout {
+              border-color: #ff6666;
+            }
 
             .moremi {
               margin: 3px 5px;
@@ -1474,6 +1503,24 @@
   }
   100% {
     border-color: #3eff3e;
+  }
+}
+@keyframes Submitting {
+  0% {
+    margin-top: -6px;
+    font-size: 36px;
+  }
+  100% {
+    margin-top: 0;
+    font-size: 20px;
+  }
+}
+@keyframes Submitted {
+  0% {
+    font-size: 23px;
+  }
+  100% {
+    font-size: 20px;
   }
 }
 @keyframes FailBlink {

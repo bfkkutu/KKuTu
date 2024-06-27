@@ -1,5 +1,6 @@
+import * as TypeORM from "typeorm";
+
 import Room from "back/game/Room";
-import Mode from "back/game/Mode";
 import WebSocket from "back/utils/WebSocket";
 import DB from "back/utils/Database";
 import Word, { WordEn, WordKo } from "back/models/Word";
@@ -7,18 +8,13 @@ import { KKuTu } from "../../common/KKuTu";
 import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
-import Relay from "back/game/modes/Relay";
-
-const MODES: Record<any, any> = {
-  [KKuTu.Game.Mode.KoreanRelay]: Relay,
-};
 const ENTRIES: Record<KKuTu.Game.Language, typeof Word> = {
   [KKuTu.Game.Language.Korean]: WordKo,
   [KKuTu.Game.Language.English]: WordEn,
 };
 
-export default class Game implements Serializable<KKuTu.Game> {
-  private readonly room: Room;
+export default abstract class Game implements Serializable<KKuTu.Game> {
+  protected readonly room: Room;
   /**
    * Room::clients의 sub map.
    * 로봇은 포함하지 않는다.
@@ -27,16 +23,56 @@ export default class Game implements Serializable<KKuTu.Game> {
   /**
    * 로봇을 포함한 모든 player의 id : score Mapping.
    */
-  private readonly scores: ImprovedMap<string, number>;
-  private readonly mode: Mode;
+  protected readonly scores: ImprovedMap<string, number>;
+  protected readonly mode: KKuTu.Game.IMode;
+  protected readonly repository: TypeORM.Repository<Word>;
   /**
    * 제시어.
    */
-  private prompt: string = "①②③④⑤⑥⑦⑧⑨⑩";
+  protected prompt: string = "①②③④⑤⑥⑦⑧⑨⑩";
   /**
    * 현재 진행 중인 round index.
    */
-  private round: number;
+  protected round: number;
+  protected player: number;
+
+  protected roundTime = 0;
+  protected turnTime = 0;
+  /**
+   * turn이 시작한 시점.
+   */
+  protected turnAt = 0;
+
+  protected turnTimer?: NodeJS.Timeout;
+
+  protected get now(): number {
+    return new Date().getTime();
+  }
+  private get speed(): number {
+    if (this.roundTime < 5000) {
+      return 10;
+    } else if (this.roundTime < 11000) {
+      return 9;
+    } else if (this.roundTime < 18000) {
+      return 8;
+    } else if (this.roundTime < 26000) {
+      return 7;
+    } else if (this.roundTime < 35000) {
+      return 6;
+    } else if (this.roundTime < 45000) {
+      return 5;
+    } else if (this.roundTime < 56000) {
+      return 4;
+    } else if (this.roundTime < 68000) {
+      return 3;
+    } else if (this.roundTime < 81000) {
+      return 2;
+    } else if (this.roundTime < 95000) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {
     this.room = room;
@@ -49,17 +85,16 @@ export default class Game implements Serializable<KKuTu.Game> {
         0,
       ])
     );
-    this.mode = new MODES[this.room.mode]();
+    this.mode = KKuTu.Game.modes[this.room.mode];
+    this.repository = DB.Manager.getRepository(ENTRIES[this.mode.language]);
     this.round = 0;
+    this.player = 0;
   }
 
   public async initialize(): Promise<void> {
-    const mode = KKuTu.Game.modes[this.room.mode];
-    if (mode.prompt === KKuTu.Game.Prompt.Word) {
-      const word = await DB.Manager.createQueryBuilder(
-        ENTRIES[mode.language],
-        "w"
-      )
+    if (this.mode.prompt === KKuTu.Game.Prompt.Word) {
+      const word = await this.repository
+        .createQueryBuilder("w")
         .select(["w.data"])
         .where("LENGTH(w.data) = :length", { length: this.room.round })
         .orderBy("RANDOM()")
@@ -70,13 +105,49 @@ export default class Game implements Serializable<KKuTu.Game> {
     this.room.broadcast(WebSocketMessage.Type.Start, {
       game: this.serialize(),
     });
-    setTimeout(() => this.startRound(), 1000);
+    setTimeout(() => this.startRound(), 2000);
   }
-  public startRound(): void {
+  protected startRound(): void {
+    this.roundTime = this.room.roundTime * 1000;
     this.room.broadcast(WebSocketMessage.Type.RoundStart, {
       round: this.round,
     });
+    setTimeout(() => this.startTurn(), 2400);
   }
+  protected startTurn(): void {
+    this.turnAt = this.now;
+    this.turnTime = 15000 - 1400 * this.speed;
+    this.turnTimer = setTimeout(
+      () => this.endRound(),
+      Math.min(this.roundTime, this.turnTime + 100)
+    );
+    const player = this.scores.keysAsArray()[this.player];
+    this.room.broadcast(WebSocketMessage.Type.TurnStart, {
+      display: this.getDisplay(),
+      player,
+      speed: this.speed,
+      time: this.turnTime,
+    });
+    if (!this.clients.has(player) && this.turnTime > 3000) {
+      setTimeout(() => this.robotSubmit(), 3000);
+    }
+  }
+  /**
+   * 입력에 실패하였다.
+   * 현재 라운드를 종료하고 다음 라운드로 넘어간다.
+   * RoundEnd 메시지를 전송한다.
+   */
+  private endRound(): void {
+    this.room.broadcast(WebSocketMessage.Type.RoundEnd, { loss: 0 });
+    setTimeout(() => {
+      ++this.round;
+      this.startRound();
+    }, 3000);
+  }
+  protected abstract getDisplay(): string;
+  protected abstract robotSubmit(): Promise<void>;
+  public abstract isSubmitable(content: string): boolean;
+  public abstract submit(content: string): Promise<void>;
   /**
    * 게임 도중 퇴장.
    *

@@ -5,9 +5,15 @@ import WebSocketGroup from "back/utils/WebSocketGroup";
 import Channel from "back/game/Channel";
 import Game from "back/game/Game";
 import Robot from "back/game/Robot";
-import { KKuTu } from "common/KKuTu";
+import { KKuTu } from "../../common/KKuTu";
 import ImprovedSet from "../../common/ImprovedSet";
 import { WebSocketMessage } from "../../common/WebSocket";
+
+import Relay from "back/game/modes/Relay";
+
+const MODES: Record<any, any> = {
+  [KKuTu.Game.Mode.KoreanRelay]: Relay,
+};
 
 export default class Room
   extends WebSocketGroup
@@ -56,6 +62,9 @@ export default class Room
       }
     }
     return true;
+  }
+  public get isGaming() {
+    return this.game !== undefined;
   }
   /**
    * 일반 유저, 로봇 전부 포함한 전체 member의 수
@@ -185,7 +194,7 @@ export default class Room
    * 게임을 시작한다.
    */
   public start(): void {
-    this.game = new Game(
+    this.game = new MODES[this.mode](
       this,
       this.clients.valuesAsArray().reduce((prev, client) => {
         if (client.user.roomId === undefined) {
@@ -199,14 +208,25 @@ export default class Room
       }, [] as WebSocket[]),
       this.robots.valuesAsArray().map((robot) => robot.id)
     );
+    // TODO
+    // @ts-ignore
     this.game.initialize();
+  }
+  public isSubmitable(content: string): boolean {
+    if (this.game === undefined) {
+      return false;
+    }
+    return this.game.isSubmitable(content);
+  }
+  public submit(content: string): void {
+    this.game?.submit(content);
   }
   public summarize(): KKuTu.Room.Summarized {
     return {
       id: this.id,
       title: this.title,
       isLocked: this.isLocked,
-      isGaming: this.game !== undefined,
+      isGaming: this.isGaming,
       limit: this.limit,
       mode: this.mode,
       round: this.round,

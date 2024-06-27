@@ -62,11 +62,9 @@ export namespace Chat {
       $input.current?.focus();
     }, [socket, content]);
 
-    const audioContext = AudioContext.instance;
-
     useEffect(() => {
       socket.messageReceiver.on(WebSocketMessage.Type.Chat, (chat) => {
-        audioContext.playEffect("chat");
+        AudioContext.instance.playEffect("chat");
         appendChat(chat);
       });
       return () => {

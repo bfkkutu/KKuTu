@@ -45,7 +45,10 @@ export namespace WebSocketMessage {
     Ready = "ready",
     Start = "start",
     RoundStart = "roundStart",
+    RoundEnd = "roundEnd",
     TurnStart = "turnStart",
+    TurnError = "turnError",
+    TurnEnd = "turnEnd",
     UpdateRoomList = "updateRoomList",
     /**
      * @sender Server & Client.
@@ -130,8 +133,23 @@ export namespace WebSocketMessage {
          */
         round: number;
       };
+      [Type.RoundEnd]: {
+        /**
+         * 점수 손실.
+         */
+        loss: number;
+      };
       [Type.TurnStart]: {
+        display: string;
         player: string;
+        speed: number;
+        time: number;
+      };
+      [Type.TurnError]: {
+        errorType: string;
+      };
+      [Type.TurnEnd]: {
+        word: Database.Word;
       };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
@@ -202,7 +220,10 @@ export namespace WebSocketMessage {
       [Type.Ready]: {};
       [Type.Start]: {};
       [Type.RoundStart]: {};
+      [Type.RoundEnd]: {};
       [Type.TurnStart]: {};
+      [Type.TurnError]: {};
+      [Type.TurnEnd]: {};
       [Type.UpdateRoomList]: {};
       [Type.FriendRequest]: {
         /**
