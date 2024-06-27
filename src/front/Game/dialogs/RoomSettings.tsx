@@ -28,12 +28,12 @@ export default class RoomSettingsDialog extends Dialog {
     const hide = Dialog.useStore((state) => state.hide);
     const [room, setRoom] = useState(this.settings);
 
-    const update = useCallback(
+    const updateIntegerField = useCallback(
       (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.currentTarget;
         setRoom({
           ...room,
-          [name]: value,
+          [name]: parseInt(value),
         });
       },
       [room]
@@ -52,7 +52,9 @@ export default class RoomSettingsDialog extends Dialog {
               name="title"
               placeholder={L.get("createRoom_title_default", nickname)}
               value={room.title}
-              onChange={update}
+              onChange={(e) =>
+                setRoom({ ...room, title: e.currentTarget.value })
+              }
             />
           </label>
           <label className="item-wrapper">
@@ -88,7 +90,7 @@ export default class RoomSettingsDialog extends Dialog {
               min={2}
               max={8}
               value={room.limit}
-              onChange={update}
+              onChange={updateIntegerField}
             />
           </label>
           <label className="item-wrapper">
@@ -99,7 +101,7 @@ export default class RoomSettingsDialog extends Dialog {
               id="createRoom-select-mode"
               name="mode"
               value={room.mode}
-              onChange={update}
+              onChange={updateIntegerField}
             >
               {EnumValueIterator(KKuTu.Game.Mode).map((mode, index) => (
                 <option key={index} value={mode}>
@@ -119,7 +121,7 @@ export default class RoomSettingsDialog extends Dialog {
               min={1}
               max={10}
               value={room.round}
-              onChange={update}
+              onChange={updateIntegerField}
             />
           </label>
           <label className="item-wrapper">
@@ -133,7 +135,7 @@ export default class RoomSettingsDialog extends Dialog {
               id="createRoom-select-roundTime"
               name="roundTime"
               value={room.roundTime}
-              onChange={update}
+              onChange={updateIntegerField}
             >
               {CLIENT_SETTINGS.roundTimes.map((roundTime, index) => (
                 <option key={index} value={roundTime}>

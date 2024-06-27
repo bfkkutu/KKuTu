@@ -192,7 +192,9 @@ function Component(props: Nest.Page.Props<"Game">) {
           </>
         ) : null}
       </div>
-      <KakaoAdvertisement unit={props.metadata!.ad.kakao.unit} />
+      {props.mode === "production" ? (
+        <KakaoAdvertisement unit={props.metadata!.ad.kakao.unit} />
+      ) : null}
     </article>
   );
 }
