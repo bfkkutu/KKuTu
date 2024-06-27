@@ -20,6 +20,13 @@ export const SETTINGS: Schema.Settings = Object.assign(
   {},
   JSON.parse(getProjectData("settings.json").toString())
 );
+/**
+ * `data/sounds.json` 파일 객체.
+ */
+export const SOUNDS: Schema.Sounds = Object.assign(
+  {},
+  JSON.parse(getProjectData("sounds.json").toString())
+);
 export const AUTH_CONFIG: Schema.AuthConfig = Object.assign(
   {},
   JSON.parse(getProjectData("auth.json").toString())
@@ -124,7 +131,7 @@ export function schedule(
 export function writeClientConstants(): void {
   const data: Partial<Nest.ClientSettings> = {
     languageSupport: SETTINGS.languageSupport,
-    sound: SETTINGS.application.sound,
+    sounds: SOUNDS,
     maxLevel: SETTINGS.application.maxLevel,
     expTable: [],
     moremiPart: SETTINGS.application.moremiPart,

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import Bind from "front/ReactBootstrap";
 import L from "front/@global/Language";
@@ -56,6 +56,8 @@ function Component(props: Nest.Page.Props<"Game">) {
   const [whisperDialogs, whisperLogs, appendWhisper] = Whisper.useStore(
     (state) => [state.dialogs, state.logs, state.append]
   );
+  const [loading, setLoading] = useState(L.get("connecting"));
+
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
   const audioContext = AudioContext.instance;
 
@@ -76,18 +78,10 @@ function Component(props: Nest.Page.Props<"Game">) {
       );
       updateMe(me);
       initializeUsers(users);
-      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sound)) {
+      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sounds)) {
         try {
-          if (Array.isArray(src)) {
-            for (const index in src) {
-              await audioContext.register(
-                id + index,
-                `/media/sound${src[index]}`
-              );
-            }
-          } else {
-            await audioContext.register(id, `/media/sound${src}`);
-          }
+          setLoading(L.get("loading_resource", src));
+          await audioContext.register(id, `/media/sound${src}`);
         } catch (e) {
           window.alert(L.get("error_soundNotFound", id));
         }
@@ -174,7 +168,7 @@ function Component(props: Nest.Page.Props<"Game">) {
         <div id="intro" ref={$intro}>
           <img className="image" src="/media/image/kkutu/intro.png" />
           <div className="version">{props.version}</div>
-          <div className="text">{L.get("welcome")}</div>
+          <div className="text">{loading}</div>
         </div>
         {me ? (
           <>

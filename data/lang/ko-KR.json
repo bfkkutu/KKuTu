@@ -88,6 +88,8 @@
     "title": "BF끄투",
 
     "welcome": "환영합니다.",
+    "connecting": "채널과 연결하는 중...",
+    "loading_resource": "리소스를 불러오는 중: {#0}",
 
     "error_closed": "[#{#0}] 서버와 연결이 끊어졌어요.",
     "error_soundNotFound": "소리 리소스 {#0}#{을} 로드하지 못했어요.",

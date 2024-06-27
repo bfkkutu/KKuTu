@@ -95,7 +95,7 @@ export default class SettingsDialog extends Dialog {
                 AudioContext.instance.play(`lobby_${lobbyMusic}`, true);
               }}
             >
-              {Object.keys(CLIENT_SETTINGS.sound)
+              {Object.keys(CLIENT_SETTINGS.sounds)
                 .filter((key) => key.startsWith("lobby_"))
                 .map((key, index) => {
                   const id = key.split("_").at(-1);

@@ -25,7 +25,6 @@ export namespace Schema {
       kakao: KakaoAdvertisement;
     };
     application: {
-      sound: Table<string | Array<string>>;
       maxLevel: number;
       expTable: number[];
       moremiPart: string[];
@@ -79,6 +78,8 @@ export namespace Schema {
       httpsOnly: boolean;
     };
   }
+  export type Sounds = Table<string>;
+
   export interface AuthClientConfig {
     clientID: string;
     clientSecret: string;
