@@ -68,6 +68,7 @@ export namespace Schema {
     channel: ProxiedServerConfiguration[];
     secure: {
       ssl: boolean;
+      proxied: boolean;
       isPFX: boolean;
       isCA: boolean;
       key: string;

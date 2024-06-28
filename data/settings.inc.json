@@ -76,6 +76,7 @@
   ],
   "secure": {
     "ssl": false,
+    "proxied": false,
     "isPFX": false,
     "isCA": false,
     "key": "",

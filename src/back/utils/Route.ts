@@ -10,7 +10,8 @@ import DB from "back/utils/Database";
 import User from "back/models/User";
 
 export default function (App: Express.Application): void {
-  const WEBSOCKET_PROTOCOL = SETTINGS.secure.ssl ? "wss" : "ws";
+  const WEBSOCKET_PROTOCOL =
+    SETTINGS.secure.ssl || SETTINGS.secure.proxied ? "wss" : "ws";
   const DEPENDENCIES = [
     ...Object.entries(PACKAGE.devDependencies),
     ...Object.entries(PACKAGE.dependencies),
