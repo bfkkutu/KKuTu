@@ -887,7 +887,10 @@
                 }
               }
 
-              .graph {
+              .gauge {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
                 border-left: 1px solid rgba(0, 0, 0, 0.7);
                 border-right: 1px solid rgba(0, 0, 0, 0.7);
                 width: 484px;
@@ -900,12 +903,33 @@
 
                 &.turn-time {
                   background-color: #70712d;
+
+                  .bar {
+                    background-color: #e6e846;
+                  }
                 }
                 &.round-time {
                   border-bottom: 1px solid rgba(0, 0, 0, 0.7);
                   border-bottom-left-radius: 10px;
                   border-bottom-right-radius: 10px;
                   background-color: #223c6c;
+
+                  .bar {
+                    background-color: #3573e4;
+                  }
+                }
+
+                .bar {
+                  display: flex;
+                  align-items: center;
+                  justify-content: flex-end;
+                  height: 100%;
+
+                  .text {
+                    color: #eee;
+                    text-align: center;
+                    text-shadow: 0px 1px 1px #141414;
+                  }
                 }
               }
             }
@@ -1351,7 +1375,7 @@
             color: #444;
           }
 
-          .gauge-text {
+          .text {
             font-size: 11px;
           }
         }
@@ -1489,7 +1513,7 @@
   }
 }
 
-.gauge {
+.gauge-exp {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1498,14 +1522,12 @@
   overflow: hidden;
   background-color: #333333;
 
-  .graph-bar {
+  .body {
     background-image: url("/media/image/kkutu/scorebar.png");
   }
 
-  .gauge-text {
+  .text {
     position: absolute;
-  }
-  .bar-text {
     color: #eee;
     text-align: center;
     text-shadow: 0px 1px 1px #141414;

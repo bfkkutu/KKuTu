@@ -145,6 +145,7 @@ export namespace WebSocketMessage {
         player: string;
         speed: number;
         time: number;
+        at: number;
       };
       [Type.TurnError]: {
         errorType: string;

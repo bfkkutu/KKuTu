@@ -1,14 +1,14 @@
 import React from "react";
 
 import L from "front/@global/Language";
+import { Dialog } from "front/@global/Bayadere/Dialog";
+import { getLevel } from "front/@global/Utility";
 import LevelIcon from "front/@block/LevelIcon";
 import Moremi from "front/@block/Moremi";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
-import { useStore } from "front/Game/Store";
-import { getLevel } from "front/@global/Utility";
-import ProfileDialog from "front/Game/dialogs/Profile";
 import Gauge from "front/@block/Gauge";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { useStore } from "front/Game/Store";
+import ProfileDialog from "front/Game/dialogs/Profile";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export namespace Profile {
   export function Box() {
@@ -38,7 +38,13 @@ export namespace Profile {
           <div className="level">
             {L.get("level")} {level}
           </div>
-          <Gauge value={me.score - prev} max={goal - prev} />
+          <Gauge
+            className="gauge-exp"
+            value={me.score - prev}
+            max={goal - prev}
+            width={190}
+            height={30}
+          />
         </div>
       </section>
     );

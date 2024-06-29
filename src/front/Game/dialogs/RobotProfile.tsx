@@ -53,7 +53,13 @@ export default class RobotProfileDialog extends Dialog {
                 <div className="score">0 / 0점</div>
               </div>
               <div className="item gauge-wrapper">
-                <Gauge value={0} max={0} width={250} height={20} />
+                <Gauge
+                  className="gauge-exp"
+                  value={0}
+                  max={0}
+                  width={250}
+                  height={20}
+                />
               </div>
             </div>
           </section>

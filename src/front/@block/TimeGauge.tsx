@@ -1,5 +1,7 @@
 import React from "react";
 
+import L from "front/@global/Language";
+
 interface Props {
   className?: string;
   max: number;
@@ -8,7 +10,13 @@ interface Props {
   height: number;
 }
 
-export default class Gauge extends React.PureComponent<Props> {
+export default class TimeGauge extends React.PureComponent<Props> {
+  public shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
+    if (nextProps.value < 0) {
+      return false;
+    }
+    return true;
+  }
   public render(): React.ReactNode {
     return (
       <div
@@ -23,11 +31,11 @@ export default class Gauge extends React.PureComponent<Props> {
           style={{
             width: `${(this.props.value / this.props.max) * 100}%`,
           }}
-        />
-        <label className="text" style={{ width: `${this.props.width}px` }}>
-          {this.props.value.toLocaleString()} /{" "}
-          {this.props.max.toLocaleString()}
-        </label>
+        >
+          <label className="text">
+            {L.get("unitSecond", (this.props.value / 1000).toFixed(1))}
+          </label>
+        </div>
       </div>
     );
   }

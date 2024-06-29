@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
 import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
@@ -8,6 +8,7 @@ import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
+import TimeGauge from "front/@block/TimeGauge";
 import { useStore } from "front/Game/Store";
 import { Room } from "front/Game/box/Room";
 import { KKuTu } from "../../../../common/KKuTu";
@@ -29,14 +30,14 @@ export namespace Game {
     [8]: 0b1111_1111,
   };
 
-  interface State {
-    round: number;
+  interface Turn {
     speed: number;
     time: number;
+    at: number;
     player?: string;
     loss?: number;
   }
-  interface DisplayState {
+  interface Display {
     content: string;
     submitting?: number;
     submitted: boolean;
@@ -54,23 +55,38 @@ export namespace Game {
         state.onMouseLeave,
       ]
     );
-    const [state, setState] = useState<State>({
-      round: 0,
+    const [now, setNow] = useState(0);
+    const [round, setRound] = useState(0);
+    const [turn, setTurn] = useState<Turn>({
       speed: 0,
       time: 0,
+      at: 0,
     });
-    const [display, setDisplay] = useState<DisplayState>({
+    const [display, setDisplay] = useState<Display>({
       content: "",
       submitted: false,
     });
+
+    const timer = useRef<DOMHighResTimeStamp>(0);
+
+    function tick() {
+      setNow(new Date().getTime());
+      timer.current = requestAnimationFrame(tick);
+    }
+
+    useEffect(() => {
+      () => {
+        cancelAnimationFrame(timer.current);
+      };
+    }, []);
 
     useEffect(() => {
       socket.messageReceiver.on(
         WebSocketMessage.Type.RoundStart,
         ({ round }) => {
-          setState({
-            ...state,
-            round,
+          setRound(round);
+          setTurn({
+            ...turn,
             loss: undefined,
           });
           setDisplay({
@@ -82,36 +98,41 @@ export namespace Game {
         }
       );
       socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, ({ loss }) => {
-        setState({ ...state, loss });
+        cancelAnimationFrame(timer.current);
+        setTurn({ ...turn, loss });
         AudioContext.instance.playEffect("timeout");
       });
       socket.messageReceiver.on(
         WebSocketMessage.Type.TurnStart,
-        ({ display, player, speed, time }) => {
-          setState({ ...state, player, speed, time });
+        ({ display, player, speed, time, at }) => {
+          setTurn({ ...turn, player, speed, time, at });
           setDisplay({
             content: display,
             submitting: undefined,
             submitted: false,
           });
+          timer.current = requestAnimationFrame(tick);
           AudioContext.instance.play(`turn_${speed}`);
         }
       );
       socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, async (word) => {
+        cancelAnimationFrame(timer.current);
         AudioContext.instance.stopAll();
+
         const display = { content: word.data };
         setDisplay({
           ...display,
           submitting: undefined,
           submitted: false,
         });
-        const tick = state.time / 96;
+
+        const tick = turn.time / 96;
         if (word.data.length < 9) {
           let beat = BEAT[word.data.length];
           let cursor = 0;
           for (let i = 0; i < 8; ++i) {
             if (beat % 0b10) {
-              AudioContext.instance.playEffect(`submit_${state.speed}`);
+              AudioContext.instance.playEffect(`submit_${turn.speed}`);
               setDisplay({
                 ...display,
                 submitting: cursor++,
@@ -121,7 +142,7 @@ export namespace Game {
             beat >>= 1;
             await sleep(tick);
           }
-          AudioContext.instance.playEffect(`submitted_${state.speed}`);
+          AudioContext.instance.playEffect(`submitted_${turn.speed}`);
           for (let i = 0; i < 3; ++i) {
             setDisplay({
               ...display,
@@ -149,7 +170,7 @@ export namespace Game {
         socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
         socket.messageReceiver.off(WebSocketMessage.Type.TurnEnd);
       };
-    }, [state]);
+    }, [turn]);
 
     return (
       <div className="product-body normal">
@@ -164,7 +185,7 @@ export namespace Game {
                     <div
                       key={index}
                       className={new ClassName("item")
-                        .if(state.round === index, "current")
+                        .if(round === index, "current")
                         .toString()}
                     >
                       {game.prompt[index]}
@@ -197,15 +218,21 @@ export namespace Game {
                   </div>
                 ))}
               </div>
-              <div className="graph turn-time"></div>
-              <div className="graph round-time"></div>
+              <TimeGauge
+                className="gauge turn-time"
+                max={turn.time}
+                value={turn.time - now + turn.at}
+                width={484}
+                height={20}
+              />
+              <div className="gauge round-time"></div>
             </div>
           </div>
           <div className="chain"></div>
         </div>
         <div className="neck">
           <div className="history"></div>
-          {state.player === id ? (
+          {turn.player === id ? (
             <input
               className="input"
               placeholder={L.get("game_input_placeholder")}
@@ -220,8 +247,8 @@ export namespace Game {
                   key={index}
                   className={new ClassName("member")
                     .if(
-                      id === state.player,
-                      state.loss === undefined ? "current" : "timeout"
+                      id === turn.player,
+                      turn.loss === undefined ? "current" : "timeout"
                     )
                     .toString()}
                 >
@@ -250,8 +277,8 @@ export namespace Game {
                 key={index}
                 className={new ClassName("member")
                   .if(
-                    id === state.player,
-                    state.loss === undefined ? "current" : "timeout"
+                    id === turn.player,
+                    turn.loss === undefined ? "current" : "timeout"
                   )
                   .toString()}
               >
