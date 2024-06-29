@@ -97,54 +97,51 @@ export namespace Game {
           AudioContext.instance.play(`turn_${speed}`);
         }
       );
-      socket.messageReceiver.on(
-        WebSocketMessage.Type.TurnEnd,
-        async ({ word }) => {
-          AudioContext.instance.stopAll();
-          const display = { content: word.data };
-          setDisplay({
-            ...display,
-            submitting: undefined,
-            submitted: false,
-          });
-          const tick = state.time / 96;
-          if (word.data.length < 9) {
-            let beat = BEAT[word.data.length];
-            let cursor = 0;
-            for (let i = 0; i < 8; ++i) {
-              if (beat % 0b10) {
-                AudioContext.instance.playEffect(`submit_${state.speed}`);
-                setDisplay({
-                  ...display,
-                  submitting: cursor++,
-                  submitted: false,
-                });
-              }
-              beat >>= 1;
-              await sleep(tick);
-            }
-            AudioContext.instance.playEffect(`submitted_${state.speed}`);
-            for (let i = 0; i < 3; ++i) {
+      socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, async (word) => {
+        AudioContext.instance.stopAll();
+        const display = { content: word.data };
+        setDisplay({
+          ...display,
+          submitting: undefined,
+          submitted: false,
+        });
+        const tick = state.time / 96;
+        if (word.data.length < 9) {
+          let beat = BEAT[word.data.length];
+          let cursor = 0;
+          for (let i = 0; i < 8; ++i) {
+            if (beat % 0b10) {
+              AudioContext.instance.playEffect(`submit_${state.speed}`);
               setDisplay({
                 ...display,
-                submitting: undefined,
-                submitted: true,
-              });
-              await sleep(tick);
-              setDisplay({
-                ...display,
-                submitting: undefined,
+                submitting: cursor++,
                 submitted: false,
               });
-              await sleep(tick);
             }
+            beat >>= 1;
+            await sleep(tick);
           }
-
-          function sleep(ms: number): Promise<void> {
-            return new Promise((resolve) => window.setTimeout(resolve, ms));
+          AudioContext.instance.playEffect(`submitted_${state.speed}`);
+          for (let i = 0; i < 3; ++i) {
+            setDisplay({
+              ...display,
+              submitting: undefined,
+              submitted: true,
+            });
+            await sleep(tick);
+            setDisplay({
+              ...display,
+              submitting: undefined,
+              submitted: false,
+            });
+            await sleep(tick);
           }
         }
-      );
+
+        function sleep(ms: number): Promise<void> {
+          return new Promise((resolve) => window.setTimeout(resolve, ms));
+        }
+      });
 
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
