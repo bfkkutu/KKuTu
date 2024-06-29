@@ -78,10 +78,10 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
         <article id="main" className="error-development">
           {this.state.error.stack ? (
             <ul>
-              {this.state.error.stack.split(" at ").map((v, i) => (
-                <li>
-                  {i !== 0 ? "at " : null}
-                  {v}
+              {this.state.error.stack.split(" at ").map((trace, index) => (
+                <li key={index}>
+                  {index !== 0 ? "at " : null}
+                  {trace}
                 </li>
               ))}
             </ul>
