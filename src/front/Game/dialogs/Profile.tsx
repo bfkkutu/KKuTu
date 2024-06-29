@@ -24,10 +24,10 @@ export default class ProfileDialog extends Dialog {
     this.user = user;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("profile_title", this.user.nickname)}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);

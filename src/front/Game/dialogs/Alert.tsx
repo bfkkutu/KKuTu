@@ -12,10 +12,10 @@ export default class AlertDialog extends Dialog.Asynchronous<void> {
     this.content = content;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.get("alert")}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const hide = Dialog.useStore((state) => state.hide);
 
     return (

@@ -25,20 +25,6 @@ export function getLevel(score: number) {
     if (score < CLIENT_SETTINGS.expTable[i]) return i + 1;
   return 1;
 }
-/**
- * 컴포넌트인지 ReactNode인지 알 수 없는 객체를 랜더링한다.
- *
- * @param object React.FC 또는 typeof React.Component 또는 React.ReactNode.
- * @returns React.ReactNode.
- */
-export function renderComponentOrNode(
-  object: React.ComponentOrNode
-): React.ReactNode {
-  if (typeof object === "function") {
-    return React.createElement(object);
-  }
-  return object;
-}
 export function filterProfanities(raw: string) {
   return raw.replace(PROFANITIES, (s) => "*".repeat(s.length));
 }

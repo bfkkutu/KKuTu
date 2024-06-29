@@ -2,21 +2,24 @@ import React from "react";
 import { create } from "zustand";
 
 import { Icon, IconType } from "front/@block/Icon";
-import { renderComponentOrNode } from "front/@global/Utility";
 
-export class Notification {
-  public content: React.ComponentOrNode;
-  public onClick?: Notification.OnClick;
+export abstract class Notification {
+  private static id = 0;
+  /**
+   * Notification은 생성 순서의 역순으로
+   * 소멸한다는 보장이 없다.
+   * 따라서 Notification마다 고유값을 부여한다.
+   */
+  public id = Notification.id++;
 
-  constructor(content: React.ComponentOrNode, onClick?: Notification.OnClick) {
-    this.content = content;
-    this.onClick = onClick;
-  }
+  public Component = React.memo(this.body.bind(this));
+
+  protected abstract body(): React.ReactElement;
+
+  public onClick(): void {}
 }
 
 export namespace Notification {
-  export type OnClick = () => void;
-
   interface State {
     notifications: Notification[];
     show: (notification: Notification) => void;
@@ -50,7 +53,7 @@ export namespace Notification {
             hide(instance);
           }}
         >
-          {renderComponentOrNode(instance.content)}
+          <instance.Component />
         </div>
         <div className="close" onClick={() => hide(instance)}>
           <Icon type={IconType.NORMAL} name="xmark" />
@@ -65,7 +68,7 @@ export namespace Notification {
     return (
       <div id="notification">
         {notifications.map((notification) => (
-          <Component instance={notification} />
+          <Component key={notification.id} instance={notification} />
         ))}
       </div>
     );

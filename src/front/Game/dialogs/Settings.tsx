@@ -11,10 +11,10 @@ import { CLIENT_SETTINGS } from "back/utils/Utility";
 export default class SettingsDialog extends Dialog {
   public static instance = new SettingsDialog();
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("settings_title")}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
     const socket = useStore((state) => state.socket);
     const hide = Dialog.useStore((state) => state.hide);

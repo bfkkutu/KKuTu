@@ -13,10 +13,10 @@ import { WebSocketMessage } from "../../../common/WebSocket";
 export default class BlackListDialog extends Dialog {
   public static instance = new BlackListDialog();
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("blackList_title")}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);

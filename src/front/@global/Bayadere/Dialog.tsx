@@ -11,21 +11,14 @@ export abstract class Dialog {
    * 소멸한다는 보장이 없다.
    * 따라서 Dialog마다 고유값을 부여한다.
    */
-  public id: number;
-  public mHead: React.FC<{}>;
-  public mBody: React.FC<{}>;
+  public id = Dialog.id++;
   public usePoint: UseBoundStore<StoreApi<Point>>;
   public visible = false;
-  /**
-   * Clean up을 위한 함수.
-   */
-  public onHide?: Dialog.OnHide;
 
-  constructor(onHide?: Dialog.OnHide) {
-    this.id = Dialog.id++;
-    this.mHead = React.memo(this.head.bind(this));
-    this.mBody = React.memo(this.body.bind(this));
-    this.onHide = onHide;
+  public HeadComponent = React.memo(this.head.bind(this));
+  public BodyComponent = React.memo(this.body.bind(this));
+
+  constructor() {
     this.usePoint = create<Point>((setState) => ({
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
@@ -37,8 +30,14 @@ export abstract class Dialog {
     }));
   }
 
-  public abstract head(): React.ReactElement;
-  public abstract body(): React.ReactElement;
+  protected abstract head(): React.ReactElement;
+  protected abstract body(): React.ReactElement;
+
+  /**
+   * Clean up을 위한 함수.
+   * 하위 클래스에서 override한다.
+   */
+  public onHide(): void {}
 
   public initializeState() {
     this.usePoint = create<Point>((setState) => ({
@@ -68,7 +67,6 @@ export namespace Dialog {
   export const hideActive = new ChainedFunction<[KeyboardEvent]>(
     (e) => e.code === "Escape"
   );
-  export type OnHide = () => void;
 
   interface State {
     dialogs: Dialog[];
@@ -162,7 +160,7 @@ export namespace Dialog {
       >
         <div className="head" onMouseDown={() => setIsMoving(true)}>
           <label>
-            <instance.mHead />
+            <instance.HeadComponent />
           </label>
           <div
             className="button-close"
@@ -172,7 +170,7 @@ export namespace Dialog {
             }}
           />
         </div>
-        <instance.mBody />
+        <instance.BodyComponent />
       </div>
     );
   }

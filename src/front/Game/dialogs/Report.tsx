@@ -15,10 +15,10 @@ export default class ReportDialog extends Dialog {
     this.target = target;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("report_title", this.target.nickname)}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const hide = Dialog.useStore((state) => state.hide);
     const [reason, setReason] = useState(0);

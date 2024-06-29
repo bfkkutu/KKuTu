@@ -14,15 +14,15 @@ export default class WhisperDialog extends Dialog {
   private user: Database.User.Summarized;
 
   constructor(user: Database.User.Summarized) {
-    super(() => Whisper.useStore.getState().close(user.id));
+    super();
 
     this.user = user;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("whisper_title", this.user.nickname)}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useGlobalStore((state) => state.socket);
     const filterEnabled = useGlobalStore(
       (state) => state.me.settings.filterProfanities
@@ -149,6 +149,10 @@ export default class WhisperDialog extends Dialog {
         </div>
       </div>
     );
+  }
+
+  public override onHide(): void {
+    Whisper.useStore.getState().close(this.user.id);
   }
 }
 

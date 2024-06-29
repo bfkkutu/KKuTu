@@ -9,10 +9,10 @@ import { WebSocketMessage } from "../../../common/WebSocket";
 export default class DictionaryDialog extends Dialog {
   public static instance = new DictionaryDialog();
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("dictionary_title")}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const [input, setInput] = useState("");
     const [result, setResult] = useState<Database.Word | undefined>(undefined);

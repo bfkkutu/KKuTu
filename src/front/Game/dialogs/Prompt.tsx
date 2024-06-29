@@ -20,10 +20,10 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
     this.type = type;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{this.title}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const hide = Dialog.useStore((state) => state.hide);
     const [input, setInput] = useState("");
 

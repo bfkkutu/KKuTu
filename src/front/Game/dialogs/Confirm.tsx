@@ -12,10 +12,10 @@ export default class ConfirmDialog extends Dialog.Asynchronous<boolean> {
     this.content = content;
   }
 
-  public head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.get("confirm")}</>;
   }
-  public body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const hide = Dialog.useStore((state) => state.hide);
 
     return (

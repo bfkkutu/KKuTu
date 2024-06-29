@@ -19,10 +19,10 @@ export default class RoomSettingsDialog extends Dialog {
     this.settings = settings;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.get("roomSettings")}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const nickname = useStore((state) => state.me.nickname);
     const socket = useStore((state) => state.socket);
     const hide = Dialog.useStore((state) => state.hide);

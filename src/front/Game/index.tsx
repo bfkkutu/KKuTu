@@ -9,12 +9,13 @@ import { Notification } from "front/@global/Bayadere/Notification";
 import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/Game/Menu";
 import { useStore } from "front/Game/Store";
-import { createInviteNotification } from "front/Game/notifications/Invite";
 import { Whisper } from "front/Game/dialogs/Whisper";
-import { WhisperNotification } from "front/Game/notifications/Whisper";
 import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
+
+import InviteNotification from "front/Game/notifications/Invite";
+import WhisperNotification from "front/Game/notifications/Whisper";
 
 import { Room } from "front/Game/box/Room";
 import { List } from "front/Game/box/ListBox";
@@ -123,8 +124,7 @@ function Component(props: Nest.Page.Props<"Game">) {
     const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
       user,
       room,
-    }) =>
-      showNotification(createInviteNotification(room, users[user].nickname));
+    }) => showNotification(new InviteNotification(room, users[user].nickname));
     socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
@@ -143,7 +143,7 @@ function Component(props: Nest.Page.Props<"Game">) {
         for (const notification of notifications) {
           if (
             notification instanceof WhisperNotification &&
-            notification.sender === whisper.sender
+            notification.sender.id === whisper.sender
           ) {
             hideNotification(notification);
           }

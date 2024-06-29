@@ -20,10 +20,10 @@ export default class RobotProfileDialog extends Dialog {
     this.robot = robot;
   }
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.render("profile_title", L.get("robot"))}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const footerButtons: React.ReactNode[] = [];
 
     return (

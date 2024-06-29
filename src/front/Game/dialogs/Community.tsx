@@ -15,12 +15,12 @@ import { WebSocketMessage } from "../../../common/WebSocket";
 export default class CommunityDialog extends Dialog {
   public static instance = new CommunityDialog();
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     const friends = useStore((state) => state.community.friends);
 
     return <>{L.render("community_title", friends.length)}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);

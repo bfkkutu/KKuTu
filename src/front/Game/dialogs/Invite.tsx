@@ -11,10 +11,10 @@ import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 export default class InviteDialog extends Dialog {
   public static instance = new InviteDialog();
 
-  public override head(): React.ReactElement {
+  protected override head(): React.ReactElement {
     return <>{L.get("invite_title")}</>;
   }
-  public override body(): React.ReactElement {
+  protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
     const users = useStore((state) => state.users);
 
