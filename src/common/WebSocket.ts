@@ -150,6 +150,7 @@ export namespace WebSocketMessage {
       };
       [Type.TurnError]: {
         errorType: string;
+        display: string;
       };
       [Type.TurnEnd]: Database.Word;
       [Type.UpdateRoomList]: {

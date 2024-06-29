@@ -4,7 +4,7 @@ import Word from "back/models/Word";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class Relay extends Game implements Chainable {
-  public history: Word[] = [];
+  public history: string[] = [];
   public last: string = "";
 
   protected override startRound(): void {
@@ -48,7 +48,17 @@ export default class Relay extends Game implements Chainable {
       .where("w.data = :data", { data: content })
       .getOne();
     if (word === null) {
-      this.room.broadcast(WebSocketMessage.Type.TurnError, { errorType: "" });
+      this.room.broadcast(WebSocketMessage.Type.TurnError, {
+        errorType: "invalid",
+        display: content,
+      });
+      return;
+    }
+    if (this.history.includes(word.id)) {
+      this.room.broadcast(WebSocketMessage.Type.TurnError, {
+        errorType: "inHistory",
+        display: content,
+      });
       return;
     }
     clearTimeout(this.turnTimer);
@@ -59,7 +69,7 @@ export default class Relay extends Game implements Chainable {
     setTimeout(() => this.startTurn(), this.turnTime / 6);
   }
   public chain(word: Word): void {
-    this.history.push(word);
+    this.history.push(word.id);
     this.last = word.data.at(-1)!;
   }
 }

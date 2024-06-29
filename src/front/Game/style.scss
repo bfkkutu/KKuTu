@@ -885,6 +885,11 @@
                 .submitted {
                   animation: Submitted 100ms linear;
                 }
+
+                &.error {
+                  animation: FailBlink 2s linear;
+                  color: #ff7777;
+                }
               }
 
               .gauge {

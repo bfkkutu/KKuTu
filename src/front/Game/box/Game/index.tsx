@@ -40,6 +40,7 @@ export namespace Game {
   }
   interface Display {
     content: string;
+    error?: string;
     submitting?: number;
     submitted: boolean;
   }
@@ -70,6 +71,7 @@ export namespace Game {
     });
 
     const timer = useRef<DOMHighResTimeStamp>(0);
+    const failTimeout = useRef<number>();
 
     function tick() {
       setNow(new Date().getTime());
@@ -119,6 +121,7 @@ export namespace Game {
       );
       socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, async (word) => {
         cancelAnimationFrame(timer.current);
+        clearTimeout(failTimeout.current);
         AudioContext.instance.stopAll();
 
         const display = { content: word.data };
@@ -165,12 +168,32 @@ export namespace Game {
           return new Promise((resolve) => window.setTimeout(resolve, ms));
         }
       });
+      socket.messageReceiver.on(
+        WebSocketMessage.Type.TurnError,
+        ({ errorType, display: content }) => {
+          clearTimeout(failTimeout.current);
+          AudioContext.instance.playEffect("fail");
+          setDisplay({
+            ...display,
+            error: L.get(`turnError_${errorType}`, content),
+          });
+          failTimeout.current = window.setTimeout(
+            () =>
+              setDisplay({
+                ...display,
+                error: undefined,
+              }),
+            1800
+          );
+        }
+      );
 
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
         socket.messageReceiver.off(WebSocketMessage.Type.RoundEnd);
         socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
         socket.messageReceiver.off(WebSocketMessage.Type.TurnEnd);
+        socket.messageReceiver.off(WebSocketMessage.Type.TurnError);
       };
     }, [turn]);
 
@@ -201,25 +224,29 @@ export namespace Game {
               </div>
             </div>
             <div className="bottom">
-              <div className="display ellipse">
-                {Array.from(display.content).map((character, index) => (
-                  <div
-                    key={index}
-                    className={
-                      display.submitting === undefined
-                        ? display.submitted
-                          ? "submitted"
-                          : ""
-                        : new ClassName()
-                            .if(index === display.submitting, "submitting")
-                            .if(index > display.submitting, "hidden")
-                            .toString()
-                    }
-                  >
-                    {character}
-                  </div>
-                ))}
-              </div>
+              {display.error === undefined ? (
+                <div className="display ellipse">
+                  {Array.from(display.content).map((character, index) => (
+                    <div
+                      key={index}
+                      className={
+                        display.submitting === undefined
+                          ? display.submitted
+                            ? "submitted"
+                            : ""
+                          : new ClassName()
+                              .if(index === display.submitting, "submitting")
+                              .if(index > display.submitting, "hidden")
+                              .toString()
+                      }
+                    >
+                      {character}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="display error ellipse">{display.error}</div>
+              )}
               <TimeGauge
                 className="gauge turn-time"
                 max={turn.time}
