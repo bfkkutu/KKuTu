@@ -64,12 +64,12 @@ export default class CommunityDialog extends Dialog {
       loadOfflineUsers();
     }, [community]);
 
-    function sendResponse(sender: string, accept: boolean) {
+    async function sendResponse(sender: string, accept: boolean) {
       socket.send(WebSocketMessage.Type.FriendRequestResponse, {
         sender,
         accept,
       });
-      socket.messageReceiver.wait(WebSocketMessage.Type.UpdateCommunity);
+      await socket.messageReceiver.wait(WebSocketMessage.Type.UpdateCommunity);
     }
 
     return (
@@ -96,7 +96,7 @@ export default class CommunityDialog extends Dialog {
                     onMouseEnter={createOnMouseEnter(tooltipAccept)}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
-                    onClick={() => sendResponse(id, true)}
+                    onClick={async () => await sendResponse(id, true)}
                   >
                     <Icon type={IconType.NORMAL} name="check" />
                   </div>
@@ -105,7 +105,7 @@ export default class CommunityDialog extends Dialog {
                     onMouseEnter={createOnMouseEnter(tooltipDecline)}
                     onMouseMove={onMouseMove}
                     onMouseLeave={onMouseLeave}
-                    onClick={() => sendResponse(id, false)}
+                    onClick={async () => await sendResponse(id, false)}
                   >
                     <Icon type={IconType.NORMAL} name="xmark" />
                   </div>
