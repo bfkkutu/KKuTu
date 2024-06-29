@@ -11,8 +11,8 @@ import LevelIcon from "front/@block/LevelIcon";
 import TimeGauge from "front/@block/TimeGauge";
 import { useStore } from "front/Game/Store";
 import { Room } from "front/Game/box/Room";
-import { KKuTu } from "../../../../common/KKuTu";
-import { WebSocketMessage } from "../../../../common/WebSocket";
+import { KKuTu } from "../../../common/KKuTu";
+import { WebSocketMessage } from "../../../common/WebSocket";
 
 export namespace Game {
   export const GRAPHICS: Record<KKuTu.Game.Graphic, React.FC<{}>> = {
