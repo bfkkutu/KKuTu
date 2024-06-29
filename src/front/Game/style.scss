@@ -1262,6 +1262,54 @@
     }
   }
 
+  &-dictionary {
+    .body {
+      width: 400px;
+      height: 220px;
+      font-size: 13px;
+
+      div {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        h4 {
+          width: 100px;
+          text-align: center;
+        }
+
+        input {
+          width: 283px;
+        }
+      }
+
+      ul {
+        height: 195px;
+        overflow-y: scroll;
+        color: #bbb;
+        background-color: #111;
+
+        li {
+          display: flex;
+          flex-direction: row;
+          white-space: initial;
+          gap: 1px;
+
+          strong {
+            color: #8acfff;
+
+            &::before {
+              content: "〈";
+            }
+            &::after {
+              content: "〉";
+            }
+          }
+        }
+      }
+    }
+  }
+
   &-profile {
     .body {
       width: 390px;

@@ -52,18 +52,18 @@ export default class L {
   private static readonly REGEXP_STRICT_ARGS = /\{##(\d+?)\}/g;
 
   public static get(key: string, ...args: any[]): string {
-    const R: string = TABLE[key];
-
-    if (!R) return `(L#${key})`;
-    return josa(
-      R.replace(L.REGEXP_PATTERN, "").replace(
-        L.REGEXP_ARGS,
-        (p, v1) => args[v1]
-      )
-    );
+    if (key in TABLE) {
+      return josa(
+        TABLE[key]
+          .replace(L.REGEXP_PATTERN, "")
+          .replace(L.REGEXP_ARGS, (p, v1) => args[v1])
+      );
+    } else {
+      return `(L#${key})`;
+    }
   }
   public static render(key: string, ...args: any[]): React.ReactNode {
-    if (TABLE[key]) {
+    if (key in TABLE) {
       return L.parse(josa(TABLE[key]), ...args);
     } else {
       return `(L#${key})`;

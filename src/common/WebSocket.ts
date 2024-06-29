@@ -63,6 +63,7 @@ export namespace WebSocketMessage {
     Report = "report",
     ReportChat = "reportChat",
     ReportWhisper = "reportWhisper",
+    Dictionary = "dictionary",
     Invite = "invite",
     AddRobot = "addRobot",
     UpdateUser = "updateUser",
@@ -148,9 +149,7 @@ export namespace WebSocketMessage {
       [Type.TurnError]: {
         errorType: string;
       };
-      [Type.TurnEnd]: {
-        word: Database.Word;
-      };
+      [Type.TurnEnd]: Database.Word;
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
       };
@@ -163,6 +162,7 @@ export namespace WebSocketMessage {
       [Type.Report]: {};
       [Type.ReportChat]: {};
       [Type.ReportWhisper]: {};
+      [Type.Dictionary]: Database.Word;
       [Type.Invite]: {
         /**
          * 초대를 보낸 유저 식별자.
@@ -270,6 +270,9 @@ export namespace WebSocketMessage {
          * 신고 대상 Whisper 객체의 식별자
          */
         target: string;
+      };
+      [Type.Dictionary]: {
+        content: string;
       };
       [Type.Invite]: {
         target: string;

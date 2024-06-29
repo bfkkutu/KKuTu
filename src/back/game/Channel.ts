@@ -16,6 +16,11 @@ import User from "back/models/User";
 import Whisper from "back/models/Whisper";
 import Chat from "back/models/Chat";
 import Report from "back/models/Report";
+import Word from "back/models/Word";
+
+const Words = Object.entries(require("back/models/Word"))
+  .filter(([key]) => key !== "default")
+  .map(([_, cls]) => cls as typeof Word);
 
 export default class Channel extends WebSocketServer {
   private static roomIdCount = 99;
@@ -617,6 +622,25 @@ export default class Channel extends WebSocketServer {
               whisper.reports.push(user.id);
               await DB.Manager.save(whisper);
               socket.send(WebSocketMessage.Type.ReportWhisper, {});
+            }
+            break;
+          case WebSocketMessage.Type.Dictionary:
+            {
+              for (const Word of Words) {
+                const word = await DB.Manager.createQueryBuilder(Word, "w")
+                  .where("w.data = :data", { data: message.content })
+                  .getOne();
+                if (word === null) {
+                  continue;
+                }
+                return socket.send(
+                  WebSocketMessage.Type.Dictionary,
+                  word.serialize()
+                );
+              }
+              return socket.sendError(WebSocketError.Type.NotFound, {
+                isFatal: false,
+              });
             }
             break;
           case WebSocketMessage.Type.Invite:

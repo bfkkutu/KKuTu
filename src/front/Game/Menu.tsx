@@ -14,6 +14,7 @@ import SettingsDialog from "front/Game/dialogs/Settings";
 import CommunityDialog from "front/Game/dialogs/Community";
 import CreateRoomDialog from "front/Game/dialogs/CreateRoom";
 import RoomSettingsDialog from "front/Game/dialogs/RoomSettings";
+import DictionaryDialog from "front/Game/dialogs/Dictionary";
 import InviteDialog from "front/Game/dialogs/Invite";
 import BlackListDialog from "front/Game/dialogs/BlackList";
 
@@ -229,6 +230,9 @@ export namespace Menu {
                   currentListBox === ListBoxType.SearchRoom
                     ? changeListBox(ListBoxType.RoomList)
                     : changeListBox(ListBoxType.SearchRoom);
+                break;
+              case Type.Dictionary:
+                props.onClick = () => toggle(DictionaryDialog.instance);
                 break;
               case Type.Invite:
                 props.onClick = () => toggle(InviteDialog.instance);
