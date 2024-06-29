@@ -33,6 +33,7 @@ export namespace Game {
   interface Turn {
     speed: number;
     time: number;
+    roundTime: number;
     at: number;
     player?: string;
     loss?: number;
@@ -60,6 +61,7 @@ export namespace Game {
     const [turn, setTurn] = useState<Turn>({
       speed: 0,
       time: 0,
+      roundTime: 0,
       at: 0,
     });
     const [display, setDisplay] = useState<Display>({
@@ -104,8 +106,8 @@ export namespace Game {
       });
       socket.messageReceiver.on(
         WebSocketMessage.Type.TurnStart,
-        ({ display, player, speed, time, at }) => {
-          setTurn({ ...turn, player, speed, time, at });
+        ({ display, player, speed, time, roundTime, at }) => {
+          setTurn({ ...turn, player, speed, time, roundTime, at });
           setDisplay({
             content: display,
             submitting: undefined,
@@ -225,7 +227,13 @@ export namespace Game {
                 width={484}
                 height={20}
               />
-              <div className="gauge round-time"></div>
+              <TimeGauge
+                className="gauge round-time"
+                max={room.roundTime * 1000}
+                value={turn.roundTime - now + turn.at}
+                width={484}
+                height={20}
+              />
             </div>
           </div>
           <div className="chain"></div>

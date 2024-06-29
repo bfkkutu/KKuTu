@@ -127,6 +127,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
       player,
       speed: this.speed,
       time: this.turnTime,
+      roundTime: this.roundTime,
       at: this.turnAt,
     });
     if (!this.clients.has(player) && this.turnTime > 3000) {
