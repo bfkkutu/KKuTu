@@ -212,6 +212,13 @@ export default class Room
     // @ts-ignore
     this.game.initialize();
   }
+  /**
+   * 게임을 종료한다.
+   */
+  public end(): void {
+    this.game = undefined;
+    this.update();
+  }
   public isSubmitable(content: string): boolean {
     if (this.game === undefined) {
       return false;

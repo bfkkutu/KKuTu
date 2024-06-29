@@ -140,8 +140,11 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
   private endRound(): void {
     this.room.broadcast(WebSocketMessage.Type.RoundEnd, { loss: 0 });
     setTimeout(() => {
-      ++this.round;
-      this.startRound();
+      if (++this.round < this.room.round) {
+        this.startRound();
+        return;
+      }
+      this.room.end();
     }, 3000);
   }
   protected abstract getDisplay(): string;
