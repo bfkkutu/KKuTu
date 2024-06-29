@@ -8,6 +8,7 @@ export default class Relay extends Game implements Chainable {
   public last: string = "";
 
   protected override startRound(): void {
+    this.history.length = 0;
     this.last = this.prompt[this.round];
     return super.startRound();
   }

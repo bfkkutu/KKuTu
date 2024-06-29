@@ -71,7 +71,7 @@ export namespace Game {
     });
 
     const timer = useRef<DOMHighResTimeStamp>(0);
-    const failTimeout = useRef<number>();
+    const errorTimeout = useRef<number>();
 
     function tick() {
       setNow(new Date().getTime());
@@ -121,7 +121,7 @@ export namespace Game {
       );
       socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, async (word) => {
         cancelAnimationFrame(timer.current);
-        clearTimeout(failTimeout.current);
+        clearTimeout(errorTimeout.current);
         AudioContext.instance.stopAll();
 
         const display = { content: word.data };
@@ -171,13 +171,13 @@ export namespace Game {
       socket.messageReceiver.on(
         WebSocketMessage.Type.TurnError,
         ({ errorType, display: content }) => {
-          clearTimeout(failTimeout.current);
+          clearTimeout(errorTimeout.current);
           AudioContext.instance.playEffect("fail");
           setDisplay({
             ...display,
             error: L.get(`turnError_${errorType}`, content),
           });
-          failTimeout.current = window.setTimeout(
+          errorTimeout.current = window.setTimeout(
             () =>
               setDisplay({
                 ...display,
