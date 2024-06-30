@@ -10,7 +10,7 @@ interface Props {
   height: number;
 }
 
-export default class TimeGauge extends React.PureComponent<Props> {
+export default class TimeGauge extends React.Component<Props> {
   public shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (nextProps.value < 0) {
       return false;
