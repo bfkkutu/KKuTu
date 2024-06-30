@@ -113,6 +113,7 @@ export namespace Game {
       socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, ({ loss }) => {
         cancelAnimationFrame(timer.current);
         setTurn({ ...turn, loss });
+        setChain({ history: [], length: 0 });
         AudioContext.instance.playEffect("timeout");
       });
       socket.messageReceiver.on(
