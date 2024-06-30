@@ -965,6 +965,43 @@
             width: 990px;
             height: 40px;
             overflow: hidden;
+
+            .item {
+              display: flex;
+              flex-direction: column;
+              flex: 0 0 auto;
+              align-items: center;
+              height: 28px;
+              width: 200px;
+              padding: 4px 0px;
+              border-radius: 10px;
+              margin: 3px;
+              color: #eee;
+              text-align: center;
+              background-color: #232323;
+              animation: HistoryEffect 200ms linear;
+
+              .word {
+                width: 190px;
+                font-size: 13px;
+              }
+
+              .means {
+                width: 190px;
+                color: #aaa;
+                .theme {
+                  color: #8acfff;
+                  margin: 0 1px;
+
+                  &::before {
+                    content: "〈";
+                  }
+                  &::after {
+                    content: "〉";
+                  }
+                }
+              }
+            }
           }
 
           .input {
@@ -1326,7 +1363,7 @@
           white-space: initial;
           gap: 1px;
 
-          strong {
+          .theme {
             color: #8acfff;
 
             &::before {
@@ -1598,6 +1635,14 @@
   }
   100% {
     font-size: 20px;
+  }
+}
+@keyframes HistoryEffect {
+  0% {
+    width: 0px;
+  }
+  100% {
+    width: 200px;
   }
 }
 @keyframes FailBlink {

@@ -13,6 +13,7 @@ import { useStore } from "front/Game/Store";
 import { Room } from "front/Game/box/Room";
 import { KKuTu } from "../../../common/KKuTu";
 import { WebSocketMessage } from "../../../common/WebSocket";
+import { Database } from "common/Database";
 
 export namespace Game {
   export const GRAPHICS: Record<KKuTu.Game.Graphic, React.FC<{}>> = {
@@ -44,6 +45,10 @@ export namespace Game {
     submitting?: number;
     submitted: boolean;
   }
+  interface Chain {
+    history: Database.Word[];
+    length: number;
+  }
   export function Normal() {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
@@ -68,6 +73,10 @@ export namespace Game {
     const [display, setDisplay] = useState<Display>({
       content: "",
       submitted: false,
+    });
+    const [chain, setChain] = useState<Chain>({
+      history: [],
+      length: 0,
     });
 
     const timer = useRef<DOMHighResTimeStamp>(0);
@@ -119,55 +128,66 @@ export namespace Game {
           AudioContext.instance.play(`turn_${speed}`);
         }
       );
-      socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, async (word) => {
-        cancelAnimationFrame(timer.current);
-        clearTimeout(errorTimeout.current);
-        AudioContext.instance.stopAll();
+      socket.messageReceiver.on(
+        WebSocketMessage.Type.TurnEnd,
+        async ({ word }) => {
+          cancelAnimationFrame(timer.current);
+          clearTimeout(errorTimeout.current);
+          AudioContext.instance.stopAll();
 
-        const display = { content: word.data };
-        setDisplay({
-          ...display,
-          submitting: undefined,
-          submitted: false,
-        });
+          const display = { content: word.data };
+          setDisplay({
+            ...display,
+            submitting: undefined,
+            submitted: false,
+          });
 
-        const tick = turn.time / 96;
-        if (word.data.length < 9) {
-          let beat = BEAT[word.data.length];
-          let cursor = 0;
-          for (let i = 0; i < 8; ++i) {
-            if (beat % 0b10) {
-              AudioContext.instance.playEffect(`submit_${turn.speed}`);
+          const tick = turn.time / 96;
+          if (word.data.length < 9) {
+            let beat = BEAT[word.data.length];
+            let cursor = 0;
+            for (let i = 0; i < 8; ++i) {
+              if (beat % 0b10) {
+                AudioContext.instance.playEffect(`submit_${turn.speed}`);
+                setDisplay({
+                  ...display,
+                  submitting: cursor++,
+                  submitted: false,
+                });
+              }
+              beat >>= 1;
+              await sleep(tick);
+            }
+            AudioContext.instance.playEffect(`submitted_${turn.speed}`);
+            for (let i = 0; i < 3; ++i) {
               setDisplay({
                 ...display,
-                submitting: cursor++,
+                submitting: undefined,
+                submitted: true,
+              });
+              await sleep(tick);
+              setDisplay({
+                ...display,
+                submitting: undefined,
                 submitted: false,
               });
+              await sleep(tick);
             }
-            beat >>= 1;
-            await sleep(tick);
           }
-          AudioContext.instance.playEffect(`submitted_${turn.speed}`);
-          for (let i = 0; i < 3; ++i) {
-            setDisplay({
-              ...display,
-              submitting: undefined,
-              submitted: true,
-            });
-            await sleep(tick);
-            setDisplay({
-              ...display,
-              submitting: undefined,
-              submitted: false,
-            });
-            await sleep(tick);
+          const history = [word, ...chain.history];
+          if (history.length > 6) {
+            history.pop();
           }
-        }
+          setChain({
+            history,
+            length: chain.length + 1,
+          });
 
-        function sleep(ms: number): Promise<void> {
-          return new Promise((resolve) => window.setTimeout(resolve, ms));
+          function sleep(ms: number): Promise<void> {
+            return new Promise((resolve) => window.setTimeout(resolve, ms));
+          }
         }
-      });
+      );
       socket.messageReceiver.on(
         WebSocketMessage.Type.TurnError,
         ({ errorType, display: content }) => {
@@ -263,10 +283,29 @@ export namespace Game {
               />
             </div>
           </div>
-          <div className="chain"></div>
+          <div className="chain">{chain.length}</div>
         </div>
         <div className="neck">
-          <div className="history"></div>
+          <div className="history">
+            {chain.history.map((word) => (
+              <div key={word.id} className="item">
+                <label className="word ellipse">{word.data}</label>
+                <div className="means ellipse">
+                  {Object.entries(word.means).map(([theme, mean], index) => {
+                    const display = L.get(`theme_${theme}`);
+                    return (
+                      <React.Fragment key={index}>
+                        {display.length === 0 ? null : (
+                          <label className="theme">{display}</label>
+                        )}
+                        {mean.length === 0 ? null : mean}
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
+          </div>
           {turn.player === id ? (
             <input
               className="input"

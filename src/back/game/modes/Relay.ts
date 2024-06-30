@@ -66,7 +66,9 @@ export default class Relay extends Game implements Chainable {
     this.chain(word);
     this.roundTime -= this.now - this.turnAt;
     this.player = (this.player + 1) % this.scores.size;
-    this.room.broadcast(WebSocketMessage.Type.TurnEnd, word.serialize());
+    this.room.broadcast(WebSocketMessage.Type.TurnEnd, {
+      word: word.serialize(),
+    });
     setTimeout(() => this.startTurn(), this.turnTime / 6);
   }
   public chain(word: Word): void {

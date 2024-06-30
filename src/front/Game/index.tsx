@@ -133,9 +133,9 @@ function Component(props: Nest.Page.Props<"Game">) {
 
   useEffect(() => {
     if (socket === undefined) return;
-    const listener: EventListener<WebSocketMessage.Type.Whisper> = (
-      whisper
-    ) => {
+    const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
+      whisper,
+    }) => {
       if (
         whisper.sender !== me.id &&
         whisperDialogs[whisper.sender] === undefined

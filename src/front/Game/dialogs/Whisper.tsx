@@ -47,9 +47,9 @@ export default class WhisperDialog extends Dialog {
     }, [content]);
 
     useEffect(() => {
-      const listener: EventListener<WebSocketMessage.Type.Whisper> = (
-        whisper
-      ) => {
+      const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
+        whisper,
+      }) => {
         append(this.user.id, whisper);
       };
       socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);

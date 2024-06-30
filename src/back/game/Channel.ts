@@ -106,7 +106,7 @@ export default class Channel extends WebSocketServer {
 
               this.broadcast(
                 WebSocketMessage.Type.Chat,
-                chat.serialize(),
+                { chat: chat.serialize() },
                 (client) =>
                   this.users.get(client.user.id)?.user.roomId === undefined
               );
@@ -131,7 +131,9 @@ export default class Channel extends WebSocketServer {
               chat.room = room.id;
               await DB.Manager.save(chat);
 
-              room.broadcast(WebSocketMessage.Type.Chat, chat.serialize());
+              room.broadcast(WebSocketMessage.Type.Chat, {
+                chat: chat.serialize(),
+              });
               Logger.info(
                 `Room #${room.id} Chat #${user.id}: ${message.content}`
               ).out();
@@ -552,7 +554,9 @@ export default class Channel extends WebSocketServer {
               whisper.target = target.user;
               whisper.content = message.content;
               await DB.Manager.save(whisper);
-              socket.send(WebSocketMessage.Type.Whisper, whisper.serialize());
+              socket.send(WebSocketMessage.Type.Whisper, {
+                whisper: whisper.serialize(),
+              });
               Logger.info(
                 `Whisper #${user.id} → #${target.user.id}: ${whisper.content}`
               ).out();
@@ -561,7 +565,9 @@ export default class Channel extends WebSocketServer {
               if (target.user.community.blackList.includes(user.id)) {
                 return;
               }
-              target.send(WebSocketMessage.Type.Whisper, whisper.serialize());
+              target.send(WebSocketMessage.Type.Whisper, {
+                whisper: whisper.serialize(),
+              });
             }
             break;
           case WebSocketMessage.Type.Report:
@@ -633,10 +639,9 @@ export default class Channel extends WebSocketServer {
                 if (word === null) {
                   continue;
                 }
-                return socket.send(
-                  WebSocketMessage.Type.Dictionary,
-                  word.serialize()
-                );
+                return socket.send(WebSocketMessage.Type.Dictionary, {
+                  word: word.serialize(),
+                });
               }
               return socket.sendError(WebSocketError.Type.NotFound, {
                 isFatal: false,

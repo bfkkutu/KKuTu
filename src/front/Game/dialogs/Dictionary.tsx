@@ -34,12 +34,11 @@ export default class DictionaryDialog extends Dialog {
             ) : (
               Object.entries(result.means).map(([theme, mean]) => {
                 const display = L.get(`theme_${theme}`);
-                if (display.length === 0) {
-                  return null;
-                }
                 return (
                   <li>
-                    <strong>{display}</strong>
+                    {display.length === 0 ? null : (
+                      <label className="theme">{display}</label>
+                    )}
                     {mean}
                   </li>
                 );
@@ -52,11 +51,10 @@ export default class DictionaryDialog extends Dialog {
             onClick={async () => {
               socket.send(WebSocketMessage.Type.Dictionary, { content: input });
               try {
-                setResult(
-                  await socket.messageReceiver.wait(
-                    WebSocketMessage.Type.Dictionary
-                  )
+                const res = await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.Dictionary
                 );
+                setResult(res.word);
               } catch (e) {
                 setResult(undefined);
               }

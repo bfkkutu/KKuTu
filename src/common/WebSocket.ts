@@ -99,7 +99,7 @@ export namespace WebSocketMessage {
          */
         user: string;
       };
-      [Type.Chat]: Database.Chat;
+      [Type.Chat]: { chat: Database.Chat };
       [Type.CreateRoom]: {
         room: KKuTu.Room.Detailed;
       };
@@ -152,7 +152,9 @@ export namespace WebSocketMessage {
         errorType: string;
         display: string;
       };
-      [Type.TurnEnd]: Database.Word;
+      [Type.TurnEnd]: {
+        word: Database.Word;
+      };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
       };
@@ -161,11 +163,13 @@ export namespace WebSocketMessage {
       [Type.FriendRemove]: {};
       [Type.BlackListAdd]: {};
       [Type.BlackListRemove]: {};
-      [Type.Whisper]: Database.Whisper;
+      [Type.Whisper]: { whisper: Database.Whisper };
       [Type.Report]: {};
       [Type.ReportChat]: {};
       [Type.ReportWhisper]: {};
-      [Type.Dictionary]: Database.Word;
+      [Type.Dictionary]: {
+        word: Database.Word;
+      };
       [Type.Invite]: {
         /**
          * 초대를 보낸 유저 식별자.

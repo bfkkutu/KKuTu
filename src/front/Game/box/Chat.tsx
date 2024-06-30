@@ -63,7 +63,7 @@ export namespace Chat {
     }, [socket, content]);
 
     useEffect(() => {
-      socket.messageReceiver.on(WebSocketMessage.Type.Chat, (chat) => {
+      socket.messageReceiver.on(WebSocketMessage.Type.Chat, ({ chat }) => {
         AudioContext.instance.playEffect("chat");
         appendChat(chat);
       });
