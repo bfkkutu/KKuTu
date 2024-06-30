@@ -159,3 +159,36 @@ export function fillWithDefaults<T extends object>(
 ): void {
   for (const key in defaults) if (!(key in object)) object[key] = defaults[key];
 }
+/**
+ * 두음법칙.
+ *
+ * @param character 문자.
+ * @returns 두음법칙 적용된 문자.
+ * @credit https://github.com/123jimin/hangul-tools/blob/master/hangul-tools.js#L214
+ */
+export function getAcceptable(character: string): string | undefined {
+  const code = character.charCodeAt(0);
+  switch (0 | ((code - "가".charCodeAt(0)) / 28)) {
+    case 48:
+    case 54:
+    case 59:
+    case 62:
+      return String.fromCharCode(code + 5292);
+
+    case 107:
+    case 111:
+    case 112:
+    case 117:
+    case 122:
+    case 125:
+      return String.fromCharCode(code + 3528);
+
+    case 105:
+    case 106:
+    case 113:
+    case 116:
+    case 118:
+    case 123:
+      return String.fromCharCode(code - 1764);
+  }
+}

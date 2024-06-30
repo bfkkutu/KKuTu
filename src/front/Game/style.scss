@@ -885,13 +885,13 @@
                 .submitted {
                   animation: Submitted 100ms linear;
                 }
-                .timeout {
-                  color: #aaa;
-                }
 
                 &.error {
                   animation: FailBlink 2s linear;
                   color: #ff7777;
+                }
+                &.timeout {
+                  color: #aaa;
                 }
               }
 

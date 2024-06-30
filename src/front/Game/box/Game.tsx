@@ -33,7 +33,8 @@ export namespace Game {
 
   enum DisplayType {
     None = "",
-    Submitted = "submitted",
+    Submit = "submit",
+    Error = "error",
     Timeout = "timeout",
   }
 
@@ -48,7 +49,7 @@ export namespace Game {
   interface Display {
     type: DisplayType;
     content: string;
-    error?: string;
+    isAnimating: boolean;
     submitting?: number;
   }
   interface Chain {
@@ -79,6 +80,7 @@ export namespace Game {
     const [display, setDisplay] = useState<Display>({
       type: DisplayType.None,
       content: "",
+      isAnimating: false,
     });
     const [chain, setChain] = useState<Chain>({
       history: [],
@@ -111,6 +113,7 @@ export namespace Game {
           setDisplay({
             type: DisplayType.None,
             content: game.prompt[round],
+            isAnimating: false,
             submitting: undefined,
           });
           AudioContext.instance.playEffect("roundStart");
@@ -126,6 +129,8 @@ export namespace Game {
             setDisplay({
               type: DisplayType.Timeout,
               content: display,
+              isAnimating: false,
+              submitting: undefined,
             });
           }
           setChain({ history: [], length: 0 });
@@ -139,6 +144,7 @@ export namespace Game {
           setDisplay({
             type: DisplayType.None,
             content: display,
+            isAnimating: false,
             submitting: undefined,
           });
           timer.current = requestAnimationFrame(tick);
@@ -155,7 +161,8 @@ export namespace Game {
           const display = { content: word.data };
           setDisplay({
             ...display,
-            type: DisplayType.None,
+            type: DisplayType.Submit,
+            isAnimating: false,
             submitting: undefined,
           });
 
@@ -168,7 +175,8 @@ export namespace Game {
                 AudioContext.instance.playEffect(`submit_${turn.speed}`);
                 setDisplay({
                   ...display,
-                  type: DisplayType.None,
+                  type: DisplayType.Submit,
+                  isAnimating: false,
                   submitting: cursor++,
                 });
               }
@@ -179,13 +187,15 @@ export namespace Game {
             for (let i = 0; i < 3; ++i) {
               setDisplay({
                 ...display,
-                type: DisplayType.Submitted,
+                type: DisplayType.Submit,
+                isAnimating: true,
                 submitting: undefined,
               });
               await sleep(tick);
               setDisplay({
                 ...display,
-                type: DisplayType.None,
+                type: DisplayType.Submit,
+                isAnimating: false,
                 submitting: undefined,
               });
               await sleep(tick);
@@ -211,14 +221,18 @@ export namespace Game {
           clearTimeout(errorTimeout.current);
           AudioContext.instance.playEffect("fail");
           setDisplay({
-            ...display,
-            error: L.get(`turnError_${errorType}`, content),
+            type: DisplayType.Error,
+            content: L.get(`turnError_${errorType}`, content),
+            isAnimating: false,
+            submitting: undefined,
           });
           errorTimeout.current = window.setTimeout(
             () =>
               setDisplay({
-                ...display,
-                error: undefined,
+                type: DisplayType.None,
+                content: display.content,
+                isAnimating: false,
+                submitting: undefined,
               }),
             1800
           );
@@ -261,14 +275,16 @@ export namespace Game {
               </div>
             </div>
             <div className="bottom">
-              {display.error === undefined ? (
+              {display.type === DisplayType.Submit ? (
                 <div className="display ellipse">
                   {Array.from(display.content).map((character, index) => (
                     <div
                       key={index}
                       className={
                         display.submitting === undefined
-                          ? display.type
+                          ? display.isAnimating
+                            ? "submitted"
+                            : ""
                           : new ClassName()
                               .if(index === display.submitting, "submitting")
                               .if(index > display.submitting, "hidden")
@@ -280,7 +296,9 @@ export namespace Game {
                   ))}
                 </div>
               ) : (
-                <div className="display error ellipse">{display.error}</div>
+                <div className={`display ${display.type} ellipse`}>
+                  {display.content}
+                </div>
               )}
               <TimeGauge
                 className="gauge turn-time"

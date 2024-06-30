@@ -1,15 +1,21 @@
 import Game from "back/game/Game";
 import Chainable from "back/game/modes/mixins/Chainable";
 import Word from "back/models/Word";
+import { getAcceptable } from "back/utils/Utility";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class Relay extends Game implements Chainable {
-  public history: string[] = [];
-  public last: string = "";
+  /**
+   * 현재 round의 chain history.
+   */
+  private readonly history: string[] = [];
+  private last: string = "";
+  private lastAcceptable?: string;
 
   protected override startRound(): void {
     this.history.length = 0;
     this.last = this.prompt[this.round];
+    this.lastAcceptable = getAcceptable(this.last);
     return super.startRound();
   }
   protected override startTurn(): void {
@@ -20,31 +26,42 @@ export default class Relay extends Game implements Chainable {
     return super.startTurn();
   }
   protected override getDisplay(): string {
-    return this.last;
+    if (this.lastAcceptable === undefined) {
+      return this.last;
+    }
+    return `${this.last}(${this.lastAcceptable})`;
   }
-  protected override async getTimeoutHint(): Promise<string> {
+  protected override async getTimeoutHint(): Promise<string | undefined> {
+    const similar = [this.last];
+    if (this.lastAcceptable !== undefined) {
+      similar.push(this.lastAcceptable);
+    }
     const word = await this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
-      .where("w.data LIKE :last", {
-        last: `${this.last}%`,
+      .where("w.data SIMILAR TO :similar", {
+        similar: `(${similar.join("|")})%`,
       })
       .orderBy("RANDOM()")
       .limit(1)
       .getOne();
     if (word === null) {
-      return this.getTimeoutHint();
+      return undefined;
     }
     return word.data;
   }
   protected override async robotSubmit(): Promise<void> {
+    const similar = [this.last];
+    if (this.lastAcceptable !== undefined) {
+      similar.push(this.lastAcceptable);
+    }
     const word = await this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
       .where(
-        "w.data LIKE :last AND LENGTH(w.data) > 1 AND LENGTH(w.data) < 9",
+        "w.data SIMILAR TO :similar AND (LENGTH(w.data) > 1 AND LENGTH(w.data) < 9)",
         {
-          last: `${this.last}%`,
+          similar: `(${similar.join("|")})%`,
         }
       )
       .orderBy("RANDOM()")
@@ -56,7 +73,14 @@ export default class Relay extends Game implements Chainable {
     this.submit(word.data);
   }
   public override isSubmitable(content: string): boolean {
-    return content.length > 1 && content.startsWith(this.last);
+    if (content.length < 2) {
+      return false;
+    }
+    return (
+      content.startsWith(this.last) ||
+      (this.lastAcceptable !== undefined &&
+        content.startsWith(this.lastAcceptable))
+    );
   }
   public override async submit(content: string): Promise<void> {
     const word = await this.repository
@@ -89,5 +113,6 @@ export default class Relay extends Game implements Chainable {
   public chain(word: Word): void {
     this.history.push(word.id);
     this.last = word.data.at(-1)!;
+    this.lastAcceptable = getAcceptable(this.last);
   }
 }
