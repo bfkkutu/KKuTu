@@ -135,6 +135,7 @@ export namespace WebSocketMessage {
         round: number;
       };
       [Type.RoundEnd]: {
+        display?: string;
         /**
          * 점수 손실.
          */

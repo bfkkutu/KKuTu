@@ -22,6 +22,21 @@ export default class Relay extends Game implements Chainable {
   protected override getDisplay(): string {
     return this.last;
   }
+  protected override async getTimeoutHint(): Promise<string> {
+    const word = await this.repository
+      .createQueryBuilder("w")
+      .select(["w.data"])
+      .where("w.data LIKE :last", {
+        last: `${this.last}%`,
+      })
+      .orderBy("RANDOM()")
+      .limit(1)
+      .getOne();
+    if (word === null) {
+      return this.getTimeoutHint();
+    }
+    return word.data;
+  }
   protected override async robotSubmit(): Promise<void> {
     const word = await this.repository
       .createQueryBuilder("w")

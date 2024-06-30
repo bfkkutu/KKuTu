@@ -139,8 +139,11 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
    * 현재 라운드를 종료하고 다음 라운드로 넘어간다.
    * RoundEnd 메시지를 전송한다.
    */
-  private endRound(): void {
-    this.room.broadcast(WebSocketMessage.Type.RoundEnd, { loss: 0 });
+  private async endRound(): Promise<void> {
+    this.room.broadcast(WebSocketMessage.Type.RoundEnd, {
+      display: await this.getTimeoutHint(),
+      loss: 0,
+    });
     setTimeout(() => {
       if (++this.round < this.room.round) {
         this.startRound();
@@ -150,6 +153,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
     }, 3000);
   }
   protected abstract getDisplay(): string;
+  protected abstract getTimeoutHint(): Promise<string | undefined>;
   protected abstract robotSubmit(): Promise<void>;
   public abstract isSubmitable(content: string): boolean;
   public abstract submit(content: string): Promise<void>;

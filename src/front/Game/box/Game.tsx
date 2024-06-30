@@ -31,6 +31,12 @@ export namespace Game {
     [8]: 0b1111_1111,
   };
 
+  enum DisplayType {
+    None = "",
+    Submitted = "submitted",
+    Timeout = "timeout",
+  }
+
   interface Turn {
     speed: number;
     time: number;
@@ -40,10 +46,10 @@ export namespace Game {
     loss?: number;
   }
   interface Display {
+    type: DisplayType;
     content: string;
     error?: string;
     submitting?: number;
-    submitted: boolean;
   }
   interface Chain {
     history: Database.Word[];
@@ -71,8 +77,8 @@ export namespace Game {
       at: 0,
     });
     const [display, setDisplay] = useState<Display>({
+      type: DisplayType.None,
       content: "",
-      submitted: false,
     });
     const [chain, setChain] = useState<Chain>({
       history: [],
@@ -103,27 +109,37 @@ export namespace Game {
             loss: undefined,
           });
           setDisplay({
+            type: DisplayType.None,
             content: game.prompt[round],
             submitting: undefined,
-            submitted: false,
           });
           AudioContext.instance.playEffect("roundStart");
         }
       );
-      socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, ({ loss }) => {
-        cancelAnimationFrame(timer.current);
-        setTurn({ ...turn, loss });
-        setChain({ history: [], length: 0 });
-        AudioContext.instance.playEffect("timeout");
-      });
+      socket.messageReceiver.on(
+        WebSocketMessage.Type.RoundEnd,
+        ({ display, loss }) => {
+          cancelAnimationFrame(timer.current);
+          setTurn({ ...turn, loss });
+          if (display !== undefined) {
+            clearTimeout(errorTimeout.current);
+            setDisplay({
+              type: DisplayType.Timeout,
+              content: display,
+            });
+          }
+          setChain({ history: [], length: 0 });
+          AudioContext.instance.playEffect("timeout");
+        }
+      );
       socket.messageReceiver.on(
         WebSocketMessage.Type.TurnStart,
         ({ display, player, speed, time, roundTime, at }) => {
           setTurn({ ...turn, player, speed, time, roundTime, at });
           setDisplay({
+            type: DisplayType.None,
             content: display,
             submitting: undefined,
-            submitted: false,
           });
           timer.current = requestAnimationFrame(tick);
           AudioContext.instance.play(`turn_${speed}`);
@@ -139,8 +155,8 @@ export namespace Game {
           const display = { content: word.data };
           setDisplay({
             ...display,
+            type: DisplayType.None,
             submitting: undefined,
-            submitted: false,
           });
 
           const tick = turn.time / 96;
@@ -152,8 +168,8 @@ export namespace Game {
                 AudioContext.instance.playEffect(`submit_${turn.speed}`);
                 setDisplay({
                   ...display,
+                  type: DisplayType.None,
                   submitting: cursor++,
-                  submitted: false,
                 });
               }
               beat >>= 1;
@@ -163,14 +179,14 @@ export namespace Game {
             for (let i = 0; i < 3; ++i) {
               setDisplay({
                 ...display,
+                type: DisplayType.Submitted,
                 submitting: undefined,
-                submitted: true,
               });
               await sleep(tick);
               setDisplay({
                 ...display,
+                type: DisplayType.None,
                 submitting: undefined,
-                submitted: false,
               });
               await sleep(tick);
             }
@@ -252,9 +268,7 @@ export namespace Game {
                       key={index}
                       className={
                         display.submitting === undefined
-                          ? display.submitted
-                            ? "submitted"
-                            : ""
+                          ? display.type
                           : new ClassName()
                               .if(index === display.submitting, "submitting")
                               .if(index > display.submitting, "hidden")
