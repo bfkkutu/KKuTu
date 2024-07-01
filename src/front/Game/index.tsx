@@ -47,6 +47,7 @@ function Component(props: Nest.Page.Props<"Game">) {
       state.removeUser,
     ]
   );
+  const vibration = useStore((state) => state.vibration);
   const room = Room.useStore((state) => state.room);
   const [notifications, showNotification, hideNotification] =
     Notification.useStore((state) => [
@@ -163,7 +164,7 @@ function Component(props: Nest.Page.Props<"Game">) {
   }, [socket, users, whisperDialogs, whisperLogs, showNotification]);
 
   return (
-    <article id="main">
+    <article id="main" style={{ paddingTop: vibration }}>
       <div id="game">
         <div id="intro" ref={$intro}>
           <img className="image" src="/media/image/kkutu/intro.png" />

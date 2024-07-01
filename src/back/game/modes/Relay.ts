@@ -1,3 +1,5 @@
+import * as TypeORM from "typeorm";
+
 import Game from "back/game/Game";
 import Chainable from "back/game/modes/mixins/Chainable";
 import Word from "back/models/Word";
@@ -32,16 +34,22 @@ export default class Relay extends Game implements Chainable {
     return `${this.last}(${this.lastAcceptable})`;
   }
   protected override async getTimeoutHint(): Promise<string | undefined> {
-    const similar = [this.last];
-    if (this.lastAcceptable !== undefined) {
-      similar.push(this.lastAcceptable);
-    }
     const word = await this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
-      .where("w.data SIMILAR TO :similar", {
-        similar: `(${similar.join("|")})%`,
-      })
+      .where(
+        new TypeORM.Brackets((query) => {
+          query.where("w.data LIKE :last", {
+            last: `${this.last}%`,
+          });
+          if (this.lastAcceptable !== undefined) {
+            query.orWhere("w.data LIKE :acceptable", {
+              acceptable: this.lastAcceptable,
+            });
+          }
+        })
+      )
+      .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
       .limit(1)
       .getOne();
@@ -51,19 +59,22 @@ export default class Relay extends Game implements Chainable {
     return word.data;
   }
   protected override async robotSubmit(): Promise<void> {
-    const similar = [this.last];
-    if (this.lastAcceptable !== undefined) {
-      similar.push(this.lastAcceptable);
-    }
     const word = await this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
       .where(
-        "w.data SIMILAR TO :similar AND (LENGTH(w.data) > 1 AND LENGTH(w.data) < 9)",
-        {
-          similar: `(${similar.join("|")})%`,
-        }
+        new TypeORM.Brackets((query) => {
+          query.where("w.data LIKE :last", {
+            last: `${this.last}%`,
+          });
+          if (this.lastAcceptable !== undefined) {
+            query.orWhere("w.data LIKE :acceptable", {
+              acceptable: this.lastAcceptable,
+            });
+          }
+        })
       )
+      .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
       .limit(1)
       .getOne();

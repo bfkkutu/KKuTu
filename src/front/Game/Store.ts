@@ -28,6 +28,9 @@ interface State {
 
   rooms: KKuTu.Room.Summarized[];
   updateRoomList: (rooms: KKuTu.Room.Summarized[]) => void;
+
+  vibration: number;
+  setVibration: (value: number) => void;
 }
 
 export const useStore = create<State>((setState) => ({
@@ -115,4 +118,7 @@ export const useStore = create<State>((setState) => ({
 
   rooms: [],
   updateRoomList: (rooms) => setState({ rooms }),
+
+  vibration: 0,
+  setVibration: (value) => setState({ vibration: value }),
 }));

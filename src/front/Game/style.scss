@@ -872,20 +872,25 @@
                 color: #eee;
                 background-image: url("/media/image/kkutu/gamestart.png");
 
-                div {
-                  width: 20px;
+                &.short {
+                  div {
+                    width: 20px;
+                  }
+
+                  .hidden {
+                    visibility: hidden;
+                  }
+                  .submitting {
+                    animation: Submitting 100ms linear;
+                  }
+                  .submitted {
+                    animation: SubmittedShort 100ms linear;
+                  }
                 }
 
-                .hidden {
-                  visibility: hidden;
+                &.submitted {
+                  animation: SubmittedLong 100ms linear;
                 }
-                .submitting {
-                  animation: Submitting 100ms linear;
-                }
-                .submitted {
-                  animation: Submitted 100ms linear;
-                }
-
                 &.error {
                   animation: FailBlink 2s linear;
                   color: #ff7777;
@@ -1632,9 +1637,17 @@
     font-size: 20px;
   }
 }
-@keyframes Submitted {
+@keyframes SubmittedShort {
   0% {
     font-size: 23px;
+  }
+  100% {
+    font-size: 20px;
+  }
+}
+@keyframes SubmittedLong {
+  0% {
+    font-size: 21px;
   }
   100% {
     font-size: 20px;

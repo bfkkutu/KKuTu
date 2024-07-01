@@ -33,7 +33,8 @@ export namespace Game {
 
   enum DisplayType {
     None = "",
-    Submit = "submit",
+    Short = "short",
+    Long = "long",
     Error = "error",
     Timeout = "timeout",
   }
@@ -60,6 +61,7 @@ export namespace Game {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const users = useStore((state) => state.users);
+    const setVibration = useStore((state) => state.setVibration);
     const room = Room.useStore((state) => state.room!);
     const game = room.game!;
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
@@ -158,24 +160,48 @@ export namespace Game {
           clearTimeout(errorTimeout.current);
           AudioContext.instance.stopAll();
 
-          const display = { content: word.data };
           setDisplay({
-            ...display,
-            type: DisplayType.Submit,
+            type: DisplayType.None,
+            content: "",
             isAnimating: false,
             submitting: undefined,
           });
 
-          const tick = turn.time / 96;
-          if (word.data.length < 9) {
+          const long = word.data.length > 8;
+          const type = long ? DisplayType.Long : DisplayType.Short;
+          const tick = turn.time / 12 / (long ? word.data.length : 8);
+          if (long) {
+            vibrate();
+            for (let i = 1; i <= word.data.length; ++i) {
+              AudioContext.instance.playEffect("submit_long");
+              setDisplay({
+                type,
+                content: word.data.substring(0, i),
+                isAnimating: false,
+                submitting: undefined,
+              });
+              await sleep(tick);
+            }
+
+            async function vibrate(level: number = word.data.length) {
+              if (level < 1) {
+                return;
+              }
+              setVibration(level);
+              await sleep(50);
+              setVibration(0);
+              await sleep(50);
+              vibrate(level * 0.7);
+            }
+          } else {
             let beat = BEAT[word.data.length];
             let cursor = 0;
             for (let i = 0; i < 8; ++i) {
               if (beat % 0b10) {
                 AudioContext.instance.playEffect(`submit_${turn.speed}`);
                 setDisplay({
-                  ...display,
-                  type: DisplayType.Submit,
+                  type,
+                  content: word.data,
                   isAnimating: false,
                   submitting: cursor++,
                 });
@@ -183,24 +209,27 @@ export namespace Game {
               beat >>= 1;
               await sleep(tick);
             }
-            AudioContext.instance.playEffect(`submitted_${turn.speed}`);
-            for (let i = 0; i < 3; ++i) {
-              setDisplay({
-                ...display,
-                type: DisplayType.Submit,
-                isAnimating: true,
-                submitting: undefined,
-              });
-              await sleep(tick);
-              setDisplay({
-                ...display,
-                type: DisplayType.Submit,
-                isAnimating: false,
-                submitting: undefined,
-              });
-              await sleep(tick);
-            }
           }
+
+          AudioContext.instance.playEffect(`submitted_${turn.speed}`);
+          for (let i = 0; i < 3; ++i) {
+            setDisplay({
+              type,
+              content: word.data,
+              isAnimating: true,
+              submitting: undefined,
+            });
+            await sleep(tick);
+
+            setDisplay({
+              type,
+              content: word.data,
+              isAnimating: false,
+              submitting: undefined,
+            });
+            await sleep(tick);
+          }
+
           const history = [word, ...chain.history];
           if (history.length > 6) {
             history.pop();
@@ -275,28 +304,47 @@ export namespace Game {
               </div>
             </div>
             <div className="bottom">
-              {display.type === DisplayType.Submit ? (
-                <div className="display ellipse">
-                  {Array.from(display.content).map((character, index) => (
-                    <div
-                      key={index}
-                      className={
-                        display.submitting === undefined
-                          ? display.isAnimating
-                            ? "submitted"
-                            : ""
-                          : new ClassName()
-                              .if(index === display.submitting, "submitting")
-                              .if(index > display.submitting, "hidden")
-                              .toString()
-                      }
-                    >
-                      {character}
-                    </div>
-                  ))}
+              {display.type === DisplayType.Short ? (
+                <div className="display ellipse short">
+                  {Array.from(display.content).map((character, index) => {
+                    if (display.submitting === undefined) {
+                      return (
+                        <div
+                          key={index}
+                          className={display.isAnimating ? "submitted" : ""}
+                        >
+                          {character}
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div
+                        key={index}
+                        className={new ClassName()
+                          .if(index === display.submitting, "submitting")
+                          .if(index > display.submitting, "hidden")
+                          .toString()}
+                      >
+                        {character}
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : display.type === DisplayType.Long ? (
+                <div
+                  className={new ClassName("display ellipse")
+                    .if(display.isAnimating, "submitted")
+                    .toString()}
+                >
+                  {display.content}
                 </div>
               ) : (
-                <div className={`display ${display.type} ellipse`}>
+                <div
+                  className={new ClassName("display ellipse")
+                    .if(display.type !== DisplayType.None, display.type)
+                    .toString()}
+                >
                   {display.content}
                 </div>
               )}
