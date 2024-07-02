@@ -610,8 +610,8 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.ReportWhisper:
             {
-              const whisper = await DB.Manager.createQueryBuilder(Whisper, "w")
-                .where("w.id = :id", { id: message.target })
+              const whisper = await DB.Manager.createQueryBuilder(Whisper, "wh")
+                .where("wh.id = :id", { id: message.target })
                 .getOne();
               if (whisper === null) {
                 return socket.sendError(WebSocketError.Type.NotFound, {
