@@ -4,16 +4,23 @@ import DB from "./Database";
 
 import LegacyWord from "./models/legacy/Word";
 import Word from "./models/Word";
+import Mean from "./models/Mean";
 
 (async () => {
   await DB.initialize();
 
-  await migrateWords("kkutu_ko", "kkutu_words_ko");
-  await migrateWords("kkutu_en", "kkutu_words_en");
+  await migrateWords("kkutu_ko", {
+    word: "kkutu_words_ko",
+    mean: "kkutu_means_ko",
+  });
+  await migrateWords("kkutu_en", {
+    word: "kkutu_words_en",
+    mean: "kkutu_means_en",
+  });
 })();
 
-async function migrateWords(from: string, to: string) {
-  console.log(`Migration: ${from} → ${to}`);
+async function migrateWords(from: string, to: { word: string; mean: string }) {
+  console.log(`Migration: ${from} → ${to.word}, ${to.mean}`);
 
   const progress = new SingleBar({});
   try {
@@ -23,7 +30,14 @@ async function migrateWords(from: string, to: string) {
       "w"
     ).getMany();
     console.log(`Loaded ${legacy.length} items!`);
-    const repository = DB.Manager.getRepository({ type: new Word(), name: to });
+    const wordRepository = DB.Manager.getRepository({
+      type: new Word(),
+      name: to.word,
+    });
+    const meanRepository = DB.Manager.getRepository({
+      type: new Mean(),
+      name: to.mean,
+    });
     const words = [];
     progress.start(legacy.length, 0);
 
@@ -31,17 +45,29 @@ async function migrateWords(from: string, to: string) {
       const word = new Word();
       word.data = item.id;
       const means = transformMean(item.mean);
-      word.means = Object.fromEntries(
-        item.theme.map((v, i) => [v, means[i] || ""])
-      );
+      word.means = [];
+      for (let i = 0; i < item.type.length; ++i) {
+        const mean = new Mean();
+        mean.word = word;
+        mean.theme = item.theme[i];
+        mean.data = means[i] || "";
+        mean.wide = item.type[i] === "INJEONG";
+        word.means.push(mean);
+      }
+      await meanRepository
+        .createQueryBuilder()
+        .insert()
+        .values(word.means)
+        .execute();
+
       words.push(word);
       if (words.length === 100) {
-        await repository.save(words);
+        await wordRepository.save(words);
         words.length = 0;
         progress.increment(100);
       }
     }
-    await repository.save(words);
+    await wordRepository.save(words);
     progress.increment(words.length);
 
     progress.stop();

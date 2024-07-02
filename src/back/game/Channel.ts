@@ -11,16 +11,13 @@ import WebSocket from "back/utils/WebSocket";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Database } from "../../common/Database";
 import ImprovedMap from "../../common/ImprovedMap";
+import { KKuTu } from "../../common/KKuTu";
 
 import User from "back/models/User";
 import Whisper from "back/models/Whisper";
 import Chat from "back/models/Chat";
 import Report from "back/models/Report";
 import Word from "back/models/Word";
-
-const Words = Object.entries(require("back/models/Word"))
-  .filter(([key]) => key !== "default")
-  .map(([_, cls]) => cls as typeof Word);
 
 export default class Channel extends WebSocketServer {
   private static roomIdCount = 99;
@@ -632,9 +629,13 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.Dictionary:
             {
-              for (const Word of Words) {
-                const word = await DB.Manager.createQueryBuilder(Word, "w")
+              for (const language of KKuTu.Game.LANGUAGES) {
+                const word = await DB.Manager.createQueryBuilder(
+                  Word[language],
+                  "w"
+                )
                   .where("w.data = :data", { data: message.content })
+                  .innerJoinAndSelect("w.means", "m")
                   .getOne();
                 if (word === null) {
                   continue;
@@ -643,7 +644,7 @@ export default class Channel extends WebSocketServer {
                   word: word.serialize(),
                 });
               }
-              return socket.sendError(WebSocketError.Type.NotFound, {
+              socket.sendError(WebSocketError.Type.NotFound, {
                 isFatal: false,
               });
             }

@@ -3,15 +3,10 @@ import * as TypeORM from "typeorm";
 import Room from "back/game/Room";
 import WebSocket from "back/utils/WebSocket";
 import DB from "back/utils/Database";
-import Word, { WordEn, WordKo } from "back/models/Word";
+import Word from "back/models/Word";
 import { KKuTu } from "../../common/KKuTu";
 import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
-
-const ENTRIES: Record<KKuTu.Game.Language, typeof Word> = {
-  [KKuTu.Game.Language.Korean]: WordKo,
-  [KKuTu.Game.Language.English]: WordEn,
-};
 
 export default abstract class Game implements Serializable<KKuTu.Game> {
   protected readonly room: Room;
@@ -86,7 +81,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
       ])
     );
     this.mode = KKuTu.Game.modes[this.room.mode];
-    this.repository = DB.Manager.getRepository(ENTRIES[this.mode.language]);
+    this.repository = DB.Manager.getRepository(Word[this.mode.language]);
     this.round = 0;
     this.player = 0;
   }

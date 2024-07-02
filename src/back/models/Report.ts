@@ -6,21 +6,21 @@ import User from "back/models/User";
 @TypeORM.Entity({ name: "kkutu_reports" })
 export default class Report implements Serializable<Database.Report> {
   @TypeORM.PrimaryGeneratedColumn({ name: "r_id", type: "int8" })
-  public id!: string;
+  public declare id: string;
 
   @TypeORM.ManyToOne(() => User)
   @TypeORM.JoinColumn({ name: "r_submitter" })
-  public submitter!: User;
+  public declare submitter: User;
 
   @TypeORM.ManyToOne(() => User)
   @TypeORM.JoinColumn({ name: "r_target" })
-  public target!: User;
+  public declare target: User;
 
   @TypeORM.Column({ name: "r_reason", type: "int2", nullable: false })
-  public reason!: number;
+  public declare reason: number;
 
   @TypeORM.Column({ name: "r_comment", type: "text", nullable: false })
-  public comment!: string;
+  public declare comment: string;
 
   @TypeORM.Column({
     name: "r_createdAt",
@@ -28,7 +28,7 @@ export default class Report implements Serializable<Database.Report> {
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
-  public createdAt!: number;
+  public declare createdAt: number;
 
   public serialize(): Database.Report {
     return {

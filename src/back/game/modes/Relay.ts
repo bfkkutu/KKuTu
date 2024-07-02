@@ -97,6 +97,7 @@ export default class Relay extends Game implements Chainable {
     const word = await this.repository
       .createQueryBuilder("w")
       .where("w.data = :data", { data: content })
+      .innerJoinAndSelect("w.means", "m")
       .getOne();
     if (word === null) {
       this.room.broadcast(WebSocketMessage.Type.TurnError, {

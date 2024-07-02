@@ -123,9 +123,10 @@ export namespace KKuTu {
       Huge,
     }
     export enum Language {
-      Korean,
-      English,
+      Korean = "ko",
+      English = "en",
     }
+    export const LANGUAGES = Object.values(Language);
     export enum Prompt {
       /**
        * ①, ②, ③, ...

@@ -2,14 +2,16 @@ import * as TypeORM from "typeorm";
 
 import { SETTINGS } from "back/utils/System";
 import { Iterator } from "back/utils/Utility";
-import { Database } from "common/Database";
 import { Logger } from "back/utils/Logger";
+import { Database } from "common/Database";
+import { KKuTu } from "../../common/KKuTu";
 
 import User from "back/models/User";
 import Chat from "back/models/Chat";
 import Whisper from "back/models/Whisper";
 import Report from "back/models/Report";
-import { WordKo, WordEn } from "back/models/Word";
+import Word from "back/models/Word";
+import Mean from "back/models/Mean";
 
 export default class DB {
   private static dataSource = new TypeORM.DataSource({
@@ -17,7 +19,14 @@ export default class DB {
     ...SETTINGS["database"],
     synchronize: true,
     logging: [],
-    entities: [User, Chat, Whisper, Report, WordKo, WordEn],
+    entities: [
+      User,
+      Chat,
+      Whisper,
+      Report,
+      ...KKuTu.Game.LANGUAGES.map((v) => Word[v]),
+      ...KKuTu.Game.LANGUAGES.map((v) => Mean[v]),
+    ],
   });
 
   public static get Manager(): TypeORM.EntityManager {

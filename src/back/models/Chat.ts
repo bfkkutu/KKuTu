@@ -7,24 +7,24 @@ import { Transformer } from "back/utils/DatabaseAgent";
 @TypeORM.Entity({ name: "kkutu_log_chats" })
 export default class Chat implements Serializable<Database.Chat> {
   @TypeORM.PrimaryGeneratedColumn({ name: "c_id", type: "int8" })
-  public id!: string;
+  public declare id: string;
 
   @TypeORM.Column({ name: "c_room", type: "int2", nullable: true })
-  public room!: Database.Nullable<number>;
+  public declare room: Database.Nullable<number>;
 
   @TypeORM.ManyToOne(() => User)
   @TypeORM.JoinColumn({ name: "c_sender" })
-  public sender!: User;
+  public declare sender: User;
 
   @TypeORM.Column({ name: "c_content", type: "text", nullable: false })
-  public content!: string;
+  public declare content: string;
 
   @TypeORM.Column({
     name: "c_reports",
     type: "text",
     transformer: Transformer.List,
   })
-  public reports!: string[];
+  public declare reports: string[];
 
   @TypeORM.Column({
     name: "c_createdAt",
@@ -32,7 +32,7 @@ export default class Chat implements Serializable<Database.Chat> {
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
-  public createdAt!: number;
+  public declare createdAt: number;
 
   public serialize(): Database.Chat {
     return {

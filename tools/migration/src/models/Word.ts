@@ -1,19 +1,19 @@
 import * as TypeORM from "typeorm";
 
+import Mean from "./Mean";
+import { LANGUAGES } from "../System";
+
 export default class Word {
+  public static ko: typeof Word;
+  public static en: typeof Word;
+
   @TypeORM.PrimaryGeneratedColumn({ name: "w_id", type: "int8" })
-  public id!: string;
+  public declare id: string;
 
   @TypeORM.Column({ name: "w_data", type: "text", nullable: false })
-  public data!: string;
+  public declare data: string;
 
-  @TypeORM.Column({
-    name: "w_means",
-    type: "json",
-    default: {},
-    nullable: false,
-  })
-  public means!: Record<string, string>;
+  public declare means: Mean[];
 
   @TypeORM.Column({
     name: "w_createdAt",
@@ -21,11 +21,14 @@ export default class Word {
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
-  public createdAt!: number;
+  public declare createdAt: number;
 }
 
-@TypeORM.Entity({ name: "kkutu_words_ko" })
-export class WordKo extends Word {}
-
-@TypeORM.Entity({ name: "kkutu_words_en" })
-export class WordEn extends Word {}
+for (const language of LANGUAGES) {
+  @TypeORM.Entity({ name: `kkutu_words_${language}` })
+  class Entity extends Word {
+    @TypeORM.OneToMany(() => Mean[language], (mean) => mean.word)
+    public declare means: Mean[];
+  }
+  Word[language] = Entity;
+}

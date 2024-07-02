@@ -7,25 +7,25 @@ import { Transformer } from "back/utils/DatabaseAgent";
 @TypeORM.Entity({ name: "kkutu_log_whispers" })
 export default class Whisper implements Serializable<Database.Whisper> {
   @TypeORM.PrimaryGeneratedColumn({ name: "wh_id", type: "int8" })
-  public id!: string;
+  public declare id: string;
 
   @TypeORM.ManyToOne(() => User)
   @TypeORM.JoinColumn({ name: "wh_sender" })
-  public sender!: User;
+  public declare sender: User;
 
   @TypeORM.ManyToOne(() => User)
   @TypeORM.JoinColumn({ name: "wh_target" })
-  public target!: User;
+  public declare target: User;
 
   @TypeORM.Column({ name: "wh_content", type: "text", nullable: false })
-  public content!: string;
+  public declare content: string;
 
   @TypeORM.Column({
     name: "wh_reports",
     type: "text",
     transformer: Transformer.List,
   })
-  public reports!: string[];
+  public declare reports: string[];
 
   @TypeORM.Column({
     name: "wh_createdAt",
@@ -33,7 +33,7 @@ export default class Whisper implements Serializable<Database.Whisper> {
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
-  public createdAt!: number;
+  public declare createdAt: number;
 
   public serialize(): Database.Whisper {
     return {

@@ -132,4 +132,8 @@ export namespace Database {
     data: string;
     means: Record<string, string>;
   }
+  export interface Mean {
+    data: string;
+    wide: boolean;
+  }
 }
