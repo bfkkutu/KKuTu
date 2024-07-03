@@ -32,3 +32,4 @@ declare global {
     confirm(content: React.ReactNode): Promise<boolean>;
   }
 }
+

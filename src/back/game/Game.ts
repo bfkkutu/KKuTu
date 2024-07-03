@@ -4,6 +4,7 @@ import Room from "back/game/Room";
 import WebSocket from "back/utils/WebSocket";
 import DB from "back/utils/Database";
 import Word from "back/models/Word";
+import * as Cache from "back/models/cache";
 import { KKuTu } from "../../common/KKuTu";
 import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
@@ -21,6 +22,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
   protected readonly scores: ImprovedMap<string, number>;
   protected readonly mode: KKuTu.Game.IMode;
   protected readonly repository: TypeORM.Repository<Word>;
+  protected readonly manner: TypeORM.Repository<Cache.Manner>;
   /**
    * 제시어.
    */
@@ -82,6 +84,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
     );
     this.mode = KKuTu.Game.modes[this.room.mode];
     this.repository = DB.Manager.getRepository(Word[this.mode.language]);
+    this.manner = DB.Manager.getRepository(Cache.Manner[this.mode.language]);
     this.round = 0;
     this.player = 0;
   }
@@ -168,3 +171,4 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
     };
   }
 }
+

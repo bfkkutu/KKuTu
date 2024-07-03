@@ -3,6 +3,7 @@ import * as TypeORM from "typeorm";
 import Game from "back/game/Game";
 import Chainable from "back/game/modes/mixins/Chainable";
 import Word from "back/models/Word";
+import * as Cache from "back/models/cache";
 import { getAcceptable } from "back/utils/Utility";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
@@ -106,6 +107,36 @@ export default class Relay extends Game implements Chainable {
       });
       return;
     }
+    if (this.room.rules.manner) {
+      const last = word.data.at(-1)!;
+      let cache = await this.manner
+        .createQueryBuilder("c_m")
+        .select(["c_m.modes"])
+        .where("c_m.last = :last", { last })
+        .getOne();
+      if (cache === null) {
+        // cache miss
+        cache = new Cache.Manner();
+        cache.last = last;
+        cache.modes = [];
+        if (
+          !(await this.repository
+            .createQueryBuilder("w")
+            .where("w.data LIKE :last", { last: `${last}%` })
+            .getExists())
+        ) {
+          cache.modes.push(this.room.mode);
+        }
+        await this.manner.save(cache);
+      }
+      if (cache.modes.includes(this.room.mode)) {
+        this.room.broadcast(WebSocketMessage.Type.TurnError, {
+          errorType: "manner",
+          display: content,
+        });
+        return;
+      }
+    }
     if (this.history.includes(word.id)) {
       this.room.broadcast(WebSocketMessage.Type.TurnError, {
         errorType: "inHistory",
@@ -128,3 +159,4 @@ export default class Relay extends Game implements Chainable {
     this.lastAcceptable = getAcceptable(this.last);
   }
 }
+

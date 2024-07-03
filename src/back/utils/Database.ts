@@ -12,6 +12,7 @@ import Whisper from "back/models/Whisper";
 import Report from "back/models/Report";
 import Word from "back/models/Word";
 import Mean from "back/models/Mean";
+import * as Cache from "back/models/cache";
 
 export default class DB {
   private static dataSource = new TypeORM.DataSource({
@@ -26,6 +27,7 @@ export default class DB {
       Report,
       ...KKuTu.Game.LANGUAGES.map((v) => Word[v]),
       ...KKuTu.Game.LANGUAGES.map((v) => Mean[v]),
+      ...KKuTu.Game.LANGUAGES.map((v) => Cache.Manner[v]),
     ],
   });
 
@@ -100,3 +102,4 @@ export default class DB {
     return (await qb.getRawOne())["count"];
   }
 }
+

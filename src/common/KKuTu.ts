@@ -325,3 +325,4 @@ export namespace KKuTu {
     rules: Record<Game.Rule, boolean>;
   }
 }
+

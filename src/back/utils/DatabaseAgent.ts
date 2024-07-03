@@ -37,6 +37,10 @@ export namespace Transformer {
     from: (v: string) => (v ? v.split(",") : []),
     to: (v: string[]) => (v ? v.join(",") : ""),
   };
+  export const IntegerList: ValueTransformer = {
+    from: (v: string) => (v ? v.split(",").map((v) => parseInt(v)) : []),
+    to: (v: number[]) => (v ? v.join(",") : ""),
+  };
   export const Point: ValueTransformer = {
     from: (v: string) => {
       return v.match(PARSER_POINT_FROM)!.slice(1).map(Number);
@@ -46,3 +50,4 @@ export namespace Transformer {
     },
   };
 }
+

@@ -106,6 +106,7 @@
 
     "turnError_invalid": "{#0}",
     "turnError_inHistory": "이미 쓰인 단어: {#0}",
+    "turnError_manner": "한 방 단어: {#0}",
 
     "error_400": "잘못된 요청이에요.",
     "error_403": "권한이 없어요.",
