@@ -66,7 +66,8 @@ export namespace WebSocketMessage {
     ReportWhisper = "reportWhisper",
     Dictionary = "dictionary",
     Invite = "invite",
-    AddRobot = "addRobot",
+    InviteRobot = "inviteRobot",
+    KickRobot = "kickRobot",
     UpdateUser = "updateUser",
     /**
      * @sender Client.
@@ -183,7 +184,8 @@ export namespace WebSocketMessage {
          */
         room: number;
       };
-      [Type.AddRobot]: {};
+      [Type.InviteRobot]: {};
+      [Type.KickRobot]: {};
       [Type.UpdateUser]: {
         user: Database.User.Summarized;
       };
@@ -296,7 +298,13 @@ export namespace WebSocketMessage {
       [Type.Invite]: {
         target: string;
       };
-      [Type.AddRobot]: {};
+      [Type.InviteRobot]: {};
+      [Type.KickRobot]: {
+        /**
+         * 추방할 끄투 봇 식별자.
+         */
+        target: string;
+      };
       [Type.UpdateUser]: {};
       [Type.QueryUser]: {
         target: string;

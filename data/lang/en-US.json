@@ -413,7 +413,7 @@
     "whisper_title": "<{FA|comment}> {#0}님과의 1대1 채팅",
 
     "invite_title": "<{FA|envelope}> 초대",
-    "invite_addRobot": "로봇 추가",
+    "invite_robot": "로봇 추가",
 
     "report_title": "<{FA|flag}> 신고 - {#0}",
     "report_target": "대상",

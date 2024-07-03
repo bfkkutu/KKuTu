@@ -6,7 +6,7 @@ import Channel from "back/game/Channel";
 import Game from "back/game/Game";
 import Robot from "back/game/Robot";
 import { KKuTu } from "../../common/KKuTu";
-import ImprovedSet from "../../common/ImprovedSet";
+import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
 import Relay from "back/game/modes/Relay";
@@ -22,7 +22,7 @@ export default class Room
   private static readonly EMPTY_PASSWORD = sha256("");
 
   private readonly channel: Channel;
-  private readonly robots = new ImprovedSet<Robot>();
+  private readonly robots = new ImprovedMap<string, Robot>();
   private game?: Game;
   public readonly id: number;
   public title: string;
@@ -137,22 +137,6 @@ export default class Room
     this.update();
   }
   /**
-   * 방에 로봇을 추가한다.
-   *
-   * @param robot 로봇 객체.
-   */
-  public addRobot(robot: Robot): void {
-    if (this.isFull) {
-      return;
-    }
-
-    this.robots.add(robot);
-    robot.roomId = this.id;
-    robot.isReady = true;
-    robot.isSpectator = false;
-    this.update();
-  }
-  /**
    * 방에서 특정 유저를 제거한다.
    *
    * @param id 유저 식별자.
@@ -179,6 +163,29 @@ export default class Room
     }
 
     this.game?.remove(id);
+    this.update();
+  }
+  public getRobot(id: string): Robot | undefined {
+    return this.robots.get(id);
+  }
+  /**
+   * 방에 로봇을 추가한다.
+   *
+   * @param robot 로봇 객체.
+   */
+  public addRobot(robot: Robot): void {
+    if (this.isFull) {
+      return;
+    }
+
+    this.robots.set(robot.id, robot);
+    robot.roomId = this.id;
+    robot.isReady = true;
+    robot.isSpectator = false;
+    this.update();
+  }
+  public removeRobot(id: string): void {
+    this.robots.delete(id);
     this.update();
   }
   /**
@@ -255,7 +262,7 @@ export default class Room
       members: Object.fromEntries(
         [
           ...this.clients.valuesAsArray().map((client) => client.user),
-          ...this.robots,
+          ...this.robots.values(),
         ].map((user) => [user.id, user.asRoomMember()])
       ),
       game: this.game?.serialize(),

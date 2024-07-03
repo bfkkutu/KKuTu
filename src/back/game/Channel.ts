@@ -710,7 +710,7 @@ export default class Channel extends WebSocketServer {
               });
             }
             break;
-          case WebSocketMessage.Type.AddRobot:
+          case WebSocketMessage.Type.InviteRobot:
             {
               if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
@@ -725,6 +725,12 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
+              if (room.master !== user.id) {
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              }
+
               if (room.isFull) {
                 return socket.sendError(WebSocketError.Type.Conflict, {
                   isFatal: false,
@@ -732,7 +738,40 @@ export default class Channel extends WebSocketServer {
               }
 
               room.addRobot(new Robot());
-              socket.send(WebSocketMessage.Type.AddRobot, {});
+              this.updateRoomList();
+              socket.send(WebSocketMessage.Type.InviteRobot, {});
+            }
+            break;
+          case WebSocketMessage.Type.KickRobot:
+            {
+              if (user.roomId === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.master !== user.id) {
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              }
+
+              const target = room.getRobot(message.target);
+              if (target === undefined) {
+                return socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
+              }
+
+              room.removeRobot(target.id);
+              this.updateRoomList();
             }
             break;
           case WebSocketMessage.Type.QueryUser:

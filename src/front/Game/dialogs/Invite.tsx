@@ -6,6 +6,7 @@ import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Room } from "front/Game/box/Room";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export default class InviteDialog extends Dialog {
@@ -16,7 +17,9 @@ export default class InviteDialog extends Dialog {
   }
   protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
+    const id = useStore((state) => state.me.id);
     const users = useStore((state) => state.users);
+    const room = Room.useStore((state) => state.room);
 
     return (
       <div className="dialog-invite">
@@ -51,30 +54,32 @@ export default class InviteDialog extends Dialog {
               </li>
             ))}
         </ul>
-        <div className="footer">
-          <button
-            onClick={async () => {
-              socket.send(WebSocketMessage.Type.AddRobot, {});
-              try {
-                await socket.messageReceiver.wait(
-                  WebSocketMessage.Type.AddRobot
-                );
-              } catch (e) {
-                const { errorType } =
-                  e as WebSocketError.Message[WebSocketError.Type];
-                switch (errorType) {
-                  case WebSocketError.Type.BadRequest:
-                    window.alert(L.get("error_400"));
-                    break;
-                  case WebSocketError.Type.Conflict:
-                    window.alert(L.get("error_roomFull"));
-                    break;
+        <div className="footer buttons">
+          {room !== undefined && room.master === id ? (
+            <button
+              onClick={async () => {
+                socket.send(WebSocketMessage.Type.InviteRobot, {});
+                try {
+                  await socket.messageReceiver.wait(
+                    WebSocketMessage.Type.InviteRobot
+                  );
+                } catch (e) {
+                  const { errorType } =
+                    e as WebSocketError.Message[WebSocketError.Type];
+                  switch (errorType) {
+                    case WebSocketError.Type.BadRequest:
+                      window.alert(L.get("error_400"));
+                      break;
+                    case WebSocketError.Type.Conflict:
+                      window.alert(L.get("error_roomFull"));
+                      break;
+                  }
                 }
-              }
-            }}
-          >
-            {L.get("invite_addRobot")}
-          </button>
+              }}
+            >
+              {L.get("invite_robot")}
+            </button>
+          ) : null}
         </div>
       </div>
     );
