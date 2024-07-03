@@ -12,7 +12,7 @@ import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class CreateRoomDialog extends Dialog {
-  public static instance = new CreateRoomDialog();
+  public static readonly instance = new CreateRoomDialog();
 
   protected override head(): React.ReactElement {
     return <>{L.get("createRoom")}</>;
@@ -181,3 +181,4 @@ export default class CreateRoomDialog extends Dialog {
     );
   }
 }
+

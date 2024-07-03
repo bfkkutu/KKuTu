@@ -9,7 +9,7 @@ import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class SettingsDialog extends Dialog {
-  public static instance = new SettingsDialog();
+  public static readonly instance = new SettingsDialog();
 
   protected override head(): React.ReactElement {
     return <>{L.render("settings_title")}</>;
@@ -260,3 +260,4 @@ export default class SettingsDialog extends Dialog {
     );
   }
 }
+

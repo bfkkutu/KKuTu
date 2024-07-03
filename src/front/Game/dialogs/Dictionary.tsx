@@ -7,7 +7,7 @@ import { Database } from "common/Database";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class DictionaryDialog extends Dialog {
-  public static instance = new DictionaryDialog();
+  public static readonly instance = new DictionaryDialog();
 
   protected override head(): React.ReactElement {
     return <>{L.render("dictionary_title")}</>;

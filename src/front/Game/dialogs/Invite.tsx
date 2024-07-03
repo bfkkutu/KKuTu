@@ -9,7 +9,7 @@ import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export default class InviteDialog extends Dialog {
-  public static instance = new InviteDialog();
+  public static readonly instance = new InviteDialog();
 
   protected override head(): React.ReactElement {
     return <>{L.get("invite_title")}</>;
@@ -80,3 +80,4 @@ export default class InviteDialog extends Dialog {
     );
   }
 }
+

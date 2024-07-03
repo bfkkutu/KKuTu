@@ -11,7 +11,7 @@ import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class BlackListDialog extends Dialog {
-  public static instance = new BlackListDialog();
+  public static readonly instance = new BlackListDialog();
 
   protected override head(): React.ReactElement {
     return <>{L.render("blackList_title")}</>;
@@ -106,3 +106,4 @@ export default class BlackListDialog extends Dialog {
     );
   }
 }
+

@@ -13,7 +13,7 @@ import { Room } from "front/Game/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class CommunityDialog extends Dialog {
-  public static instance = new CommunityDialog();
+  public static readonly instance = new CommunityDialog();
 
   protected override head(): React.ReactElement {
     const friends = useStore((state) => state.community.friends);
@@ -243,3 +243,4 @@ export default class CommunityDialog extends Dialog {
     );
   }
 }
+
