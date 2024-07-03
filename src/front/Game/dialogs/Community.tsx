@@ -238,7 +238,6 @@ export default class CommunityDialog extends Dialog {
             );
           })}
         </ul>
-        <div className="footer"></div>
       </div>
     );
   }

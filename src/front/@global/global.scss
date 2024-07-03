@@ -504,16 +504,18 @@ code {
 
     .footer {
       display: flex;
-      justify-content: flex-end;
-      padding-left: 16px;
-      margin: 16px 0 0 auto;
 
-      button {
-        float: right;
-        margin-right: 5px;
-        margin-bottom: 5px;
-        width: 80px;
-        height: 20px;
+      &.buttons {
+        justify-content: flex-end;
+        margin: 16px 0 0 auto;
+        gap: 5px;
+
+        button {
+          float: right;
+          margin-bottom: 5px;
+          width: 80px;
+          height: 20px;
+        }
       }
     }
   }

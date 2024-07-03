@@ -21,7 +21,7 @@ export default class ConfirmDialog extends Dialog.Asynchronous<boolean> {
     return (
       <>
         <div className="body dialog-confirm">{this.content}</div>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             type="button"
             onClick={() => {
@@ -45,3 +45,4 @@ export default class ConfirmDialog extends Dialog.Asynchronous<boolean> {
     );
   }
 }
+

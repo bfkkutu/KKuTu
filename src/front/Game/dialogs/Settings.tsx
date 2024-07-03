@@ -232,7 +232,7 @@ export default class SettingsDialog extends Dialog {
             </div>
           </label>
         </form>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             type="button"
             onClick={() => window.alert("이동 가능한 채널이 없습니다.")}

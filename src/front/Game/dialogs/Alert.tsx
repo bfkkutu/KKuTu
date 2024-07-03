@@ -21,7 +21,7 @@ export default class AlertDialog extends Dialog.Asynchronous<void> {
     return (
       <>
         <div className="body dialog-alert">{this.content}</div>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             type="button"
             onClick={() => {
@@ -36,3 +36,4 @@ export default class AlertDialog extends Dialog.Asynchronous<void> {
     );
   }
 }
+

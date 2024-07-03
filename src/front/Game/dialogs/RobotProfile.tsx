@@ -113,8 +113,9 @@ export default class RobotProfileDialog extends Dialog {
           </section>
           <section>RECORD</section>
         </div>
-        <div className="footer">{footerButtons}</div>
+        <div className="footer buttons">{footerButtons}</div>
       </div>
     );
   }
 }
+

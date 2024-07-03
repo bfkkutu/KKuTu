@@ -1146,9 +1146,12 @@
   }
 
   &-community {
+    width: 300px;
+    height: 300px;
+
     .body {
-      width: 300px;
-      height: 300px;
+      height: 100%;
+
       overflow: {
         x: hidden;
         y: scroll;
@@ -1199,9 +1202,11 @@
   }
 
   &-blackList {
+    width: 300px;
+    height: 300px;
+
     .body {
-      width: 300px;
-      height: 300px;
+      height: 100%;
       overflow: {
         x: hidden;
         y: scroll;
@@ -1241,10 +1246,12 @@
   }
 
   &-report {
+    width: 350px;
+
     .body {
       display: flex;
       flex-direction: column;
-      width: 350px;
+      width: 100%;
       font-size: 13px;
 
       .item-wrapper {
@@ -1275,10 +1282,12 @@
   }
 
   &-createRoom {
+    width: 350px;
+
     .body {
       display: flex;
       flex-direction: column;
-      width: 350px;
+      width: 100%;
       font-size: 13px;
 
       .item-wrapper {
@@ -1307,10 +1316,12 @@
   }
 
   &-roomSettings {
+    width: 350px;
+
     .body {
       display: flex;
       flex-direction: column;
-      width: 350px;
+      width: 100%;
       font-size: 13px;
 
       .item-wrapper {
@@ -1339,9 +1350,10 @@
   }
 
   &-dictionary {
+    width: 400px;
+    height: 275px;
+
     .body {
-      width: 400px;
-      height: 220px;
       font-size: 13px;
 
       div {
@@ -1387,10 +1399,10 @@
   }
 
   &-profile {
-    .body {
-      width: 390px;
-      height: 465px;
+    width: 390px;
+    height: 465px;
 
+    .body {
       .profile {
         display: flex;
 
@@ -1431,13 +1443,18 @@
         }
       }
     }
+
+    .footer {
+      flex-wrap: wrap;
+    }
   }
 
   &-whisper {
+    width: 400px;
+
     .body {
       display: flex;
       flex-direction: column-reverse;
-      width: 400px;
       height: 300px;
       overflow: {
         x: hidden;
@@ -1518,8 +1535,9 @@
   }
 
   &-invite {
+    width: 300px;
+
     .body {
-      width: 300px;
       height: 300px;
       overflow: {
         x: hidden;
@@ -1708,3 +1726,4 @@
     opacity: 0.1;
   }
 }
+

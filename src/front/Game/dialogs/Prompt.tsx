@@ -37,7 +37,7 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
             onChange={(e) => setInput(e.currentTarget.value)}
           />
         </div>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             type="button"
             onClick={() => {
@@ -61,3 +61,4 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
     );
   }
 }
+

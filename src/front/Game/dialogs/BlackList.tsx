@@ -101,7 +101,6 @@ export default class BlackListDialog extends Dialog {
             );
           })}
         </ul>
-        <div className="footer"></div>
       </div>
     );
   }

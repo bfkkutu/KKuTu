@@ -46,7 +46,7 @@ export default class DictionaryDialog extends Dialog {
             )}
           </ul>
         </div>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             onClick={async () => {
               socket.send(WebSocketMessage.Type.Dictionary, { content: input });

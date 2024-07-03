@@ -59,7 +59,7 @@ export default class ReportDialog extends Dialog {
             />
           </label>
         </form>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             onClick={async () => {
               socket.send(WebSocketMessage.Type.Report, {
@@ -79,3 +79,4 @@ export default class ReportDialog extends Dialog {
     );
   }
 }
+

@@ -157,7 +157,7 @@ export default class CreateRoomDialog extends Dialog {
             <RuleSelector room={room} setter={setRoom} />
           </label>
         </form>
-        <div className="footer">
+        <div className="footer buttons">
           <button
             type="button"
             onClick={async () => {
