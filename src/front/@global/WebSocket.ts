@@ -61,7 +61,9 @@ class MessageReceiver {
       ) => {
         cleanup();
         reject(message);
-        if (message.isFatal) useStore.getState().socket.close();
+        if (message.isFatal) {
+          useStore.getState().socket.close();
+        }
       };
       show();
       this.on(type, callback);
@@ -117,3 +119,4 @@ class WebSocket extends C {
   }
 }
 export default WebSocket;
+

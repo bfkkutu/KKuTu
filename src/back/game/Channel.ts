@@ -257,39 +257,75 @@ export default class Channel extends WebSocketServer {
               });
             }
             break;
-          case WebSocketMessage.Type.HandoverRoom:
+          case WebSocketMessage.Type.Handover:
             {
-              if (user.roomId === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {
-                  isFatal: false,
-                });
-
-              const room = this.rooms.get(user.roomId);
-              if (room === undefined)
-                return socket.sendError(WebSocketError.Type.BadRequest, {
-                  isFatal: false,
-                });
-
-              if (room.master !== user.id)
-                return socket.sendError(WebSocketError.Type.Forbidden, {
-                  isFatal: false,
-                });
-
-              const master = room.get(message.master);
-              if (master === undefined || master.user.roomId === undefined) {
+              if (user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
               }
 
-              room.master = master.user.id;
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.master !== user.id) {
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              }
+
+              const target = room.get(message.target);
+              if (target === undefined || target.user.roomId === undefined) {
+                return socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
+              }
+
+              room.master = target.user.id;
               user.isReady = false;
-              master.user.isReady = true;
+              target.user.isReady = true;
               room.update();
               Logger.info(
-                `Room #${room.id}: handover #${user.id} → #${master.user.id}`
+                `Room #${room.id}: handover #${user.id} → #${target.user.id}`
               ).out();
-              socket.send(WebSocketMessage.Type.HandoverRoom, {});
+            }
+            break;
+          case WebSocketMessage.Type.Kick:
+            {
+              if (user.roomId === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              const room = this.rooms.get(user.roomId);
+              if (room === undefined) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.master !== user.id) {
+                return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              }
+
+              const target = room.get(message.target);
+              if (target === undefined || target.user.roomId === undefined) {
+                return socket.sendError(WebSocketError.Type.NotFound, {
+                  isFatal: false,
+                });
+              }
+
+              room.remove(target.user.id);
+              target.user.leaveRoom();
+              Logger.info(`Room #${room.id}: kick #${target.user.id}`).out();
+              target.send(WebSocketMessage.Type.Kick, {});
             }
             break;
           case WebSocketMessage.Type.Spectate:
@@ -800,3 +836,4 @@ export default class Channel extends WebSocketServer {
     return this.users.size;
   }
 }
+

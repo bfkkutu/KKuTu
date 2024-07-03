@@ -24,18 +24,22 @@ export namespace Room {
     const id = useGlobalStore((state) => state.me.id);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
-    const [room, updateRoom, addMember, updateMember, removeMember] = useStore(
-      (state) => [
+    const [room, updateRoom, addMember, updateMember, removeMember, leaveRoom] =
+      useStore((state) => [
         state.room!,
         state.updateRoom,
         state.addMember,
         state.updateMember,
         state.removeMember,
-      ]
-    );
+        state.leaveRoom,
+      ]);
     const [modified, setModified] = useState<string[]>([]);
 
     useEffect(() => {
+      socket.messageReceiver.on(WebSocketMessage.Type.Kick, () => {
+        window.alert(L.get("alert_kicked"));
+        leaveRoom();
+      });
       socket.messageReceiver.on(WebSocketMessage.Type.Spectate, ({ member }) =>
         updateMember(member)
       );

@@ -46,19 +46,11 @@ export default class ProfileDialog extends Dialog {
 
     if (this.user.id !== id) {
       footerButtons.push(
-        <button
-          key={footerButtons.length}
-          onClick={() => Whisper.toggle(this.user)}
-        >
-          {L.get("whisper")}
-        </button>
-      );
-      footerButtons.push(
         <button key={footerButtons.length} onClick={() => toggle(reportDialog)}>
           {L.get("report")}
         </button>
       );
-      if (room !== undefined && room.master === id)
+      if (room !== undefined && room.master === id) {
         footerButtons.push(
           <button
             key={footerButtons.length}
@@ -67,21 +59,86 @@ export default class ProfileDialog extends Dialog {
                 !(await window.confirm(
                   L.render("confirm_handover", this.user.nickname)
                 ))
-              )
+              ) {
                 return;
-              socket.send(WebSocketMessage.Type.HandoverRoom, {
-                master: this.user.id,
+              }
+              socket.send(WebSocketMessage.Type.Handover, {
+                target: this.user.id,
               });
-              await socket.messageReceiver.wait(
-                WebSocketMessage.Type.HandoverRoom
-              );
-              hide(this);
+              try {
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.UpdateRoom
+                );
+                hide(this);
+              } catch (e) {
+                const { errorType } =
+                  e as WebSocketError.Message[WebSocketError.Type];
+                switch (errorType) {
+                  case WebSocketError.Type.BadRequest:
+                    window.alert(L.get("error_400"));
+                    break;
+                  case WebSocketError.Type.NotFound:
+                    window.alert(L.get("error_404"));
+                    break;
+                  case WebSocketError.Type.Forbidden:
+                    window.alert(L.get("error_403"));
+                    break;
+                }
+              }
             }}
           >
             {L.get("handover")}
           </button>
         );
-      if (!community.friends.includes(this.user.id))
+        footerButtons.push(
+          <button
+            key={footerButtons.length}
+            onClick={async () => {
+              if (
+                !(await window.confirm(
+                  L.render("confirm_kick", this.user.nickname)
+                ))
+              ) {
+                return;
+              }
+              socket.send(WebSocketMessage.Type.Kick, {
+                target: this.user.id,
+              });
+              try {
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.UpdateRoom
+                );
+                hide(this);
+              } catch (e) {
+                const { errorType } =
+                  e as WebSocketError.Message[WebSocketError.Type];
+                switch (errorType) {
+                  case WebSocketError.Type.BadRequest:
+                    window.alert(L.get("error_400"));
+                    break;
+                  case WebSocketError.Type.NotFound:
+                    window.alert(L.get("error_404"));
+                    break;
+                  case WebSocketError.Type.Forbidden:
+                    window.alert(L.get("error_403"));
+                    break;
+                }
+              }
+            }}
+          >
+            {L.get("kick")}
+          </button>
+        );
+        footerButtons.push(
+          <button
+            key={footerButtons.length}
+            onClick={() => Whisper.toggle(this.user)}
+          >
+            {L.get("whisper")}
+          </button>
+        );
+      }
+      if (!community.friends.includes(this.user.id)) {
         footerButtons.push(
           <button
             key={footerButtons.length}
@@ -120,7 +177,8 @@ export default class ProfileDialog extends Dialog {
             {L.get("friendRequest")}
           </button>
         );
-      if (!community.blackList.includes(this.user.id))
+      }
+      if (!community.blackList.includes(this.user.id)) {
         footerButtons.push(
           <button
             key={footerButtons.length}
@@ -156,6 +214,7 @@ export default class ProfileDialog extends Dialog {
             {L.get("blackListAdd")}
           </button>
         );
+      }
     }
 
     return (
@@ -200,3 +259,4 @@ export default class ProfileDialog extends Dialog {
     );
   }
 }
+

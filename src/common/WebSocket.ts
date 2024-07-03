@@ -37,10 +37,11 @@ export namespace WebSocketMessage {
     Chat = "chat",
     CreateRoom = "createRoom",
     UpdateRoom = "updateRoom",
-    HandoverRoom = "handoverRoom",
     InitializeRoom = "initializeRoom",
     JoinRoom = "joinRoom",
     LeaveRoom = "leaveRoom",
+    Handover = "handover",
+    Kick = "kick",
     Spectate = "spectate",
     Ready = "ready",
     Start = "start",
@@ -106,7 +107,6 @@ export namespace WebSocketMessage {
       [Type.UpdateRoom]: {
         room: KKuTu.Room.Detailed;
       };
-      [Type.HandoverRoom]: {};
       [Type.InitializeRoom]: {
         room: KKuTu.Room.Detailed;
       };
@@ -119,6 +119,8 @@ export namespace WebSocketMessage {
          */
         member: string;
       };
+      [Type.Handover]: {};
+      [Type.Kick]: {};
       [Type.Spectate]: {
         member: KKuTu.Room.Member;
       };
@@ -215,15 +217,24 @@ export namespace WebSocketMessage {
       [Type.UpdateRoom]: {
         room: KKuTu.Room.Settings;
       };
-      [Type.HandoverRoom]: {
-        master: string;
-      };
       [Type.InitializeRoom]: {};
       [Type.JoinRoom]: {
         target: number;
         password?: string;
       };
       [Type.LeaveRoom]: {};
+      [Type.Handover]: {
+        /**
+         * 새로운 방장의 식별자.
+         */
+        target: string;
+      };
+      [Type.Kick]: {
+        /**
+         * 추방할 대상의 식별자.
+         */
+        target: string;
+      };
       [Type.Spectate]: {};
       [Type.Ready]: {};
       [Type.Start]: {};
@@ -340,3 +351,4 @@ export namespace WebSocketError {
     } & ContentWithFlags[type];
   };
 }
+
