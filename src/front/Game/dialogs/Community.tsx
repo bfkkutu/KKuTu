@@ -187,7 +187,7 @@ export default class CommunityDialog extends Dialog {
                               ))
                             )
                               return;
-                            if (room === undefined) {
+                            if (room !== undefined) {
                               socket.send(WebSocketMessage.Type.LeaveRoom, {});
                               await socket.messageReceiver.wait(
                                 WebSocketMessage.Type.LeaveRoom
