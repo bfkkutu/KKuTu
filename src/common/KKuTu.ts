@@ -127,20 +127,9 @@ export namespace KKuTu {
       English = "en",
     }
     export const LANGUAGES = Object.values(Language);
-    export enum Prompt {
-      /**
-       * ①, ②, ③, ...
-       */
-      Round,
-      /**
-       * 제, 시, 어, ...
-       */
-      Word,
-    }
     export interface IMode {
       graphic: Graphic;
       language: Language;
-      prompt: Prompt;
       rules: Rule[];
       themeSelect: boolean;
     }
@@ -148,7 +137,6 @@ export namespace KKuTu {
       [Mode.KoreanRelay]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Word,
         rules: [
           Rule.Manner,
           Rule.WideTheme,
@@ -163,56 +151,48 @@ export namespace KKuTu {
       [Mode.KoreanRelayReversed]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Word,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanThree]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Word,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanKKuTu]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Word,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanConsonantQuiz]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanTypingCompetition]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanWordCompetition]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanSock]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanDrawingQuiz]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: true,
       },
@@ -220,42 +200,36 @@ export namespace KKuTu {
       [Mode.EnglishRelay]: {
         graphic: Graphic.Normal,
         language: Language.English,
-        prompt: Prompt.Word,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishKKuTu]: {
         graphic: Graphic.Normal,
         language: Language.English,
-        prompt: Prompt.Word,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishTypingCompetition]: {
         graphic: Graphic.Normal,
         language: Language.English,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishWordCompetition]: {
         graphic: Graphic.Normal,
         language: Language.English,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishSock]: {
         graphic: Graphic.Normal,
         language: Language.English,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishDrawingQuiz]: {
         graphic: Graphic.Normal,
         language: Language.English,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: true,
       },
@@ -263,7 +237,6 @@ export namespace KKuTu {
       [Mode.Hunmin]: {
         graphic: Graphic.Normal,
         language: Language.Korean,
-        prompt: Prompt.Round,
         rules: [],
         themeSelect: false,
       },

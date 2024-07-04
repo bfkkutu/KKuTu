@@ -34,8 +34,24 @@ export default class Relay extends Game implements Chainable {
     }
     return `${this.last}(${this.lastAcceptable})`;
   }
+  protected override async getPrompt(): Promise<string | undefined> {
+    const builder = this.repository
+      .createQueryBuilder("w")
+      .select(["w.data"])
+      .where("LENGTH(w.data) = :length", { length: this.room.round })
+      .orderBy("RANDOM()")
+      .limit(1);
+    if (!this.room.rules.wide) {
+      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+    }
+    const word = await builder.getOne();
+    if (word === null) {
+      return undefined;
+    }
+    return word.data;
+  }
   protected override async getTimeoutHint(): Promise<string | undefined> {
-    const word = await this.repository
+    const builder = this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
       .where(
@@ -52,15 +68,18 @@ export default class Relay extends Game implements Chainable {
       )
       .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
-      .limit(1)
-      .getOne();
+      .limit(1);
+    if (!this.room.rules.wide) {
+      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+    }
+    const word = await builder.getOne();
     if (word === null) {
       return undefined;
     }
     return word.data;
   }
   protected override async robotSubmit(): Promise<void> {
-    const word = await this.repository
+    const builder = this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
       .where(
@@ -77,8 +96,11 @@ export default class Relay extends Game implements Chainable {
       )
       .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
-      .limit(1)
-      .getOne();
+      .limit(1);
+    if (!this.room.rules.wide) {
+      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+    }
+    const word = await builder.getOne();
     if (word === null) {
       return;
     }
@@ -95,11 +117,14 @@ export default class Relay extends Game implements Chainable {
     );
   }
   public override async submit(content: string): Promise<void> {
-    const word = await this.repository
+    const builder = this.repository
       .createQueryBuilder("w")
       .where("w.data = :data", { data: content })
-      .innerJoinAndSelect("w.means", "m")
-      .getOne();
+      .innerJoinAndSelect("w.means", "m");
+    if (!this.room.rules.wide) {
+      builder.andWhere("m.wide = false");
+    }
+    const word = await builder.getOne();
     if (word === null) {
       this.room.broadcast(WebSocketMessage.Type.TurnError, {
         errorType: "invalid",

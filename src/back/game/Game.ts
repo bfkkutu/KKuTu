@@ -9,6 +9,10 @@ import { KKuTu } from "../../common/KKuTu";
 import ImprovedMap from "../../common/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
+const PROMPT_DEFAULT: Record<KKuTu.Game.Language, string> = {
+  [KKuTu.Game.Language.Korean]: "가나다라마바사아자차",
+  [KKuTu.Game.Language.English]: "abcdefghij",
+};
 export default abstract class Game implements Serializable<KKuTu.Game> {
   protected readonly room: Room;
   /**
@@ -90,16 +94,9 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
   }
 
   public async initialize(): Promise<void> {
-    if (this.mode.prompt === KKuTu.Game.Prompt.Word) {
-      const word = await this.repository
-        .createQueryBuilder("w")
-        .select(["w.data"])
-        .where("LENGTH(w.data) = :length", { length: this.room.round })
-        .orderBy("RANDOM()")
-        .limit(1)
-        .getOne();
-      this.prompt = word === null ? "가나다라마바사아자차" : word.data;
-    }
+    const word = await this.getPrompt();
+    this.prompt =
+      word === undefined ? PROMPT_DEFAULT[this.mode.language] : word;
     this.room.broadcast(WebSocketMessage.Type.Start, {
       game: this.serialize(),
     });
@@ -149,6 +146,9 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
       }
       this.room.end();
     }, 3000);
+  }
+  protected async getPrompt(): Promise<string | undefined> {
+    return "①②③④⑤⑥⑦⑧⑨⑩";
   }
   protected abstract getDisplay(): string;
   protected abstract getTimeoutHint(): Promise<string | undefined>;
