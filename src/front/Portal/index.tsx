@@ -204,6 +204,12 @@ export default class Portal extends React.PureComponent<
           </p>
           <h2>3. 이 서버의 데이터는 어떻게 되는 건가요?</h2>
           <p>정식 오픈 전에 모두 폐기됩니다.</p>
+          <h2>4. 서버 응답이 너무 느려요.</h2>
+          <p>
+            기존에 사용하던 클라우드 업체의 폐업으로 다른 업체를 알아보고
+            있습니다. 서버 응답이 느린 것은 임시로 클라우드플레어를 사용 중이기
+            때문입니다.
+          </p>
         </div>
         {this.props.mode === "production" ? (
           <GoogleAdvertisement {...this.props.metadata!.ad.google} />
@@ -213,3 +219,4 @@ export default class Portal extends React.PureComponent<
   }
 }
 Bind(Portal);
+
