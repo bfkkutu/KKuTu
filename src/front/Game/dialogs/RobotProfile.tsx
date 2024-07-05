@@ -30,7 +30,6 @@ export default class RobotProfileDialog extends Dialog {
     const socket = useStore((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
-    const hide = Dialog.useStore((state) => state.hide);
 
     const footerButtons: React.ReactNode[] = [];
 
@@ -51,7 +50,7 @@ export default class RobotProfileDialog extends Dialog {
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.UpdateRoom
               );
-              hide(this);
+              this.hide();
             } catch (e) {
               const { errorType } =
                 e as WebSocketError.Message[WebSocketError.Type];

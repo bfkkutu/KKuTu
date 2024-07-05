@@ -1,42 +1,60 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import sha256 from "sha256";
 
 import L from "front/@global/Language";
-import { useStore } from "front/Game/Store";
-import RuleSelector from "front/Game/blocks/RuleSelector";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import Checkbox from "front/@block/Checkbox";
+import { useStore } from "front/Game/Store";
+import { Room } from "front/Game/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class RoomSettingsDialog extends Dialog {
-  private settings: KKuTu.Room.Settings;
+  public static readonly instance = new RoomSettingsDialog();
 
-  constructor(settings: KKuTu.Room.Settings) {
-    super();
+  public override initialize(): void {
+    super.initialize();
 
-    this.settings = settings;
+    const unsubscribe = Room.useStore.subscribe((state) => {
+      if (state.room === undefined) {
+        this.hide();
+        unsubscribe();
+      }
+    });
   }
-
   protected override head(): React.ReactElement {
     return <>{L.get("roomSettings")}</>;
   }
   protected override body(): React.ReactElement {
-    const nickname = useStore((state) => state.me.nickname);
     const socket = useStore((state) => state.socket);
-    const hide = Dialog.useStore((state) => state.hide);
-    const [room, setRoom] = useState(this.settings);
+    const nickname = useStore((state) => state.me.nickname);
+    const room = Room.useStore((state) => state.room!);
+    const [settings, setSettings] = useState<KKuTu.Room.Settings>({
+      title: room.title,
+      password: "",
+      policy: room.policy,
+      limit: room.limit,
+      mode: room.mode,
+      round: room.round,
+      roundTime: room.roundTime,
+      rules: room.rules,
+    });
+
+    const changed = useRef(new Set<string>());
 
     const updateIntegerField = useCallback(
       (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.currentTarget;
-        setRoom({
-          ...room,
+        changed.current.add(name);
+        setSettings({
+          ...settings,
           [name]: parseInt(value),
         });
       },
-      [room]
+      [settings]
     );
 
     return (
@@ -51,10 +69,11 @@ export default class RoomSettingsDialog extends Dialog {
               id="createRoom-input-title"
               name="title"
               placeholder={L.get("createRoom_title_default", nickname)}
-              value={room.title}
-              onChange={(e) =>
-                setRoom({ ...room, title: e.currentTarget.value })
-              }
+              value={settings.title}
+              onChange={(e) => {
+                changed.current.add("title");
+                setSettings({ ...settings, title: e.currentTarget.value });
+              }}
             />
           </label>
           <label className="item-wrapper">
@@ -73,11 +92,38 @@ export default class RoomSettingsDialog extends Dialog {
                 if (password === null) {
                   return;
                 }
-                setRoom({ ...room, password });
+                changed.current.add("password");
+                setSettings({ ...settings, password: sha256(password) });
               }}
             >
               {L.get("change")}
             </button>
+          </label>
+          <label className="item-wrapper">
+            <label className="dialog-desc" htmlFor="createRoom-policy">
+              {L.get("roomPolicy")}
+            </label>
+            <div className="checkbox-group">
+              {Object.values(KKuTu.Room.Policy).map((policy, index) => (
+                <Checkbox
+                  key={index}
+                  id={`createRoom-policy-${policy}`}
+                  tooltip={new Tooltip(L.get(`room_policy_${policy}_desc`))}
+                  checked={settings.policy[policy]}
+                  onChange={(e) =>
+                    setSettings({
+                      ...settings,
+                      policy: {
+                        ...settings.policy,
+                        [policy]: e.currentTarget.checked,
+                      },
+                    })
+                  }
+                >
+                  {L.get(`room_policy_${policy}`)}
+                </Checkbox>
+              ))}
+            </div>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="createRoom-input-limit">
@@ -89,7 +135,7 @@ export default class RoomSettingsDialog extends Dialog {
               name="limit"
               min={2}
               max={8}
-              value={room.limit}
+              value={settings.limit}
               onChange={updateIntegerField}
             />
           </label>
@@ -100,7 +146,7 @@ export default class RoomSettingsDialog extends Dialog {
             <select
               id="createRoom-select-mode"
               name="mode"
-              value={room.mode}
+              value={settings.mode}
               onChange={updateIntegerField}
             >
               {EnumValueIterator(KKuTu.Game.Mode).map((mode, index) => (
@@ -120,7 +166,7 @@ export default class RoomSettingsDialog extends Dialog {
               name="round"
               min={1}
               max={10}
-              value={room.round}
+              value={settings.round}
               onChange={updateIntegerField}
             />
           </label>
@@ -134,7 +180,7 @@ export default class RoomSettingsDialog extends Dialog {
             <select
               id="createRoom-select-roundTime"
               name="roundTime"
-              value={room.roundTime}
+              value={settings.roundTime}
               onChange={updateIntegerField}
             >
               {CLIENT_SETTINGS.roundTimes.map((roundTime, index) => (
@@ -148,23 +194,48 @@ export default class RoomSettingsDialog extends Dialog {
             <label className="dialog-desc" htmlFor="createRoom-rules">
               {L.get("roomRules")}
             </label>
-            <RuleSelector room={room} setter={setRoom} />
+            <div className="checkbox-group">
+              {KKuTu.Game.modes[settings.mode].rules.map((rule, index) => (
+                <Checkbox
+                  key={index}
+                  id={`createRoom-rules-${rule}`}
+                  tooltip={new Tooltip(L.get(`game_rule_${rule}_desc`))}
+                  checked={settings.rules[rule]}
+                  onChange={(e) => {
+                    changed.current.add("rules");
+                    setSettings({
+                      ...settings,
+                      rules: {
+                        ...settings.rules,
+                        [rule]: e.currentTarget.checked,
+                      },
+                    });
+                  }}
+                >
+                  {L.get(`game_rule_${rule}`)}
+                </Checkbox>
+              ))}
+            </div>
           </label>
         </form>
         <div className="footer buttons">
           <button
             type="button"
             onClick={async () => {
-              socket.send(WebSocketMessage.Type.UpdateRoom, {
-                room: {
-                  ...room,
-                  password: sha256(room.password),
-                },
-              });
-              await socket.messageReceiver.wait(
-                WebSocketMessage.Type.UpdateRoom
-              );
-              hide(this);
+              console.log(changed.current);
+              if (changed.current.size !== 0) {
+                socket.send(WebSocketMessage.Type.UpdateRoom, {
+                  settings: Object.fromEntries(
+                    Object.entries(settings).filter(([key]) =>
+                      changed.current.has(key)
+                    )
+                  ),
+                });
+                await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.UpdateRoom
+                );
+              }
+              this.hide();
             }}
           >
             {L.get("ok")}

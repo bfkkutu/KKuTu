@@ -86,7 +86,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
         0,
       ])
     );
-    this.mode = KKuTu.Game.modes[this.room.mode];
+    this.mode = KKuTu.Game.modes[this.room.settings.mode];
     this.repository = DB.Manager.getRepository(Word[this.mode.language]);
     this.manner = DB.Manager.getRepository(Cache.Manner[this.mode.language]);
     this.round = 0;
@@ -103,7 +103,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
     setTimeout(() => this.startRound(), 2000);
   }
   protected startRound(): void {
-    this.roundTime = this.room.roundTime * 1000;
+    this.roundTime = this.room.settings.roundTime * 1000;
     this.room.broadcast(WebSocketMessage.Type.RoundStart, {
       round: this.round,
     });
@@ -140,7 +140,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
       loss: 0,
     });
     setTimeout(() => {
-      if (++this.round < this.room.round) {
+      if (++this.round < this.room.settings.round) {
         this.startRound();
         return;
       }

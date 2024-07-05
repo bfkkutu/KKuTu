@@ -38,10 +38,10 @@ export default class Relay extends Game implements Chainable {
     const builder = this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
-      .where("LENGTH(w.data) = :length", { length: this.room.round })
+      .where("LENGTH(w.data) = :length", { length: this.room.settings.round })
       .orderBy("RANDOM()")
       .limit(1);
-    if (!this.room.rules.wide) {
+    if (!this.room.settings.rules.wide) {
       builder.innerJoin("w.means", "m").andWhere("m.wide = false");
     }
     const word = await builder.getOne();
@@ -69,7 +69,7 @@ export default class Relay extends Game implements Chainable {
       .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
       .limit(1);
-    if (!this.room.rules.wide) {
+    if (!this.room.settings.rules.wide) {
       builder.innerJoin("w.means", "m").andWhere("m.wide = false");
     }
     const word = await builder.getOne();
@@ -97,7 +97,7 @@ export default class Relay extends Game implements Chainable {
       .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
       .limit(1);
-    if (!this.room.rules.wide) {
+    if (!this.room.settings.rules.wide) {
       builder.innerJoin("w.means", "m").andWhere("m.wide = false");
     }
     const word = await builder.getOne();
@@ -121,7 +121,7 @@ export default class Relay extends Game implements Chainable {
       .createQueryBuilder("w")
       .where("w.data = :data", { data: content })
       .innerJoinAndSelect("w.means", "m");
-    if (!this.room.rules.wide) {
+    if (!this.room.settings.rules.wide) {
       builder.andWhere("m.wide = false");
     }
     const word = await builder.getOne();
@@ -132,7 +132,7 @@ export default class Relay extends Game implements Chainable {
       });
       return;
     }
-    if (this.room.rules.manner) {
+    if (this.room.settings.rules.manner) {
       const last = word.data.at(-1)!;
       let cache = await this.manner
         .createQueryBuilder("c_m")
@@ -150,11 +150,11 @@ export default class Relay extends Game implements Chainable {
             .where("w.data LIKE :last", { last: `${last}%` })
             .getExists())
         ) {
-          cache.modes.push(this.room.mode);
+          cache.modes.push(this.room.settings.mode);
         }
         await this.manner.save(cache);
       }
-      if (cache.modes.includes(this.room.mode)) {
+      if (cache.modes.includes(this.room.settings.mode)) {
         this.room.broadcast(WebSocketMessage.Type.TurnError, {
           errorType: "manner",
           display: content,

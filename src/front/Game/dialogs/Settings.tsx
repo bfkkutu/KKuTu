@@ -17,7 +17,6 @@ export default class SettingsDialog extends Dialog {
   protected override body(): React.ReactElement {
     const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
     const socket = useStore((state) => state.socket);
-    const hide = Dialog.useStore((state) => state.hide);
     const [valueChanged, setValueChanged] = useState(false);
 
     const updateSettings = (
@@ -249,7 +248,7 @@ export default class SettingsDialog extends Dialog {
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.UpdateSettings
               );
-              hide(this);
+              this.hide();
               window.alert("변경 사항이 저장되었습니다.");
             }}
           >

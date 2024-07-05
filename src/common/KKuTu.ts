@@ -1,3 +1,5 @@
+import { HasId } from "common/mixins/HasId";
+
 export namespace KKuTu {
   export namespace Game {
     export enum Mode {
@@ -96,15 +98,11 @@ export namespace KKuTu {
       /**
        * 두음 법칙 없음
        */
-      NoInitial = "noInitial",
+      //NoInitial = "noInitial",
       /**
        * 글자 금지
        */
       Dismission = "dismission",
-      /**
-       * 초보방
-       */
-      Newbie = "newbie",
       /**
        * 아이템전
        */
@@ -113,10 +111,6 @@ export namespace KKuTu {
        * 두 글자 금지
        */
       BanDouble = "banDouble",
-      /**
-       * 게임 중 참여
-       */
-      JoinWhileGaming = "joinWhileGaming",
     }
     export enum Graphic {
       Normal,
@@ -141,10 +135,8 @@ export namespace KKuTu {
           Rule.Manner,
           Rule.WideTheme,
           Rule.Mission,
-          Rule.NoInitial,
-          Rule.Newbie,
+          //Rule.NoInitial,
           Rule.Item,
-          Rule.JoinWhileGaming,
         ],
         themeSelect: false,
       },
@@ -248,6 +240,26 @@ export namespace KKuTu {
   }
 
   export namespace Room {
+    export interface Base {
+      title: string;
+      policy: Record<Policy, boolean>;
+      limit: number;
+      mode: Game.Mode;
+      round: number;
+      roundTime: number;
+      rules: Record<Game.Rule, boolean>;
+    }
+
+    export enum Policy {
+      /**
+       * 초보방
+       */
+      Newbie = "newbie",
+      /**
+       * 게임 중 참여
+       */
+      JoinWhileGaming = "joinWhileGaming",
+    }
     export interface SearchOptions {
       title: string;
       mode: Game.Mode;
@@ -255,17 +267,11 @@ export namespace KKuTu {
       roundTime: NumberRange;
       rules: Record<Game.Rule, boolean>;
     }
-    export interface Settings {
-      title: string;
-      limit: number;
-      mode: Game.Mode;
-      round: number;
-      roundTime: number;
-      rules: Record<Game.Rule, boolean>;
+    export interface Settings extends Base {
       password: string;
     }
-    export interface Member {
-      id: string;
+
+    export interface Member extends HasId<string> {
       isRobot: boolean;
       isReady: boolean;
       isSpectator: boolean;
@@ -288,14 +294,6 @@ export namespace KKuTu {
       game?: Game;
     }
   }
-  export interface Room {
-    id: number;
-    title: string;
-    limit: number;
-    mode: Game.Mode;
-    round: number;
-    roundTime: number;
-    rules: Record<Game.Rule, boolean>;
-  }
+  export interface Room extends HasId<number>, Room.Base {}
 }
 

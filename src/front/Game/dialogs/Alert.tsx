@@ -16,19 +16,11 @@ export default class AlertDialog extends Dialog.Asynchronous<void> {
     return <>{L.get("alert")}</>;
   }
   protected override body(): React.ReactElement {
-    const hide = Dialog.useStore((state) => state.hide);
-
     return (
       <>
         <div className="body dialog-alert">{this.content}</div>
         <div className="footer buttons">
-          <button
-            type="button"
-            onClick={() => {
-              hide(this);
-              this.resolve();
-            }}
-          >
+          <button type="button" onClick={() => this.resolve()}>
             {L.get("ok")}
           </button>
         </div>

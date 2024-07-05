@@ -16,28 +16,14 @@ export default class ConfirmDialog extends Dialog.Asynchronous<boolean> {
     return <>{L.get("confirm")}</>;
   }
   protected override body(): React.ReactElement {
-    const hide = Dialog.useStore((state) => state.hide);
-
     return (
       <>
         <div className="body dialog-confirm">{this.content}</div>
         <div className="footer buttons">
-          <button
-            type="button"
-            onClick={() => {
-              hide(this);
-              this.resolve(true);
-            }}
-          >
+          <button type="button" onClick={() => this.resolve(true)}>
             {L.get("yes")}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              hide(this);
-              this.resolve(false);
-            }}
-          >
+          <button type="button" onClick={() => this.resolve(false)}>
             {L.get("no")}
           </button>
         </div>

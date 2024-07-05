@@ -12,6 +12,16 @@ import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 export default class InviteDialog extends Dialog {
   public static readonly instance = new InviteDialog();
 
+  public override initialize(): void {
+    super.initialize();
+
+    const unsubscribe = Room.useStore.subscribe((state) => {
+      if (state.room === undefined) {
+        this.hide();
+        unsubscribe();
+      }
+    });
+  }
   protected override head(): React.ReactElement {
     return <>{L.get("invite_title")}</>;
   }

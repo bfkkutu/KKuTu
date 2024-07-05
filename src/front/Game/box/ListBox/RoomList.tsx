@@ -24,8 +24,10 @@ export default function RoomListBox() {
       WebSocketMessage.Type.UpdateRoomList,
       ({ rooms }) => updateRoomList(rooms)
     );
-    return () =>
+
+    return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoomList);
+    };
   }, []);
 
   return (
@@ -129,3 +131,4 @@ export default function RoomListBox() {
     </section>
   );
 }
+

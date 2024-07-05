@@ -14,27 +14,21 @@ import Relay from "back/game/modes/Relay";
 const MODES: Record<any, any> = {
   [KKuTu.Game.Mode.KoreanRelay]: Relay,
 };
-
+const EMPTY_PASSWORD = sha256("");
 export default class Room
   extends WebSocketGroup
   implements Serializable<KKuTu.Room>
 {
-  private static readonly EMPTY_PASSWORD = sha256("");
-
   private readonly channel: Channel;
   private readonly robots = new ImprovedMap<string, Robot>();
   private game?: Game;
   public readonly id: number;
-  public title: string;
-  public isLocked: boolean;
-  public password: string;
-  public limit: number;
-  public mode: KKuTu.Game.Mode;
-  public round: number;
-  public roundTime: number;
-  public rules: Record<KKuTu.Game.Rule, boolean>;
+  public readonly settings: KKuTu.Room.Settings;
   public master: string;
 
+  public get isLocked(): boolean {
+    return this.settings.password !== EMPTY_PASSWORD;
+  }
   /**
    * 방이 비어있는지 여부.
    * 로봇은 제외한다.
@@ -47,7 +41,7 @@ export default class Room
    * 로봇을 포함한다.
    */
   public get isFull() {
-    return this.size === this.limit;
+    return this.size === this.settings.limit;
   }
   /**
    * 게임을 시작할 수 있는지 여부.
@@ -87,38 +81,29 @@ export default class Room
     channel: Channel,
     id: number,
     master: string,
-    room: KKuTu.Room.Settings
+    settings: KKuTu.Room.Settings
   ) {
     super();
 
     this.channel = channel;
     this.id = id;
+    this.settings = settings;
     this.master = master;
-
-    this.title = room.title;
-    this.isLocked = room.password !== Room.EMPTY_PASSWORD;
-    this.password = room.password;
-    this.limit = room.limit;
-    this.mode = room.mode;
-    this.round = room.round;
-    this.roundTime = room.roundTime;
-    this.rules = room.rules;
   }
 
   /**
    * 방 설정을 업데이트한다.
    *
-   * @param room 방 설정 객체.
+   * @param settings 방 설정 객체.
    */
-  public configure(room: KKuTu.Room.Settings): void {
-    this.title = room.title;
-    this.isLocked = room.password !== Room.EMPTY_PASSWORD;
-    this.password = room.password;
-    this.limit = room.limit;
-    this.mode = room.mode;
-    this.round = room.round;
-    this.roundTime = room.roundTime;
-    this.rules = room.rules;
+  public configure(settings: Partial<KKuTu.Room.Settings>): void {
+    const allowed = Object.keys(this.settings);
+    Object.assign(
+      this.settings,
+      Object.fromEntries(
+        Object.entries(settings).filter(([name]) => allowed.includes(name))
+      )
+    );
   }
   /**
    * 방에 클라이언트를 추가한다.
@@ -201,7 +186,7 @@ export default class Room
    * 게임을 시작한다.
    */
   public start(): void {
-    this.game = new MODES[this.mode](
+    this.game = new MODES[this.settings.mode](
       this,
       this.clients.valuesAsArray().reduce((prev, client) => {
         if (client.user.roomId === undefined) {
@@ -238,26 +223,28 @@ export default class Room
   public summarize(): KKuTu.Room.Summarized {
     return {
       id: this.id,
-      title: this.title,
+      title: this.settings.title,
+      policy: this.settings.policy,
+      limit: this.settings.limit,
+      mode: this.settings.mode,
+      round: this.settings.round,
+      roundTime: this.settings.roundTime,
+      rules: this.settings.rules,
+      members: this.size,
       isLocked: this.isLocked,
       isGaming: this.isGaming,
-      limit: this.limit,
-      mode: this.mode,
-      round: this.round,
-      roundTime: this.roundTime,
-      rules: this.rules,
-      members: this.size,
     };
   }
   public serialize(): KKuTu.Room.Detailed {
     return {
       id: this.id,
-      title: this.title,
-      limit: this.limit,
-      mode: this.mode,
-      round: this.round,
-      roundTime: this.roundTime,
-      rules: this.rules,
+      title: this.settings.title,
+      policy: this.settings.policy,
+      limit: this.settings.limit,
+      mode: this.settings.mode,
+      round: this.settings.round,
+      roundTime: this.settings.roundTime,
+      rules: this.settings.rules,
       master: this.master,
       members: Object.fromEntries(
         [

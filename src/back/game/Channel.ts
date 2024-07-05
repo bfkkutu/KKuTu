@@ -176,7 +176,7 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
-              room.configure(message.room);
+              room.configure(message.settings);
               room.update();
               this.updateRoomList();
             }
@@ -202,7 +202,7 @@ export default class Channel extends WebSocketServer {
                     isFatal: false,
                   });
                 }
-                if (room.password !== message.password) {
+                if (room.settings.password !== message.password) {
                   return socket.sendError(WebSocketError.Type.Forbidden, {
                     isFatal: false,
                   });

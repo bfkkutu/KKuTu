@@ -173,8 +173,6 @@ export namespace Menu {
       state.change,
     ]);
 
-    const roomSettingsDialog =
-      room && new RoomSettingsDialog({ ...room, password: "" });
     let contexts = [];
 
     if (room === undefined) {
@@ -220,8 +218,12 @@ export namespace Menu {
                 props.onClick = () => toggle(CreateRoomDialog.instance);
                 break;
               case Type.RoomSettings:
-                props.onClick = () =>
-                  roomSettingsDialog && toggle(roomSettingsDialog);
+                props.onClick = () => {
+                  if (room === undefined) {
+                    return;
+                  }
+                  toggle(RoomSettingsDialog.instance);
+                };
                 break;
               case Type.SearchRoom:
                 if (currentListBox === ListBoxType.SearchRoom)
@@ -323,3 +325,4 @@ export namespace Menu {
     );
   }
 }
+

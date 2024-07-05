@@ -24,7 +24,6 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
     return <>{this.title}</>;
   }
   protected override body(): React.ReactElement {
-    const hide = Dialog.useStore((state) => state.hide);
     const [input, setInput] = useState("");
 
     return (
@@ -38,22 +37,10 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
           />
         </div>
         <div className="footer buttons">
-          <button
-            type="button"
-            onClick={() => {
-              hide(this);
-              this.resolve(input);
-            }}
-          >
+          <button type="button" onClick={() => this.resolve(input)}>
             {L.get("ok")}
           </button>
-          <button
-            type="button"
-            onClick={() => {
-              hide(this);
-              this.resolve(null);
-            }}
-          >
+          <button type="button" onClick={() => this.resolve(null)}>
             {L.get("cancel")}
           </button>
         </div>

@@ -20,7 +20,6 @@ export default class ReportDialog extends Dialog {
   }
   protected override body(): React.ReactElement {
     const socket = useStore((state) => state.socket);
-    const hide = Dialog.useStore((state) => state.hide);
     const [reason, setReason] = useState(0);
     const [comment, setComment] = useState("");
 
@@ -69,7 +68,7 @@ export default class ReportDialog extends Dialog {
               });
               await socket.messageReceiver.wait(WebSocketMessage.Type.Report);
               window.alert(L.get("alert_reportSubmitted"));
-              hide(this);
+              this.hide();
             }}
           >
             {L.get("submit")}

@@ -217,7 +217,7 @@ export namespace WebSocketMessage {
         room: KKuTu.Room.Settings;
       };
       [Type.UpdateRoom]: {
-        room: KKuTu.Room.Settings;
+        settings: Partial<KKuTu.Room.Settings>;
       };
       [Type.InitializeRoom]: {};
       [Type.JoinRoom]: {

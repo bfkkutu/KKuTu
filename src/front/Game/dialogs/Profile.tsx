@@ -32,10 +32,7 @@ export default class ProfileDialog extends Dialog {
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
     const community = useStore((state) => state.community);
-    const [toggle, hide] = Dialog.useStore((state) => [
-      state.toggle,
-      state.hide,
-    ]);
+    const toggle = Dialog.useStore((state) => state.toggle);
 
     const footerButtons: React.ReactNode[] = [];
     const reportDialog = new ReportDialog(this.user);
@@ -69,7 +66,7 @@ export default class ProfileDialog extends Dialog {
                 await socket.messageReceiver.wait(
                   WebSocketMessage.Type.UpdateRoom
                 );
-                hide(this);
+                this.hide();
               } catch (e) {
                 const { errorType } =
                   e as WebSocketError.Message[WebSocketError.Type];
@@ -108,7 +105,7 @@ export default class ProfileDialog extends Dialog {
                 await socket.messageReceiver.wait(
                   WebSocketMessage.Type.UpdateRoom
                 );
-                hide(this);
+                this.hide();
               } catch (e) {
                 const { errorType } =
                   e as WebSocketError.Message[WebSocketError.Type];

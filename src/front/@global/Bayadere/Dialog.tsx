@@ -14,6 +14,7 @@ export abstract class Dialog {
   public id = Dialog.id++;
   public usePoint: UseBoundStore<StoreApi<Point>>;
   public visible = false;
+  private _hide?: () => void;
 
   public HeadComponent = React.memo(this.head.bind(this));
   public BodyComponent = React.memo(this.body.bind(this));
@@ -39,7 +40,15 @@ export abstract class Dialog {
    */
   public onHide(): void {}
 
-  public initializeState() {
+  protected hide() {
+    this._hide?.();
+  }
+
+  /**
+   * Dialog를 초기화한다.
+   * Dialog가 DOM에 표시되기 직전에 호출된다.
+   */
+  public initialize(): void {
     this.usePoint = create<Point>((setState) => ({
       x: window.innerWidth / 2,
       y: window.innerHeight / 2,
@@ -50,6 +59,12 @@ export abstract class Dialog {
         })),
     }));
   }
+  public bind(hide: Dialog.State["hide"]): void {
+    this._hide = () => hide(this);
+  }
+  public unbind(): void {
+    this._hide = undefined;
+  }
 }
 
 export namespace Dialog {
@@ -59,7 +74,10 @@ export namespace Dialog {
     protected resolve: Resolve<T> = () => {};
     protected reject: Reject = () => {};
     public wait = new Promise<T>((resolve, reject) => {
-      this.resolve = resolve;
+      this.resolve = (value) => {
+        this.hide();
+        resolve(value);
+      };
       this.reject = reject;
     });
   }
@@ -68,7 +86,7 @@ export namespace Dialog {
     (e) => e.code === "Escape"
   );
 
-  interface State {
+  export interface State {
     dialogs: Dialog[];
     show: (dialog: Dialog) => void;
     hide: (dialog: Dialog) => void;
@@ -78,7 +96,7 @@ export namespace Dialog {
     dialogs: [],
     show: (dialog) => {
       hideActive.push(createChain(dialog));
-      dialog.initializeState();
+      dialog.initialize();
       dialog.visible = true;
       setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
     },
@@ -99,7 +117,7 @@ export namespace Dialog {
         }));
       } else {
         hideActive.push(createChain(dialog));
-        dialog.initializeState();
+        dialog.initialize();
         setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
       }
       dialog.visible = !dialog.visible;
@@ -146,11 +164,20 @@ export namespace Dialog {
         window.addEventListener("mousemove", mousemove);
         window.addEventListener("mouseup", mouseup);
       }
+
       return () => {
         window.removeEventListener("mousemove", mousemove);
         window.removeEventListener("mouseup", mouseup);
       };
     }, [isMoving]);
+
+    useEffect(() => {
+      instance.bind(hide);
+
+      return () => {
+        instance.unbind();
+      };
+    }, [hide]);
 
     return (
       <div
@@ -187,3 +214,4 @@ export namespace Dialog {
     );
   }
 }
+
