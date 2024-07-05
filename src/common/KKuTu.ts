@@ -260,6 +260,7 @@ export namespace KKuTu {
        */
       JoinWhileGaming = "joinWhileGaming",
     }
+    export const POLICY_CHANGEABLE = [Policy.JoinWhileGaming];
     export interface SearchOptions {
       title: string;
       mode: Game.Mode;
@@ -295,5 +296,10 @@ export namespace KKuTu {
     }
   }
   export interface Room extends HasId<number>, Room.Base {}
+
+  /**
+   * 31레벨 경험치 0일 때의 누적 점수 값.
+   */
+  export const NEWBIE_SCORE = 13779;
 }
 

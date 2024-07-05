@@ -3,8 +3,8 @@ import { create } from "zustand";
 
 import { ListBoxType } from "front/@global/enums/ListBoxType";
 
-import RoomListBox from "front/Game/box/ListBox/RoomList";
-import SearchRoom from "front/Game/box/ListBox/SearchRoom";
+import RoomListBox from "front/Game/box/ListBox/room/RoomList";
+import SearchRoom from "front/Game/box/ListBox/room/SearchRoom";
 
 export namespace List {
   const TABLE: Record<ListBoxType, React.FC> = {
@@ -27,3 +27,4 @@ export namespace List {
     change: (type) => setState({ current: type }),
   }));
 }
+

@@ -156,6 +156,10 @@ export namespace Dialog {
         move(-$.current.clientWidth / 2, -$.current.clientHeight / 2);
       }
       window.setTimeout(() => setAnimation(""), 200);
+
+      return () => {
+        instance.unbind();
+      };
     }, []);
 
     useEffect(() => {
@@ -173,10 +177,6 @@ export namespace Dialog {
 
     useEffect(() => {
       instance.bind(hide);
-
-      return () => {
-        instance.unbind();
-      };
     }, [hide]);
 
     return (

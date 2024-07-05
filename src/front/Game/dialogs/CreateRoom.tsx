@@ -11,6 +11,7 @@ import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
+import { getLevel } from "front/@global/Utility";
 
 export default class CreateRoomDialog extends Dialog {
   public static readonly instance = new CreateRoomDialog();
@@ -19,7 +20,10 @@ export default class CreateRoomDialog extends Dialog {
     return <>{L.get("createRoom")}</>;
   }
   protected override body(): React.ReactElement {
-    const nickname = useStore((state) => state.me.nickname);
+    const [score, nickname] = useStore((state) => [
+      state.me.score,
+      state.me.nickname,
+    ]);
     const socket = useStore((state) => state.socket);
     const updateRoom = Room.useStore((state) => state.updateRoom);
     const [room, setRoom] = useState<KKuTu.Room.Settings>({
@@ -98,7 +102,7 @@ export default class CreateRoomDialog extends Dialog {
                 <Checkbox
                   key={index}
                   id={`createRoom-policy-${policy}`}
-                  tooltip={new Tooltip(L.get(`room_policy_${policy}_desc`))}
+                  tooltip={new Tooltip(L.render(`room_policy_${policy}_desc`))}
                   checked={room.policy[policy]}
                   onChange={(e) =>
                     setRoom({
@@ -108,6 +112,10 @@ export default class CreateRoomDialog extends Dialog {
                         [policy]: e.currentTarget.checked,
                       },
                     })
+                  }
+                  disabled={
+                    policy === KKuTu.Room.Policy.Newbie &&
+                    score >= KKuTu.NEWBIE_SCORE
                   }
                 >
                   {L.get(`room_policy_${policy}`)}

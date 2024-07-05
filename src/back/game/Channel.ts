@@ -196,6 +196,19 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
+              // 31레벨 경험치 0을 넘는지 여부 확인.
+              if (
+                room.settings.policy.newbie &&
+                user.score >= KKuTu.NEWBIE_SCORE
+              ) {
+                // 현재는 이 외의 경우가 없으므로 BadRequest를 보낸다.
+                // 나중에 다른 케이스가 추가되면 reason, detail과 같은
+                // 필드 추가를 검토할 예정.
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
               if (room.isLocked) {
                 if (message.password === undefined) {
                   return socket.sendError(WebSocketError.Type.Unauthorized, {

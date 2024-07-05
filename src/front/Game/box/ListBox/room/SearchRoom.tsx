@@ -2,17 +2,14 @@ import React, { useEffect, useState } from "react";
 
 import { useStore } from "front/Game/Store";
 import L from "front/@global/Language";
-import Mode from "front/@block/Mode";
-import { Icon, IconType } from "front/@block/Icon";
-import { Room } from "front/Game/box/Room";
-import { WebSocketMessage } from "../../../../common/WebSocket";
-import { KKuTu } from "../../../../common/KKuTu";
-import { EnumValueIterator } from "../../../../common/Utility";
+import Item from "front/Game/box/ListBox/room/Item";
+import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { KKuTu } from "../../../../../common/KKuTu";
+import { EnumValueIterator } from "../../../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default function SearchRoom() {
   const socket = useStore((state) => state.socket);
-  const updateRoom = Room.useStore((state) => state.updateRoom);
   const [rooms, updateRoomList] = useStore((state) => [
     state.rooms,
     state.updateRoomList,
@@ -197,42 +194,7 @@ export default function SearchRoom() {
           {result.length === 0 ? (
             <div>{L.get("error_noResult")}</div>
           ) : (
-            result.map((room, index) => (
-              <div
-                key={index}
-                className={`item ${room.isGaming ? "gaming" : "waiting"}`}
-                onClick={async () => {
-                  socket.send(WebSocketMessage.Type.JoinRoom, {
-                    target: room.id,
-                  });
-                  const res = await socket.messageReceiver.wait(
-                    WebSocketMessage.Type.InitializeRoom
-                  );
-                  updateRoom(res.room);
-                }}
-              >
-                <div className="id">{room.id}</div>
-                <div className="title ellipse">{room.title}</div>
-                <div className="limit">
-                  {room.members} / {room.limit}
-                </div>
-                <div className="game-settings">
-                  <div className="mode">
-                    <Mode room={room} />
-                  </div>
-                  <div className="round">{L.get("unitRound", room.round)}</div>
-                  <div className="time">
-                    {L.get("unitSecond", room.roundTime)}
-                  </div>
-                </div>
-                <div className="lock">
-                  <Icon
-                    type={IconType.NORMAL}
-                    name={room.isLocked ? "lock" : "unlock"}
-                  />
-                </div>
-              </div>
-            ))
+            result.map((room, index) => <Item key={index} room={room} />)
           )}
         </div>
       </div>

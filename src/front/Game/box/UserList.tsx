@@ -1,13 +1,13 @@
 import React from "react";
 
 import L from "front/@global/Language";
-import LevelIcon from "front/@block/LevelIcon";
-import { useStore } from "front/Game/Store";
 import { getLevel } from "front/@global/Utility";
-import ProfileImage from "front/@block/ProfileImage";
-import { Database } from "common/Database";
-import ProfileDialog from "front/Game/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import LevelIcon from "front/@block/LevelIcon";
+import ProfileImage from "front/@block/ProfileImage";
+import { useStore } from "front/Game/Store";
+import ProfileDialog from "front/Game/dialogs/Profile";
+import { Database } from "common/Database";
 
 export namespace UserList {
   interface Props {
@@ -56,3 +56,4 @@ export namespace UserList {
     );
   }
 }
+

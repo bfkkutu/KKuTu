@@ -1,5 +1,3 @@
-import React from "react";
-
 import { CLIENT_SETTINGS, FRONT } from "back/utils/Utility";
 
 const PROFANITIES =
@@ -21,8 +19,11 @@ export function getRequiredScore(level: number) {
   );
 }
 export function getLevel(score: number) {
-  for (let i = 0; i <= CLIENT_SETTINGS.maxLevel; i++)
-    if (score < CLIENT_SETTINGS.expTable[i]) return i + 1;
+  for (let i = 0; i <= CLIENT_SETTINGS.maxLevel; i++) {
+    if (score < CLIENT_SETTINGS.expTable[i]) {
+      return i + 1;
+    }
+  }
   return 1;
 }
 export function filterProfanities(raw: string) {
@@ -59,3 +60,4 @@ export class ChainedFunction<P extends Array<any>> {
     f(this.continue.bind(this));
   }
 }
+

@@ -104,21 +104,22 @@ export default class RoomSettingsDialog extends Dialog {
               {L.get("roomPolicy")}
             </label>
             <div className="checkbox-group">
-              {Object.values(KKuTu.Room.Policy).map((policy, index) => (
+              {KKuTu.Room.POLICY_CHANGEABLE.map((policy, index) => (
                 <Checkbox
                   key={index}
                   id={`createRoom-policy-${policy}`}
-                  tooltip={new Tooltip(L.get(`room_policy_${policy}_desc`))}
+                  tooltip={new Tooltip(L.render(`room_policy_${policy}_desc`))}
                   checked={settings.policy[policy]}
-                  onChange={(e) =>
+                  onChange={(e) => {
+                    changed.current.add("policy");
                     setSettings({
                       ...settings,
                       policy: {
                         ...settings.policy,
                         [policy]: e.currentTarget.checked,
                       },
-                    })
-                  }
+                    });
+                  }}
                 >
                   {L.get(`room_policy_${policy}`)}
                 </Checkbox>

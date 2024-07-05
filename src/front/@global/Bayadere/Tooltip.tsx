@@ -2,9 +2,9 @@ import React, { useRef } from "react";
 import { create } from "zustand";
 
 export class Tooltip {
-  public content: string;
+  public content: React.ReactNode;
 
-  constructor(content: string) {
+  constructor(content: React.ReactNode) {
     this.content = content;
   }
 }
@@ -67,3 +67,4 @@ export namespace Tooltip {
     );
   }
 }
+
