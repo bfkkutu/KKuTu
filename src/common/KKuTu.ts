@@ -233,10 +233,14 @@ export namespace KKuTu {
         themeSelect: false,
       },
     };
+    export interface Player {
+      readonly id: string;
+      score: number;
+    }
   }
   export interface Game {
     prompt: string;
-    players: Record<string, number>;
+    players: Game.Player[];
   }
 
   export namespace Room {

@@ -13,17 +13,13 @@ const PROMPT_DEFAULT: Record<KKuTu.Game.Language, string> = {
   [KKuTu.Game.Language.Korean]: "가나다라마바사아자차",
   [KKuTu.Game.Language.English]: "abcdefghij",
 };
-export default abstract class Game implements Serializable<KKuTu.Game> {
+export abstract class Game implements Serializable<KKuTu.Game> {
   protected readonly room: Room;
   /**
    * Room::clients의 sub map.
    * 로봇은 포함하지 않는다.
    */
   private readonly clients: ImprovedMap<string, WebSocket>;
-  /**
-   * 로봇을 포함한 모든 player의 id : score Mapping.
-   */
-  protected readonly scores: ImprovedMap<string, number>;
   protected readonly mode: KKuTu.Game.IMode;
   protected readonly repository: TypeORM.Repository<Word>;
   protected readonly manner: TypeORM.Repository<Cache.Manner>;
@@ -35,7 +31,7 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
    * 현재 진행 중인 round index.
    */
   protected round: number;
-  protected player: number;
+  protected turn: Game.TurnIterator;
 
   protected roundTime = 0;
   protected turnTime = 0;
@@ -74,23 +70,22 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
       return 0;
     }
   }
+  public get current(): string {
+    return this.turn.current.id;
+  }
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {
     this.room = room;
     this.clients = new ImprovedMap(
       clients.map((client) => [client.user.id, client])
     );
-    this.scores = new ImprovedMap(
-      [...clients.map((client) => client.user.id), ...robots].map((id) => [
-        id,
-        0,
-      ])
-    );
     this.mode = KKuTu.Game.modes[this.room.settings.mode];
     this.repository = DB.Manager.getRepository(Word[this.mode.language]);
     this.manner = DB.Manager.getRepository(Cache.Manner[this.mode.language]);
     this.round = 0;
-    this.player = 0;
+    this.turn = new Game.TurnIterator(
+      [...clients.map((client) => client.user.id), ...robots].map((id) => id)
+    );
   }
 
   public async initialize(): Promise<void> {
@@ -116,16 +111,15 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
       () => this.endRound(),
       Math.min(this.roundTime, this.turnTime + 100)
     );
-    const player = this.scores.keysAsArray()[this.player];
     this.room.broadcast(WebSocketMessage.Type.TurnStart, {
       display: this.getDisplay(),
-      player,
+      player: this.turn.current.id,
       speed: this.speed,
       time: this.turnTime,
       roundTime: this.roundTime,
       at: this.turnAt,
     });
-    if (!this.clients.has(player) && this.turnTime > 3000) {
+    if (!this.clients.has(this.turn.current.id) && this.turnTime > 3000) {
       setTimeout(() => this.robotSubmit(), 3000);
     }
   }
@@ -153,22 +147,97 @@ export default abstract class Game implements Serializable<KKuTu.Game> {
   protected abstract getDisplay(): string;
   protected abstract getTimeoutHint(): Promise<string | undefined>;
   protected abstract robotSubmit(): Promise<void>;
+
   public abstract isSubmitable(content: string): boolean;
   public abstract submit(content: string): Promise<void>;
+
+  /**
+   * 게임 도중 입장. (바로 참여)
+   *
+   * @param socket 입장한 유저의 식별자.
+   */
+  public add(socket: WebSocket): void {
+    this.clients.set(socket.user.id, socket);
+    this.turn.push(socket.user.id);
+  }
   /**
    * 게임 도중 퇴장.
    *
-   * @param id 퇴장한 유저의 식별자
+   * @param id 퇴장한 유저의 식별자.
    */
   public remove(id: string): void {
     this.clients.delete(id);
+    this.turn.remove(id);
+  }
+  /**
+   * 특정 유저가 현재 이 게임에 참여하고
+   * 있는지 여부를 반환한다.
+   *
+   * @param id 유저 식별자.
+   * @returns 유저가 이 게임에 참여하고 있는지 여부.
+   */
+  public has(id: string): boolean {
+    return this.clients.has(id);
   }
 
   public serialize(): KKuTu.Game {
     return {
       prompt: this.prompt,
-      players: this.scores.asRecord(),
+      players: this.turn.serialize(),
     };
   }
 }
+
+export namespace Game {
+  class Player implements Serializable<KKuTu.Game.Player> {
+    public readonly id: string;
+    public score: number = 0;
+
+    constructor(id: string) {
+      this.id = id;
+    }
+
+    public serialize(): KKuTu.Game.Player {
+      return {
+        id: this.id,
+        score: this.score,
+      };
+    }
+  }
+
+  export class TurnIterator implements Serializable<KKuTu.Game.Player[]> {
+    private readonly players: Player[];
+    private cursor: number = 0;
+
+    public get current(): Player {
+      return this.players[this.cursor];
+    }
+
+    constructor(players: string[]) {
+      this.players = players.map((id) => new Player(id));
+    }
+
+    public next(): Player {
+      this.cursor = (this.cursor + 1) % this.players.length;
+      return this.current;
+    }
+    public push(id: string): void {
+      this.players.push(new Player(id));
+    }
+    public remove(id: string): void {
+      const index = this.players.findIndex((player) => player.id === id);
+      this.players.splice(index, 1);
+      if (this.cursor < index) {
+        return;
+      }
+      --this.cursor;
+    }
+
+    public serialize(): KKuTu.Game.Player[] {
+      return this.players.map((player) => player.serialize());
+    }
+  }
+}
+
+export default Game;
 

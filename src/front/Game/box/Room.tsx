@@ -24,15 +24,12 @@ export namespace Room {
     const id = useGlobalStore((state) => state.me.id);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
-    const [room, updateRoom, updateMember, removeMember, leaveRoom] = useStore(
-      (state) => [
-        state.room!,
-        state.updateRoom,
-        state.updateMember,
-        state.removeMember,
-        state.leaveRoom,
-      ]
-    );
+    const [room, updateRoom, updateMember, leaveRoom] = useStore((state) => [
+      state.room!,
+      state.updateRoom,
+      state.updateMember,
+      state.leaveRoom,
+    ]);
     const [modified, setModified] = useState<string[]>([]);
 
     useEffect(() => {
@@ -67,18 +64,8 @@ export namespace Room {
       socket.messageReceiver.on(WebSocketMessage.Type.JoinRoom, ({ member }) =>
         notice(L.get("notice_joinRoom", users[member.id].nickname))
       );
-      socket.messageReceiver.on(
-        WebSocketMessage.Type.LeaveRoom,
-        ({ member }) => {
-          notice(L.get("notice_leaveRoom", users[member].nickname));
-          // 나간 유저가 본인이라면
-          // 곧 room은 undefined가 될 것이므로
-          // room 객체를 업데이트할 이유가 없다.
-          if (id === member) {
-            return;
-          }
-          removeMember(member);
-        }
+      socket.messageReceiver.on(WebSocketMessage.Type.LeaveRoom, ({ member }) =>
+        notice(L.get("notice_leaveRoom", users[member].nickname))
       );
 
       return () => {
@@ -221,6 +208,7 @@ export namespace Room {
   }
   export function Member({ member }: Props) {
     const room = useStore((state) => state.room!);
+    const users = useGlobalStore((state) => state.users);
     const toggle = Dialog.useStore((state) => state.toggle);
 
     const stats: React.ReactNode[] = [];
@@ -261,8 +249,6 @@ export namespace Room {
       );
     }
 
-    const users = useGlobalStore((state) => state.users);
-
     const user = users[member.id];
     const dialog = new ProfileDialog(user);
 
@@ -282,7 +268,6 @@ export namespace Room {
     room?: KKuTu.Room.Detailed;
     updateRoom: (room: KKuTu.Room.Detailed) => void;
     updateMember: (member: Partial<KKuTu.Room.Member>) => void;
-    removeMember: (id: string) => void;
     leaveRoom: () => void;
   }
   export const useStore = create<State>((setState) => ({
@@ -290,7 +275,9 @@ export namespace Room {
     updateRoom: (room) => setState({ room }),
     updateMember: (member) =>
       setState(({ room }) => {
-        if (member.id === undefined || room === undefined) return {};
+        if (member.id === undefined || room === undefined) {
+          return {};
+        }
         return {
           room: {
             ...room,
@@ -301,18 +288,6 @@ export namespace Room {
                 ...member,
               },
             },
-          },
-        };
-      }),
-    removeMember: (id) =>
-      setState(({ room }) => {
-        if (room === undefined) return {};
-        const members = { ...room.members };
-        delete members[id];
-        return {
-          room: {
-            ...room,
-            members,
           },
         };
       }),

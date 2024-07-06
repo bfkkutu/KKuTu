@@ -397,14 +397,14 @@ export namespace Game {
           ) : null}
         </div>
         <div className="body">
-          {Object.entries(game.players).map(([id, score], index) => {
-            if (room.members[id].isRobot) {
+          {game.players.map((player, index) => {
+            if (room.members[player.id].isRobot) {
               return (
                 <div
                   key={index}
                   className={new ClassName("member")
                     .if(
-                      id === turn.player,
+                      player.id === turn.player,
                       turn.loss === undefined ? "current" : "timeout"
                     )
                     .toString()}
@@ -420,13 +420,13 @@ export namespace Game {
                     <div className="nickname ellipse">{L.get("robot")}</div>
                   </div>
                   <div className="score">
-                    {score.toString().padStart(5, "0")}
+                    {player.score.toString().padStart(5, "0")}
                   </div>
                 </div>
               );
             }
 
-            const member = users[id];
+            const member = users[player.id];
             const level = getLevel(member.score);
 
             return (
@@ -434,7 +434,7 @@ export namespace Game {
                 key={index}
                 className={new ClassName("member")
                   .if(
-                    id === turn.player,
+                    player.id === turn.player,
                     turn.loss === undefined ? "current" : "timeout"
                   )
                   .toString()}
@@ -456,7 +456,9 @@ export namespace Game {
                   />
                   <div className="nickname ellipse">{member.nickname}</div>
                 </div>
-                <div className="score">{score.toString().padStart(5, "0")}</div>
+                <div className="score">
+                  {player.score.toString().padStart(5, "0")}
+                </div>
               </div>
             );
           })}

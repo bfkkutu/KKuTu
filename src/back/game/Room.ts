@@ -21,9 +21,9 @@ export default class Room
 {
   private readonly channel: Channel;
   private readonly robots = new ImprovedMap<string, Robot>();
-  private game?: Game;
   public readonly id: number;
   public readonly settings: KKuTu.Room.Settings;
+  public game?: Game;
   public master: string;
 
   public get isLocked(): boolean {
@@ -33,20 +33,20 @@ export default class Room
    * 방이 비어있는지 여부.
    * 로봇은 제외한다.
    */
-  private get isEmpty() {
+  private get isEmpty(): boolean {
     return this.clients.size === 0;
   }
   /**
    * 방이 꽉 찼는지 여부.
    * 로봇을 포함한다.
    */
-  public get isFull() {
+  public get isFull(): boolean {
     return this.size === this.settings.limit;
   }
   /**
    * 게임을 시작할 수 있는지 여부.
    */
-  public get isReady() {
+  public get isReady(): boolean {
     for (const client of this.clients.values()) {
       if (client.user.roomId === undefined) {
         continue;
@@ -57,20 +57,20 @@ export default class Room
     }
     return true;
   }
-  public get isGaming() {
+  public get isGaming(): boolean {
     return this.game !== undefined;
   }
   /**
    * 일반 유저, 로봇 전부 포함한 전체 member의 수
    */
-  private get size() {
+  private get size(): number {
     return this.clients.size + this.robots.size;
   }
   /**
    * 관전자를 제외한 member의 수
    * (player의 수)
    */
-  public get count() {
+  public get count(): number {
     return (
       this.clients.valuesAsArray().filter((client) => !client.user.isSpectator)
         .length + this.robots.size
@@ -119,6 +119,9 @@ export default class Room
     socket.user.roomId = this.id;
     socket.user.isReady = socket.user.settings.game.autoReady;
     socket.user.isSpectator = false;
+    if (this.game !== undefined && this.settings.policy.joinWhileGaming) {
+      this.game.add(socket);
+    }
     this.update();
   }
   /**
@@ -147,7 +150,9 @@ export default class Room
       client.user.isReady = true;
     }
 
-    this.game?.remove(id);
+    if (this.game !== undefined && this.game.has(id)) {
+      this.game.remove(id);
+    }
     this.update();
   }
   public getRobot(id: string): Robot | undefined {
@@ -210,15 +215,6 @@ export default class Room
   public end(): void {
     this.game = undefined;
     this.update();
-  }
-  public isSubmitable(content: string): boolean {
-    if (this.game === undefined) {
-      return false;
-    }
-    return this.game.isSubmitable(content);
-  }
-  public submit(content: string): void {
-    this.game?.submit(content);
   }
   public summarize(): KKuTu.Room.Summarized {
     return {

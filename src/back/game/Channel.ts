@@ -117,8 +117,12 @@ export default class Channel extends WebSocketServer {
                 return;
               }
 
-              if (room.isSubmitable(message.content)) {
-                room.submit(message.content);
+              if (
+                room.game !== undefined &&
+                room.game.current === user.id &&
+                room.game.isSubmitable(message.content)
+              ) {
+                room.game.submit(message.content);
                 return;
               }
 
