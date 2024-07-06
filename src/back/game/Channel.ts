@@ -424,6 +424,7 @@ export default class Channel extends WebSocketServer {
               }
               room.start();
               Logger.info(`Room #${room.id}: game started`).out();
+              this.updateRoomList();
             }
             break;
           case WebSocketMessage.Type.FriendRequest:
