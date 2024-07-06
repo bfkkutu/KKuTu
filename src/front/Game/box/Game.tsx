@@ -142,6 +142,7 @@ export namespace Game {
       socket.messageReceiver.on(
         WebSocketMessage.Type.TurnStart,
         ({ display, player, speed, time, roundTime, at }) => {
+          cancelAnimationFrame(timer.current);
           setTurn({ ...turn, player, speed, time, roundTime, at });
           setDisplay({
             type: DisplayType.None,
