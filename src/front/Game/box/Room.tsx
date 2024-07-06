@@ -24,15 +24,15 @@ export namespace Room {
     const id = useGlobalStore((state) => state.me.id);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
-    const [room, updateRoom, addMember, updateMember, removeMember, leaveRoom] =
-      useStore((state) => [
+    const [room, updateRoom, updateMember, removeMember, leaveRoom] = useStore(
+      (state) => [
         state.room!,
         state.updateRoom,
-        state.addMember,
         state.updateMember,
         state.removeMember,
         state.leaveRoom,
-      ]);
+      ]
+    );
     const [modified, setModified] = useState<string[]>([]);
 
     useEffect(() => {
@@ -64,12 +64,8 @@ export namespace Room {
     }, []);
 
     useEffect(() => {
-      socket.messageReceiver.on(
-        WebSocketMessage.Type.JoinRoom,
-        ({ member }) => {
-          notice(L.get("notice_joinRoom", users[member.id].nickname));
-          addMember(member);
-        }
+      socket.messageReceiver.on(WebSocketMessage.Type.JoinRoom, ({ member }) =>
+        notice(L.get("notice_joinRoom", users[member.id].nickname))
       );
       socket.messageReceiver.on(
         WebSocketMessage.Type.LeaveRoom,
@@ -285,7 +281,6 @@ export namespace Room {
   interface State {
     room?: KKuTu.Room.Detailed;
     updateRoom: (room: KKuTu.Room.Detailed) => void;
-    addMember: (member: KKuTu.Room.Member) => void;
     updateMember: (member: Partial<KKuTu.Room.Member>) => void;
     removeMember: (id: string) => void;
     leaveRoom: () => void;
@@ -293,13 +288,6 @@ export namespace Room {
   export const useStore = create<State>((setState) => ({
     room: undefined,
     updateRoom: (room) => setState({ room }),
-    addMember: (member) =>
-      setState(({ room }) => {
-        if (room === undefined) return {};
-        return {
-          room: { ...room, members: { ...room.members, [member.id]: member } },
-        };
-      }),
     updateMember: (member) =>
       setState(({ room }) => {
         if (member.id === undefined || room === undefined) return {};
@@ -331,3 +319,4 @@ export namespace Room {
     leaveRoom: () => setState({ room: undefined }),
   }));
 }
+
