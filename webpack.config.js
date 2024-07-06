@@ -84,6 +84,9 @@ const ANCESTOR = {
       },
     }),
   ],
+  watchOptions: {
+    ignored: [".git", ".jj"],
+  },
 };
 
 module.exports = [
@@ -168,3 +171,4 @@ module.exports = [
     },
   },
 ];
+
