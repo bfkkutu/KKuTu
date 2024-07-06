@@ -169,9 +169,11 @@ export namespace Game {
 
           const long = word.data.length > 8;
           const type = long ? DisplayType.Long : DisplayType.Short;
-          const tick = turn.time / 12 / (long ? word.data.length : 8);
+          const tick = turn.time / 96;
           if (long) {
             vibrate();
+
+            const tick = turn.time / 12 / word.data.length;
             for (let i = 1; i <= word.data.length; ++i) {
               AudioContext.instance.playEffect("submit_long");
               setDisplay({
@@ -466,3 +468,4 @@ export namespace Game {
     return <div className="product-body huge"></div>;
   }
 }
+
