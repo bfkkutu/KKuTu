@@ -78,34 +78,15 @@ export default class Relay extends Game implements Chainable {
     }
     return word.data;
   }
-  protected override async robotSubmit(): Promise<void> {
-    const builder = this.repository
-      .createQueryBuilder("w")
-      .select(["w.data"])
-      .where(
-        new TypeORM.Brackets((query) => {
-          query.where("w.data LIKE :last", {
-            last: `${this.last}%`,
-          });
-          if (this.lastAcceptable !== undefined) {
-            query.orWhere("w.data LIKE :acceptable", {
-              acceptable: this.lastAcceptable,
-            });
-          }
-        })
-      )
-      .andWhere("LENGTH(w.data) > 1")
-      .orderBy("RANDOM()")
-      .limit(1);
-    if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
-    }
-    const word = await builder.getOne();
-    if (word === null) {
-      return;
-    }
-    this.submit(word.data);
+  protected override getScore(): number {
+    const lastChain = this.history.at(-1)!;
+    const base =
+      ((5 + 7 * lastChain.length) ** 0.74 + 0.88 * this.history.length) *
+      (2 - this.turnTimer.delay / this.turnTime);
+    // TODO: mission
+    return Math.round(base);
   }
+
   public override isSubmitable(content: string): boolean {
     if (content.length < 2) {
       return false;
@@ -169,15 +150,46 @@ export default class Relay extends Game implements Chainable {
       });
       return;
     }
-    clearTimeout(this.turnTimer);
     this.chain(word);
-    this.roundTime -= this.now - this.turnAt;
+    this.synchronizer.freeze();
+    this.turnTimer.cancel();
+    this.roundTime -= this.turnTimer.delay;
     this.turn.next();
     this.room.broadcast(WebSocketMessage.Type.TurnEnd, {
       word: word.serialize(),
+      score: this.getScore(),
     });
     setTimeout(() => this.startTurn(), this.turnTime / 6);
   }
+  protected override async robotSubmit(): Promise<void> {
+    const builder = this.repository
+      .createQueryBuilder("w")
+      .select(["w.data"])
+      .where(
+        new TypeORM.Brackets((query) => {
+          query.where("w.data LIKE :last", {
+            last: `${this.last}%`,
+          });
+          if (this.lastAcceptable !== undefined) {
+            query.orWhere("w.data LIKE :acceptable", {
+              acceptable: this.lastAcceptable,
+            });
+          }
+        })
+      )
+      .andWhere("LENGTH(w.data) > 1")
+      .orderBy("RANDOM()")
+      .limit(1);
+    if (!this.room.settings.rules.wide) {
+      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+    }
+    const word = await builder.getOne();
+    if (word === null) {
+      return;
+    }
+    this.submit(word.data);
+  }
+
   public chain(word: Word): void {
     this.history.push(word.id);
     this.last = word.data.at(-1)!;

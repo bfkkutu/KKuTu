@@ -22,29 +22,23 @@ export abstract class Game implements Serializable<KKuTu.Game> {
   private readonly clients: ImprovedMap<string, WebSocket>;
   protected readonly mode: KKuTu.Game.IMode;
   protected readonly repository: TypeORM.Repository<Word>;
+  protected readonly synchronizer = new Game.Synchronizer();
   protected readonly manner: TypeORM.Repository<Cache.Manner>;
+  protected readonly turn: Game.TurnIterator;
+  protected readonly turnTimer = new Game.Scheduler(this.synchronizer);
   /**
    * 제시어.
    */
   protected prompt: string = "①②③④⑤⑥⑦⑧⑨⑩";
+
   /**
    * 현재 진행 중인 round index.
    */
   protected round: number;
-  protected turn: Game.TurnIterator;
 
   protected roundTime = 0;
   protected turnTime = 0;
-  /**
-   * turn이 시작한 시점.
-   */
-  protected turnAt = 0;
 
-  protected turnTimer?: NodeJS.Timeout;
-
-  protected get now(): number {
-    return new Date().getTime();
-  }
   private get speed(): number {
     if (this.roundTime < 5000) {
       return 10;
@@ -105,9 +99,9 @@ export abstract class Game implements Serializable<KKuTu.Game> {
     setTimeout(() => this.startTurn(), 2400);
   }
   protected startTurn(): void {
-    this.turnAt = this.now;
     this.turnTime = 15000 - 1400 * this.speed;
-    this.turnTimer = setTimeout(
+    this.synchronizer.unfreeze();
+    this.turnTimer.schedule(
       () => this.endRound(),
       Math.min(this.roundTime, this.turnTime + 100)
     );
@@ -117,7 +111,7 @@ export abstract class Game implements Serializable<KKuTu.Game> {
       speed: this.speed,
       time: this.turnTime,
       roundTime: this.roundTime,
-      at: this.turnAt,
+      at: this.turnTimer.at,
     });
     if (!this.clients.has(this.turn.current.id) && this.turnTime > 3000) {
       setTimeout(() => this.robotSubmit(), 3000);
@@ -146,10 +140,11 @@ export abstract class Game implements Serializable<KKuTu.Game> {
   }
   protected abstract getDisplay(): string;
   protected abstract getTimeoutHint(): Promise<string | undefined>;
-  protected abstract robotSubmit(): Promise<void>;
+  protected abstract getScore(): number;
 
   public abstract isSubmitable(content: string): boolean;
   public abstract submit(content: string): Promise<void>;
+  protected abstract robotSubmit(): Promise<void>;
 
   /**
    * 게임 도중 입장. (바로 참여)
@@ -170,7 +165,7 @@ export abstract class Game implements Serializable<KKuTu.Game> {
     if (this.turn.current.id === id) {
       // 본인 턴의 진행 도중 퇴장한 경우.
       this.turn.next();
-      clearTimeout(this.turnTimer);
+      this.turnTimer.cancel();
       this.startTurn();
     }
     this.turn.remove(id);
@@ -241,6 +236,47 @@ export namespace Game {
 
     public serialize(): KKuTu.Game.Player[] {
       return this.players.map((player) => player.serialize());
+    }
+  }
+
+  export class Scheduler {
+    private readonly synchronizer: Synchronizer;
+    private timeout?: NodeJS.Timeout;
+    public at: number = 0;
+
+    public get delay(): number {
+      return this.synchronizer.now - this.at;
+    }
+
+    constructor(synchronizer: Synchronizer) {
+      this.synchronizer = synchronizer;
+    }
+
+    public cancel(): void {
+      clearTimeout(this.timeout);
+    }
+    public schedule(callback: Function, ms: number): void {
+      this.cancel();
+      this.timeout = setTimeout(() => callback(), ms);
+      this.at = this.synchronizer.now;
+    }
+  }
+
+  export class Synchronizer {
+    private time?: number;
+
+    public get now(): number {
+      return this.time === undefined ? this.getTime() : this.time;
+    }
+
+    private getTime(): number {
+      return new Date().getTime();
+    }
+    public freeze(): void {
+      this.time = this.getTime();
+    }
+    public unfreeze(): void {
+      this.time = undefined;
     }
   }
 }

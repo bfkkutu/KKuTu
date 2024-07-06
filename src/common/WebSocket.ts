@@ -158,6 +158,7 @@ export namespace WebSocketMessage {
       };
       [Type.TurnEnd]: {
         word: Database.Word;
+        score: number;
       };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
