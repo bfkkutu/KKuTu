@@ -223,7 +223,6 @@ export default class RoomSettingsDialog extends Dialog {
           <button
             type="button"
             onClick={async () => {
-              console.log(changed.current);
               if (changed.current.size !== 0) {
                 socket.send(WebSocketMessage.Type.UpdateRoom, {
                   settings: Object.fromEntries(
