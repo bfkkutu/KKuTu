@@ -169,8 +169,8 @@ export abstract class Game
     this.clients.delete(id);
     if (this.turn.current.id === id) {
       // 본인 턴의 진행 도중 퇴장한 경우.
-      this.turn.next();
       this.turnTimer.cancel();
+      this.turn.next();
       this.startTurn();
     }
     this.turn.remove(id);
