@@ -61,7 +61,7 @@ export default class Relay extends Game implements Chainable {
           });
           if (this.lastAcceptable !== undefined) {
             query.orWhere("w.data LIKE :acceptable", {
-              acceptable: this.lastAcceptable,
+              acceptable: `${this.lastAcceptable}%`,
             });
           }
         })
@@ -172,7 +172,7 @@ export default class Relay extends Game implements Chainable {
           });
           if (this.lastAcceptable !== undefined) {
             query.orWhere("w.data LIKE :acceptable", {
-              acceptable: this.lastAcceptable,
+              acceptable: `${this.lastAcceptable}%`,
             });
           }
         })
