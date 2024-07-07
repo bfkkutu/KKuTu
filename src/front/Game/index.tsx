@@ -61,7 +61,6 @@ function Component(props: Nest.Page.Props<"Game">) {
   const [loading, setLoading] = useState(L.get("connecting"));
 
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
-  const audioContext = AudioContext.instance;
 
   const $intro = useRef<HTMLDivElement>(null);
 
@@ -83,13 +82,13 @@ function Component(props: Nest.Page.Props<"Game">) {
       for (const [id, src] of Object.entries(CLIENT_SETTINGS.sounds)) {
         try {
           setLoading(L.get("loading_resource", src));
-          await audioContext.register(id, `/media/sound${src}`);
+          await AudioContext.instance.register(id, `/media/sound${src}`);
         } catch (e) {
           window.alert(L.get("error_soundNotFound", id));
         }
       }
-      audioContext.volume = me.settings.bgmVolume;
-      audioContext.play(`lobby_${me.settings.lobbyMusic}`, true);
+      AudioContext.instance.volume = me.settings.bgmVolume;
+      AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
       const intro = $intro.current!;
       intro.style.opacity = "0";
       socket.send(WebSocketMessage.Type.Initialize, {});
@@ -106,6 +105,7 @@ function Component(props: Nest.Page.Props<"Game">) {
       removeUser(user)
     );
     socket.on("close", (e) => {
+      AudioContext.instance.stopAll();
       window.alert(L.get("error_closed", e.code));
     });
   }, [socket]);
@@ -200,3 +200,4 @@ function Component(props: Nest.Page.Props<"Game">) {
   );
 }
 Bind(Component);
+
