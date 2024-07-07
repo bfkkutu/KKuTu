@@ -3,6 +3,7 @@ import * as TypeORM from "typeorm";
 import Room from "back/game/Room";
 import WebSocket from "back/utils/WebSocket";
 import DB from "back/utils/Database";
+import Synchronizable from "back/utils/Synchronizable";
 import Word from "back/models/Word";
 import * as Cache from "back/models/cache";
 import { KKuTu } from "../../common/KKuTu";
@@ -13,7 +14,10 @@ const PROMPT_DEFAULT: Record<KKuTu.Game.Language, string> = {
   [KKuTu.Game.Language.Korean]: "가나다라마바사아자차",
   [KKuTu.Game.Language.English]: "abcdefghij",
 };
-export abstract class Game implements Serializable<KKuTu.Game> {
+export abstract class Game
+  extends Synchronizable
+  implements Serializable<KKuTu.Game>
+{
   protected readonly room: Room;
   /**
    * Room::clients의 sub map.
@@ -22,10 +26,9 @@ export abstract class Game implements Serializable<KKuTu.Game> {
   private readonly clients: ImprovedMap<string, WebSocket>;
   protected readonly mode: KKuTu.Game.IMode;
   protected readonly repository: TypeORM.Repository<Word>;
-  protected readonly synchronizer = new Game.Synchronizer();
   protected readonly manner: TypeORM.Repository<Cache.Manner>;
   protected readonly turn: Game.TurnIterator;
-  protected readonly turnTimer = new Game.Scheduler(this.synchronizer);
+  protected readonly turnTimer = new Game.Scheduler(this);
   /**
    * 제시어.
    */
@@ -69,6 +72,8 @@ export abstract class Game implements Serializable<KKuTu.Game> {
   }
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {
+    super();
+
     this.room = room;
     this.clients = new ImprovedMap(
       clients.map((client) => [client.user.id, client])
@@ -100,7 +105,7 @@ export abstract class Game implements Serializable<KKuTu.Game> {
   }
   protected startTurn(): void {
     this.turnTime = 15000 - 1400 * this.speed;
-    this.synchronizer.unfreeze();
+    this.unfreeze();
     this.turnTimer.schedule(
       () => this.endRound(),
       Math.min(this.roundTime, this.turnTime + 100)
@@ -239,17 +244,12 @@ export namespace Game {
     }
   }
 
-  export class Scheduler {
-    private readonly synchronizer: Synchronizer;
+  export class Scheduler extends Synchronizable {
     private timeout?: NodeJS.Timeout;
     public at: number = 0;
 
     public get delay(): number {
-      return this.synchronizer.now - this.at;
-    }
-
-    constructor(synchronizer: Synchronizer) {
-      this.synchronizer = synchronizer;
+      return this.now - this.at;
     }
 
     public cancel(): void {
@@ -258,25 +258,7 @@ export namespace Game {
     public schedule(callback: Function, ms: number): void {
       this.cancel();
       this.timeout = setTimeout(() => callback(), ms);
-      this.at = this.synchronizer.now;
-    }
-  }
-
-  export class Synchronizer {
-    private time?: number;
-
-    public get now(): number {
-      return this.time === undefined ? this.getTime() : this.time;
-    }
-
-    private getTime(): number {
-      return new Date().getTime();
-    }
-    public freeze(): void {
-      this.time = this.getTime();
-    }
-    public unfreeze(): void {
-      this.time = undefined;
+      this.at = this.now;
     }
   }
 }

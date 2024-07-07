@@ -151,7 +151,7 @@ export default class Relay extends Game implements Chainable {
       return;
     }
     this.chain(word);
-    this.synchronizer.freeze();
+    this.freeze();
     this.turnTimer.cancel();
     this.roundTime -= this.turnTimer.delay;
     this.turn.next();
