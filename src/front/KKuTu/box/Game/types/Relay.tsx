@@ -17,11 +17,12 @@ import { Database } from "common/Database";
 
 namespace Relay {
   export interface Turn {
+    hint?: string;
+    player: number;
     speed: number;
     time: number;
     roundTime: number;
     at: number;
-    player: number;
     displacement?: number;
   }
   export interface Chain {
@@ -44,11 +45,11 @@ export default function Relay() {
   const [now, setNow] = useState(0);
   const [round, setRound] = useState(0);
   const [turn, setTurn] = useState<Relay.Turn>({
+    player: 0,
     speed: 0,
     time: 0,
     roundTime: 0,
     at: 0,
-    player: 0,
   });
   const [chain, setChain] = useState<Relay.Chain>({
     history: [],
@@ -80,6 +81,29 @@ export default function Relay() {
       AudioContext.instance.playEffect("roundStart");
     });
     socket.messageReceiver.on(
+      WebSocketMessage.Type.TurnStart,
+      ({ display, hint, player, speed, time, roundTime, at }) => {
+        window.cancelAnimationFrame(timer.current);
+        setTurn({
+          hint,
+          player,
+          speed,
+          time,
+          roundTime,
+          at,
+          displacement: undefined,
+        });
+        setDisplay({
+          type: Display.Type.None,
+          content: display,
+          isAnimating: false,
+          submitting: undefined,
+        });
+        timer.current = window.requestAnimationFrame(tick);
+        AudioContext.instance.play(`turn_${speed}`);
+      }
+    );
+    socket.messageReceiver.on(
       WebSocketMessage.Type.TurnError,
       ({ errorType, display: content }) => {
         clearTimeout(errorTimeout.current);
@@ -106,31 +130,10 @@ export default function Relay() {
     () => {
       window.cancelAnimationFrame(timer.current);
       socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
+      socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
       socket.messageReceiver.off(WebSocketMessage.Type.TurnError);
     };
   }, []);
-
-  useEffect(() => {
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.TurnStart,
-      ({ display, player, speed, time, roundTime, at }) => {
-        window.cancelAnimationFrame(timer.current);
-        setTurn({ ...turn, player, speed, time, roundTime, at });
-        setDisplay({
-          type: Display.Type.None,
-          content: display,
-          isAnimating: false,
-          submitting: undefined,
-        });
-        timer.current = window.requestAnimationFrame(tick);
-        AudioContext.instance.play(`turn_${speed}`);
-      }
-    );
-
-    return () => {
-      socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
-    };
-  }, [turn]);
 
   useEffect(() => {
     socket.messageReceiver.on(
@@ -226,6 +229,9 @@ export default function Relay() {
           for (let i = 0; i < 8; ++i) {
             if (beat % 0b10) {
               AudioContext.instance.playEffect(`submit_${turn.speed}`);
+              if (word.data[cursor] === turn.hint) {
+                AudioContext.instance.playEffect(`submit_mission`);
+              }
               setDisplay({
                 type,
                 content: word.data,
@@ -281,7 +287,11 @@ export default function Relay() {
   return (
     <div className="product-body normal">
       <div className="head">
-        <div className="hint"></div>
+        <div className="left">
+          {turn.hint === undefined ? null : (
+            <div className="hint">{turn.hint}</div>
+          )}
+        </div>
         <div className="stage">
           <div className="top">
             <div className="rounds">
@@ -307,30 +317,30 @@ export default function Relay() {
           <div className="bottom">
             {display.type === Display.Type.Short ? (
               <div className="display ellipse short">
-                {Array.from(display.content).map((character, index) => {
-                  if (display.submitting === undefined) {
-                    return (
-                      <div
-                        key={index}
-                        className={display.isAnimating ? "submitted" : ""}
-                      >
-                        {character}
-                      </div>
-                    );
-                  }
-
-                  return (
-                    <div
-                      key={index}
-                      className={new ClassName()
-                        .if(index === display.submitting, "submitting")
-                        .if(index > display.submitting, "hidden")
-                        .toString()}
-                    >
-                      {character}
-                    </div>
-                  );
-                })}
+                {Array.from(display.content).map((character, index) => (
+                  <div
+                    key={index}
+                    className={new ClassName()
+                      .if(turn.hint === character, "mission")
+                      .if(
+                        display.submitting === undefined && display.isAnimating,
+                        "submitted"
+                      )
+                      .elif(
+                        // index는 undefined일 수 없음.
+                        index === display.submitting,
+                        "submitting"
+                      )
+                      .elif(
+                        display.submitting !== undefined &&
+                          index > display.submitting,
+                        "hidden"
+                      )
+                      .toString()}
+                  >
+                    {character}
+                  </div>
+                ))}
               </div>
             ) : display.type === Display.Type.Long ? (
               <div
@@ -365,7 +375,11 @@ export default function Relay() {
             />
           </div>
         </div>
-        <div className="chain">{chain.length}</div>
+        <div className="right">
+          {chain.length === 0 ? null : (
+            <div className="chain">{chain.length}</div>
+          )}
+        </div>
       </div>
       <div className="neck">
         <div className="history">
@@ -411,7 +425,9 @@ export default function Relay() {
               className={new ClassName("member")
                 .if(
                   myTurn,
-                  display.type === Display.Type.Timeout ? "timeout" : "current"
+                  new ClassName()
+                    .if(display.type === Display.Type.Timeout, "timeout")
+                    .else("current")
                 )
                 .toString()}
             >

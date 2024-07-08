@@ -35,6 +35,7 @@
   "submit_9": "/game/submit/9.mp3",
   "submit_10": "/game/submit/10.mp3",
   "submit_long": "/game/submit/long.mp3",
+  "submit_mission": "/game/submit/mission.mp3",
 
   "submitted_0": "/game/submitted/0.mp3",
   "submitted_1": "/game/submitted/1.mp3",
@@ -48,3 +49,4 @@
   "submitted_9": "/game/submitted/9.mp3",
   "submitted_10": "/game/submitted/10.mp3"
 }
+

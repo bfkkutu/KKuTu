@@ -1,19 +1,20 @@
 import * as TypeORM from "typeorm";
 
 import Game from "back/game/Game";
+import Room from "back/game/Room";
 import Chainable from "back/game/types/mixins/Chainable";
-import Word from "back/models/Word";
-import * as Cache from "back/models/cache";
+import Mission from "back/game/types/mixins/Mission";
 import DB from "back/utils/Database";
 import WebSocket from "back/utils/WebSocket";
 import { getAcceptable } from "back/utils/Utility";
 import ImprovedMap from "back/utils/ImprovedMap";
 import DefaultDictionary from "back/utils/DefaultDictionary";
-import Room from "back/game/Room";
+import Word from "back/models/Word";
+import * as Cache from "back/models/cache";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { KKuTu } from "common/KKuTu";
+import { KKuTu } from "../../../common/KKuTu";
 
-class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
+class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
   private readonly manner: TypeORM.Repository<Cache.Manner>;
   private readonly turn: Relay.TurnIterator;
   private readonly turnTimer = new Game.Scheduler(this);
@@ -26,6 +27,7 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
   private readonly history: string[] = [];
   private last: string = "";
   private lastAcceptable?: string;
+  private mission?: string;
 
   public get currentTurn(): string {
     return this.turn.current;
@@ -73,6 +75,7 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
     this.history.length = 0;
     this.last = this.prompt[this.round];
     this.lastAcceptable = getAcceptable(this.last);
+    this.mission = this.getMission();
     return super.startRound();
   }
   protected override startTurn(): void {
@@ -88,6 +91,7 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
     );
     this.room.broadcast(WebSocketMessage.Type.TurnStart, {
       display: this.getDisplay(),
+      hint: this.mission,
       player: this.turn.indexOf(),
       speed: this.speed,
       time: this.turnTime,
@@ -149,12 +153,17 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
     return word.data;
   }
   protected override getScore(word: Word): number {
-    let score =
+    let R =
       ((5 + 7 * word.data.length) ** 0.74 + 0.88 * this.history.length) *
       (2 - this.turnTimer.delay / this.turnTime) *
       (15 / (this.counts.get(word.id) + 15));
-    // TODO: mission
-    return Math.round(score);
+    if (this.mission !== undefined) {
+      const match = word.data.match(new RegExp(this.mission, "g"));
+      if (match !== null) {
+        R += (R / 2) * match.length;
+      }
+    }
+    return Math.round(R);
   }
 
   public override isSubmitable(content: string): boolean {
@@ -271,6 +280,10 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
     this.last = word.data.at(-1)!;
     this.lastAcceptable = getAcceptable(this.last);
   }
+  public getMission(): string {
+    const TABLE = Relay.MISSION[this.mode.language];
+    return TABLE[Math.floor(Math.random() * TABLE.length)];
+  }
 
   public override add(socket: WebSocket): void {
     super.add(socket);
@@ -301,6 +314,53 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable {
 }
 
 namespace Relay {
+  export const MISSION = {
+    [KKuTu.Game.Language.Korean]: [
+      "가",
+      "나",
+      "다",
+      "라",
+      "마",
+      "바",
+      "사",
+      "아",
+      "자",
+      "차",
+      "카",
+      "타",
+      "파",
+      "하",
+    ],
+    [KKuTu.Game.Language.English]: [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ],
+  };
+
   export class TurnIterator {
     private readonly players: string[];
     private cursor: number = 0;

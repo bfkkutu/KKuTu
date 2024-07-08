@@ -786,19 +786,29 @@
         padding-top: 0px;
 
         .head {
-          display: flex;
-          flex-direction: row;
+          display: grid;
+          grid-template-columns: 245px 500px 245px;
+          height: 150px;
 
-          .hint {
-            padding-top: 55px;
-            margin: 50px 105px 0px 40px;
-            width: 100px;
-            height: 45px;
-            font-size: 24px;
-            color: #eee;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 0px 1px 5px #141414;
+          .left {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+
+            .hint {
+              padding-top: 55px;
+              margin: {
+                left: 105px;
+                right: 40px;
+              }
+              height: 45px;
+              font-size: 24px;
+              color: #eee;
+              font-weight: bold;
+              text-align: center;
+              text-shadow: 0px 1px 5px #141414;
+              background-image: url("/media/image/kkutu/lefthand.png");
+            }
           }
 
           .stage {
@@ -806,18 +816,17 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
-            width: 500px;
 
             .top {
               height: 40px;
-              width: 500px;
+              width: 100%;
 
               .rounds {
+                position: absolute;
                 display: flex;
                 flex-direction: row;
                 justify-content: center;
                 align-items: center;
-                position: absolute;
                 width: 500px;
                 color: #fff;
                 text-align: center;
@@ -836,7 +845,7 @@
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: flex-end;
-                width: 500px;
+                width: 100%;
 
                 img {
                   position: sticky;
@@ -880,11 +889,15 @@
                   .hidden {
                     visibility: hidden;
                   }
+
                   .submitting {
                     animation: Submitting 100ms linear;
                   }
                   .submitted {
                     animation: SubmittedShort 100ms linear;
+                  }
+                  .mission {
+                    color: #66ff66;
                   }
                 }
 
@@ -948,17 +961,25 @@
             }
           }
 
-          .chain {
-            padding-top: 55px;
-            margin: 50px 105px 0px 40px;
-            width: 100px;
-            height: 45px;
-            font-size: 24px;
-            color: #eeeeee;
-            font-weight: bold;
-            text-align: center;
-            text-shadow: 0px 1px 5px #141414;
-            background-image: url("/media/image/kkutu/righthand.png");
+          .right {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+
+            .chain {
+              padding-top: 55px;
+              margin: {
+                left: 40px;
+                right: 105px;
+              }
+              height: 45px;
+              font-size: 24px;
+              color: #eeeeee;
+              font-weight: bold;
+              text-align: center;
+              text-shadow: 0px 1px 5px #141414;
+              background-image: url("/media/image/kkutu/righthand.png");
+            }
           }
         }
 

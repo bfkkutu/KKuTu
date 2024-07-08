@@ -148,12 +148,25 @@ export namespace WebSocketMessage {
       [Type.TurnStart]: {
         display: string;
         /**
+         * 미션, 힌트 등을 위한 추가 데이터.
+         */
+        hint?: string;
+        /**
          * 현재 턴 player index.
          */
         player: number;
+        /**
+         * 턴 속도.
+         */
         speed: number;
         time: number;
+        /**
+         * 남은 라운드 시간.
+         */
         roundTime: number;
+        /**
+         * 턴이 시작된 UNIX 시간.
+         */
         at: number;
       };
       [Type.TurnError]: {
