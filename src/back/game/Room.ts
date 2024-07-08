@@ -2,11 +2,11 @@ import sha256 from "sha256";
 
 import WebSocket from "back/utils/WebSocket";
 import WebSocketGroup from "back/utils/WebSocketGroup";
+import ImprovedMap from "back/utils/ImprovedMap";
 import Channel from "back/game/Channel";
 import Game from "back/game/Game";
 import Robot from "back/game/Robot";
 import { KKuTu } from "../../common/KKuTu";
-import ImprovedMap from "../utils/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
 import Relay from "back/game/types/Relay";
@@ -23,7 +23,7 @@ export default class Room
   private readonly robots = new ImprovedMap<string, Robot>();
   public readonly id: number;
   public readonly settings: KKuTu.Room.Settings;
-  public game?: Game<any>;
+  public game?: Game<KKuTu.Game.Type>;
   public master: string;
 
   public get isLocked(): boolean {

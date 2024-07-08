@@ -4,9 +4,9 @@ import Room from "back/game/Room";
 import WebSocket from "back/utils/WebSocket";
 import DB from "back/utils/Database";
 import Synchronizable from "back/utils/Synchronizable";
+import ImprovedMap from "back/utils/ImprovedMap";
 import Word from "back/models/Word";
 import { KKuTu } from "../../common/KKuTu";
-import ImprovedMap from "../utils/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
 const DEFAULT_PROMPTS: Record<KKuTu.Game.Language, string> = {

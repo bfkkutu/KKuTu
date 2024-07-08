@@ -1,4 +1,4 @@
-export default class ImprovedMap<K extends hashable, V> extends Map<K, V> {
+export default class ImprovedMap<K extends key, V> extends Map<K, V> {
   public keysAsArray(): K[] {
     return Array.from(this.keys());
   }

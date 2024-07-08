@@ -1,5 +1,5 @@
 import WebSocket from "back/utils/WebSocket";
-import ImprovedMap from "./ImprovedMap";
+import ImprovedMap from "back/utils/ImprovedMap";
 import { WebSocketMessage } from "common/WebSocket";
 
 export default class WebSocketGroup {

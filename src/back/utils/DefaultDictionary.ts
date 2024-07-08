@@ -1,7 +1,7 @@
 /**
  * Equivalent of python defaultdict.
  */
-export default class DefaultDictionary<K extends hashable, V> {
+export default class DefaultDictionary<K extends key, V> {
   private readonly data = {} as Record<K, V>;
   private readonly defaultValue: V;
 
