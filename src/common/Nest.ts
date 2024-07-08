@@ -7,7 +7,7 @@ export namespace Nest {
   export namespace Page {
     export type Type = keyof Page.DataTable;
     export type DataTable = {
-      Game: {
+      KKuTu: {
         id: string;
         ws: string;
       };
@@ -61,3 +61,4 @@ export namespace Nest {
     punctual: boolean;
   };
 }
+

@@ -1,5 +1,5 @@
 import WebSocket from "back/utils/WebSocket";
-import ImprovedMap from "../../common/ImprovedMap";
+import ImprovedMap from "./ImprovedMap";
 import { WebSocketMessage } from "common/WebSocket";
 
 export default class WebSocketGroup {
@@ -23,3 +23,4 @@ export default class WebSocketGroup {
       if (filter === undefined || filter(client)) client.send(type, content);
   }
 }
+

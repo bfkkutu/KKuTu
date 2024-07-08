@@ -129,7 +129,8 @@ export namespace WebSocketMessage {
         member: KKuTu.Room.Member;
       };
       [Type.Start]: {
-        game: KKuTu.Game;
+        // TODO: 임시.
+        game: KKuTu.Game.Type.Serialized[KKuTu.Game.Type];
       };
       [Type.RoundStart]: {
         /**
@@ -146,7 +147,10 @@ export namespace WebSocketMessage {
       };
       [Type.TurnStart]: {
         display: string;
-        player: string;
+        /**
+         * 현재 턴 player index.
+         */
+        player: number;
         speed: number;
         time: number;
         roundTime: number;
@@ -158,7 +162,7 @@ export namespace WebSocketMessage {
       };
       [Type.TurnEnd]: {
         word: Database.Word;
-        score: number;
+        gain: number;
       };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];

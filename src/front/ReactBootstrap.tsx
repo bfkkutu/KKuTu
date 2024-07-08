@@ -13,9 +13,9 @@ import { Notification } from "front/@global/Bayadere/Notification";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 
-import AlertDialog from "front/Game/dialogs/Alert";
-import PromptDialog from "front/Game/dialogs/Prompt";
-import ConfirmDialog from "front/Game/dialogs/Confirm";
+import AlertDialog from "front/KKuTu/dialogs/Alert";
+import PromptDialog from "front/KKuTu/dialogs/Prompt";
+import ConfirmDialog from "front/KKuTu/dialogs/Confirm";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) => {
@@ -108,3 +108,4 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
     );
   }
 }
+

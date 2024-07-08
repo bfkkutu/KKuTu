@@ -1,4 +1,4 @@
-import { useStore } from "front/Game/Store";
+import { useStore } from "front/KKuTu/Store";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { Database } from "common/Database";

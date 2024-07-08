@@ -1,0 +1,203 @@
+import React, { useEffect, useRef, useState } from "react";
+
+import Bind from "front/ReactBootstrap";
+import L from "front/@global/Language";
+import AudioContext from "front/@global/AudioContext";
+import { getRequiredScore } from "front/@global/Utility";
+import { EventListener } from "front/@global/WebSocket";
+import { Notification } from "front/@global/Bayadere/Notification";
+import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
+import { Menu } from "front/KKuTu/Menu";
+import { useStore } from "front/KKuTu/Store";
+import { Whisper } from "front/KKuTu/dialogs/Whisper";
+import { Nest } from "common/Nest";
+import { WebSocketMessage } from "../../common/WebSocket";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
+
+import InviteNotification from "front/KKuTu/notifications/Invite";
+import WhisperNotification from "front/KKuTu/notifications/Whisper";
+
+import { Room } from "front/KKuTu/box/Room";
+import { List } from "front/KKuTu/box/ListBox";
+import { UserList } from "front/KKuTu/box/UserList";
+import { Profile } from "front/KKuTu/box/Profile";
+import { Chat } from "front/KKuTu/box/Chat";
+
+CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
+for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
+  CLIENT_SETTINGS.expTable.push(
+    CLIENT_SETTINGS.expTable[i - 2] + getRequiredScore(i)
+  );
+CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
+CLIENT_SETTINGS.expTable.push(Infinity);
+
+function Component(props: Nest.Page.Props<"KKuTu">) {
+  const [socket, initializeSocket] = useStore((state) => [
+    state.socket,
+    state.initializeSocket,
+  ]);
+  const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
+  const updateCommunity = useStore((state) => state.updateCommunity);
+  const [users, initializeUsers, appendUser, setUser, removeUser] = useStore(
+    (state) => [
+      state.users,
+      state.initializeUsers,
+      state.appendUser,
+      state.setUser,
+      state.removeUser,
+    ]
+  );
+  const vibration = useStore((state) => state.vibration);
+  const room = Room.useStore((state) => state.room);
+  const [notifications, showNotification, hideNotification] =
+    Notification.useStore((state) => [
+      state.notifications,
+      state.show,
+      state.hide,
+    ]);
+  const [whisperDialogs, whisperLogs, appendWhisper] = Whisper.useStore(
+    (state) => [state.dialogs, state.logs, state.append]
+  );
+  const [loading, setLoading] = useState(L.get("connecting"));
+
+  const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
+
+  const $intro = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    initializeSocket(props.data.ws);
+  }, []);
+
+  useEffect(() => {
+    if (socket === undefined) {
+      return;
+    }
+
+    socket.on("open", async () => {
+      const { me, users } = await socket.messageReceiver.wait(
+        WebSocketMessage.Type.Initialize
+      );
+      updateMe(me);
+      initializeUsers(users);
+      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sounds)) {
+        try {
+          setLoading(L.get("loading_resource", src));
+          await AudioContext.instance.register(id, `/media/sound${src}`);
+        } catch (e) {
+          window.alert(L.get("error_soundNotFound", id));
+        }
+      }
+      AudioContext.instance.volume = me.settings.bgmVolume;
+      AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
+      const intro = $intro.current!;
+      intro.style.opacity = "0";
+      socket.send(WebSocketMessage.Type.Initialize, {});
+      window.setTimeout(() => intro.remove(), 2000);
+    });
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.UpdateCommunity,
+      ({ community }) => updateCommunity(community)
+    );
+    socket.messageReceiver.on(WebSocketMessage.Type.Join, ({ user }) =>
+      appendUser(user)
+    );
+    socket.messageReceiver.on(WebSocketMessage.Type.Leave, ({ user }) =>
+      removeUser(user)
+    );
+    socket.on("close", (e) => {
+      AudioContext.instance.stopAll();
+      window.alert(L.get("error_closed", e.code));
+    });
+  }, [socket]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+    socket.messageReceiver.on(WebSocketMessage.Type.UpdateUser, ({ user }) =>
+      setUser(user.id, { ...user, roomId: user.roomId || undefined })
+    );
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUser);
+    };
+  }, [socket, users]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+    const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
+      user,
+      room,
+    }) => showNotification(new InviteNotification(room, users[user].nickname));
+    socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
+    };
+  }, [socket, users, showNotification]);
+
+  useEffect(() => {
+    if (socket === undefined) return;
+    const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
+      whisper,
+    }) => {
+      if (
+        whisper.sender !== me.id &&
+        whisperDialogs[whisper.sender] === undefined
+      ) {
+        for (const notification of notifications) {
+          if (
+            notification instanceof WhisperNotification &&
+            notification.sender.id === whisper.sender
+          ) {
+            hideNotification(notification);
+          }
+        }
+        showNotification(
+          new WhisperNotification(
+            users[whisper.sender],
+            appendWhisper(whisper.sender, whisper)
+          )
+        );
+      }
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
+    };
+  }, [socket, users, whisperDialogs, whisperLogs, showNotification]);
+
+  return (
+    <article id="main" style={{ paddingTop: vibration }}>
+      <div id="game">
+        <div id="intro" ref={$intro}>
+          <img className="image" src="/media/image/kkutu/intro.png" />
+          <div className="version">{props.version}</div>
+          <div className="text">{loading}</div>
+        </div>
+        {me ? (
+          <>
+            <Menu.Component />
+            <div id="box-grid">
+              {room === undefined ? (
+                <div className="lobby">
+                  <UserList.Box server={server} />
+                  <List.Box />
+                </div>
+              ) : (
+                <div className="room">
+                  <Room.Box />
+                </div>
+              )}
+              <div className="lobby">
+                <Profile.Box />
+                <Chat.Box />
+              </div>
+            </div>
+          </>
+        ) : null}
+      </div>
+      {props.mode === "production" ? (
+        <KakaoAdvertisement unit={props.metadata!.ad.kakao.unit} />
+      ) : null}
+    </article>
+  );
+}
+Bind(Component);
+

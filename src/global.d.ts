@@ -3,6 +3,8 @@ import React from "react";
 import { WebSocketMessage } from "./common/WebSocket";
 
 declare global {
+  type hashable = string | number | symbol;
+
   type Table<V> = {
     [key: string]: V;
   };

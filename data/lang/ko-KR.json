@@ -25,7 +25,6 @@
     "privacyPolicy": "개인정보 처리방침",
     "opensource": "오픈소스 고지",
     "policy": "운영 정책",
-    "level": "레벨",
     "ok": "확인",
     "cancel": "취소",
     "yes": "예",
@@ -84,7 +83,7 @@
     "description": "로그인에 실패하였습니다. 다시 시도해주세요.",
     "login": "로그인"
   },
-  "Game": {
+  "KKuTu": {
     "title": "BF끄투",
 
     "welcome": "환영합니다.",
@@ -131,6 +130,7 @@
     "friendRequest": "친구 추가",
     "blackListAdd": "블랙리스트 추가",
     "open": "열기",
+    "level": "레벨 {#0}",
     "report": "신고",
     "submit": "제출",
     "handover": "방장 인계",

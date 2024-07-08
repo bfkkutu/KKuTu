@@ -6,13 +6,13 @@ import Channel from "back/game/Channel";
 import Game from "back/game/Game";
 import Robot from "back/game/Robot";
 import { KKuTu } from "../../common/KKuTu";
-import ImprovedMap from "../../common/ImprovedMap";
+import ImprovedMap from "../utils/ImprovedMap";
 import { WebSocketMessage } from "../../common/WebSocket";
 
-import Relay from "back/game/modes/Relay";
+import Relay from "back/game/types/Relay";
 
-const MODES: Record<any, any> = {
-  [KKuTu.Game.Mode.KoreanRelay]: Relay,
+const TYPES: Record<any, any> = {
+  [KKuTu.Game.Type.Relay]: Relay,
 };
 const EMPTY_PASSWORD = sha256("");
 export default class Room
@@ -23,7 +23,7 @@ export default class Room
   private readonly robots = new ImprovedMap<string, Robot>();
   public readonly id: number;
   public readonly settings: KKuTu.Room.Settings;
-  public game?: Game;
+  public game?: Game<any>;
   public master: string;
 
   public get isLocked(): boolean {
@@ -191,7 +191,7 @@ export default class Room
    * 게임을 시작한다.
    */
   public start(): void {
-    this.game = new MODES[this.settings.mode](
+    this.game = new TYPES[this.settings.mode](
       this,
       this.clients.valuesAsArray().reduce((prev, client) => {
         if (client.user.roomId === undefined) {

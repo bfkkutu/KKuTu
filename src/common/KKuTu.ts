@@ -2,6 +2,48 @@ import { HasId } from "common/mixins/HasId";
 
 export namespace KKuTu {
   export namespace Game {
+    export enum Type {
+      /**
+       * 끝말잇기
+       */
+      Relay,
+      /**
+       * 앞말잇기
+       */
+      RelayReversed,
+      /**
+       * 쿵쿵따
+       */
+      Three,
+      /**
+       * 끄투
+       */
+      KKuTu,
+      /**
+       * 자음퀴즈
+       */
+      ConsonantQuiz,
+      /**
+       * 타자대결
+       */
+      TypingCompetition,
+      /**
+       * 단어대결
+       */
+      WordCompetition,
+      /**
+       * 솎솎
+       */
+      Sock,
+      /**
+       * 그림퀴즈
+       */
+      DrawingQuiz,
+      /**
+       * 훈민정음
+       */
+      Hunmin,
+    }
     export enum Mode {
       /**
        * 한국어 끝말잇기
@@ -112,24 +154,20 @@ export namespace KKuTu {
        */
       BanDouble = "banDouble",
     }
-    export enum Graphic {
-      Normal,
-      Huge,
-    }
     export enum Language {
       Korean = "ko",
       English = "en",
     }
     export const LANGUAGES = Object.values(Language);
-    export interface IMode {
-      graphic: Graphic;
+    export interface ModeConfiguration {
+      type: Type;
       language: Language;
       rules: Rule[];
       themeSelect: boolean;
     }
-    export const modes: Record<Mode, IMode> = {
+    export const MODES: Record<Mode, ModeConfiguration> = {
       [Mode.KoreanRelay]: {
-        graphic: Graphic.Normal,
+        type: Type.Relay,
         language: Language.Korean,
         rules: [
           Rule.Manner,
@@ -141,106 +179,122 @@ export namespace KKuTu {
         themeSelect: false,
       },
       [Mode.KoreanRelayReversed]: {
-        graphic: Graphic.Normal,
+        type: Type.RelayReversed,
         language: Language.Korean,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanThree]: {
-        graphic: Graphic.Normal,
+        type: Type.Three,
         language: Language.Korean,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanKKuTu]: {
-        graphic: Graphic.Normal,
+        type: Type.KKuTu,
         language: Language.Korean,
         rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanConsonantQuiz]: {
-        graphic: Graphic.Normal,
+        type: Type.ConsonantQuiz,
         language: Language.Korean,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanTypingCompetition]: {
-        graphic: Graphic.Normal,
+        type: Type.TypingCompetition,
         language: Language.Korean,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanWordCompetition]: {
-        graphic: Graphic.Normal,
+        type: Type.WordCompetition,
         language: Language.Korean,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanSock]: {
-        graphic: Graphic.Normal,
+        type: Type.Sock,
         language: Language.Korean,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanDrawingQuiz]: {
-        graphic: Graphic.Normal,
+        type: Type.DrawingQuiz,
         language: Language.Korean,
         rules: [],
         themeSelect: true,
       },
 
       [Mode.EnglishRelay]: {
-        graphic: Graphic.Normal,
+        type: Type.Relay,
         language: Language.English,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishKKuTu]: {
-        graphic: Graphic.Normal,
+        type: Type.KKuTu,
         language: Language.English,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishTypingCompetition]: {
-        graphic: Graphic.Normal,
+        type: Type.TypingCompetition,
         language: Language.English,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishWordCompetition]: {
-        graphic: Graphic.Normal,
+        type: Type.WordCompetition,
         language: Language.English,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishSock]: {
-        graphic: Graphic.Normal,
+        type: Type.Sock,
         language: Language.English,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishDrawingQuiz]: {
-        graphic: Graphic.Normal,
+        type: Type.DrawingQuiz,
         language: Language.English,
         rules: [],
         themeSelect: true,
       },
 
       [Mode.Hunmin]: {
-        graphic: Graphic.Normal,
+        type: Type.Hunmin,
         language: Language.Korean,
         rules: [],
         themeSelect: false,
       },
     };
-    export interface Player {
-      readonly id: string;
-      score: number;
+    export namespace Type {
+      export namespace Serialized {
+        interface Base {
+          readonly prompt: string;
+          readonly players: readonly string[];
+        }
+
+        export interface Relay extends Base {
+          readonly scores: Record<string, number>;
+        }
+      }
+      export interface Serialized {
+        [Type.Relay]: Type.Serialized.Relay;
+        [Type.RelayReversed]: never;
+        [Type.Three]: never;
+        [Type.KKuTu]: never;
+        [Type.ConsonantQuiz]: never;
+        [Type.TypingCompetition]: never;
+        [Type.WordCompetition]: never;
+        [Type.Sock]: never;
+        [Type.DrawingQuiz]: never;
+        [Type.Hunmin]: never;
+      }
     }
-  }
-  export interface Game {
-    prompt: string;
-    players: Game.Player[];
   }
 
   export namespace Room {
@@ -293,10 +347,10 @@ export namespace KKuTu {
     /**
      * 방 안에서 확인할 수 있는 방 정보들.
      */
-    export interface Detailed extends Room {
+    export interface Detailed<T extends Game.Type = Game.Type> extends Room {
       members: Record<string, Member>;
       master: string;
-      game?: Game;
+      game?: Game.Type.Serialized[T];
     }
   }
   export interface Room extends HasId<number>, Room.Base {}

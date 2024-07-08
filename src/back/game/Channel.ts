@@ -7,10 +7,10 @@ import Room from "back/game/Room";
 import Robot from "back/game/Robot";
 import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
+import ImprovedMap from "back/utils/ImprovedMap";
 import WebSocket from "back/utils/WebSocket";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 import { Database } from "../../common/Database";
-import ImprovedMap from "../../common/ImprovedMap";
 import { KKuTu } from "../../common/KKuTu";
 
 import User from "back/models/User";
@@ -18,6 +18,9 @@ import Whisper from "back/models/Whisper";
 import Chat from "back/models/Chat";
 import Report from "back/models/Report";
 import Word from "back/models/Word";
+
+// TODO: 일반화
+import Relay from "back/game/types/Relay";
 
 export default class Channel extends WebSocketServer {
   private static roomIdCount = 99;
@@ -119,7 +122,8 @@ export default class Channel extends WebSocketServer {
 
               if (
                 room.game !== undefined &&
-                room.game.current === user.id &&
+                room.game instanceof Relay && // TODO: 일반화
+                room.game.currentTurn === user.id &&
                 room.game.isSubmitable(message.content)
               ) {
                 room.game.submit(message.content);

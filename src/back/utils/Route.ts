@@ -34,7 +34,7 @@ export default function (App: Express.Application): void {
       return res.redirect("/register");
     }
 
-    return PageBuilder("Game", {
+    return PageBuilder("KKuTu", {
       id: user.id,
       ws: `${WEBSOCKET_PROTOCOL}://${
         SETTINGS.channel[id].hostname || req.hostname
@@ -62,3 +62,4 @@ export default function (App: Express.Application): void {
     return res.sendStatus(200);
   });
 }
+
