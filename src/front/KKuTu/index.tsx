@@ -4,7 +4,7 @@ import Bind from "front/ReactBootstrap";
 import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
 import { getRequiredScore } from "front/@global/Utility";
-import { EventListener } from "front/@global/WebSocket";
+import WebSocket from "front/@global/WebSocket";
 import { Notification } from "front/@global/Bayadere/Notification";
 import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/KKuTu/Menu";
@@ -122,10 +122,10 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
 
   useEffect(() => {
     if (socket === undefined) return;
-    const inviteListener: EventListener<WebSocketMessage.Type.Invite> = async ({
-      user,
-      room,
-    }) => showNotification(new InviteNotification(room, users[user].nickname));
+    const inviteListener: WebSocket.EventListener<
+      WebSocketMessage.Type.Invite
+    > = async ({ user, room }) =>
+      showNotification(new InviteNotification(room, users[user].nickname));
     socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
@@ -134,7 +134,7 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
 
   useEffect(() => {
     if (socket === undefined) return;
-    const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
+    const listener: WebSocket.EventListener<WebSocketMessage.Type.Whisper> = ({
       whisper,
     }) => {
       if (

@@ -3,7 +3,7 @@ import { create as createStoreHook } from "zustand";
 
 import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
-import { EventListener } from "front/@global/WebSocket";
+import WebSocket from "front/@global/WebSocket";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { useStore as useGlobalStore } from "front/KKuTu/Store";
 import { Database } from "common/Database";
@@ -47,9 +47,9 @@ export default class WhisperDialog extends Dialog {
     }, [content]);
 
     useEffect(() => {
-      const listener: EventListener<WebSocketMessage.Type.Whisper> = ({
-        whisper,
-      }) => {
+      const listener: WebSocket.EventListener<
+        WebSocketMessage.Type.Whisper
+      > = ({ whisper }) => {
         append(this.user.id, whisper);
       };
       socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);

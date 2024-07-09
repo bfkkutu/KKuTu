@@ -6,7 +6,7 @@ import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { getLevel } from "front/@global/Utility";
 import ClassName from "front/@global/ClassName";
-import { EventListener } from "front/@global/WebSocket";
+import WebSocket from "front/@global/WebSocket";
 import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
@@ -43,9 +43,9 @@ export namespace Room {
       socket.messageReceiver.on(WebSocketMessage.Type.Ready, ({ member }) =>
         updateMember(member)
       );
-      const onUpdate: EventListener<WebSocketMessage.Type.UpdateRoom> = ({
-        room: data,
-      }) => {
+      const onUpdate: WebSocket.EventListener<
+        WebSocketMessage.Type.UpdateRoom
+      > = ({ room: data }) => {
         if (room.id !== data.id) {
           return;
         }
@@ -81,7 +81,7 @@ export namespace Room {
         audioContext.playEffect("gameStart");
         updateRoom({ ...room, game });
       });
-      const updateAnimation: EventListener<
+      const updateAnimation: WebSocket.EventListener<
         WebSocketMessage.Type.UpdateRoom
       > = ({ room: data }) => {
         if (room.id !== data.id) {
@@ -119,9 +119,9 @@ export namespace Room {
     }, [room]);
 
     useEffect(() => {
-      const onHandover: EventListener<WebSocketMessage.Type.UpdateRoom> = ({
-        room: data,
-      }) => {
+      const onHandover: WebSocket.EventListener<
+        WebSocketMessage.Type.UpdateRoom
+      > = ({ room: data }) => {
         if (room.id !== data.id) {
           return;
         }
