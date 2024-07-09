@@ -102,6 +102,20 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
       setTimeout(() => this.robotSubmit(), 3000);
     }
   }
+  protected override async endRound(): Promise<void> {
+    const score = this.scores.get(this.turn.current);
+    if (score !== undefined) {
+      const loss = Math.round(
+        Math.min(10 + this.history.length * 2.1 + score * 0.15, score)
+      );
+      this.room.broadcast(WebSocketMessage.Type.RoundEnd, {
+        display: await this.getTimeoutHint(),
+        loss,
+      });
+    }
+    super.endRound();
+  }
+
   protected override getDisplay(): string {
     if (this.lastAcceptable === undefined) {
       return this.last;
@@ -124,7 +138,7 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
     }
     return word.data;
   }
-  protected override async getTimeoutHint(): Promise<string | undefined> {
+  private async getTimeoutHint(): Promise<string | undefined> {
     const builder = this.repository
       .createQueryBuilder("w")
       .select(["w.data"])
@@ -220,27 +234,27 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
     this.freeze();
     this.turnTimer.cancel();
     this.roundTime -= this.turnTimer.delay;
-    let gain =
-      ((5 + 7 * word.data.length) ** 0.74 + 0.88 * this.history.length) *
-      (2 - this.turnTimer.delay / this.turnTime) *
-      (15 / (this.counts.get(word.id) + 15));
-    if (this.mission !== undefined) {
-      const match = word.data.match(new RegExp(this.mission, "g"));
-      if (match !== null) {
-        gain += (gain / 2) * match.length;
-        this.mission = this.getMission();
+    const score = this.scores.get(this.turn.current);
+    if (score !== undefined) {
+      let gain =
+        ((5 + 7 * word.data.length) ** 0.74 + 0.88 * this.history.length) *
+        (2 - this.turnTimer.delay / this.turnTime) *
+        (15 / (this.counts.get(word.id) + 15));
+      if (this.mission !== undefined) {
+        const match = word.data.match(new RegExp(this.mission, "g"));
+        if (match !== null) {
+          gain += (gain / 2) * match.length;
+          this.mission = this.getMission();
+        }
       }
+      gain = Math.round(gain);
+      this.scores.set(this.turn.current, score + gain);
+      this.turn.next();
+      this.room.broadcast(WebSocketMessage.Type.TurnEnd, {
+        word: word.serialize(),
+        gain,
+      });
     }
-    gain = Math.round(gain);
-    this.scores.set(
-      this.turn.current,
-      this.scores.get(this.turn.current)! + gain
-    );
-    this.turn.next();
-    this.room.broadcast(WebSocketMessage.Type.TurnEnd, {
-      word: word.serialize(),
-      gain,
-    });
     setTimeout(() => this.startTurn(), this.turnTime / 6);
   }
   protected override async robotSubmit(): Promise<void> {

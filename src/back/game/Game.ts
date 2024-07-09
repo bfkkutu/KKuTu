@@ -71,10 +71,6 @@ abstract class Game<T extends KKuTu.Game.Type>
    * RoundEnd 메시지를 전송한다.
    */
   protected async endRound(): Promise<void> {
-    this.room.broadcast(WebSocketMessage.Type.RoundEnd, {
-      display: await this.getTimeoutHint(),
-      loss: 0,
-    });
     setTimeout(() => {
       if (++this.round < this.room.settings.round) {
         this.startRound();
@@ -83,11 +79,11 @@ abstract class Game<T extends KKuTu.Game.Type>
       this.room.end();
     }, 3000);
   }
+
   protected async getPrompt(): Promise<string | undefined> {
     return "①②③④⑤⑥⑦⑧⑨⑩";
   }
   protected abstract getDisplay(): string;
-  protected abstract getTimeoutHint(): Promise<string | undefined>;
 
   public abstract isSubmitable(content: string): boolean;
   public abstract submit(content: string): Promise<void>;

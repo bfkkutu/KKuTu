@@ -1118,10 +1118,6 @@
 
                 &.loss {
                   color: #f59e9e;
-
-                  &::before {
-                    content: "-";
-                  }
                 }
                 &.gain {
                   color: #2255ff;
