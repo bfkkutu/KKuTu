@@ -524,7 +524,7 @@ export default function Relay() {
                       .else("gain")
                       .toString()}
                   >
-                    {displacement}
+                    {displacement[index]}
                   </div>
                 )}
               </div>
