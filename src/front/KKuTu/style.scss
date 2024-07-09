@@ -882,7 +882,7 @@
                 background-image: url("/media/image/kkutu/gamestart.png");
 
                 &.short {
-                  div {
+                  span {
                     width: 20px;
                   }
 
@@ -896,9 +896,9 @@
                   .submitted {
                     animation: SubmittedShort 100ms linear;
                   }
-                  .mission {
-                    color: #66ff66;
-                  }
+                }
+                .mission {
+                  color: #66ff66;
                 }
 
                 &.submitted {

@@ -1,9 +1,10 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
 import { getLevel } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
+import WebSocket from "front/@global/WebSocket";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
@@ -59,12 +60,21 @@ export default function Relay() {
     content: "",
     isAnimating: false,
   });
-  const [displacement, setDisplacement] = useState<number | undefined>(
-    undefined
+  const [displacement, setDisplacement] = useState<Array<number | undefined>>(
+    []
   );
 
   const timer = useRef<DOMHighResTimeStamp>(0);
   const errorTimeout = useRef<number>();
+
+  const hideDisplacement = useCallback(
+    (index: number) => {
+      const next = [...displacement];
+      next[index] = undefined;
+      setDisplacement(next);
+    },
+    [displacement]
+  );
 
   function tick() {
     setNow(new Date().getTime());
@@ -143,147 +153,189 @@ export default function Relay() {
   }, [display.content]);
 
   useEffect(() => {
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.RoundEnd,
-      ({ display, loss }) => {
-        window.cancelAnimationFrame(timer.current);
-        const id = game.players[turn.player];
-        updateGame({
-          ...game,
-          scores: {
-            ...game.scores,
-            [id]: game.scores[id] - loss,
-          },
-        });
-        setDisplacement(-loss);
-        window.setTimeout(() => setDisplacement(undefined), 2000);
-
-        if (display !== undefined) {
-          window.clearTimeout(errorTimeout.current);
-          setDisplay({
-            type: Display.Type.Timeout,
-            content: display,
-            isAnimating: false,
-            submitting: undefined,
-          });
-        }
-
-        setChain({ history: [], length: 0 });
-        AudioContext.instance.playEffect("timeout");
-      }
-    );
-    socket.messageReceiver.on(
-      WebSocketMessage.Type.TurnEnd,
-      async ({ word, gain }) => {
-        window.cancelAnimationFrame(timer.current);
+    const onRoundEnd: WebSocket.EventListener<
+      WebSocketMessage.Type.RoundEnd
+    > = ({ display }) => {
+      window.cancelAnimationFrame(timer.current);
+      if (display !== undefined) {
         window.clearTimeout(errorTimeout.current);
-        AudioContext.instance.stopAll();
-
-        const id = game.players[turn.player];
-        updateGame({
-          ...game,
-          scores: {
-            ...game.scores,
-            [id]: game.scores[id] + gain,
-          },
-        });
-        setDisplacement(gain);
-        window.setTimeout(() => setDisplacement(undefined), 2000);
         setDisplay({
-          type: Display.Type.None,
-          content: "",
+          type: Display.Type.Timeout,
+          content: display,
           isAnimating: false,
           submitting: undefined,
         });
+      }
 
-        const long = word.data.length > 8;
-        const type = long ? Display.Type.Long : Display.Type.Short;
-        const tick = turn.time / 96;
-        if (long) {
-          vibrate();
+      setChain({ history: [], length: 0 });
+      AudioContext.instance.playEffect("timeout");
+    };
+    const onTurnEnd: WebSocket.EventListener<
+      WebSocketMessage.Type.TurnEnd
+    > = async ({ word }) => {
+      window.cancelAnimationFrame(timer.current);
+      window.clearTimeout(errorTimeout.current);
+      AudioContext.instance.stopAll();
 
-          const tick = turn.time / 12 / word.data.length;
-          for (let i = 1; i <= word.data.length; ++i) {
-            AudioContext.instance.playEffect("submit_long");
-            setDisplay({
-              type,
-              content: word.data.substring(0, i),
-              isAnimating: false,
-              submitting: undefined,
-            });
-            await sleep(tick);
+      setDisplay({
+        type: Display.Type.None,
+        content: "",
+        isAnimating: false,
+        submitting: undefined,
+      });
+
+      const long = word.data.length > 8;
+      const type = long ? Display.Type.Long : Display.Type.Short;
+      const tick = turn.time / 96;
+      if (long) {
+        vibrate();
+
+        const tick = turn.time / 12 / word.data.length;
+        for (let i = 0; i < word.data.length; ++i) {
+          AudioContext.instance.playEffect("submit_long");
+          if (word.data[i] === turn.hint) {
+            AudioContext.instance.playEffect(`submit_mission`);
           }
-
-          async function vibrate(level: number = word.data.length) {
-            if (level < 1) {
-              return;
-            }
-            setVibration(level);
-            await sleep(50);
-            setVibration(0);
-            await sleep(50);
-            vibrate(level * 0.7);
-          }
-        } else {
-          let beat = Display.BEAT[word.data.length];
-          let cursor = 0;
-          for (let i = 0; i < 8; ++i) {
-            if (beat % 0b10) {
-              AudioContext.instance.playEffect(`submit_${turn.speed}`);
-              if (word.data[cursor] === turn.hint) {
-                AudioContext.instance.playEffect(`submit_mission`);
-              }
-              setDisplay({
-                type,
-                content: word.data,
-                isAnimating: false,
-                submitting: cursor++,
-              });
-            }
-            beat >>= 1;
-            await sleep(tick);
-          }
-        }
-
-        AudioContext.instance.playEffect(`submitted_${turn.speed}`);
-        for (let i = 0; i < 3; ++i) {
           setDisplay({
             type,
-            content: word.data,
-            isAnimating: true,
-            submitting: undefined,
-          });
-          await sleep(tick);
-
-          setDisplay({
-            type,
-            content: word.data,
+            content: word.data.substring(0, i + 1),
             isAnimating: false,
             submitting: undefined,
           });
           await sleep(tick);
         }
 
-        const history = [word, ...chain.history];
-        if (history.length > 6) {
-          history.pop();
+        async function vibrate(level: number = word.data.length) {
+          if (level < 1) {
+            return;
+          }
+          setVibration(level);
+          await sleep(50);
+          setVibration(0);
+          await sleep(50);
+          vibrate(level * 0.7);
         }
-        setChain({
-          history,
-          length: chain.length + 1,
-        });
-
-        function sleep(ms: number): Promise<void> {
-          return new Promise((resolve) => window.setTimeout(resolve, ms));
+      } else {
+        let beat = Display.BEAT[word.data.length];
+        let cursor = 0;
+        for (let i = 0; i < 8; ++i) {
+          if (beat % 0b10) {
+            AudioContext.instance.playEffect(`submit_${turn.speed}`);
+            if (word.data[cursor] === turn.hint) {
+              AudioContext.instance.playEffect(`submit_mission`);
+            }
+            setDisplay({
+              type,
+              content: word.data,
+              isAnimating: false,
+              submitting: cursor++,
+            });
+          }
+          beat >>= 1;
+          await sleep(tick);
         }
       }
-    );
+
+      AudioContext.instance.playEffect(`submitted_${turn.speed}`);
+      for (let i = 0; i < 3; ++i) {
+        setDisplay({
+          type,
+          content: word.data,
+          isAnimating: true,
+          submitting: undefined,
+        });
+        await sleep(tick);
+
+        setDisplay({
+          type,
+          content: word.data,
+          isAnimating: false,
+          submitting: undefined,
+        });
+        await sleep(tick);
+      }
+
+      const history = [word, ...chain.history];
+      if (history.length > 6) {
+        history.pop();
+      }
+      setChain({
+        history,
+        length: chain.length + 1,
+      });
+
+      function sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => window.setTimeout(resolve, ms));
+      }
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, onRoundEnd);
+    socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, onTurnEnd);
 
     return () => {
-      socket.messageReceiver.off(WebSocketMessage.Type.RoundEnd);
-      socket.messageReceiver.off(WebSocketMessage.Type.TurnEnd);
+      socket.messageReceiver.off(WebSocketMessage.Type.RoundEnd, onRoundEnd);
+      socket.messageReceiver.off(WebSocketMessage.Type.TurnEnd, onTurnEnd);
     };
-  }, [turn, game]);
+  }, [turn]);
+
+  useEffect(() => {
+    const onRoundEnd: WebSocket.EventListener<
+      WebSocketMessage.Type.RoundEnd
+    > = ({ loss }) => {
+      const id = game.players[turn.player];
+      updateGame({
+        ...game,
+        scores: {
+          ...game.scores,
+          [id]: game.scores[id] - loss,
+        },
+      });
+    };
+    const onTurnEnd: WebSocket.EventListener<WebSocketMessage.Type.TurnEnd> = ({
+      gain,
+    }) => {
+      const id = game.players[turn.player];
+      updateGame({
+        ...game,
+        scores: {
+          ...game.scores,
+          [id]: game.scores[id] + gain,
+        },
+      });
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, onRoundEnd);
+    socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, onTurnEnd);
+
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.RoundEnd, onRoundEnd);
+      socket.messageReceiver.off(WebSocketMessage.Type.TurnEnd, onTurnEnd);
+    };
+  }, [game, turn.player]);
+
+  useEffect(() => {
+    const onRoundEnd: WebSocket.EventListener<
+      WebSocketMessage.Type.RoundEnd
+    > = ({ loss }) => {
+      const next = [...displacement];
+      next[turn.player] = -loss;
+      setDisplacement(next);
+      window.setTimeout(() => hideDisplacement(turn.player), 2000);
+    };
+    const onTurnEnd: WebSocket.EventListener<WebSocketMessage.Type.TurnEnd> = ({
+      gain,
+    }) => {
+      const next = [...displacement];
+      next[turn.player] = gain;
+      setDisplacement(next);
+      window.setTimeout(() => hideDisplacement(turn.player), 2000);
+    };
+    socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, onRoundEnd);
+    socket.messageReceiver.on(WebSocketMessage.Type.TurnEnd, onTurnEnd);
+
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.RoundEnd, onRoundEnd);
+      socket.messageReceiver.off(WebSocketMessage.Type.TurnEnd, onTurnEnd);
+    };
+  }, [turn.player, displacement]);
 
   return (
     <div className="product-body normal">
@@ -319,7 +371,7 @@ export default function Relay() {
             {display.type === Display.Type.Short ? (
               <div className="display ellipse short">
                 {Array.from(display.content).map((character, index) => (
-                  <div
+                  <span
                     key={index}
                     className={new ClassName()
                       .if(turn.hint === character, "mission")
@@ -340,7 +392,7 @@ export default function Relay() {
                       .toString()}
                   >
                     {character}
-                  </div>
+                  </span>
                 ))}
               </div>
             ) : display.type === Display.Type.Long ? (
@@ -349,7 +401,18 @@ export default function Relay() {
                   .if(display.isAnimating, "submitted")
                   .toString()}
               >
-                {display.content}
+                {turn.hint === undefined
+                  ? display.content
+                  : Array.from(display.content).map((character, index) => (
+                      <span
+                        key={index}
+                        className={new ClassName()
+                          .if(turn.hint === character, "mission")
+                          .toString()}
+                      >
+                        {character}
+                      </span>
+                    ))}
               </div>
             ) : (
               <div
@@ -418,14 +481,13 @@ export default function Relay() {
           const level = getLevel(
             room.members[id].isRobot ? 0 : users[id].score
           );
-          const myTurn = game.players[turn.player] === id;
 
           return (
             <div
               key={index}
               className={new ClassName("member")
                 .if(
-                  myTurn,
+                  game.players[turn.player] === id,
                   new ClassName()
                     .if(display.type === Display.Type.Timeout, "timeout")
                     .else("current")
@@ -455,16 +517,16 @@ export default function Relay() {
               </div>
               <div className="score">
                 {game.scores[id].toString().padStart(5, "0")}
-                {myTurn && displacement !== undefined ? (
+                {displacement[index] === undefined ? null : (
                   <div
                     className={new ClassName("displacement")
-                      .if(displacement < 0, "loss")
+                      .if(displacement[index] < 0, "loss")
                       .else("gain")
                       .toString()}
                   >
                     {displacement}
                   </div>
-                ) : null}
+                )}
               </div>
             </div>
           );
