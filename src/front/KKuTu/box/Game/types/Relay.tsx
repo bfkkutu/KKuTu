@@ -23,7 +23,6 @@ namespace Relay {
     time: number;
     roundTime: number;
     at: number;
-    displacement?: number;
   }
   export interface Chain {
     readonly history: Database.Word[];
@@ -60,6 +59,9 @@ export default function Relay() {
     content: "",
     isAnimating: false,
   });
+  const [displacement, setDisplacement] = useState<number | undefined>(
+    undefined
+  );
 
   const timer = useRef<DOMHighResTimeStamp>(0);
   const errorTimeout = useRef<number>();
@@ -91,7 +93,6 @@ export default function Relay() {
           time,
           roundTime,
           at,
-          displacement: undefined,
         });
         setDisplay({
           type: Display.Type.None,
@@ -103,6 +104,15 @@ export default function Relay() {
         AudioContext.instance.play(`turn_${speed}`);
       }
     );
+
+    return () => {
+      window.cancelAnimationFrame(timer.current);
+      socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
+      socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
+    };
+  }, []);
+
+  useEffect(() => {
     socket.messageReceiver.on(
       WebSocketMessage.Type.TurnError,
       ({ errorType, display: content }) => {
@@ -127,13 +137,10 @@ export default function Relay() {
       }
     );
 
-    () => {
-      window.cancelAnimationFrame(timer.current);
-      socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
-      socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
+    return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.TurnError);
     };
-  }, []);
+  }, [display.content]);
 
   useEffect(() => {
     socket.messageReceiver.on(
@@ -148,11 +155,8 @@ export default function Relay() {
             [id]: game.scores[id] - loss,
           },
         });
-        setTurn({ ...turn, displacement: loss });
-        window.setTimeout(
-          () => setTurn({ ...turn, displacement: undefined }),
-          2000
-        );
+        setDisplacement(-loss);
+        window.setTimeout(() => setDisplacement(undefined), 2000);
 
         if (display !== undefined) {
           window.clearTimeout(errorTimeout.current);
@@ -183,11 +187,8 @@ export default function Relay() {
             [id]: game.scores[id] + gain,
           },
         });
-        setTurn({ ...turn, displacement: gain });
-        window.setTimeout(
-          () => setTurn({ ...turn, displacement: undefined }),
-          2000
-        );
+        setDisplacement(gain);
+        window.setTimeout(() => setDisplacement(undefined), 2000);
         setDisplay({
           type: Display.Type.None,
           content: "",
@@ -454,14 +455,14 @@ export default function Relay() {
               </div>
               <div className="score">
                 {game.scores[id].toString().padStart(5, "0")}
-                {myTurn && turn.displacement !== undefined ? (
+                {myTurn && displacement !== undefined ? (
                   <div
                     className={new ClassName("displacement")
-                      .if(turn.displacement < 0, "loss")
+                      .if(displacement < 0, "loss")
                       .else("gain")
                       .toString()}
                   >
-                    {turn.displacement}
+                    {displacement}
                   </div>
                 ) : null}
               </div>

@@ -152,19 +152,6 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
     }
     return word.data;
   }
-  protected override getScore(word: Word): number {
-    let R =
-      ((5 + 7 * word.data.length) ** 0.74 + 0.88 * this.history.length) *
-      (2 - this.turnTimer.delay / this.turnTime) *
-      (15 / (this.counts.get(word.id) + 15));
-    if (this.mission !== undefined) {
-      const match = word.data.match(new RegExp(this.mission, "g"));
-      if (match !== null) {
-        R += (R / 2) * match.length;
-      }
-    }
-    return Math.round(R);
-  }
 
   public override isSubmitable(content: string): boolean {
     if (content.length < 2) {
@@ -233,7 +220,18 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
     this.freeze();
     this.turnTimer.cancel();
     this.roundTime -= this.turnTimer.delay;
-    const gain = this.getScore(word);
+    let gain =
+      ((5 + 7 * word.data.length) ** 0.74 + 0.88 * this.history.length) *
+      (2 - this.turnTimer.delay / this.turnTime) *
+      (15 / (this.counts.get(word.id) + 15));
+    if (this.mission !== undefined) {
+      const match = word.data.match(new RegExp(this.mission, "g"));
+      if (match !== null) {
+        gain += (gain / 2) * match.length;
+        this.mission = this.getMission();
+      }
+    }
+    gain = Math.round(gain);
     this.scores.set(
       this.turn.current,
       this.scores.get(this.turn.current)! + gain

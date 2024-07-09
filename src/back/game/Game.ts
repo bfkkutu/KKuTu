@@ -88,7 +88,6 @@ abstract class Game<T extends KKuTu.Game.Type>
   }
   protected abstract getDisplay(): string;
   protected abstract getTimeoutHint(): Promise<string | undefined>;
-  protected abstract getScore(word: Word): number;
 
   public abstract isSubmitable(content: string): boolean;
   public abstract submit(content: string): Promise<void>;
