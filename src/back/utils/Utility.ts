@@ -115,20 +115,12 @@ export function orderByString<T>(
 export function reduceToTable<T, U, V extends number | string>(
   target: T[],
   placer: (v: T, i: number, my: T[]) => U,
-  keyPlacer?: (v: T, i: number, my: T[]) => V
+  keyPlacer: (v: T, i: number, my: T[]) => V = (v) => String(v) as V
 ): { [key in V]: U } {
-  return target.reduce(
-    keyPlacer
-      ? (pv, v, i, my) => {
-          pv[keyPlacer(v, i, my)] = placer(v, i, my);
-          return pv;
-        }
-      : (pv, v, i, my) => {
-          pv[String(v) as V] = placer(v, i, my);
-          return pv;
-        },
-    {} as { [key in V]: U }
-  );
+  return target.reduce((pv, v, i, my) => {
+    pv[keyPlacer(v, i, my)] = placer(v, i, my);
+    return pv;
+  }, {} as { [key in V]: U });
 }
 /**
  * 문자열 내 단일 샤프 인자들을 추가 정보로 대체시켜 반환한다.
@@ -157,7 +149,11 @@ export function fillWithDefaults<T extends object>(
   object: Partial<T>,
   defaults: T
 ): void {
-  for (const key in defaults) if (!(key in object)) object[key] = defaults[key];
+  for (const key in defaults) {
+    if (!(key in object)) {
+      object[key] = defaults[key];
+    }
+  }
 }
 /**
  * 두음법칙.
@@ -192,3 +188,4 @@ export function getAcceptable(character: string): string | undefined {
       return String.fromCharCode(code - 1764);
   }
 }
+

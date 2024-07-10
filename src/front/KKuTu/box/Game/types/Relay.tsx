@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
-import { getLevel } from "front/@global/Utility";
+import { getLevel, Iterator } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
 import WebSocket from "front/@global/WebSocket";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
@@ -348,18 +348,16 @@ export default function Relay() {
         <div className="stage">
           <div className="top">
             <div className="rounds">
-              {Array(room.round)
-                .fill(null)
-                .map((_, index) => (
-                  <div
-                    key={index}
-                    className={new ClassName("item")
-                      .if(round === index, "current")
-                      .toString()}
-                  >
-                    {game.prompt[index]}
-                  </div>
-                ))}
+              {Iterator(room.round).map((_, index) => (
+                <div
+                  key={index}
+                  className={new ClassName("item")
+                    .if(round === index, "current")
+                    .toString()}
+                >
+                  {game.prompt[index]}
+                </div>
+              ))}
             </div>
             <div className="character">
               <img className="eye-left" src="/media/image/ui/jjoeyeL.png" />

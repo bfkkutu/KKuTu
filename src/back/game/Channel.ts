@@ -184,6 +184,12 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
+              if (room.isGaming) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
               room.configure(message.settings);
               room.update();
               this.updateRoomList();
@@ -299,6 +305,12 @@ export default class Channel extends WebSocketServer {
                 });
               }
 
+              if (room.isGaming) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+              }
+
               const target = room.get(message.target);
               if (target === undefined || target.user.roomId === undefined) {
                 return socket.sendError(WebSocketError.Type.NotFound, {
@@ -332,6 +344,12 @@ export default class Channel extends WebSocketServer {
 
               if (room.master !== user.id) {
                 return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.isGaming) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
               }
@@ -417,6 +435,12 @@ export default class Channel extends WebSocketServer {
 
               if (room.master !== user.id) {
                 return socket.sendError(WebSocketError.Type.Forbidden, {
+                  isFatal: false,
+                });
+              }
+
+              if (room.isGaming) {
+                return socket.sendError(WebSocketError.Type.BadRequest, {
                   isFatal: false,
                 });
               }

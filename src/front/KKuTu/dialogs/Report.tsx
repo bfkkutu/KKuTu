@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 
-import { Database } from "common/Database";
-import { WebSocketMessage } from "../../../common/WebSocket";
 import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Iterator } from "front/@global/Utility";
 import { useStore } from "front/KKuTu/Store";
+import { Database } from "common/Database";
+import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class ReportDialog extends Dialog {
   private target: Database.User.Summarized;
@@ -41,13 +42,11 @@ export default class ReportDialog extends Dialog {
               value={reason}
               onChange={(e) => setReason(parseInt(e.currentTarget.value))}
             >
-              {Array(4)
-                .fill(null)
-                .map((_, index) => (
-                  <option key={index} value={index}>
-                    {L.get(`report_reason_${index}`)}
-                  </option>
-                ))}
+              {Iterator(4).map((_, index) => (
+                <option key={index} value={index}>
+                  {L.get(`report_reason_${index}`)}
+                </option>
+              ))}
             </select>
           </label>
           <label className="item-wrapper-center">
