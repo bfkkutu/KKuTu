@@ -59,9 +59,9 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
   }
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {
-    super(room, clients, robots);
+    super(room, clients);
 
-    this.manner = DB.Manager.getRepository(Cache.Manner[this.mode.language]);
+    this.manner = DB.Manager.getRepository(this.getMannerEntity());
     const players = [...clients.map((client) => client.user.id), ...robots].map(
       (id) => id
     );
@@ -70,11 +70,22 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
       this.scores.set(id, 0);
     }
   }
+  private getMannerEntity(): typeof Cache.Manner {
+    if (
+      this.mode.language === KKuTu.Game.Language.Korean &&
+      this.room.settings.rules.noInitial
+    ) {
+      return Cache.Manner.koNoInitial;
+    }
+    return Cache.Manner[this.mode.language];
+  }
 
   protected override startRound(): void {
     this.history.length = 0;
     this.last = this.prompt[this.round];
-    this.lastAcceptable = getAcceptable(this.last);
+    if (!this.room.settings.rules.noInitial) {
+      this.lastAcceptable = getAcceptable(this.last);
+    }
     if (this.room.settings.rules.mission) {
       this.mission = this.getMission();
     }
@@ -292,7 +303,9 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
     this.counts.set(word.id, this.counts.get(word.id) + 1);
     this.history.push(word.id);
     this.last = word.data.at(-1)!;
-    this.lastAcceptable = getAcceptable(this.last);
+    if (!this.room.settings.rules.noInitial) {
+      this.lastAcceptable = getAcceptable(this.last);
+    }
   }
   public getMission(): string {
     const TABLE = Relay.MISSION[this.mode.language];

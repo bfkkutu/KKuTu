@@ -5,6 +5,7 @@ import { KKuTu } from "../../../common/KKuTu";
 
 export default class Manner {
   public static ko: typeof Manner;
+  public static koNoInitial: typeof Manner;
   public static en: typeof Manner;
 
   @TypeORM.PrimaryGeneratedColumn({ name: "c_m_id", type: "int8" })
@@ -36,4 +37,8 @@ for (const language of Object.values(KKuTu.Game.Language)) {
   class Entity extends Manner {}
   Manner[language] = Entity;
 }
+
+@TypeORM.Entity({ name: "kkutu_cache_manner_koNoInitial" })
+class koNoInitial extends Manner {}
+Manner.koNoInitial = koNoInitial;
 

@@ -28,6 +28,7 @@ export default class DB {
       ...KKuTu.Game.LANGUAGES.map((v) => Word[v]),
       ...KKuTu.Game.LANGUAGES.map((v) => Mean[v]),
       ...KKuTu.Game.LANGUAGES.map((v) => Cache.Manner[v]),
+      Cache.Manner.koNoInitial,
     ],
   });
 

@@ -140,7 +140,7 @@ export namespace KKuTu {
       /**
        * 두음 법칙 없음
        */
-      //NoInitial = "noInitial",
+      NoInitial = "noInitial",
       /**
        * 글자 금지
        */
@@ -173,8 +173,7 @@ export namespace KKuTu {
           Rule.Manner,
           Rule.Wide,
           Rule.Mission,
-          Rule.Dismission,
-          //Rule.NoInitial,
+          Rule.NoInitial,
           Rule.Item,
         ],
         themeSelect: false,
@@ -231,7 +230,7 @@ export namespace KKuTu {
       [Mode.EnglishRelay]: {
         type: Type.Relay,
         language: Language.English,
-        rules: [Rule.Wide, Rule.Mission, Rule.Dismission],
+        rules: [Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.EnglishKKuTu]: {

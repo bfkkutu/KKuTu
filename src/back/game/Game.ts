@@ -36,7 +36,7 @@ abstract class Game<T extends KKuTu.Game.Type>
   protected round: number;
   protected roundTime = 0;
 
-  constructor(room: Room, clients: WebSocket[], robots: string[]) {
+  constructor(room: Room, clients: WebSocket[]) {
     super();
 
     this.room = room;
