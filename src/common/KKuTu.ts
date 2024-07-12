@@ -120,7 +120,7 @@ export namespace KKuTu {
       /**
        * 어인정
        */
-      WideTheme = "wide",
+      Wide = "wide",
       /**
        * 미션
        */
@@ -171,8 +171,9 @@ export namespace KKuTu {
         language: Language.Korean,
         rules: [
           Rule.Manner,
-          Rule.WideTheme,
+          Rule.Wide,
           Rule.Mission,
+          Rule.Dismission,
           //Rule.NoInitial,
           Rule.Item,
         ],
@@ -181,19 +182,19 @@ export namespace KKuTu {
       [Mode.KoreanRelayReversed]: {
         type: Type.RelayReversed,
         language: Language.Korean,
-        rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
+        rules: [Rule.Manner, Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanThree]: {
         type: Type.Three,
         language: Language.Korean,
-        rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
+        rules: [Rule.Manner, Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanKKuTu]: {
         type: Type.KKuTu,
         language: Language.Korean,
-        rules: [Rule.Manner, Rule.WideTheme, Rule.Mission],
+        rules: [Rule.Manner, Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanConsonantQuiz]: {
@@ -230,7 +231,7 @@ export namespace KKuTu {
       [Mode.EnglishRelay]: {
         type: Type.Relay,
         language: Language.English,
-        rules: [],
+        rules: [Rule.Wide, Rule.Mission, Rule.Dismission],
         themeSelect: false,
       },
       [Mode.EnglishKKuTu]: {

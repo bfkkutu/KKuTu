@@ -191,7 +191,7 @@ export default class Room
    * 게임을 시작한다.
    */
   public start(): void {
-    this.game = new TYPES[this.settings.mode](
+    this.game = new TYPES[KKuTu.Game.MODES[this.settings.mode].type](
       this,
       this.clients.valuesAsArray().reduce((prev, client) => {
         if (client.user.roomId === undefined) {
