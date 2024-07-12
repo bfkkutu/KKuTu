@@ -75,7 +75,9 @@ class Relay extends Game<KKuTu.Game.Type.Relay> implements Chainable, Mission {
     this.history.length = 0;
     this.last = this.prompt[this.round];
     this.lastAcceptable = getAcceptable(this.last);
-    this.mission = this.getMission();
+    if (this.room.settings.rules.mission) {
+      this.mission = this.getMission();
+    }
     return super.startRound();
   }
   protected override startTurn(): void {
