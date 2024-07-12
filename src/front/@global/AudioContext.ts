@@ -63,6 +63,12 @@ class AudioContext extends C {
       audioSource.start();
     });
   }
+  public isPlaying(id?: string): boolean {
+    if (id === undefined) {
+      return Object.keys(this.playing).length !== 0;
+    }
+    return id in this.playing;
+  }
   /**
    * 오디오 재생을 중단한다.
    *
@@ -70,7 +76,7 @@ class AudioContext extends C {
    * @returns 중단 여부
    */
   public stop(id: string): boolean {
-    if (id in this.playing) {
+    if (this.isPlaying(id)) {
       this.playing[id].stop();
       this.playing[id].disconnect();
       return delete this.playing[id];
@@ -86,3 +92,4 @@ class AudioContext extends C {
   }
 }
 export default AudioContext;
+

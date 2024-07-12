@@ -206,7 +206,7 @@ export namespace Menu {
             > = {};
             switch (config.type) {
               case Type.Settings:
-                props.onClick = () => toggle(SettingsDialog.instance);
+                props.onClick = () => toggle(new SettingsDialog(me.settings));
                 break;
               case Type.Community:
                 props.onClick = () => toggle(CommunityDialog.instance);

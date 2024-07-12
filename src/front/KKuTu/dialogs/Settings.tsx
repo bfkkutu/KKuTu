@@ -9,7 +9,17 @@ import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class SettingsDialog extends Dialog {
-  public static readonly instance = new SettingsDialog();
+  /**
+   * Dialog 생성 당시 설정 값.
+   */
+  private readonly settings: Database.JSON.Types.User.settings;
+  private isSaving = false;
+
+  constructor(settings: Database.JSON.Types.User.settings) {
+    super();
+
+    this.settings = { ...settings };
+  }
 
   protected override head(): React.ReactElement {
     return <>{L.render("settings_title")}</>;
@@ -71,9 +81,8 @@ export default class SettingsDialog extends Dialog {
               value={me.settings.effectVolume}
               onChange={(e) =>
                 updateSettings({
-                  effectVolume: parseFloat(
-                    e.currentTarget.value.substring(0, 4)
-                  ),
+                  effectVolume: (AudioContext.instance.effectVolume =
+                    parseFloat(e.currentTarget.value.substring(0, 4))),
                 })
               }
             />
@@ -86,12 +95,15 @@ export default class SettingsDialog extends Dialog {
               id="settings-select-bgm"
               value={me.settings.lobbyMusic}
               onChange={(e) => {
-                AudioContext.instance.stop(`lobby_${me.settings.lobbyMusic}`);
                 const lobbyMusic = parseInt(e.currentTarget.value);
+                const id = `lobby_${me.settings.lobbyMusic}`;
+                if (AudioContext.instance.isPlaying(id)) {
+                  AudioContext.instance.stop(id);
+                  AudioContext.instance.play(`lobby_${lobbyMusic}`, true);
+                }
                 updateSettings({
                   lobbyMusic,
                 });
-                AudioContext.instance.play(`lobby_${lobbyMusic}`, true);
               }}
             >
               {Object.keys(CLIENT_SETTINGS.sounds)
@@ -234,12 +246,6 @@ export default class SettingsDialog extends Dialog {
         <div className="footer buttons">
           <button
             type="button"
-            onClick={() => window.alert("이동 가능한 채널이 없습니다.")}
-          >
-            {L.get("moveServer")}
-          </button>
-          <button
-            type="button"
             disabled={!valueChanged}
             onClick={async () => {
               socket.send(WebSocketMessage.Type.UpdateSettings, {
@@ -248,8 +254,9 @@ export default class SettingsDialog extends Dialog {
               await socket.messageReceiver.wait(
                 WebSocketMessage.Type.UpdateSettings
               );
+              this.isSaving = true;
               this.hide();
-              window.alert("변경 사항이 저장되었습니다.");
+              window.alert(L.get("settings_alert_saved"));
             }}
           >
             {L.get("save")}
@@ -257,6 +264,21 @@ export default class SettingsDialog extends Dialog {
         </div>
       </div>
     );
+  }
+
+  public override onHide() {
+    if (!this.isSaving) {
+      const state = useStore.getState();
+      AudioContext.instance.volume = this.settings.bgmVolume;
+      AudioContext.instance.effectVolume = this.settings.effectVolume;
+      useStore.setState({
+        ...state,
+        me: {
+          ...state.me,
+          settings: this.settings,
+        },
+      });
+    }
   }
 }
 
