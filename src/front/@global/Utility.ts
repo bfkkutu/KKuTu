@@ -60,12 +60,3 @@ export class ChainedFunction<P extends Array<any>> {
     f(this.continue.bind(this));
   }
 }
-/**
- * 배열을 생성해 반환한다.
- *
- * @param length 배열의 길이.
- * @param fill 배열의 내용.
- */
-export function Iterator<T = undefined>(length: number, fill?: T): T[] {
-  return Array(length).fill(fill);
-}

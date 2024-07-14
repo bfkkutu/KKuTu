@@ -2,9 +2,9 @@ import React, { useState } from "react";
 
 import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { Iterator } from "front/@global/Utility";
 import { useStore } from "front/KKuTu/Store";
 import { Database } from "common/Database";
+import { Iterator } from "../../../common/Utility";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class ReportDialog extends Dialog {

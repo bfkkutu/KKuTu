@@ -122,8 +122,9 @@ export default class Channel extends WebSocketServer {
 
               if (
                 room.game !== undefined &&
-                room.game instanceof Relay && // TODO: 일반화
-                room.game.currentTurn === user.id &&
+                ("currentTurn" in room.game
+                  ? room.game.currentTurn === user.id
+                  : true) &&
                 room.game.isSubmitable(message.content)
               ) {
                 room.game.submit(message.content);

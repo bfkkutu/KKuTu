@@ -95,15 +95,19 @@ export namespace Dialog {
   export const useStore = create<State>((setState) => ({
     dialogs: [],
     show: (dialog) => {
+      if (dialog.visible) {
+        return;
+      }
       hideActive.push(createChain(dialog));
       dialog.initialize();
       dialog.visible = true;
       setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
     },
     hide: (dialog) => {
-      if (dialog.visible) {
-        dialog.onHide?.();
+      if (!dialog.visible) {
+        return;
       }
+      dialog.onHide?.();
       dialog.visible = false;
       setState(({ dialogs }) => ({
         dialogs: dialogs.filter((v) => v !== dialog),

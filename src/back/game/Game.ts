@@ -115,6 +115,7 @@ abstract class Game<T extends KKuTu.Game.Type>
   public has(id: string): boolean {
     return this.clients.has(id);
   }
+  public destruct(): void {}
 
   public abstract serialize(): KKuTu.Game.Type.Serialized[T];
 }
@@ -137,6 +138,127 @@ namespace Game {
       this.at = this.now;
     }
   }
+
+  export function HasTurn(cls: any): any {
+    return class extends cls {
+      private declare readonly turn: Turn.Iterator;
+      private declare readonly turnTimer: Game.Scheduler;
+      private declare roundTime: number;
+      private declare turnTime: number;
+
+      protected get speed(): number {
+        if (this.roundTime < 5000) {
+          return 10;
+        } else if (this.roundTime < 11000) {
+          return 9;
+        } else if (this.roundTime < 18000) {
+          return 8;
+        } else if (this.roundTime < 26000) {
+          return 7;
+        } else if (this.roundTime < 35000) {
+          return 6;
+        } else if (this.roundTime < 45000) {
+          return 5;
+        } else if (this.roundTime < 56000) {
+          return 4;
+        } else if (this.roundTime < 68000) {
+          return 3;
+        } else if (this.roundTime < 81000) {
+          return 2;
+        } else if (this.roundTime < 95000) {
+          return 1;
+        } else {
+          return 0;
+        }
+      }
+      public get currentTurn(): string {
+        return this.turn.current;
+      }
+    };
+  }
+  export namespace Turn {
+    export class Iterator {
+      private readonly players: string[];
+      private cursor: number = 0;
+
+      public get current(): string {
+        return this.players[this.cursor];
+      }
+
+      constructor(players: string[]) {
+        this.players = players;
+      }
+
+      public next(): string {
+        this.cursor = (this.cursor + 1) % this.players.length;
+        return this.current;
+      }
+      public push(id: string): void {
+        this.players.push(id);
+      }
+      public remove(id: string): void {
+        const index = this.players.findIndex((v) => v === id);
+        this.players.splice(index, 1);
+        if (this.cursor < index) {
+          return;
+        }
+        --this.cursor;
+      }
+      public indexOf(id?: string): number {
+        return id === undefined ? this.cursor : this.players.indexOf(id);
+      }
+      public toArray(): readonly string[] {
+        return this.players;
+      }
+    }
+  }
+
+  export const MISSION = {
+    [KKuTu.Game.Language.Korean]: [
+      "가",
+      "나",
+      "다",
+      "라",
+      "마",
+      "바",
+      "사",
+      "아",
+      "자",
+      "차",
+      "카",
+      "타",
+      "파",
+      "하",
+    ],
+    [KKuTu.Game.Language.English]: [
+      "a",
+      "b",
+      "c",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "l",
+      "m",
+      "n",
+      "o",
+      "p",
+      "q",
+      "r",
+      "s",
+      "t",
+      "u",
+      "v",
+      "w",
+      "x",
+      "y",
+      "z",
+    ],
+  };
 }
 
 export default Game;

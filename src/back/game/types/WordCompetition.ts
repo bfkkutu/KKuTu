@@ -1,45 +1,47 @@
-import * as TypeORM from "typeorm";
-
 import Game from "back/game/Game";
 import Room from "back/game/Room";
 import Chainable from "back/game/types/mixins/Chainable";
 import Mission from "back/game/types/mixins/Mission";
 import DB from "back/utils/Database";
 import WebSocket from "back/utils/WebSocket";
-import { getAcceptable, random } from "back/utils/Utility";
+import { random } from "back/utils/Utility";
 import ImprovedMap from "back/utils/ImprovedMap";
 import DefaultDictionary from "back/utils/DefaultDictionary";
 import Word from "back/models/Word";
-import * as Cache from "back/models/cache";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
+import { Iterator } from "../../../common/Utility";
 
 @Game.HasTurn
-export default class Relay
-  extends Game<KKuTu.Game.Type.Relay>
+export default class WordCompetition
+  extends Game<KKuTu.Game.Type.WordCompetition>
   implements Chainable, Mission
 {
-  private readonly manner: TypeORM.Repository<Cache.Manner>;
+  private declare memory: DB.Memory.Repository<Word>;
   private readonly turn: Game.Turn.Iterator;
   private readonly turnTimer = new Game.Scheduler(this);
   private turnTime = 0;
   private readonly scores = new ImprovedMap<string, number>();
   private readonly counts = new DefaultDictionary<string, number>(0);
+  private readonly themes: string[];
   /**
    * 현재 round의 chain history.
    */
   private readonly history: string[] = [];
-  private last: string = "";
-  private lastAcceptable?: string;
   private mission?: string;
 
   private declare speed: number;
   public declare currentTurn: string;
+  private get id(): string {
+    return `${this.mode.language}_${this.theme}`;
+  }
+  private get theme(): string {
+    return this.themes[this.round];
+  }
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {
     super(room, clients);
 
-    this.manner = DB.Manager.getRepository(this.getMannerEntity());
     const players = [...clients.map((client) => client.user.id), ...robots].map(
       (id) => id
     );
@@ -47,23 +49,19 @@ export default class Relay
     for (const id of players) {
       this.scores.set(id, 0);
     }
-  }
-  private getMannerEntity(): typeof Cache.Manner {
-    if (
-      this.mode.language === KKuTu.Game.Language.Korean &&
-      this.room.settings.rules.noInitial
-    ) {
-      return Cache.Manner.koNoInitial;
-    }
-    return Cache.Manner[this.mode.language];
+    const THEMES = this.room.settings.themes || KKuTu.Game.THEMES;
+    this.themes = Iterator(this.room.settings.round).map(() => random(THEMES));
   }
 
-  protected override startRound(): void {
+  protected override async startRound(): Promise<void> {
+    this.memory = await DB.Memory.load(
+      this.id,
+      this.repository
+        .createQueryBuilder("w")
+        .innerJoinAndSelect("w.means", "m")
+        .where("m.theme = :theme", { theme: this.theme })
+    );
     this.history.length = 0;
-    this.last = this.prompt[this.round];
-    if (!this.room.settings.rules.noInitial) {
-      this.lastAcceptable = getAcceptable(this.last);
-    }
     if (this.room.settings.rules.mission) {
       this.mission = this.getMission();
     }
@@ -94,6 +92,7 @@ export default class Relay
     }
   }
   protected override async endRound(): Promise<void> {
+    DB.Memory.unload(this.id);
     const score = this.scores.get(this.turn.current);
     if (score !== undefined) {
       const loss = Math.round(
@@ -108,112 +107,24 @@ export default class Relay
   }
 
   protected override getDisplay(): string {
-    if (this.lastAcceptable === undefined) {
-      return this.last;
-    }
-    return `${this.last}(${this.lastAcceptable})`;
-  }
-  protected override async getPrompt(): Promise<string | undefined> {
-    const builder = this.repository
-      .createQueryBuilder("w")
-      .select(["w.data"])
-      .where("LENGTH(w.data) = :length", { length: this.room.settings.round })
-      .orderBy("RANDOM()")
-      .limit(1);
-    if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
-    }
-    const word = await builder.getOne();
-    if (word === null) {
-      return undefined;
-    }
-    return word.data;
+    return this.theme;
   }
   private async getTimeoutHint(): Promise<string | undefined> {
-    const builder = this.repository
-      .createQueryBuilder("w")
-      .select(["w.data"])
-      .where(
-        new TypeORM.Brackets((query) => {
-          query.where("w.data LIKE :last", {
-            last: `${this.last}%`,
-          });
-          if (this.lastAcceptable !== undefined) {
-            query.orWhere("w.data LIKE :acceptable", {
-              acceptable: `${this.lastAcceptable}%`,
-            });
-          }
-        })
-      )
-      .andWhere("LENGTH(w.data) > 1")
-      .orderBy("RANDOM()")
-      .limit(1);
-    if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
-    }
-    const word = await builder.getOne();
-    if (word === null) {
-      return undefined;
-    }
-    return word.data;
+    return this.memory.random();
   }
 
-  public override isSubmitable(content: string): boolean {
-    if (content.length < 2) {
-      return false;
-    }
-    return (
-      content.startsWith(this.last) ||
-      (this.lastAcceptable !== undefined &&
-        content.startsWith(this.lastAcceptable))
-    );
+  public override isSubmitable(): boolean {
+    return true;
   }
   public override async submit(content: string): Promise<void> {
-    const builder = this.repository
-      .createQueryBuilder("w")
-      .where("w.data = :data", { data: content })
-      .innerJoinAndSelect("w.means", "m");
-    if (!this.room.settings.rules.wide) {
-      builder.andWhere("m.wide = false");
-    }
-    const word = await builder.getOne();
-    if (word === null) {
+    if (!this.memory.has(content)) {
       this.room.broadcast(WebSocketMessage.Type.TurnError, {
         errorType: "invalid",
         display: content,
       });
       return;
     }
-    if (this.room.settings.rules.manner) {
-      const last = word.data.at(-1)!;
-      let cache = await this.manner
-        .createQueryBuilder("c_m")
-        .select(["c_m.modes"])
-        .where("c_m.last = :last", { last })
-        .getOne();
-      if (cache === null) {
-        // cache miss
-        cache = new Cache.Manner();
-        cache.last = last;
-        cache.modes = [];
-        if (
-          !(await this.repository
-            .createQueryBuilder("w")
-            .where("w.data LIKE :last", { last: `${last}%` })
-            .getExists())
-        ) {
-          cache.modes.push(this.room.settings.mode);
-        }
-        await this.manner.save(cache);
-      }
-      if (cache.modes.includes(this.room.settings.mode)) {
-        this.room.broadcast(WebSocketMessage.Type.TurnError, {
-          errorType: "manner",
-          display: content,
-        });
-        return;
-      }
-    }
+    const word = this.memory.get(content);
     if (this.history.includes(word.id)) {
       this.room.broadcast(WebSocketMessage.Type.TurnError, {
         errorType: "inHistory",
@@ -249,41 +160,12 @@ export default class Relay
     setTimeout(() => this.startTurn(), this.turnTime / 6);
   }
   protected override async robotSubmit(): Promise<void> {
-    const builder = this.repository
-      .createQueryBuilder("w")
-      .select(["w.data"])
-      .where(
-        new TypeORM.Brackets((query) => {
-          query.where("w.data LIKE :last", {
-            last: `${this.last}%`,
-          });
-          if (this.lastAcceptable !== undefined) {
-            query.orWhere("w.data LIKE :acceptable", {
-              acceptable: `${this.lastAcceptable}%`,
-            });
-          }
-        })
-      )
-      .andWhere("LENGTH(w.data) > 1")
-      .orderBy("RANDOM()")
-      .limit(1);
-    if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
-    }
-    const word = await builder.getOne();
-    if (word === null) {
-      return;
-    }
-    this.submit(word.data);
+    this.submit(this.memory.random());
   }
 
   public chain(word: Word): void {
     this.counts.set(word.id, this.counts.get(word.id) + 1);
     this.history.push(word.id);
-    this.last = word.data.at(-1)!;
-    if (!this.room.settings.rules.noInitial) {
-      this.lastAcceptable = getAcceptable(this.last);
-    }
   }
   public getMission(): string {
     const TABLE = Game.MISSION[this.mode.language];
@@ -308,8 +190,11 @@ export default class Relay
     this.turn.remove(id);
     this.scores.delete(id);
   }
+  public override destruct(): void {
+    DB.Memory.unload(this.id);
+  }
 
-  public override serialize(): KKuTu.Game.Type.Serialized.Relay {
+  public override serialize(): KKuTu.Game.Type.Serialized.WordCompetition {
     return {
       prompt: this.prompt,
       players: this.turn.toArray(),

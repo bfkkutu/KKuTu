@@ -17,7 +17,7 @@ import { Database } from "common/Database";
 import { Iterator } from "../../../../../common/Utility";
 import { WebSocketMessage } from "../../../../../common/WebSocket";
 
-namespace Relay {
+namespace WordCompetition {
   export interface Turn {
     hint?: string;
     player: number;
@@ -31,7 +31,7 @@ namespace Relay {
     length: number;
   }
 }
-export default function Relay() {
+export default function WordCompetition() {
   const socket = useStore((state) => state.socket);
   const id = useStore((state) => state.me.id);
   const users = useStore((state) => state.users);
@@ -45,14 +45,14 @@ export default function Relay() {
   );
   const [now, setNow] = useState(0);
   const [round, setRound] = useState(0);
-  const [turn, setTurn] = useState<Relay.Turn>({
+  const [turn, setTurn] = useState<WordCompetition.Turn>({
     player: 0,
     speed: 0,
     time: 0,
     roundTime: 0,
     at: 0,
   });
-  const [chain, setChain] = useState<Relay.Chain>({
+  const [chain, setChain] = useState<WordCompetition.Chain>({
     history: [],
     length: 0,
   });
@@ -107,7 +107,7 @@ export default function Relay() {
         });
         setDisplay({
           type: Display.Type.None,
-          content: display,
+          content: `〈${L.get(`theme_${display}`)}〉`,
           isAnimating: false,
           submitting: undefined,
         });

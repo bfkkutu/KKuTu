@@ -2,11 +2,12 @@ import React from "react";
 import sha256 from "sha256";
 
 import L from "front/@global/Language";
+import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Mode from "front/@block/Mode";
 import { Icon, IconType } from "front/@block/Icon";
 import { useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
-import { KKuTu } from "common/KKuTu";
+import { KKuTu } from "../../../../../common/KKuTu";
 import {
   WebSocketError,
   WebSocketMessage,
@@ -18,6 +19,9 @@ interface Props {
 export default function Item(props: Props) {
   const socket = useStore((state) => state.socket);
   const updateRoom = Room.useStore((state) => state.updateRoom);
+  const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
+    (state) => [state.createOnMouseEnter, state.onMouseMove, state.onMouseLeave]
+  );
 
   return (
     <div
@@ -87,9 +91,26 @@ export default function Item(props: Props) {
         {props.room.members} / {props.room.limit}
       </div>
       <div className="game-settings">
-        <div className="mode">
-          <Mode room={props.room} />
-        </div>
+        {KKuTu.Game.MODES[props.room.mode].themeSelect ? (
+          <div
+            className="mode"
+            onMouseEnter={createOnMouseEnter(
+              new Tooltip(
+                props.room.themes
+                  .map((theme) => L.get(`theme_${theme}`))
+                  .join(" / ")
+              )
+            )}
+            onMouseMove={onMouseMove}
+            onMouseLeave={onMouseLeave}
+          >
+            <Mode room={props.room} />
+          </div>
+        ) : (
+          <div className="mode">
+            <Mode room={props.room} />
+          </div>
+        )}
         <div className="round">{L.get("unitRound", props.room.round)}</div>
         <div className="time">{L.get("unitSecond", props.room.roundTime)}</div>
       </div>

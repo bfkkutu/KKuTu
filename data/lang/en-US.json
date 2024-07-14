@@ -144,6 +144,7 @@
     "roomRoundTime": "라운드 시간",
     "roomRules": "특수 규칙",
     "roomSettings": "방 설정",
+    "themeSelect": "주제 선택",
     "ready": "준비",
     "spectator": "관전",
     "master": "방장",
@@ -260,13 +261,10 @@
     "theme_TLR": "테일즈런너",
     "theme_HKI": "붕괴3rd",
     "theme_BAN": "뱅드림! 걸즈 밴드 파티!",
-    "theme_KWW": "노운워드",
     "theme_FGO": "Fate/Grand/Order",
     "theme_YGO": "유희왕",
     "theme_PCN": "프린세스 커넥트! Re:Dive",
     "theme_WOW": "월드 오브 워크래프트",
-    "theme_POP": "PopSong",
-    "theme_KGY": "카구야 님은 고백받고 싶어",
     "theme_SMW": "서머너즈 워",
     "theme_CPR": "기업",
     "theme_OPC": "원피스",
@@ -405,8 +403,11 @@
 
     "blackList_title": "<{FA|ban}> 블랙리스트 관리",
 
-    "createRoom_title_default": "{#0}님의 방",
-    "createRoom_password": "비밀번호",
+    "roomSettings_title_default": "{#0}님의 방",
+    "roomSettings_password": "비밀번호",
+
+    "themeSelect_common": "일반",
+    "themeSelect_wide": "어인정",
 
     "dictionary_title": "<{FA|book}> 사전",
     "dictionary_input": "검색어",

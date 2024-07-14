@@ -1390,6 +1390,30 @@
     }
   }
 
+  &-themeSelect {
+    .body {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+
+      .title {
+        display: flex;
+        flex-direction: row;
+        font-weight: bold;
+      }
+
+      section {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+
+        label {
+          display: flex;
+          flex-direction: row;
+        }
+      }
+    }
+  }
+
   &-dictionary {
     width: 400px;
     height: 275px;

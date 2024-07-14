@@ -69,15 +69,6 @@ export function isEmpty(object: Table<any>, includeNullity?: boolean): boolean {
   );
 }
 /**
- * 배열을 생성해 반환한다.
- *
- * @param length 배열의 길이.
- * @param fill 배열의 내용.
- */
-export function Iterator<T = undefined>(length: number, fill?: T): T[] {
-  return Array(length).fill(fill);
-}
-/**
  * 객체 배열을 정렬할 때 쓸 비교 함수를 만들어 반환한다.
  *
  * @param retriever 객체로부터 비굣값을 추출하는 함수.
@@ -187,5 +178,8 @@ export function getAcceptable(character: string): string | undefined {
     case 123:
       return String.fromCharCode(code - 1764);
   }
+}
+export function random<T>(array: T[]): T {
+  return array[Math.floor(Math.random() * array.length)];
 }
 

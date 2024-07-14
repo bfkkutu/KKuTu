@@ -1,9 +1,10 @@
 import * as TypeORM from "typeorm";
 
-import { SETTINGS } from "back/utils/System";
-import { Iterator } from "back/utils/Utility";
+import { gc, SETTINGS } from "back/utils/System";
 import { Logger } from "back/utils/Logger";
+import { random } from "back/utils/Utility";
 import { Database } from "common/Database";
+import { Iterator } from "../../common/Utility";
 import { KKuTu } from "../../common/KKuTu";
 
 import User from "back/models/User";
@@ -14,7 +15,7 @@ import Word from "back/models/Word";
 import Mean from "back/models/Mean";
 import * as Cache from "back/models/cache";
 
-export default class DB {
+class DB {
   private static dataSource = new TypeORM.DataSource({
     type: "postgres",
     ...SETTINGS["database"],
@@ -103,4 +104,58 @@ export default class DB {
     return (await qb.getRawOne())["count"];
   }
 }
+
+namespace DB {
+  export class Memory {
+    private static readonly TABLE: Table<Memory.Repository<any> | undefined> =
+      {};
+
+    public static async load<E extends TypeORM.ObjectLiteral>(
+      id: string,
+      query: TypeORM.SelectQueryBuilder<E>
+    ): Promise<Memory.Repository<E>> {
+      if (Memory.TABLE[id] === undefined) {
+        const words = await query.getMany();
+        Memory.TABLE[id] = new Memory.Repository<E>(
+          Object.fromEntries(words.map((word) => [word.data, word]))
+        );
+      }
+      ++Memory.TABLE[id].count;
+      return Memory.TABLE[id];
+    }
+    public static unload(id: string): void {
+      const repository = Memory.TABLE[id];
+      if (repository === undefined) {
+        return;
+      }
+      if (--repository.count !== 0) {
+        return;
+      }
+      delete Memory.TABLE[id];
+      gc();
+    }
+  }
+  export namespace Memory {
+    export class Repository<E extends TypeORM.ObjectLiteral> {
+      private readonly data: Table<E>;
+      public count = 0;
+
+      constructor(data: Table<E>) {
+        this.data = data;
+      }
+
+      public has(key: string): boolean {
+        return key in this.data;
+      }
+      public get(key: string): E {
+        return this.data[key];
+      }
+      public random(): string {
+        return random(Object.keys(this.data));
+      }
+    }
+  }
+}
+
+export default DB;
 

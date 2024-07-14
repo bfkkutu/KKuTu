@@ -173,8 +173,9 @@ export namespace Menu {
       state.change,
     ]);
 
-    let contexts = [];
+    const settingsDialog = new SettingsDialog(me.settings);
 
+    let contexts = [];
     if (room === undefined) {
       contexts.push(Context.Lobby);
     } else {
@@ -206,7 +207,7 @@ export namespace Menu {
             > = {};
             switch (config.type) {
               case Type.Settings:
-                props.onClick = () => toggle(new SettingsDialog(me.settings));
+                props.onClick = () => toggle(settingsDialog);
                 break;
               case Type.Community:
                 props.onClick = () => toggle(CommunityDialog.instance);

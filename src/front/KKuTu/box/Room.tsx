@@ -4,6 +4,7 @@ import { create } from "zustand";
 import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import { getLevel } from "front/@global/Utility";
 import ClassName from "front/@global/ClassName";
 import WebSocket from "front/@global/WebSocket";
@@ -21,9 +22,15 @@ import { KKuTu } from "../../../common/KKuTu";
 export namespace Room {
   export function Box() {
     const socket = useGlobalStore((state) => state.socket);
-    const id = useGlobalStore((state) => state.me.id);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
+    const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
+      (state) => [
+        state.createOnMouseEnter,
+        state.onMouseMove,
+        state.onMouseLeave,
+      ]
+    );
     const [room, updateRoom, updateMember, leaveRoom] = useStore((state) => [
       state.room!,
       state.updateRoom,
@@ -153,13 +160,32 @@ export namespace Room {
           >
             {room.title}
           </h5>
-          <h5
-            className={new ClassName("mode")
-              .if(modified.includes("mode"), "modified")
-              .toString()}
-          >
-            <Mode room={room} />
-          </h5>
+          {KKuTu.Game.MODES[room.mode].themeSelect ? (
+            <h5
+              className={new ClassName("mode")
+                .if(modified.includes("mode"), "modified")
+                .toString()}
+              onMouseEnter={createOnMouseEnter(
+                new Tooltip(
+                  room.themes
+                    .map((theme) => L.get(`theme_${theme}`))
+                    .join(" / ")
+                )
+              )}
+              onMouseMove={onMouseMove}
+              onMouseLeave={onMouseLeave}
+            >
+              <Mode room={room} />
+            </h5>
+          ) : (
+            <h5
+              className={new ClassName("mode")
+                .if(modified.includes("mode"), "modified")
+                .toString()}
+            >
+              <Mode room={room} />
+            </h5>
+          )}
           <h5
             className={new ClassName("limit")
               .if(modified.includes("limit"), "modified")

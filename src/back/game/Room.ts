@@ -10,9 +10,11 @@ import { KKuTu } from "../../common/KKuTu";
 import { WebSocketMessage } from "../../common/WebSocket";
 
 import Relay from "back/game/types/Relay";
+import WordCompetition from "back/game/types/WordCompetition";
 
 const TYPES: Record<any, any> = {
   [KKuTu.Game.Type.Relay]: Relay,
+  [KKuTu.Game.Type.WordCompetition]: WordCompetition,
 };
 const EMPTY_PASSWORD = sha256("");
 export default class Room
@@ -133,6 +135,7 @@ export default class Room
     super.remove(id);
 
     if (this.isEmpty) {
+      this.end();
       return this.channel.unloadRoom(this.id);
     }
 
@@ -213,6 +216,10 @@ export default class Room
    * 게임을 종료한다.
    */
   public end(): void {
+    if (this.game === undefined) {
+      return;
+    }
+    this.game.destruct();
     this.game = undefined;
     this.update();
   }
@@ -226,6 +233,7 @@ export default class Room
       round: this.settings.round,
       roundTime: this.settings.roundTime,
       rules: this.settings.rules,
+      themes: this.settings.themes,
       members: this.size,
       isLocked: this.isLocked,
       isGaming: this.isGaming,
@@ -241,6 +249,7 @@ export default class Room
       round: this.settings.round,
       roundTime: this.settings.roundTime,
       rules: this.settings.rules,
+      themes: this.settings.themes,
       master: this.master,
       members: Object.fromEntries(
         [

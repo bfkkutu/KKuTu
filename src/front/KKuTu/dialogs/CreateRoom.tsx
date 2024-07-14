@@ -7,11 +7,11 @@ import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Checkbox from "front/@block/Checkbox";
 import { useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
+import ThemeSelectDialog from "front/KKuTu/dialogs/ThemeSelect";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
-import { getLevel } from "front/@global/Utility";
 
 export default class CreateRoomDialog extends Dialog {
   public static readonly instance = new CreateRoomDialog();
@@ -26,8 +26,9 @@ export default class CreateRoomDialog extends Dialog {
     ]);
     const socket = useStore((state) => state.socket);
     const updateRoom = Room.useStore((state) => state.updateRoom);
+    const show = Dialog.useStore((state) => state.show);
     const [room, setRoom] = useState<KKuTu.Room.Settings>({
-      title: L.get("createRoom_title_default", nickname),
+      title: L.get("roomSettings_title_default", nickname),
       password: "",
       policy: Object.values(KKuTu.Room.Policy).reduce((prev, curr) => {
         prev[curr] = false;
@@ -41,54 +42,60 @@ export default class CreateRoomDialog extends Dialog {
         prev[curr] = false;
         return prev;
       }, {} as Record<KKuTu.Game.Rule, boolean>),
+      themes: [],
     });
 
-    const updateField = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.currentTarget;
-        setRoom({
-          ...room,
-          [name]: value,
-        });
-      },
+    const themeSelectDialog = new ThemeSelectDialog(room.themes, (themes) =>
+      update({ themes })
+    );
+
+    const update = useCallback(
+      (settings: Partial<KKuTu.Room.Settings>) =>
+        setRoom({ ...room, ...settings }),
       [room]
     );
-    const updateIntegerField = useCallback(
-      (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.currentTarget;
-        setRoom({
-          ...room,
-          [name]: parseInt(value),
-        });
-      },
-      [room]
-    );
+    const updateField = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+      const { name, value } = e.currentTarget;
+      update({
+        [name]: value,
+      });
+    };
+    const updateIntegerField = (
+      e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    ) => {
+      const { name, value } = e.currentTarget;
+      update({
+        [name]: parseInt(value),
+      });
+    };
 
     return (
       <div className="dialog-createRoom">
         <form className="body">
           <label className="item-wrapper">
-            <label className="dialog-desc" htmlFor="createRoom-input-title">
+            <label className="dialog-desc" htmlFor="createRoom-title">
               {L.get("roomTitle")}
             </label>
             <input
               type="text"
-              id="createRoom-input-title"
+              id="createRoom-title"
               name="title"
-              placeholder={L.get("createRoom_title_default", nickname)}
+              placeholder={L.get("roomSettings_title_default", nickname)}
               value={room.title}
               onChange={updateField}
             />
           </label>
           <label className="item-wrapper">
-            <label className="dialog-desc" htmlFor="createRoom-input-password">
-              {L.get("createRoom_password")}
+            <label className="dialog-desc" htmlFor="createRoom-password">
+              {L.get("roomSettings_password")}
             </label>
             <input
               type="password"
-              id="createRoom-input-password"
+              id="createRoom-password"
               name="password"
-              placeholder={L.get("createRoom_password")}
+              placeholder={L.get("roomSettings_password")}
               value={room.password}
               onChange={updateField}
             />
@@ -105,8 +112,7 @@ export default class CreateRoomDialog extends Dialog {
                   tooltip={new Tooltip(L.render(`room_policy_${policy}_desc`))}
                   checked={room.policy[policy]}
                   onChange={(e) =>
-                    setRoom({
-                      ...room,
+                    update({
                       policy: {
                         ...room.policy,
                         [policy]: e.currentTarget.checked,
@@ -124,12 +130,12 @@ export default class CreateRoomDialog extends Dialog {
             </div>
           </label>
           <label className="item-wrapper">
-            <label className="dialog-desc" htmlFor="createRoom-input-limit">
+            <label className="dialog-desc" htmlFor="createRoom-limit">
               {L.get("roomLimit")}
             </label>
             <input
               type="number"
-              id="createRoom-input-limit"
+              id="createRoom-limit"
               name="limit"
               min={2}
               max={8}
@@ -138,11 +144,11 @@ export default class CreateRoomDialog extends Dialog {
             />
           </label>
           <label className="item-wrapper">
-            <label className="dialog-desc" htmlFor="createRoom-select-mode">
+            <label className="dialog-desc" htmlFor="createRoom-mode">
               {L.get("roomMode")}
             </label>
             <select
-              id="createRoom-select-mode"
+              id="createRoom-mode"
               name="mode"
               value={room.mode}
               onChange={updateIntegerField}
@@ -155,12 +161,12 @@ export default class CreateRoomDialog extends Dialog {
             </select>
           </label>
           <label className="item-wrapper">
-            <label className="dialog-desc" htmlFor="createRoom-input-round">
+            <label className="dialog-desc" htmlFor="createRoom-round">
               {L.get("roomRound")}
             </label>
             <input
               type="number"
-              id="createRoom-input-round"
+              id="createRoom-round"
               name="round"
               min={1}
               max={10}
@@ -169,14 +175,11 @@ export default class CreateRoomDialog extends Dialog {
             />
           </label>
           <label className="item-wrapper">
-            <label
-              className="dialog-desc"
-              htmlFor="createRoom-select-roundTime"
-            >
+            <label className="dialog-desc" htmlFor="createRoom-roundTime">
               {L.get("roomRoundTime")}
             </label>
             <select
-              id="createRoom-select-roundTime"
+              id="createRoom-roundTime"
               name="roundTime"
               value={room.roundTime}
               onChange={updateIntegerField}
@@ -200,8 +203,7 @@ export default class CreateRoomDialog extends Dialog {
                   tooltip={new Tooltip(L.get(`game_rule_${rule}_desc`))}
                   checked={room.rules[rule]}
                   onChange={(e) =>
-                    setRoom({
-                      ...room,
+                    update({
                       rules: { ...room.rules, [rule]: e.currentTarget.checked },
                     })
                   }
@@ -211,6 +213,21 @@ export default class CreateRoomDialog extends Dialog {
               ))}
             </div>
           </label>
+          {KKuTu.Game.MODES[room.mode].themeSelect ? (
+            <label className="item-wrapper">
+              <label
+                className="dialog-desc"
+                htmlFor="createRoom-themes"
+              ></label>
+              <button
+                type="button"
+                id="createRoom-themes"
+                onClick={() => show(themeSelectDialog)}
+              >
+                {L.get("themeSelect")}
+              </button>
+            </label>
+          ) : null}
         </form>
         <div className="footer buttons">
           <button

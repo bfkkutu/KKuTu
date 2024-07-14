@@ -38,6 +38,7 @@ export const PACKAGE: Schema.Package = JSON.parse(
   getProjectData("../package.json").toString()
 );
 
+export const gc = global.gc || (() => {});
 /**
  * 프로젝트 데이터 폴더의 데이터를 동기식으로 읽어 그 내용을 반환한다.
  *
@@ -143,3 +144,4 @@ export function writeClientConstants(): void {
     `window.__CLIENT_SETTINGS=${JSON.stringify(data)}`
   );
 }
+

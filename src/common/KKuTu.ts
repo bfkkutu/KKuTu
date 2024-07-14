@@ -211,7 +211,7 @@ export namespace KKuTu {
       [Mode.KoreanWordCompetition]: {
         type: Type.WordCompetition,
         language: Language.Korean,
-        rules: [],
+        rules: [Rule.Mission],
         themeSelect: true,
       },
       [Mode.KoreanSock]: {
@@ -271,6 +271,127 @@ export namespace KKuTu {
         themeSelect: false,
       },
     };
+    export const THEMES_WIDE = [
+      "IMS" /* THE iDOLM@STER */,
+      "VOC" /* 보컬로이드/우타이테 */,
+      "KTV" /* 국내 방송 프로그램 */,
+      "KOT" /* 철도역 */,
+      "DOT" /* 도타 2 */,
+      "DGM" /* 디지몬 */,
+      "RAG" /* 음식 */,
+      "LVL" /* 러브 라이브! */,
+      "LOL" /* 리그 오브 레전드 */,
+      "MMM" /* 마법소녀 마도카☆마기카 */,
+      "MAP" /* 메이플스토리 */,
+      "MKK" /* 메카쿠시티 액터즈 */,
+      "MNG" /* 모노가타리 시리즈 */,
+      "MOB" /* 모바일 게임 */,
+      "STA" /* 스타크래프트 */,
+      "OIJ" /* 신조어 */,
+      "ESB" /* 앙상블 스타즈! */,
+      "ELW" /* 엘소드 */,
+      "OVW" /* 오버워치 */,
+      "NEX" /* 게임 이름 */,
+      "KPO" /* 유명인 */,
+      "JLN" /* 라이트 노벨 */,
+      "JAN" /* 만화/애니메이션/웹툰 */,
+      "ZEL" /* 젤다의 전설 */,
+      "POK" /* 포켓몬스터 */,
+      "HAI" /* 하이큐!! */,
+      "HSS" /* 하스스톤 */,
+      "KMV" /* 영화 이름 */,
+      "HDC" /* 함대 컬렉션 */,
+      "HOS" /* 히어로즈 오브 더 스톰 */,
+      "DBD" /* 데드바이데이라이트 */,
+      "RUN" /* 런닝맨 */,
+      "MUN" /* 대한민국 문화재 */,
+      "KPOP" /* 한국 음악 */,
+      "SOK" /* 속담 */,
+      "PKT" /* 파워 쿵쿵따 */,
+      "PIC" /* 명화 */,
+      "EMD" /* 읍/면/동 */,
+      "MIN" /* 마인크래프트 */,
+      "MINBE" /* 마인크래프트 베드락 에디션 */,
+      "NYA" /* 냥코대전쟁 */,
+      "CKR" /* 쿠키런 */,
+      "HAK" /* 학교 */,
+      "BUS" /* 버스 정류장 */,
+      "BST" /* 버스 터미널 */,
+      "DONG" /* 동요 */,
+      "MFA" /* 마피아42 */,
+      "ZHS" /* 좀비고등학교 */,
+      "KTR" /* 카트라이더 */,
+      "ILN" /* 아이러브니키 */,
+      "TRR" /* 테라리아 */,
+      "THP" /* 동방 프로젝트 */,
+      "UND" /* 언더테일/델타룬 */,
+      "TLR" /* 테일즈런너 */,
+      "HKI" /* 붕괴3rd */,
+      "BAN" /* 뱅드림! 걸즈 밴드 파티! */,
+      "FGO" /* Fate/Grand/Order */,
+      "YGO" /* 유희왕 */,
+      "PCN" /* 프린세스 커넥트! Re:Dive */,
+      "WOW" /* 월드 오브 워크래프트 */,
+      "SMW" /* 서머너즈 워 */,
+      "CPR" /* 기업 */,
+      "OPC" /* 원피스 */,
+    ];
+    export const THEMES = [
+      "0" /*  */,
+      "10" /* 가톨릭 */,
+      "20" /* 건설 */,
+      "30" /* 경제 */,
+      "40" /* 고적 */,
+      "50" /* 고유 */,
+      "60" /* 공업 */,
+      "70" /* 광업 */,
+      "80" /* 교육 */,
+      "90" /* 교통 */,
+      "100" /* 군사 */,
+      "110" /* 기계 */,
+      "120" /* 기독교 */,
+      "130" /* 논리 */,
+      "140" /* 농업 */,
+      "150" /* 문학 */,
+      "160" /* 물리 */,
+      "170" /* 미술 */,
+      "180" /* 민속 */,
+      "190" /* 동물 */,
+      "200" /* 법률 */,
+      "210" /* 불교 */,
+      "220" /* 사회 */,
+      "230" /* 생물 */,
+      "240" /* 수학 */,
+      "250" /* 수산 */,
+      "260" /* 수공 */,
+      "270" /* 식물 */,
+      "280" /* 심리 */,
+      "290" /* 약학 */,
+      "300" /* 언론 */,
+      "310" /* 언어 */,
+      "320" /* 역사 */,
+      "330" /* 연영 */,
+      "340" /* 예술 */,
+      "350" /* 운동 */,
+      "360" /* 음악 */,
+      "370" /* 의학 */,
+      "380" /* 인명 */,
+      "390" /* 전기 */,
+      "400" /* 정치 */,
+      "410" /* 종교 */,
+      "420" /* 지리 */,
+      "430" /* 지명 */,
+      "440" /* 책명 */,
+      "450" /* 천문 */,
+      "460" /* 철학 */,
+      "470" /* 출판 */,
+      "480" /* 통신 */,
+      "490" /* 컴퓨터 */,
+      "500" /* 한의학 */,
+      "510" /* 항공 */,
+      "520" /* 해양 */,
+      "530" /* 화학 */,
+    ];
     export namespace Type {
       export namespace Serialized {
         interface Base {
@@ -279,7 +400,10 @@ export namespace KKuTu {
         }
 
         export interface Relay extends Base {
-          readonly scores: Record<string, number>;
+          readonly scores: Table<number>;
+        }
+        export interface WordCompetition extends Base {
+          readonly scores: Table<number>;
         }
       }
       export interface Serialized {
@@ -289,7 +413,7 @@ export namespace KKuTu {
         [Type.KKuTu]: never;
         [Type.ConsonantQuiz]: never;
         [Type.TypingCompetition]: never;
-        [Type.WordCompetition]: never;
+        [Type.WordCompetition]: Type.Serialized.WordCompetition;
         [Type.Sock]: never;
         [Type.DrawingQuiz]: never;
         [Type.Hunmin]: never;
@@ -306,6 +430,7 @@ export namespace KKuTu {
       round: number;
       roundTime: number;
       rules: Record<Game.Rule, boolean>;
+      themes: string[];
     }
 
     export enum Policy {
@@ -348,7 +473,7 @@ export namespace KKuTu {
      * 방 안에서 확인할 수 있는 방 정보들.
      */
     export interface Detailed<T extends Game.Type = Game.Type> extends Room {
-      members: Record<string, Member>;
+      members: Table<Member>;
       master: string;
       game?: Game.Type.Serialized[T];
     }

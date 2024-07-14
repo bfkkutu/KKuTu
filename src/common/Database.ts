@@ -130,10 +130,11 @@ export namespace Database {
   export interface Word {
     id: string;
     data: string;
-    means: Record<string, string>;
+    means: Table<string>;
   }
   export interface Mean {
     data: string;
     wide: boolean;
   }
 }
+

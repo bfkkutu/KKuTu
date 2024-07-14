@@ -15,9 +15,9 @@ let LANGUAGES: Table<string>;
  * @param args 추가 정보.
  */
 export function L(key: string, ...args: any[]): string {
-  return args.length
-    ? resolveLanguageArguments(LANGUAGES[key], ...args)
-    : LANGUAGES[key];
+  return args.length === 0
+    ? LANGUAGES[key]
+    : resolveLanguageArguments(LANGUAGES[key], ...args);
 }
 /**
  * 언어 파일에서 주어진 식별자와 대응되는 문자열표를 반환한다.
@@ -86,3 +86,4 @@ export function loadLanguages(): void {
   LANGUAGES = R;
   Logger.info("Languages has been updated.").out();
 }
+
