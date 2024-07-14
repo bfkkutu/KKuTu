@@ -58,15 +58,16 @@ export function Engine<T extends Nest.Page.Type>(
   const REACT_SUFFIX = isProduction ? "production.min" : "development";
   const KEY = `${$.locale}/${$.page}`;
   const SSR = $.ssr;
-  const GOOGLE_ADS = isProduction
-    ? `<script
+  const GOOGLE_ADS =
+    isProduction && $.page === "Portal"
+      ? `<script
   async
   src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${
     $.metadata!.ad?.google.client
   }"
   crossorigin="anonymous"
 ></script>`
-    : "";
+      : "";
   let Index: any;
 
   $.title = L(`${KEY}#title`, ...($.metadata?.titleArgs || []));
@@ -101,3 +102,4 @@ export function Engine<T extends Nest.Page.Type>(
   ).replace(READER_NEST, (v, p1, p2) => String(eval(p2)));
   callback(null, HTML);
 }
+
