@@ -7,18 +7,21 @@ export namespace Nest {
   export namespace Page {
     export type Type = keyof Page.DataTable;
     export type DataTable = {
+      Portal: {};
       KKuTu: {
         id: string;
         ws: string;
       };
+      Register: {};
       Login: {
         loginMethods: AuthModuleConfig[];
       };
-      Portal: {};
       OpenSource: {
         dependencies: [name: string, version: string][];
       };
-      Register: {};
+      Administration: {
+        ws: string;
+      };
     };
     export type Metadata = {
       ad: Schema.Settings["advertisement"];

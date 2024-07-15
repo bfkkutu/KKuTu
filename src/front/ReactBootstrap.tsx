@@ -23,7 +23,7 @@ if (typeof window !== "undefined") {
     Dialog.useStore.getState().show(dialog);
     return dialog.wait;
   };
-  // @ts-ignore
+  // @ts-expect-error
   window.prompt = (
     title: string,
     content: React.ReactNode,
@@ -33,7 +33,7 @@ if (typeof window !== "undefined") {
     Dialog.useStore.getState().show(dialog);
     return dialog.wait;
   };
-  // @ts-ignore
+  // @ts-expect-error
   window.confirm = (content: React.ReactNode) => {
     const dialog = new ConfirmDialog(content);
     Dialog.useStore.getState().show(dialog);
@@ -94,7 +94,7 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
 
     return (
       <>
-        <img id="background" className="jt-image" />
+        <img id="background" />
         <div id="bayadere">
           <Dialog.Manager />
           <Notification.Manager />

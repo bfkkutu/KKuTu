@@ -6,6 +6,7 @@ import { getLoginMethods } from "back/utils/LoginRoute";
 import Channel from "back/game/Channel";
 import { PACKAGE, SETTINGS } from "back/utils/System";
 import DB from "back/utils/Database";
+import { Database } from "../../common/Database";
 
 import User from "back/models/User";
 
@@ -20,7 +21,9 @@ export default function (App: Express.Application): void {
   App.get("/", PageBuilder("Portal"));
   App.get("/game/:id", async (req, res, next) => {
     const id = parseInt(req.params.id);
-    if (isNaN(id)) return res.sendStatus(400);
+    if (isNaN(id)) {
+      return res.sendStatus(400);
+    }
 
     if (req.session.profile === undefined) {
       res.status(401);
@@ -57,6 +60,25 @@ export default function (App: Express.Application): void {
     })
   );
   App.get("//servers", (req, res) => res.redirect("/servers"));
+  App.get("/admin", async (req, res, next) => {
+    if (req.session.profile === undefined) {
+      res.status(401);
+      return res.redirect("/login");
+    }
+
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) {
+      return res.redirect("/register");
+    }
+
+    if (user.departures === Database.Departure.None) {
+      return res.sendStatus(403);
+    }
+
+    return PageBuilder("Administration")(req, res, next);
+  });
   App.get("/admin/load-languages", (req, res) => {
     loadLanguages();
     return res.sendStatus(200);

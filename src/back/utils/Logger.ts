@@ -118,7 +118,7 @@ export class Logger {
    */
   public static async initialize(subject: string): Promise<void> {
     FS = await import("fs");
-    // @ts-ignore
+    // @ts-expect-error
     System = await import("back/utils/System");
     if ((await import("cluster")).default.isWorker) {
       Logger.workerProcessId = (await import("process")).pid;
@@ -417,3 +417,4 @@ export class LogStyle {
   public static readonly TYPE_WARNING = [LogColor.F_BLACK, LogColor.B_YELLOW];
   public static readonly XHR = [LogColor.F_GREEN];
 }
+

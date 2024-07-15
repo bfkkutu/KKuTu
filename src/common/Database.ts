@@ -79,10 +79,11 @@ export namespace Database {
   }
 
   export enum Departure {
-    None = 0b000,
-    Management = 0b001,
-    DatabaseWord = 0b010,
-    DatabaseShop = 0b100,
+    None = 0b0000,
+    Owner = 0b0001,
+    Management = 0b0010,
+    DatabaseWord = 0b0100,
+    DatabaseShop = 0b1000,
   }
 
   // table interfaces

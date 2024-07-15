@@ -320,20 +320,6 @@ button:focus {
   background-size: 200px 200px;
 }
 
-/* 자동완성 */
-#AutoCompletionBox {
-  float: left;
-  top: 56px;
-  min-width: 60px;
-  padding: 5px;
-  border-radius: 10px;
-  margin: 5px;
-  color: #eeeeee;
-  font-size: 13px;
-  background-color: #232323;
-  background-color: rgba(0, 0, 0, 0.7);
-  z-index: 2;
-}
 .auto-item {
   margin: 2px 0px;
   cursor: pointer;
@@ -386,34 +372,6 @@ code {
 .jt-btn-shadow {
   box-shadow: 0px 2px 2px #000000;
   text-shadow: 0px 1px 1px #444444;
-}
-.tier-U {
-  color: #aaaaaa;
-}
-.tier-B {
-  color: #c59e63;
-}
-.tier-S {
-  color: #e0e8dd;
-}
-.tier-G {
-  color: #f8e972;
-}
-.tier-P {
-  color: #a2f9e1;
-  text-shadow: 0px 0px 1px #aadddd;
-}
-.tier-D {
-  color: #96c7f9;
-  text-shadow: 0px 0px 3px #88bbee;
-}
-.tier-M {
-  color: #2ac9af;
-  text-shadow: 0px 0px 5px #11aa88;
-}
-.tier-C {
-  color: #2effdf;
-  text-shadow: 0px 0px 5px #1072aa;
 }
 
 .in-iframe {

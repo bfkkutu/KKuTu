@@ -12,6 +12,7 @@ import { WebSocketMessage } from "../../common/WebSocket";
 import Relay from "back/game/types/Relay";
 import WordCompetition from "back/game/types/WordCompetition";
 
+// TODO
 const TYPES: Record<any, any> = {
   [KKuTu.Game.Type.Relay]: Relay,
   [KKuTu.Game.Type.WordCompetition]: WordCompetition,
@@ -208,9 +209,8 @@ export default class Room
       }, [] as WebSocket[]),
       this.robots.valuesAsArray().map((robot) => robot.id)
     );
-    // TODO
-    // @ts-ignore
-    this.game.initialize();
+    // TODO: remove !
+    this.game!.initialize();
   }
   /**
    * 게임을 종료한다.
