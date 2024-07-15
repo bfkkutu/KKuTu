@@ -19,9 +19,6 @@ import Chat from "back/models/Chat";
 import Report from "back/models/Report";
 import Word from "back/models/Word";
 
-// TODO: 일반화
-import Relay from "back/game/types/Relay";
-
 export default class Channel extends WebSocketServer {
   private static roomIdCount = 99;
   public static readonly instances: Channel[] = [];
