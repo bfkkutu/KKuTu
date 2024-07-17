@@ -1,11 +1,12 @@
 import { useStore } from "front/KKuTu/Store";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
+import { reduceToTable } from "../../common/Utility";
 import { Database } from "common/Database";
 
-const C =
+const Super =
   typeof window === "undefined" ? (class Dummy {} as never) : window.WebSocket;
-class WebSocket extends C {
+class WebSocket extends Super {
   public messageReceiver = new WebSocket.MessageReceiver();
 
   constructor(url: string) {
@@ -18,7 +19,7 @@ class WebSocket extends C {
 
   public on = this.addEventListener;
   public off = this.removeEventListener;
-  // @ts-ignore
+  // @ts-expect-error
   public override send<T extends WebSocketMessage.Type>(
     type: T,
     content: WebSocketMessage.Content.Client[T]
@@ -56,12 +57,9 @@ namespace WebSocket {
   ) => void;
 
   export class MessageReceiver {
-    private listeners = Object.values(WebSocketMessage.Type).reduce(
-      (prev, curr) => {
-        prev[curr] = [];
-        return prev;
-      },
-      {} as Record<WebSocketMessage.Type, EventListener<any>[]>
+    private readonly listeners = reduceToTable(
+      Object.values(WebSocketMessage.Type),
+      () => [] as EventListener<any>[]
     );
 
     public emit<T extends WebSocketMessage.Type>(

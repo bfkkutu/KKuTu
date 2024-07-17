@@ -2,8 +2,9 @@ import Express from "express";
 import ALP from "accept-language-parser";
 
 import { SETTINGS, getProjectData } from "back/utils/System";
-import { reduceToTable, resolveLanguageArguments } from "back/utils/Utility";
+import { resolveLanguageArguments } from "back/utils/Utility";
 import { Logger } from "back/utils/Logger";
+import { reduceToTable } from "../../common/Utility";
 
 const LANGUAGE_SUPPORT = Object.keys(SETTINGS["languageSupport"]);
 let LANGUAGES: Table<string>;

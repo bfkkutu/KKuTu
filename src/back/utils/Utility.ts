@@ -97,23 +97,6 @@ export function orderByString<T>(
     : (a, b) => retriever(a).localeCompare(retriever(b));
 }
 /**
- * 배열을 주어진 함수에 따라 딕셔너리로 바꾸어 반환한다.
- *
- * @param target 대상 배열.
- * @param placer 값을 반환하는 함수.
- * @param keyPlacer 키를 반환하는 함수.
- */
-export function reduceToTable<T, U, V extends number | string>(
-  target: T[],
-  placer: (v: T, i: number, my: T[]) => U,
-  keyPlacer: (v: T, i: number, my: T[]) => V = (v) => String(v) as V
-): { [key in V]: U } {
-  return target.reduce((pv, v, i, my) => {
-    pv[keyPlacer(v, i, my)] = placer(v, i, my);
-    return pv;
-  }, {} as { [key in V]: U });
-}
-/**
  * 문자열 내 단일 샤프 인자들을 추가 정보로 대체시켜 반환한다.
  *
  * @param text 입력 문자열.

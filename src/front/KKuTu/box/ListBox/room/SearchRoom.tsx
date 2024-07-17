@@ -5,7 +5,10 @@ import L from "front/@global/Language";
 import Item from "front/KKuTu/box/ListBox/room/Item";
 import { WebSocketMessage } from "../../../../../common/WebSocket";
 import { KKuTu } from "../../../../../common/KKuTu";
-import { EnumValueIterator } from "../../../../../common/Utility";
+import {
+  EnumValueIterator,
+  reduceToTable,
+} from "../../../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default function SearchRoom() {
@@ -19,10 +22,7 @@ export default function SearchRoom() {
     mode: 0,
     round: [1, 10],
     roundTime: [10, 150],
-    rules: Object.values(KKuTu.Game.Rule).reduce((prev, curr) => {
-      prev[curr] = false;
-      return prev;
-    }, {} as Record<KKuTu.Game.Rule, boolean>),
+    rules: reduceToTable(Object.values(KKuTu.Game.Rule), () => false),
   });
 
   useEffect(() => {

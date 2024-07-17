@@ -2,8 +2,9 @@ import FS from "fs";
 import Path from "path";
 
 import { Nest } from "common/Nest";
-import { reduceToTable, TIMEZONE_OFFSET } from "back/utils/Utility";
+import { TIMEZONE_OFFSET } from "back/utils/Utility";
 import { Schema } from "common/Schema";
+import { reduceToTable } from "../../common/Utility";
 
 /**
  * 프로젝트 루트 경로.

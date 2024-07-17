@@ -10,7 +10,7 @@ import { Room } from "front/KKuTu/box/Room";
 import ThemeSelectDialog from "front/KKuTu/dialogs/ThemeSelect";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
-import { EnumValueIterator } from "../../../common/Utility";
+import { EnumValueIterator, reduceToTable } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class CreateRoomDialog extends Dialog {
@@ -30,18 +30,12 @@ export default class CreateRoomDialog extends Dialog {
     const [room, setRoom] = useState<KKuTu.Room.Settings>({
       title: L.get("roomSettings_title_default", nickname),
       password: "",
-      policy: Object.values(KKuTu.Room.Policy).reduce((prev, curr) => {
-        prev[curr] = false;
-        return prev;
-      }, {} as Record<KKuTu.Room.Policy, boolean>),
+      policy: reduceToTable(Object.values(KKuTu.Room.Policy), () => false),
       limit: 8,
       mode: 0,
       round: 5,
       roundTime: 120,
-      rules: Object.values(KKuTu.Game.Rule).reduce((prev, curr) => {
-        prev[curr] = false;
-        return prev;
-      }, {} as Record<KKuTu.Game.Rule, boolean>),
+      rules: reduceToTable(Object.values(KKuTu.Game.Rule), () => false),
       themes: [],
     });
 

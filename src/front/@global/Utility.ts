@@ -29,6 +29,18 @@ export function getLevel(score: number) {
 export function filterProfanities(raw: string) {
   return raw.replace(PROFANITIES, (s) => "*".repeat(s.length));
 }
+export function sum(...arr: number[]): number;
+export function sum(arr: number[]): number;
+export function sum(arr: number | number[], ...args: number[]): number {
+  if (typeof arr === "number") {
+    let sum = arr;
+    for (let i = 0; i < args.length; ++i) {
+      sum += args[i];
+    }
+    return sum;
+  }
+  return sum(...arr);
+}
 
 export type Chain = (f: () => void) => void;
 type ChainCondition<P extends Array<any>> = (...args: P) => boolean;
@@ -60,3 +72,4 @@ export class ChainedFunction<P extends Array<any>> {
     f(this.continue.bind(this));
   }
 }
+

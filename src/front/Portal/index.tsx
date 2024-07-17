@@ -1,9 +1,10 @@
 import React from "react";
 
-import Bind from "front/ReactBootstrap";
 import L from "front/@global/Language";
+import { sum } from "front/@global/Utility";
 import { Icon } from "front/@block/Icon";
 import GoogleAdvertisement from "front/@block/GoogleAdvertisement";
+import Bind from "front/ReactBootstrap";
 import { Nest } from "common/Nest";
 import { Schema } from "common/Schema";
 
@@ -54,7 +55,7 @@ export default class Portal extends React.PureComponent<
     if (list && list.length) {
       this.setState({
         list,
-        sum: list.reduce((partialSum: number, i: number) => partialSum + i, 0),
+        sum: sum(...list),
         isRefreshing: false,
         isListInitialized: true,
       });
