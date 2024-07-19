@@ -48,7 +48,12 @@ export default class Register extends React.PureComponent<
         nickname: this.props.session.profile.name,
         exordial: this.props.session.profile.exordial,
       });
-    } catch (e) {}
+    } catch (e) {
+      this.setState({
+        serviceTerms: L.get("failedToLoad"),
+        privacyPolicy: L.get("failedToLoad"),
+      });
+    }
   }
   public render() {
     switch (this.state.page) {
