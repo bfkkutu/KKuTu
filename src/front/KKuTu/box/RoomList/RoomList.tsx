@@ -2,13 +2,13 @@ import React, { useEffect } from "react";
 
 import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import CreateRoomDialog from "front/KKuTu/dialogs/CreateRoom";
 import Room from "front/KKuTu/box/RoomList";
 import { WebSocketMessage } from "../../../../common/WebSocket";
 
 export default function RoomListBox() {
-  const socket = useStore((state) => state.socket);
+  const socket = useSocket((state) => state.socket);
   const [rooms, updateRoomList] = useStore((state) => [
     state.rooms,
     state.updateRoomList,

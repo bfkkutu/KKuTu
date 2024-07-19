@@ -1,4 +1,3 @@
-import { useStore } from "front/KKuTu/Store";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { reduceToTable } from "../../common/Utility";
@@ -7,7 +6,7 @@ import { Database } from "common/Database";
 const Super =
   typeof window === "undefined" ? (class Dummy {} as never) : window.WebSocket;
 class WebSocket extends Super {
-  public readonly messageReceiver = new WebSocket.MessageReceiver();
+  public readonly messageReceiver = new WebSocket.MessageReceiver(this);
 
   constructor(url: string) {
     super(url);
@@ -57,10 +56,15 @@ namespace WebSocket {
   ) => void;
 
   export class MessageReceiver {
+    private readonly socket: WebSocket;
     private readonly listeners = reduceToTable(
       Object.values(WebSocketMessage.Type),
       () => [] as EventListener<any>[]
     );
+
+    constructor(socket: WebSocket) {
+      this.socket = socket;
+    }
 
     public emit<T extends WebSocketMessage.Type>(
       message: WebSocketMessage.Server[T]
@@ -109,7 +113,7 @@ namespace WebSocket {
           cleanup();
           reject(message);
           if (message.isFatal) {
-            useStore.getState().socket.close();
+            this.socket.close();
           }
         };
         show();

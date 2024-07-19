@@ -1,14 +1,49 @@
 import { create } from "zustand";
+import { load } from "@fingerprintjs/botd";
 
 import WebSocket from "front/@global/WebSocket";
 import { Chat } from "front/KKuTu/box/Chat";
 import { Database } from "../../common/Database";
 import { KKuTu } from "common/KKuTu";
 
-interface State {
+interface Socket {
   socket: WebSocket;
-  initializeSocket: (url: string) => void;
+  connect: (url: string) => void;
+  disconnect: () => void;
+}
+export const useSocket = create<Socket>((setState) => ({
+  socket: undefined as any,
+  connect: (url) => setState({ socket: new WebSocket(url) }),
+  disconnect: () =>
+    setState(({ socket }) => {
+      if (
+        socket.readyState === WebSocket.CLOSING ||
+        socket.readyState === WebSocket.CLOSED
+      ) {
+        return { socket };
+      }
+      socket.close();
+      return { socket: undefined };
+    }),
+}));
 
+type BotDetectorInterface = ReturnType<typeof load> extends Promise<infer R>
+  ? R
+  : never;
+interface BotDetector {
+  detector?: BotDetectorInterface;
+  load: () => Promise<BotDetectorInterface>;
+}
+export const useDetector = create<BotDetector>((setState) => ({
+  detector: undefined,
+  load: async () => {
+    const detector = await load();
+    setState({ detector });
+    return detector;
+  },
+}));
+
+interface State {
   me: Database.User;
   updateMe: (me: Database.User) => void;
 
@@ -32,14 +67,7 @@ interface State {
   vibration: number;
   setVibration: (value: number) => void;
 }
-
 export const useStore = create<State>((setState) => ({
-  socket: undefined as any,
-  initializeSocket: (url: string) =>
-    setState({
-      socket: new WebSocket(url),
-    }),
-
   me: undefined as any,
   updateMe: (me) =>
     setState({

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { WebSocketMessage } from "../../../common/WebSocket";
@@ -25,8 +25,8 @@ export default class SettingsDialog extends Dialog {
     return <>{L.render("settings_title")}</>;
   }
   protected override body(): React.ReactElement {
+    const socket = useSocket((state) => state.socket);
     const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
-    const socket = useStore((state) => state.socket);
     const [valueChanged, setValueChanged] = useState(false);
 
     const updateSettings = (

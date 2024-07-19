@@ -2,7 +2,7 @@ import React from "react";
 
 import L from "front/@global/Language";
 import { Notification } from "front/@global/Bayadere/Notification";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
@@ -22,7 +22,7 @@ export default class InviteNotification extends Notification {
   }
 
   public override async onClick(): Promise<void> {
-    const { socket } = useStore.getState();
+    const { socket } = useSocket.getState();
 
     if (
       !(await window.confirm(

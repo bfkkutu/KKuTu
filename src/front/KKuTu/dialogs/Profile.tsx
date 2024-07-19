@@ -1,7 +1,7 @@
 import React from "react";
 
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import Moremi from "front/@block/Moremi";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
@@ -28,7 +28,7 @@ export default class ProfileDialog extends Dialog {
     return <>{L.render("profile_title", this.user.nickname)}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
     const community = useStore((state) => state.community);

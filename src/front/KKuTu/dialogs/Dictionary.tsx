@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket } from "front/KKuTu/Store";
 import { Database } from "common/Database";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
@@ -13,7 +13,7 @@ export default class DictionaryDialog extends Dialog {
     return <>{L.render("dictionary_title")}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const [input, setInput] = useState("");
     const [result, setResult] = useState<Database.Word | undefined>(undefined);
 

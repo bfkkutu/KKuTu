@@ -7,7 +7,7 @@ import LevelIcon from "front/@block/LevelIcon";
 import Gauge from "front/@block/Gauge";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Room } from "front/KKuTu/box/Room";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export default class RobotProfileDialog extends Dialog {
@@ -27,7 +27,7 @@ export default class RobotProfileDialog extends Dialog {
     return <>{L.render("profile_title", L.get("robot"))}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
 

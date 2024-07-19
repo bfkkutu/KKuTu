@@ -10,7 +10,7 @@ import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
 import TimeGauge from "front/@block/TimeGauge";
-import { useStore } from "front/KKuTu/Store";
+import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
 import { Display } from "front/KKuTu/box/Game/Display";
 import { Database } from "common/Database";
@@ -32,7 +32,11 @@ namespace WordCompetition {
   }
 }
 export default function WordCompetition() {
-  const socket = useStore((state) => state.socket);
+  const [socket, disconnect] = useSocket((state) => [
+    state.socket,
+    state.disconnect,
+  ]);
+  const detector = useDetector((state) => state.detector);
   const id = useStore((state) => state.me.id);
   const users = useStore((state) => state.users);
   const setVibration = useStore((state) => state.setVibration);
@@ -83,6 +87,16 @@ export default function WordCompetition() {
   }
 
   useEffect(() => {
+    if (detector === undefined) {
+      disconnect();
+      return;
+    }
+    if (detector.detect().bot) {
+      disconnect();
+      window.alert(L.get("alert_botdDetected"));
+      return;
+    }
+
     socket.messageReceiver.on(WebSocketMessage.Type.RoundStart, ({ round }) => {
       setRound(round);
       setDisplay({

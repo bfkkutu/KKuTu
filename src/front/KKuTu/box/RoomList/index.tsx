@@ -6,7 +6,7 @@ import L from "front/@global/Language";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Mode from "front/@block/Mode";
 import Icon from "front/@block/Icon";
-import { useStore as useGlobalStore } from "front/KKuTu/Store";
+import { useSocket } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
 import RoomListBox from "front/KKuTu/box/RoomList/RoomList";
 import SearchRoom from "front/KKuTu/box/RoomList/SearchRoom";
@@ -34,7 +34,7 @@ namespace ListBox {
     room: KKuTu.Room.Summarized;
   }
   export function Item(props: Props) {
-    const socket = useGlobalStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const updateRoom = Room.useStore((state) => state.updateRoom);
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
       (state) => [

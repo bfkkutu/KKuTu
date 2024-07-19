@@ -4,7 +4,7 @@ import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import Icon from "front/@block/Icon";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
 import ListBox from "front/KKuTu/box/RoomList";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
@@ -160,7 +160,7 @@ export namespace Menu {
   ];
 
   export function Component() {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const me = useStore((state) => state.me);
     const [room, leaveRoom] = Room.useStore((state) => [
       state.room,

@@ -5,7 +5,7 @@ import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
 import WebSocket from "front/@global/WebSocket";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { useStore as useGlobalStore } from "front/KKuTu/Store";
+import { useStore as useGlobalStore, useSocket } from "front/KKuTu/Store";
 import { Database } from "common/Database";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 import { filterProfanities } from "front/@global/Utility";
@@ -23,7 +23,7 @@ export default class WhisperDialog extends Dialog {
     return <>{L.render("whisper_title", this.user.nickname)}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useGlobalStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const filterEnabled = useGlobalStore(
       (state) => state.me.settings.filterProfanities
     );

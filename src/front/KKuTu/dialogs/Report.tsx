@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket } from "front/KKuTu/Store";
 import { Database } from "common/Database";
 import { Iterator } from "../../../common/Utility";
 import { WebSocketMessage } from "../../../common/WebSocket";
@@ -20,7 +20,7 @@ export default class ReportDialog extends Dialog {
     return <>{L.render("report_title", this.target.nickname)}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const [reason, setReason] = useState(0);
     const [comment, setComment] = useState("");
 

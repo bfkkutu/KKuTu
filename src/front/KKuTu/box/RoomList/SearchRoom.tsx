@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import L from "front/@global/Language";
 import Room from "front/KKuTu/box/RoomList";
 import { WebSocketMessage } from "../../../../common/WebSocket";
@@ -9,7 +9,7 @@ import { EnumValueIterator, reduceToTable } from "../../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default function SearchRoom() {
-  const socket = useStore((state) => state.socket);
+  const socket = useSocket((state) => state.socket);
   const [rooms, updateRoomList] = useStore((state) => [
     state.rooms,
     state.updateRoomList,

@@ -8,7 +8,7 @@ import WebSocket from "front/@global/WebSocket";
 import { Notification } from "front/@global/Bayadere/Notification";
 import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/KKuTu/Menu";
-import { useStore } from "front/KKuTu/Store";
+import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
@@ -32,10 +32,12 @@ CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
 CLIENT_SETTINGS.expTable.push(Infinity);
 
 function Component(props: Nest.Page.Props<"KKuTu">) {
-  const [socket, initializeSocket] = useStore((state) => [
+  const [socket, connect, disconnect] = useSocket((state) => [
     state.socket,
-    state.initializeSocket,
+    state.connect,
+    state.disconnect,
   ]);
+  const load = useDetector((state) => state.load);
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const updateCommunity = useStore((state) => state.updateCommunity);
   const [users, initializeUsers, appendUser, setUser, removeUser] = useStore(
@@ -65,7 +67,20 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
   const $intro = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    initializeSocket(props.data.ws);
+    (async () => {
+      try {
+        const detector = await load();
+        if (detector.detect().bot) {
+          window.alert(L.get("alert_botdDetected"));
+          disconnect();
+        }
+      } catch (e) {
+        window.alert(L.get("alert_botdFailed"));
+        disconnect();
+      }
+    })();
+
+    connect(props.data.ws);
   }, []);
 
   useEffect(() => {

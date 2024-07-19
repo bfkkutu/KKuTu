@@ -7,7 +7,7 @@ import { Dialog } from "front/@global/Bayadere/Dialog";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import Icon from "front/@block/Icon";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import { WebSocketMessage } from "../../../common/WebSocket";
@@ -21,7 +21,7 @@ export default class CommunityDialog extends Dialog {
     return <>{L.render("community_title", friends.length)}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);
     const [room, updateRoom, leaveRoom] = Room.useStore((state) => [

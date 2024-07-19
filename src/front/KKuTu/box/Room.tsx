@@ -12,7 +12,7 @@ import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
 import Mode from "front/@block/Mode";
-import { useStore as useGlobalStore } from "front/KKuTu/Store";
+import { useStore as useGlobalStore, useSocket } from "front/KKuTu/Store";
 import { Game } from "front/KKuTu/box/Game";
 import ProfileDialog from "front/KKuTu/dialogs/Profile";
 import RobotProfileDialog from "front/KKuTu/dialogs/RobotProfile";
@@ -21,7 +21,7 @@ import { KKuTu } from "../../../common/KKuTu";
 
 export namespace Room {
   export function Box() {
-    const socket = useGlobalStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(

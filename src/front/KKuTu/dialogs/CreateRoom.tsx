@@ -5,7 +5,7 @@ import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Checkbox from "front/@block/Checkbox";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
 import ThemeSelectDialog from "front/KKuTu/dialogs/ThemeSelect";
 import { WebSocketMessage } from "../../../common/WebSocket";
@@ -20,11 +20,11 @@ export default class CreateRoomDialog extends Dialog {
     return <>{L.get("createRoom")}</>;
   }
   protected override body(): React.ReactElement {
+    const socket = useSocket((state) => state.socket);
     const [score, nickname] = useStore((state) => [
       state.me.score,
       state.me.nickname,
     ]);
-    const socket = useStore((state) => state.socket);
     const updateRoom = Room.useStore((state) => state.updateRoom);
     const show = Dialog.useStore((state) => state.show);
     const [room, setRoom] = useState<KKuTu.Room.Settings>({

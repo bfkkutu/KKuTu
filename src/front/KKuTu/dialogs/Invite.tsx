@@ -1,7 +1,7 @@
 import React from "react";
 
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
@@ -26,7 +26,7 @@ export default class InviteDialog extends Dialog {
     return <>{L.get("invite_title")}</>;
   }
   protected override body(): React.ReactElement {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const users = useStore((state) => state.users);
     const room = Room.useStore((state) => state.room);

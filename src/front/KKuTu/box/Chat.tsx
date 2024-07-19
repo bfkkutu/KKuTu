@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Parser as HTMLParser } from "html-to-react";
 
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import AudioContext from "front/@global/AudioContext";
 import ProfileDialog from "front/KKuTu/dialogs/Profile";
 import { Dialog } from "front/@global/Bayadere/Dialog";
@@ -42,7 +42,7 @@ export namespace Chat {
   export type Item = Chat.Chat | Chat.Notice;
 
   export function Box() {
-    const socket = useStore((state) => state.socket);
+    const socket = useSocket((state) => state.socket);
     const [chatLog, appendChat] = useStore((state) => [
       state.chatLog,
       state.appendChat,
@@ -133,12 +133,12 @@ export namespace Chat {
     chat: Chat;
   }
   function Chat(props: Props) {
+    const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const filterEnabled = useStore(
       (state) => state.me.settings.filterProfanities
     );
     const users = useStore((state) => state.users);
-    const socket = useStore((state) => state.socket);
     const toggleChatVisibility = useStore(
       (state) => state.toggleChatVisibility
     );
