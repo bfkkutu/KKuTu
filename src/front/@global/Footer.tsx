@@ -8,7 +8,7 @@ export default class Footer extends React.PureComponent {
       <footer>
         <div className="left">
           <div>
-            새로운 끄투의 시작, BF끄투 Copyright (C) 2018-2023 이승훈(
+            새로운 끄투의 시작, BF끄투 Copyright (C) 2018-2024 이승훈(
             <a target="_blank" href="mailto:op@lsh.sh">
               op@lsh.sh
             </a>
@@ -68,3 +68,4 @@ export default class Footer extends React.PureComponent {
     );
   }
 }
+

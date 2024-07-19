@@ -10,16 +10,18 @@ export default class OpenSource extends React.PureComponent<
   public render() {
     return (
       <article id="main">
-        <h2>BF끄투는 아래 오픈소스 소프트웨어에 의존하고 있습니다.</h2>
-        <ul>
+        <h2>{L.get("dependencies")}</h2>
+        <section>
           {this.props.data.dependencies.map(([name, version], index) => (
-            <li key={index}>
-              {name} 버전 {version}
-            </li>
+            <div key={index} className="dependency">
+              <div className="name ellipse">{name}</div>
+              <div className="version">{version}</div>
+            </div>
           ))}
-        </ul>
+        </section>
       </article>
     );
   }
 }
 Bind(OpenSource);
+

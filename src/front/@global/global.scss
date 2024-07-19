@@ -530,6 +530,12 @@ code {
   padding: 5px;
 }
 
+.ellipse {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 @keyframes DialogAppearance {
   from {
     opacity: 0;
