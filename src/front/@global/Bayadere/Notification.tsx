@@ -1,7 +1,7 @@
 import React from "react";
 import { create } from "zustand";
 
-import { Icon, IconType } from "front/@block/Icon";
+import Icon from "front/@block/Icon";
 
 export abstract class Notification {
   private static id = 0;
@@ -56,7 +56,7 @@ export namespace Notification {
           <instance.Component />
         </div>
         <div className="close" onClick={() => hide(instance)}>
-          <Icon type={IconType.NORMAL} name="xmark" />
+          <Icon type={Icon.Type.NORMAL} name="xmark" />
         </div>
       </div>
     );
@@ -74,3 +74,4 @@ export namespace Notification {
     );
   }
 }
+

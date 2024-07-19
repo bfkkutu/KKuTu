@@ -1,13 +1,12 @@
 import React from "react";
 
-import { Icon, IconType } from "front/@block/Icon";
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
 import ClassName from "front/@global/ClassName";
-import { ListBoxType } from "front/@global/enums/ListBoxType";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import Icon from "front/@block/Icon";
+import { useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
-import { List } from "front/KKuTu/box/ListBox";
+import ListBox from "front/KKuTu/box/RoomList";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
 import SettingsDialog from "front/KKuTu/dialogs/Settings";
@@ -58,32 +57,32 @@ export namespace Menu {
     {
       type: Type.Help,
       isTiny: true,
-      label: <Icon type={IconType.NORMAL} name="question-circle" />,
+      label: <Icon type={Icon.Type.NORMAL} name="question-circle" />,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Settings,
       isTiny: true,
-      label: <Icon type={IconType.NORMAL} name="wrench" />,
+      label: <Icon type={Icon.Type.NORMAL} name="wrench" />,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Community,
       isTiny: true,
-      label: <Icon type={IconType.NORMAL} name="comments" />,
+      label: <Icon type={Icon.Type.NORMAL} name="comments" />,
       badge: () => useStore.getState().community.friendRequests.received.length,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.BlackList,
       isTiny: true,
-      label: <Icon type={IconType.NORMAL} name="ban" />,
+      label: <Icon type={Icon.Type.NORMAL} name="ban" />,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Leaderboard,
       isTiny: true,
-      label: <Icon type={IconType.NORMAL} name="trophy" />,
+      label: <Icon type={Icon.Type.NORMAL} name="trophy" />,
       contexts: [Context.Lobby],
     },
     {
@@ -168,7 +167,7 @@ export namespace Menu {
       state.leaveRoom,
     ]);
     const toggle = Dialog.useStore((state) => state.toggle);
-    const [currentListBox, changeListBox] = List.useStore((state) => [
+    const [currentListBox, changeListBox] = ListBox.useStore((state) => [
       state.current,
       state.change,
     ]);
@@ -227,12 +226,12 @@ export namespace Menu {
                 };
                 break;
               case Type.SearchRoom:
-                if (currentListBox === ListBoxType.SearchRoom)
+                if (currentListBox === ListBox.Type.SearchRoom)
                   className.push("menu-toggled");
                 props.onClick = () =>
-                  currentListBox === ListBoxType.SearchRoom
-                    ? changeListBox(ListBoxType.RoomList)
-                    : changeListBox(ListBoxType.SearchRoom);
+                  currentListBox === ListBox.Type.SearchRoom
+                    ? changeListBox(ListBox.Type.RoomList)
+                    : changeListBox(ListBox.Type.SearchRoom);
                 break;
               case Type.Dictionary:
                 props.onClick = () => toggle(DictionaryDialog.instance);

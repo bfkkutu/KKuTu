@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
 import { getLevel } from "front/@global/Utility";
-import ProfileImage from "front/@block/ProfileImage";
-import LevelIcon from "front/@block/LevelIcon";
-import { Icon, IconType } from "front/@block/Icon";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import ProfileImage from "front/@block/ProfileImage";
+import LevelIcon from "front/@block/LevelIcon";
+import Icon from "front/@block/Icon";
+import { useStore } from "front/KKuTu/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class BlackListDialog extends Dialog {
@@ -94,7 +94,7 @@ export default class BlackListDialog extends Dialog {
                       );
                     }}
                   >
-                    <Icon type={IconType.NORMAL} name="xmark" />
+                    <Icon type={Icon.Type.NORMAL} name="xmark" />
                   </div>
                 </div>
               </li>

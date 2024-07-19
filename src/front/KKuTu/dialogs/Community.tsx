@@ -1,15 +1,15 @@
 import React, { useEffect, useState } from "react";
 
 import L from "front/@global/Language";
-import { useStore } from "front/KKuTu/Store";
 import { getLevel } from "front/@global/Utility";
-import ProfileImage from "front/@block/ProfileImage";
-import LevelIcon from "front/@block/LevelIcon";
-import { Icon, IconType } from "front/@block/Icon";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import { Dialog } from "front/@global/Bayadere/Dialog";
-import { Whisper } from "front/KKuTu/dialogs/Whisper";
+import ProfileImage from "front/@block/ProfileImage";
+import LevelIcon from "front/@block/LevelIcon";
+import Icon from "front/@block/Icon";
+import { useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
+import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import { WebSocketMessage } from "../../../common/WebSocket";
 
 export default class CommunityDialog extends Dialog {
@@ -98,7 +98,7 @@ export default class CommunityDialog extends Dialog {
                     onMouseLeave={onMouseLeave}
                     onClick={async () => await sendResponse(id, true)}
                   >
-                    <Icon type={IconType.NORMAL} name="check" />
+                    <Icon type={Icon.Type.NORMAL} name="check" />
                   </div>
                   <div
                     className="decline"
@@ -107,7 +107,7 @@ export default class CommunityDialog extends Dialog {
                     onMouseLeave={onMouseLeave}
                     onClick={async () => await sendResponse(id, false)}
                   >
-                    <Icon type={IconType.NORMAL} name="xmark" />
+                    <Icon type={Icon.Type.NORMAL} name="xmark" />
                   </div>
                 </div>
               </li>
@@ -122,7 +122,7 @@ export default class CommunityDialog extends Dialog {
                 <div className="left">
                   <Icon
                     className={isOnline ? "online" : "offline"}
-                    type={IconType.NORMAL}
+                    type={Icon.Type.NORMAL}
                     name="circle"
                   />
                   <ProfileImage src={friend.image} width={20} height={20} />
@@ -143,7 +143,7 @@ export default class CommunityDialog extends Dialog {
                         onMouseLeave={onMouseLeave}
                         onClick={() => Whisper.toggle(friend)}
                       >
-                        <Icon type={IconType.NORMAL} name="comment" />
+                        <Icon type={Icon.Type.NORMAL} name="comment" />
                       </div>
                       {room === undefined ||
                       friend.roomId === room.id ? null : (
@@ -166,7 +166,7 @@ export default class CommunityDialog extends Dialog {
                             );
                           }}
                         >
-                          <Icon type={IconType.NORMAL} name="envelope" />
+                          <Icon type={Icon.Type.NORMAL} name="envelope" />
                         </div>
                       )}
                       {friend.roomId !== undefined &&
@@ -204,7 +204,7 @@ export default class CommunityDialog extends Dialog {
                             updateRoom(res.room);
                           }}
                         >
-                          <Icon type={IconType.NORMAL} name="arrow-right" />
+                          <Icon type={Icon.Type.NORMAL} name="arrow-right" />
                         </div>
                       ) : null}
                       <div
@@ -230,7 +230,7 @@ export default class CommunityDialog extends Dialog {
                           );
                         }}
                       >
-                        <Icon type={IconType.NORMAL} name="xmark" />
+                        <Icon type={Icon.Type.NORMAL} name="xmark" />
                       </div>
                     </>
                   ) : null}

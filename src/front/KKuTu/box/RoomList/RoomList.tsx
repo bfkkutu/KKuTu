@@ -4,8 +4,8 @@ import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { useStore } from "front/KKuTu/Store";
 import CreateRoomDialog from "front/KKuTu/dialogs/CreateRoom";
-import Item from "front/KKuTu/box/ListBox/room/Item";
-import { WebSocketMessage } from "../../../../../common/WebSocket";
+import Room from "front/KKuTu/box/RoomList";
+import { WebSocketMessage } from "../../../../common/WebSocket";
 
 export default function RoomListBox() {
   const socket = useStore((state) => state.socket);
@@ -40,7 +40,7 @@ export default function RoomListBox() {
             {L.get("createRoom")}
           </div>
         ) : (
-          rooms.map((room, index) => <Item key={index} room={room} />)
+          rooms.map((room, index) => <Room.Item key={index} room={room} />)
         )}
       </div>
     </section>

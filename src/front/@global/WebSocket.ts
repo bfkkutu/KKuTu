@@ -7,7 +7,7 @@ import { Database } from "common/Database";
 const Super =
   typeof window === "undefined" ? (class Dummy {} as never) : window.WebSocket;
 class WebSocket extends Super {
-  public messageReceiver = new WebSocket.MessageReceiver();
+  public readonly messageReceiver = new WebSocket.MessageReceiver();
 
   constructor(url: string) {
     super(url);

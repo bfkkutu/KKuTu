@@ -2,7 +2,7 @@ import React from "react";
 import { josa } from "josa";
 import { Parser as HTMLParser } from "html-to-react";
 
-import { Icon, IconType } from "front/@block/Icon";
+import Icon from "front/@block/Icon";
 import { getTimeDistance } from "front/@global/Utility";
 import { FRONT } from "back/utils/Utility";
 
@@ -13,7 +13,7 @@ const PATTERN_RESOLVER: Table<PatternResolver> = {
   BR: (key) => <br key={key} />,
   FA: (key, name) => <Icon key={key} name={name} />,
   FAK: (key, ...args) => (
-    <Icon key={key} name={args.join(",")} type={IconType.STACK} />
+    <Icon key={key} name={args.join(",")} type={Icon.Type.STACK} />
   ),
   L: (key, className, data) => (
     <label key={key} className={className}>
@@ -21,7 +21,7 @@ const PATTERN_RESOLVER: Table<PatternResolver> = {
     </label>
   ),
   ICON: (key, name) => (
-    <Icon key={key} className="language" name={name} type={IconType.PURE} />
+    <Icon key={key} className="language" name={name} type={Icon.Type.PURE} />
   ),
   REF: (key, name, ...args) => (
     <React.Fragment key={key}>{L.render(name, ...args)}</React.Fragment>
@@ -153,3 +153,4 @@ export function getHumanTimeDistance(from: number, to: number = Date.now()) {
     ? L.render("TIME_DISTANCE_PAST", distance)
     : L.render("TIME_DISTANCE_FUTURE", -distance);
 }
+

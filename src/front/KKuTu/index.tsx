@@ -18,7 +18,7 @@ import InviteNotification from "front/KKuTu/notifications/Invite";
 import WhisperNotification from "front/KKuTu/notifications/Whisper";
 
 import { Room } from "front/KKuTu/box/Room";
-import { List } from "front/KKuTu/box/ListBox";
+import ListBox from "front/KKuTu/box/RoomList";
 import { UserList } from "front/KKuTu/box/UserList";
 import { Profile } from "front/KKuTu/box/Profile";
 import { Chat } from "front/KKuTu/box/Chat";
@@ -178,7 +178,7 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
               {room === undefined ? (
                 <div className="lobby">
                   <UserList.Box server={server} />
-                  <List.Box />
+                  <ListBox.Box />
                 </div>
               ) : (
                 <div className="room">

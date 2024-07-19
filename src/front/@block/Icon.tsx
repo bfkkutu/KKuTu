@@ -6,17 +6,12 @@ const FA_CYCLE_TYPES: Table<string> = {
   "@": "fa-spin",
 };
 
-export enum IconType {
-  NORMAL,
-  STACK,
-  PURE,
-}
 type Props = {
   className?: string;
   name: string;
-  type?: IconType;
+  type?: Icon.Type;
 };
-export const Icon = ({ className, name, type }: Props) => {
+function Icon({ className, name, type }: Props) {
   const classList: string[] = ["icon"];
   const style: React.CSSProperties = {};
   let chunk: RegExpMatchArray | null;
@@ -24,7 +19,7 @@ export const Icon = ({ className, name, type }: Props) => {
   if (className) classList.push(className);
   switch (type) {
     default:
-    case IconType.NORMAL: {
+    case Icon.Type.NORMAL: {
       const spinType = FA_CYCLE_TYPES[name[0]];
 
       classList.push("fa-fw");
@@ -38,7 +33,7 @@ export const Icon = ({ className, name, type }: Props) => {
       );
       return <i className={classList.join(" ")} style={style} />;
     }
-    case IconType.STACK:
+    case Icon.Type.STACK:
       classList.push("fa-stack");
       return (
         <span className="ik fa-stack">
@@ -47,9 +42,19 @@ export const Icon = ({ className, name, type }: Props) => {
           ))}
         </span>
       );
-    case IconType.PURE:
+    case Icon.Type.PURE:
       classList.push("ip", `icon-${name}`);
       style.backgroundImage = `url("/media/images/icons/${name}.png")`;
       return <i className={classList.join(" ")} style={style} />;
   }
-};
+}
+namespace Icon {
+  export enum Type {
+    NORMAL,
+    STACK,
+    PURE,
+  }
+}
+
+export default Icon;
+

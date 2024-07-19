@@ -2,13 +2,10 @@ import React, { useEffect, useState } from "react";
 
 import { useStore } from "front/KKuTu/Store";
 import L from "front/@global/Language";
-import Item from "front/KKuTu/box/ListBox/room/Item";
-import { WebSocketMessage } from "../../../../../common/WebSocket";
-import { KKuTu } from "../../../../../common/KKuTu";
-import {
-  EnumValueIterator,
-  reduceToTable,
-} from "../../../../../common/Utility";
+import Room from "front/KKuTu/box/RoomList";
+import { WebSocketMessage } from "../../../../common/WebSocket";
+import { KKuTu } from "../../../../common/KKuTu";
+import { EnumValueIterator, reduceToTable } from "../../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default function SearchRoom() {
@@ -198,7 +195,7 @@ export default function SearchRoom() {
           {result.length === 0 ? (
             <div>{L.get("error_noResult")}</div>
           ) : (
-            result.map((room, index) => <Item key={index} room={room} />)
+            result.map((room, index) => <Room.Item key={index} room={room} />)
           )}
         </div>
       </div>
