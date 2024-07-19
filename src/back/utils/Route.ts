@@ -77,7 +77,11 @@ export default function (App: Express.Application): void {
       return res.sendStatus(403);
     }
 
-    return PageBuilder("Administration")(req, res, next);
+    return PageBuilder("Administration", { departures: user.departures })(
+      req,
+      res,
+      next
+    );
   });
   App.get("/admin/load-languages", (req, res) => {
     loadLanguages();

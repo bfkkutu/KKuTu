@@ -21,7 +21,7 @@ export default class Register extends React.PureComponent<
   Nest.Page.Props<"Register">,
   State
 > {
-  public state: State = {
+  public readonly state: State = {
     page: 0,
 
     serviceTerms: L.get("loading"),
@@ -173,3 +173,4 @@ export default class Register extends React.PureComponent<
   }
 }
 Bind(Register);
+

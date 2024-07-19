@@ -29,6 +29,8 @@
 }
 
 #stage {
+  color: #eee;
+
   #main {
     margin-top: 80px;
     margin-right: 80px;
@@ -293,6 +295,15 @@ header .menu-sub-btn {
 }
 
 #background {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background-image: url("/media/image/kkutu/gamebg.png");
+  background-size: 200px 200px;
   animation: BGScroll 4s linear infinite;
 }
 @keyframes BGScroll {
@@ -303,3 +314,4 @@ header .menu-sub-btn {
     background-position: -200px -200px;
   }
 }
+

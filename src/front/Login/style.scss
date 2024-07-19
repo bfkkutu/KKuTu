@@ -18,6 +18,10 @@
 
 @import "../@global/global.scss";
 
+#stage {
+  color: #eee;
+}
+
 button {
   border: none;
   margin: 8px auto;
@@ -63,8 +67,16 @@ button {
   width: 48px !important;
 }
 
-#Background {
-  animation: BGScroll 4s linear infinite;
+#background {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: -1;
+  background-image: url("/media/image/kkutu/gamebg.png");
+  background-size: 200px 200px;
 }
 @keyframes BGScroll {
   from {
@@ -74,3 +86,4 @@ button {
     background-position: -200px -200px;
   }
 }
+

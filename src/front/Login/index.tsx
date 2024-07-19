@@ -12,7 +12,7 @@ export default class Login extends React.PureComponent<
   Nest.Page.Props<"Login">,
   State
 > {
-  public state: State = { loginButtons: [] };
+  public readonly state: State = { loginButtons: [] };
   public componentDidMount() {
     const loginButtons: React.ReactNode[] = [];
     for (const config of this.props.data.loginMethods)
@@ -75,3 +75,4 @@ export default class Login extends React.PureComponent<
   }
 }
 Bind(Login);
+

@@ -63,7 +63,7 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
   public static getDerivedStateFromError(error: Error): Partial<State> {
     return { error };
   }
-  public state: State = {};
+  public readonly state: State = {};
   public render() {
     if (this.state.error !== undefined) {
       if (this.props.mode === "production") {

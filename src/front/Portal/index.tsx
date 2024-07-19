@@ -23,7 +23,7 @@ export default class Portal extends React.PureComponent<
   Nest.Page.Props<"Portal">,
   State
 > {
-  public state: State = {
+  public readonly state: State = {
     list: [],
     isRefreshing: true,
     isListInitialized: false,

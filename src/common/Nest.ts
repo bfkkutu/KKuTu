@@ -20,7 +20,7 @@ export namespace Nest {
         dependencies: [name: string, version: string][];
       };
       Administration: {
-        ws: string;
+        departures: number;
       };
     };
     export type Metadata = {
