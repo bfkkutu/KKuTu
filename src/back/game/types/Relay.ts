@@ -16,7 +16,7 @@ import { KKuTu } from "../../../common/KKuTu";
 
 @Game.HasTurn
 export default class Relay
-  extends Game<KKuTu.Game.Type.Relay>
+  extends Game<KKuTu.Game.Interface.General>
   implements Chainable, Mission
 {
   private readonly manner: TypeORM.Repository<Cache.Manner>;
@@ -309,7 +309,7 @@ export default class Relay
     this.scores.delete(id);
   }
 
-  public override serialize(): KKuTu.Game.Type.Serialized.Relay {
+  public override serialize(): KKuTu.Game.Interface.Serialized.General {
     return {
       prompt: this.prompt,
       players: this.turn.toArray(),

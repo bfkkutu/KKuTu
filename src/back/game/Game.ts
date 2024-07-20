@@ -13,9 +13,9 @@ const DEFAULT_PROMPTS: Record<KKuTu.Game.Language, string> = {
   [KKuTu.Game.Language.Korean]: "가나다라마바사아자차",
   [KKuTu.Game.Language.English]: "abcdefghij",
 };
-abstract class Game<T extends KKuTu.Game.Type>
+abstract class Game<T extends KKuTu.Game.Interface>
   extends Synchronizable
-  implements Serializable<KKuTu.Game.Type.Serialized[T]>
+  implements Serializable<KKuTu.Game.Interface.Serialized[T]>
 {
   protected readonly room: Room;
   /**
@@ -117,7 +117,7 @@ abstract class Game<T extends KKuTu.Game.Type>
   }
   public destruct(): void {}
 
-  public abstract serialize(): KKuTu.Game.Type.Serialized[T];
+  public abstract serialize(): KKuTu.Game.Interface.Serialized[T];
 }
 
 namespace Game {

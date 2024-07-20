@@ -12,26 +12,14 @@ import LevelIcon from "front/@block/LevelIcon";
 import TimeGauge from "front/@block/TimeGauge";
 import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
+import { Game } from "front/KKuTu/box/Game";
 import { Display } from "front/KKuTu/box/Game/Display";
-import { Database } from "common/Database";
 import { Iterator } from "../../../../../common/Utility";
 import { WebSocketMessage } from "../../../../../common/WebSocket";
+import { KKuTu } from "../../../../../common/KKuTu";
+import { Database } from "common/Database";
 
-namespace Relay {
-  export interface Turn {
-    hint?: string;
-    player: number;
-    speed: number;
-    time: number;
-    roundTime: number;
-    at: number;
-  }
-  export interface Chain {
-    readonly history: Database.Word[];
-    length: number;
-  }
-}
-export default function Relay() {
+function General(props: Game.Props) {
   const [socket, disconnect] = useSocket((state) => [
     state.socket,
     state.disconnect,
@@ -49,14 +37,14 @@ export default function Relay() {
   );
   const [now, setNow] = useState(0);
   const [round, setRound] = useState(0);
-  const [turn, setTurn] = useState<Relay.Turn>({
+  const [turn, setTurn] = useState<General.Turn>({
     player: 0,
     speed: 0,
     time: 0,
     roundTime: 0,
     at: 0,
   });
-  const [chain, setChain] = useState<Relay.Chain>({
+  const [chain, setChain] = useState<General.Chain>({
     history: [],
     length: 0,
   });
@@ -81,6 +69,7 @@ export default function Relay() {
     [displacement]
   );
 
+  const decodeDisplay = General.getDisplayDecoder(props.mode);
   function tick() {
     setNow(new Date().getTime());
     timer.current = window.requestAnimationFrame(tick);
@@ -121,7 +110,7 @@ export default function Relay() {
         });
         setDisplay({
           type: Display.Type.None,
-          content: display,
+          content: decodeDisplay(display),
           isAnimating: false,
           submitting: undefined,
         });
@@ -548,3 +537,32 @@ export default function Relay() {
     </div>
   );
 }
+
+namespace General {
+  export interface Turn {
+    hint?: string;
+    player: number;
+    speed: number;
+    time: number;
+    roundTime: number;
+    at: number;
+  }
+  export interface Chain {
+    readonly history: Database.Word[];
+    length: number;
+  }
+
+  export function getDisplayDecoder(
+    mode: KKuTu.Game.Mode
+  ): (display: string) => string {
+    switch (mode) {
+      case KKuTu.Game.Mode.KoreanWordCompetition:
+      case KKuTu.Game.Mode.EnglishWordCompetition:
+        return (display) => `〈${L.get(`theme_${display}`)}〉`;
+      default:
+        return (display) => display;
+    }
+  }
+}
+
+export default General;

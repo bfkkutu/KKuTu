@@ -2,48 +2,6 @@ import { HasId } from "common/mixins/HasId";
 
 export namespace KKuTu {
   export namespace Game {
-    export enum Type {
-      /**
-       * 끝말잇기
-       */
-      Relay,
-      /**
-       * 앞말잇기
-       */
-      RelayReversed,
-      /**
-       * 쿵쿵따
-       */
-      Three,
-      /**
-       * 끄투
-       */
-      KKuTu,
-      /**
-       * 자음퀴즈
-       */
-      ConsonantQuiz,
-      /**
-       * 타자대결
-       */
-      TypingCompetition,
-      /**
-       * 단어대결
-       */
-      WordCompetition,
-      /**
-       * 솎솎
-       */
-      Sock,
-      /**
-       * 그림퀴즈
-       */
-      DrawingQuiz,
-      /**
-       * 훈민정음
-       */
-      Hunmin,
-    }
     export enum Mode {
       /**
        * 한국어 끝말잇기
@@ -159,15 +117,22 @@ export namespace KKuTu {
       English = "en",
     }
     export const LANGUAGES = Object.values(Language);
+    export enum Interface {
+      General,
+      /**
+       * TODO
+       */
+      TODO,
+    }
     export interface ModeConfiguration {
-      type: Type;
+      interface: Interface;
       language: Language;
       rules: Rule[];
       themeSelect: boolean;
     }
     export const MODES: Record<Mode, ModeConfiguration> = {
       [Mode.KoreanRelay]: {
-        type: Type.Relay,
+        interface: Interface.General,
         language: Language.Korean,
         rules: [
           Rule.Manner,
@@ -179,93 +144,93 @@ export namespace KKuTu {
         themeSelect: false,
       },
       [Mode.KoreanRelayReversed]: {
-        type: Type.RelayReversed,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [Rule.Manner, Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanThree]: {
-        type: Type.Three,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [Rule.Manner, Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanKKuTu]: {
-        type: Type.KKuTu,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [Rule.Manner, Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.KoreanConsonantQuiz]: {
-        type: Type.ConsonantQuiz,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanTypingCompetition]: {
-        type: Type.TypingCompetition,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [],
         themeSelect: true,
       },
       [Mode.KoreanWordCompetition]: {
-        type: Type.WordCompetition,
+        interface: Interface.General,
         language: Language.Korean,
         rules: [Rule.Mission],
         themeSelect: true,
       },
       [Mode.KoreanSock]: {
-        type: Type.Sock,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [],
         themeSelect: false,
       },
       [Mode.KoreanDrawingQuiz]: {
-        type: Type.DrawingQuiz,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [],
         themeSelect: true,
       },
 
       [Mode.EnglishRelay]: {
-        type: Type.Relay,
+        interface: Interface.General,
         language: Language.English,
         rules: [Rule.Wide, Rule.Mission],
         themeSelect: false,
       },
       [Mode.EnglishKKuTu]: {
-        type: Type.KKuTu,
+        interface: Interface.TODO,
         language: Language.English,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishTypingCompetition]: {
-        type: Type.TypingCompetition,
+        interface: Interface.TODO,
         language: Language.English,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishWordCompetition]: {
-        type: Type.WordCompetition,
+        interface: Interface.General,
         language: Language.English,
         rules: [],
         themeSelect: true,
       },
       [Mode.EnglishSock]: {
-        type: Type.Sock,
+        interface: Interface.TODO,
         language: Language.English,
         rules: [],
         themeSelect: false,
       },
       [Mode.EnglishDrawingQuiz]: {
-        type: Type.DrawingQuiz,
+        interface: Interface.TODO,
         language: Language.English,
         rules: [],
         themeSelect: true,
       },
 
       [Mode.Hunmin]: {
-        type: Type.Hunmin,
+        interface: Interface.TODO,
         language: Language.Korean,
         rules: [],
         themeSelect: false,
@@ -392,31 +357,20 @@ export namespace KKuTu {
       "520" /* 해양 */,
       "530" /* 화학 */,
     ];
-    export namespace Type {
+    export namespace Interface {
       export namespace Serialized {
         interface Base {
           readonly prompt: string;
           readonly players: readonly string[];
         }
 
-        export interface Relay extends Base {
-          readonly scores: Table<number>;
-        }
-        export interface WordCompetition extends Base {
+        export interface General extends Base {
           readonly scores: Table<number>;
         }
       }
       export interface Serialized {
-        [Type.Relay]: Type.Serialized.Relay;
-        [Type.RelayReversed]: never;
-        [Type.Three]: never;
-        [Type.KKuTu]: never;
-        [Type.ConsonantQuiz]: never;
-        [Type.TypingCompetition]: never;
-        [Type.WordCompetition]: Type.Serialized.WordCompetition;
-        [Type.Sock]: never;
-        [Type.DrawingQuiz]: never;
-        [Type.Hunmin]: never;
+        [Interface.General]: Interface.Serialized.General;
+        [Interface.TODO]: never;
       }
     }
   }
@@ -472,10 +426,11 @@ export namespace KKuTu {
     /**
      * 방 안에서 확인할 수 있는 방 정보들.
      */
-    export interface Detailed<T extends Game.Type = Game.Type> extends Room {
+    export interface Detailed<T extends Game.Interface = Game.Interface>
+      extends Room {
       members: Table<Member>;
       master: string;
-      game?: Game.Type.Serialized[T];
+      game?: Game.Interface.Serialized[T];
     }
   }
   export interface Room extends HasId<number>, Room.Base {}

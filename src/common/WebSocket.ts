@@ -130,7 +130,7 @@ export namespace WebSocketMessage {
       };
       [Type.Start]: {
         // TODO: 임시.
-        game: KKuTu.Game.Type.Serialized[KKuTu.Game.Type];
+        game: KKuTu.Game.Interface.Serialized[KKuTu.Game.Interface];
       };
       [Type.RoundStart]: {
         /**

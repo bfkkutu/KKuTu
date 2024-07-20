@@ -14,7 +14,7 @@ import { Iterator } from "../../../common/Utility";
 
 @Game.HasTurn
 export default class WordCompetition
-  extends Game<KKuTu.Game.Type.WordCompetition>
+  extends Game<KKuTu.Game.Interface.General>
   implements Chainable, Mission
 {
   private declare memory: DB.Memory.Repository<Word>;
@@ -194,7 +194,7 @@ export default class WordCompetition
     DB.Memory.unload(this.id);
   }
 
-  public override serialize(): KKuTu.Game.Type.Serialized.WordCompetition {
+  public override serialize(): KKuTu.Game.Interface.Serialized.General {
     return {
       prompt: this.prompt,
       players: this.turn.toArray(),

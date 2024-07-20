@@ -221,7 +221,10 @@ export namespace Room {
             </div>
           </div>
         ) : (
-          React.createElement(Game.TYPES[KKuTu.Game.MODES[room.mode].type])
+          React.createElement(
+            Game.INTERFACES[KKuTu.Game.MODES[room.mode].interface],
+            { mode: room.mode }
+          )
         )}
       </section>
     );
@@ -295,7 +298,9 @@ export namespace Room {
     leaveRoom: () => void;
 
     // 아마도 임시. 더 깔끔한 방법 찾기.
-    updateGame: (game: KKuTu.Game.Type.Serialized[KKuTu.Game.Type]) => void;
+    updateGame: (
+      game: KKuTu.Game.Interface.Serialized[KKuTu.Game.Interface]
+    ) => void;
   }
   export const useStore = create<State>((setState) => ({
     room: undefined,

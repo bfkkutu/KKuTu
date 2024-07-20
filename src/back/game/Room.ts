@@ -14,8 +14,11 @@ import WordCompetition from "back/game/types/WordCompetition";
 
 // TODO
 const TYPES: Record<any, any> = {
-  [KKuTu.Game.Type.Relay]: Relay,
-  [KKuTu.Game.Type.WordCompetition]: WordCompetition,
+  [KKuTu.Game.Mode.KoreanRelay]: Relay,
+  [KKuTu.Game.Mode.KoreanWordCompetition]: WordCompetition,
+
+  [KKuTu.Game.Mode.EnglishRelay]: Relay,
+  [KKuTu.Game.Mode.EnglishWordCompetition]: WordCompetition,
 };
 const EMPTY_PASSWORD = sha256("");
 export default class Room
@@ -26,7 +29,7 @@ export default class Room
   private readonly robots = new ImprovedMap<string, Robot>();
   public readonly id: number;
   public readonly settings: KKuTu.Room.Settings;
-  public game?: Game<KKuTu.Game.Type>;
+  public game?: Game<KKuTu.Game.Interface>;
   public master: string;
 
   public get isLocked(): boolean {
@@ -195,7 +198,7 @@ export default class Room
    * 게임을 시작한다.
    */
   public start(): void {
-    this.game = new TYPES[KKuTu.Game.MODES[this.settings.mode].type](
+    this.game = new TYPES[this.settings.mode](
       this,
       this.clients.valuesAsArray().reduce((prev, client) => {
         if (client.user.roomId === undefined) {
