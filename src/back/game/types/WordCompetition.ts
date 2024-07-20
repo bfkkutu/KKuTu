@@ -5,7 +5,6 @@ import Mission from "back/game/types/mixins/Mission";
 import DB from "back/utils/Database";
 import WebSocket from "back/utils/WebSocket";
 import { random } from "back/utils/Utility";
-import ImprovedMap from "back/utils/ImprovedMap";
 import DefaultDictionary from "back/utils/DefaultDictionary";
 import Word from "back/models/Word";
 import { WebSocketMessage } from "../../../common/WebSocket";
@@ -21,7 +20,6 @@ export default class WordCompetition
   private readonly turn: Game.Turn.Iterator;
   private readonly turnTimer = new Game.Scheduler(this);
   private turnTime = 0;
-  private readonly scores = new ImprovedMap<string, number>();
   private readonly counts = new DefaultDictionary<string, number>(0);
   private readonly themes: string[];
   /**
@@ -40,15 +38,9 @@ export default class WordCompetition
   }
 
   constructor(room: Room, clients: WebSocket[], robots: string[]) {
-    super(room, clients);
+    super(room, clients, robots);
 
-    const players = [...clients.map((client) => client.user.id), ...robots].map(
-      (id) => id
-    );
-    this.turn = new Game.Turn.Iterator(players);
-    for (const id of players) {
-      this.scores.set(id, 0);
-    }
+    this.turn = new Game.Turn.Iterator(this.scores.keysAsArray());
     const THEMES = this.room.settings.themes || KKuTu.Game.THEMES;
     this.themes = Iterator(this.room.settings.round).map(() => random(THEMES));
   }
@@ -162,6 +154,14 @@ export default class WordCompetition
   protected override async robotSubmit(): Promise<void> {
     this.submit(this.memory.random());
   }
+  protected getMultiplier(): number {
+    switch (this.mode.language) {
+      case KKuTu.Game.Language.Korean:
+        return 0.57;
+      case KKuTu.Game.Language.English:
+        return 0.65;
+    }
+  }
 
   public chain(word: Word): void {
     this.counts.set(word.id, this.counts.get(word.id) + 1);
@@ -176,7 +176,6 @@ export default class WordCompetition
     super.add(socket);
 
     this.turn.push(socket.user.id);
-    this.scores.set(socket.user.id, 0);
   }
   public override remove(id: string): void {
     super.remove(id);
@@ -188,9 +187,8 @@ export default class WordCompetition
       this.startTurn();
     }
     this.turn.remove(id);
-    this.scores.delete(id);
   }
-  public override destruct(): void {
+  public override deinitialize(): void {
     DB.Memory.unload(this.id);
   }
 

@@ -35,7 +35,7 @@ export namespace Profile {
             <div className="record">{L.render("stat_record", 0)}</div>
             <div className="money">{L.render("stat_money", me.money)}</div>
           </div>
-          <div className="level">{L.get("level", level)}</div>
+          <div className="level">{L.get("unitLevel", level)}</div>
           <Gauge
             className="gauge-exp"
             value={me.score - prev}

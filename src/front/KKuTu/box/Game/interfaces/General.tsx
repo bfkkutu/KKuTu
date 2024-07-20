@@ -25,7 +25,7 @@ function General(props: Game.Props) {
     state.disconnect,
   ]);
   const detector = useDetector((state) => state.detector);
-  const id = useStore((state) => state.me.id);
+  const me = useStore((state) => state.me);
   const users = useStore((state) => state.users);
   const setVibration = useStore((state) => state.setVibration);
   const [room, game, updateGame] = Room.useStore((state) => {
@@ -123,6 +123,7 @@ function General(props: Game.Props) {
       window.cancelAnimationFrame(timer.current);
       socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
       socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
+      AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
     };
   }, []);
 
@@ -468,7 +469,7 @@ function General(props: Game.Props) {
             </div>
           ))}
         </div>
-        {game.players[turn.player] === id ? (
+        {game.players[turn.player] === me.id ? (
           <input
             className="input"
             placeholder={L.get("game_input_placeholder")}
@@ -504,7 +505,7 @@ function General(props: Game.Props) {
               <div
                 className="profile"
                 onMouseEnter={createOnMouseEnter(
-                  new Tooltip(L.get("level", level))
+                  new Tooltip(L.get("unitLevel", level))
                 )}
                 onMouseMove={onMouseMove}
                 onMouseLeave={onMouseLeave}

@@ -11,13 +11,13 @@ export abstract class Dialog {
    * 소멸한다는 보장이 없다.
    * 따라서 Dialog마다 고유값을 부여한다.
    */
-  public id = Dialog.id++;
+  public readonly id = Dialog.id++;
   public usePoint: UseBoundStore<StoreApi<Point>>;
   public visible = false;
   private _hide?: () => void;
 
-  public HeadComponent = React.memo(this.head.bind(this));
-  public BodyComponent = React.memo(this.body.bind(this));
+  public readonly HeadComponent = React.memo(this.head.bind(this));
+  public readonly BodyComponent = React.memo(this.body.bind(this));
 
   constructor() {
     this.usePoint = create<Point>((setState) => ({

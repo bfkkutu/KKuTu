@@ -373,6 +373,35 @@ export namespace KKuTu {
         [Interface.TODO]: never;
       }
     }
+    export interface Result {
+      /**
+       * 게임 결과.
+       * (정렬된 점수 목록)
+       */
+      scores: [id: string, score: Result.Score][];
+      gain?: {
+        /**
+         * 획득한 경험치.
+         */
+        score: number;
+        /**
+         * 획득한 핑.
+         */
+        money: number;
+      };
+    }
+    export namespace Result {
+      export interface Score {
+        /**
+         * 게임 최종 점수.
+         */
+        value: number;
+        /**
+         * 획득한 경험치.
+         */
+        gain: number;
+      }
+    }
   }
 
   export namespace Room {

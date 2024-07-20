@@ -45,6 +45,7 @@ export namespace WebSocketMessage {
     Spectate = "spectate",
     Ready = "ready",
     Start = "start",
+    End = "end",
     RoundStart = "roundStart",
     RoundEnd = "roundEnd",
     TurnStart = "turnStart",
@@ -68,7 +69,9 @@ export namespace WebSocketMessage {
     Invite = "invite",
     InviteRobot = "inviteRobot",
     KickRobot = "kickRobot",
+    UpdateMe = "updateMe",
     UpdateUser = "updateUser",
+    UpdateUserList = "updateUserList",
     /**
      * @sender Client.
      * @condition 접속 중이 아닌 유저의 정보가 필요한 경우.
@@ -131,6 +134,9 @@ export namespace WebSocketMessage {
       [Type.Start]: {
         // TODO: 임시.
         game: KKuTu.Game.Interface.Serialized[KKuTu.Game.Interface];
+      };
+      [Type.End]: {
+        result: KKuTu.Game.Result;
       };
       [Type.RoundStart]: {
         /**
@@ -204,8 +210,14 @@ export namespace WebSocketMessage {
       };
       [Type.InviteRobot]: {};
       [Type.KickRobot]: {};
+      [Type.UpdateMe]: {
+        me: Database.User;
+      };
       [Type.UpdateUser]: {
         user: Database.User.Summarized;
+      };
+      [Type.UpdateUserList]: {
+        users: Database.User.Summarized[];
       };
       [Type.QueryUser]: {
         user?: Database.User.Summarized;
@@ -258,6 +270,7 @@ export namespace WebSocketMessage {
       [Type.Spectate]: {};
       [Type.Ready]: {};
       [Type.Start]: {};
+      [Type.End]: {};
       [Type.RoundStart]: {};
       [Type.RoundEnd]: {};
       [Type.TurnStart]: {};
@@ -323,7 +336,9 @@ export namespace WebSocketMessage {
          */
         target: string;
       };
+      [Type.UpdateMe]: {};
       [Type.UpdateUser]: {};
+      [Type.UpdateUserList]: {};
       [Type.QueryUser]: {
         target: string;
       };

@@ -16,6 +16,7 @@ import { useStore as useGlobalStore, useSocket } from "front/KKuTu/Store";
 import { Game } from "front/KKuTu/box/Game";
 import ProfileDialog from "front/KKuTu/dialogs/Profile";
 import RobotProfileDialog from "front/KKuTu/dialogs/RobotProfile";
+import ResultDialog from "front/KKuTu/dialogs/Result";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 
@@ -24,6 +25,7 @@ export namespace Room {
     const socket = useSocket((state) => state.socket);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
+    const show = Dialog.useStore((state) => state.show);
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
       (state) => [
         state.createOnMouseEnter,
@@ -59,11 +61,15 @@ export namespace Room {
         updateRoom(data);
       };
       socket.messageReceiver.on(WebSocketMessage.Type.UpdateRoom, onUpdate);
+      socket.messageReceiver.on(WebSocketMessage.Type.End, ({ result }) =>
+        show(new ResultDialog(result))
+      );
 
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
         socket.messageReceiver.off(WebSocketMessage.Type.Ready);
         socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom, onUpdate);
+        socket.messageReceiver.off(WebSocketMessage.Type.End);
       };
     }, []);
 

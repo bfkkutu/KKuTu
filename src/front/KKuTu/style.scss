@@ -1416,6 +1416,63 @@
     }
   }
 
+  &-result {
+    width: 400px;
+    height: 420px;
+
+    .body {
+      ul {
+        margin: 1px;
+        height: 260px;
+
+        li {
+          display: grid;
+          grid-template-columns: 5% 5% 30% 30% 15% 15%;
+          padding: 5px;
+          border-radius: 5px;
+          width: 388px;
+          height: 20px;
+          box-shadow: 0px 1px 1px #cccccc;
+          background-color: #f4f4f4;
+        }
+      }
+
+      .me {
+        display: flex;
+        flex-direction: column;
+        padding: 4px;
+        border: 1px solid #cccccc;
+        border-radius: 5px;
+
+        .gain {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-evenly;
+        }
+
+        .score {
+          display: grid;
+          grid-template-columns: 20% 80%;
+          align-items: center;
+
+          .gauge-desc {
+            display: flex;
+            flex-direction: column;
+
+            span {
+              text-align: center;
+            }
+
+            .level {
+              font-size: 30px;
+              font-weight: bold;
+            }
+          }
+        }
+      }
+    }
+  }
+
   &-dictionary {
     width: 400px;
     height: 275px;

@@ -2,6 +2,7 @@ import sha256 from "sha256";
 
 import WebSocket from "back/utils/WebSocket";
 import WebSocketGroup from "back/utils/WebSocketGroup";
+import DB from "back/utils/Database";
 import ImprovedMap from "back/utils/ImprovedMap";
 import Channel from "back/game/Channel";
 import Game from "back/game/Game";
@@ -218,12 +219,49 @@ export default class Room
   /**
    * 게임을 종료한다.
    */
-  public end(): void {
+  public async end(): Promise<void> {
     if (this.game === undefined) {
       return;
     }
-    this.game.destruct();
+    const scores = this.game.getResult();
+    // TODO: 아이템 효과 적용
+    const entries = scores.entriesAsArray();
+    for (const client of this.clients.values()) {
+      const score = scores.get(client.user.id);
+      if (score === undefined) {
+        client.send(WebSocketMessage.Type.End, {
+          result: {
+            scores: entries,
+          },
+        });
+      } else {
+        const money = Math.floor(1 + score.gain / 100);
+        client.user.score += score.gain;
+        client.user.money += money;
+        client.send(WebSocketMessage.Type.End, {
+          result: {
+            scores: entries,
+            gain: { score: score.gain, money },
+          },
+        });
+      }
+    }
+    this.game.deinitialize();
     this.game = undefined;
+    const users = [];
+    for (const client of this.clients.values()) {
+      if (!scores.has(client.user.id)) {
+        continue;
+      }
+      users.push(client.user);
+      client.send(WebSocketMessage.Type.UpdateMe, {
+        me: client.user.serialize(),
+      });
+    }
+    this.channel.broadcast(WebSocketMessage.Type.UpdateUserList, {
+      users: users.map((user) => user.summarize()),
+    });
+    await DB.Manager.save(users);
     this.update();
   }
   public summarize(): KKuTu.Room.Summarized {

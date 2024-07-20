@@ -57,8 +57,8 @@ interface State {
 
   users: Table<Database.User.Summarized>;
   initializeUsers: (list: Database.User.Summarized[]) => void;
-  appendUser: (user: Database.User.Summarized) => void;
-  setUser: (id: string, user: Partial<Database.User.Summarized>) => void;
+  updateUser: (user: Database.User.Summarized) => void;
+  updateUsers: (users: Database.User.Summarized[]) => void;
   removeUser: (user: string) => void;
 
   rooms: KKuTu.Room.Summarized[];
@@ -126,17 +126,18 @@ export const useStore = create<State>((setState) => ({
       for (const item of list) users[item.id] = item;
       return { users };
     }),
-  appendUser: (user) =>
+  updateUser: (user) =>
     setState(({ users }) => ({
-      users: {
-        ...users,
-        [user.id]: user,
-      },
+      users: { ...users, [user.id]: user },
     })),
-  setUser: (id, user) =>
-    setState(({ users }) => ({
-      users: { ...users, [id]: { ...users[id], ...user } },
-    })),
+  updateUsers: (list) =>
+    setState((state) => {
+      const users = { ...state.users };
+      for (const user of list) {
+        users[user.id] = user;
+      }
+      return { users };
+    }),
   removeUser: (user) =>
     setState((state) => {
       const users = { ...state.users };

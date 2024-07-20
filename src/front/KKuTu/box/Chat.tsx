@@ -67,6 +67,7 @@ export namespace Chat {
         AudioContext.instance.playEffect("chat");
         appendChat(chat);
       });
+
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Chat);
       };
@@ -86,6 +87,7 @@ export namespace Chat {
           }
         };
       }
+
       return () => {
         if ($input.current) {
           $input.current.onkeydown = null;

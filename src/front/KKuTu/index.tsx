@@ -40,15 +40,14 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
   const load = useDetector((state) => state.load);
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const updateCommunity = useStore((state) => state.updateCommunity);
-  const [users, initializeUsers, appendUser, setUser, removeUser] = useStore(
-    (state) => [
+  const [users, initializeUsers, updateUser, updateUsers, removeUser] =
+    useStore((state) => [
       state.users,
       state.initializeUsers,
-      state.appendUser,
-      state.setUser,
+      state.updateUser,
+      state.updateUsers,
       state.removeUser,
-    ]
-  );
+    ]);
   const vibration = useStore((state) => state.vibration);
   const room = Room.useStore((state) => state.room);
   const [notifications, showNotification, hideNotification] =
@@ -114,41 +113,56 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
       ({ community }) => updateCommunity(community)
     );
     socket.messageReceiver.on(WebSocketMessage.Type.Join, ({ user }) =>
-      appendUser(user)
+      updateUser(user)
     );
     socket.messageReceiver.on(WebSocketMessage.Type.Leave, ({ user }) =>
       removeUser(user)
+    );
+    socket.messageReceiver.on(WebSocketMessage.Type.UpdateMe, ({ me }) =>
+      updateMe(me)
+    );
+    socket.messageReceiver.on(WebSocketMessage.Type.UpdateUser, ({ user }) =>
+      updateUser(user)
+    );
+    socket.messageReceiver.on(
+      WebSocketMessage.Type.UpdateUserList,
+      ({ users }) => updateUsers(users)
     );
     socket.on("close", (e) => {
       AudioContext.instance.stopAll();
       window.alert(L.get("error_closed", e.code));
     });
+
+    return () => {
+      socket.messageReceiver.off(WebSocketMessage.Type.Join);
+      socket.messageReceiver.off(WebSocketMessage.Type.Leave);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateMe);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUser);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUserList);
+    };
   }, [socket]);
 
   useEffect(() => {
-    if (socket === undefined) return;
-    socket.messageReceiver.on(WebSocketMessage.Type.UpdateUser, ({ user }) =>
-      setUser(user.id, { ...user, roomId: user.roomId || undefined })
-    );
-    return () => {
-      socket.messageReceiver.off(WebSocketMessage.Type.UpdateUser);
-    };
-  }, [socket, users]);
+    if (socket === undefined) {
+      return;
+    }
 
-  useEffect(() => {
-    if (socket === undefined) return;
     const inviteListener: WebSocket.EventListener<
       WebSocketMessage.Type.Invite
     > = async ({ user, room }) =>
       showNotification(new InviteNotification(room, users[user].nickname));
     socket.messageReceiver.on(WebSocketMessage.Type.Invite, inviteListener);
+
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Invite, inviteListener);
     };
-  }, [socket, users, showNotification]);
+  }, [socket, users]);
 
   useEffect(() => {
-    if (socket === undefined) return;
+    if (socket === undefined) {
+      return;
+    }
+
     const listener: WebSocket.EventListener<WebSocketMessage.Type.Whisper> = ({
       whisper,
     }) => {
@@ -173,10 +187,11 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
       }
     };
     socket.messageReceiver.on(WebSocketMessage.Type.Whisper, listener);
+
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Whisper, listener);
     };
-  }, [socket, users, whisperDialogs, whisperLogs, showNotification]);
+  }, [socket, users, whisperDialogs]);
 
   return (
     <article id="main" style={{ paddingTop: vibration }}>

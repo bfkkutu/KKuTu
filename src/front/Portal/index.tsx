@@ -1,10 +1,10 @@
 import React from "react";
 
 import L from "front/@global/Language";
-import { sum } from "front/@global/Utility";
 import Icon from "front/@block/Icon";
 import GoogleAdvertisement from "front/@block/GoogleAdvertisement";
 import Bind from "front/ReactBootstrap";
+import { sum } from "../../common/Utility";
 import { Nest } from "common/Nest";
 import { Schema } from "common/Schema";
 

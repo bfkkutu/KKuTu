@@ -10,9 +10,7 @@
 
     "total": "총",
     "unitPeople": "{#0}명",
-    "unitLevel": "레벨 {#0}",
     "unitSecond": "{#0}초",
-    "unitRound": "라운드 {#0}",
 
     "error_production": "랜더링 중 오류가 발생했습니다.<{BR}>서비스 이용에 불편을 드려 죄송합니다.<{BR}>3초 후 재접속합니다.",
 
@@ -122,6 +120,10 @@
     "icon_show": "<{FA|eye-slash}>",
     "icon_report": "<{FA|flag}>",
 
+    "unitLevel": "레벨 {#0}",
+    "unitRound": "라운드 {#0}",
+    "unitScore": "{#0}점",
+
     "search": "검색",
     "invite": "초대",
     "follow": "따라가기",
@@ -130,7 +132,7 @@
     "friendRequest": "친구 추가",
     "blackListAdd": "블랙리스트 추가",
     "open": "열기",
-    "level": "레벨 {#0}",
+    "level": "레벨",
     "report": "신고",
     "submit": "제출",
     "handover": "방장 인계",
@@ -397,7 +399,12 @@
     "settings_game": "게임",
     "settings_filterProfanities": "욕설 필터링",
     "settings_etc": "기타",
-    "settings_alert_saved": "변경 사항이 저장되었습니다.",
+    "settings_alert_saved": "변경 사항이 저장되었어요.",
+
+    "result_title": "게임 결과",
+    "result_score": "획득한 경험치",
+    "result_money": "획득한 핑",
+    "result_save": "경기 저장",
 
     "community_title": "<{FA|users}> 친구 ({#0} / 100)",
 
@@ -412,7 +419,7 @@
     "dictionary_title": "<{FA|book}> 사전",
     "dictionary_input": "검색어",
     "dictionary_input_placeholder": "검색어를 입력하세요.",
-    "dictionary_notFound": "검색 결과가 없습니다.",
+    "dictionary_notFound": "검색 결과가 없어요.",
 
     "profile_title": "<{FA|user}> {#0}님의 정보",
 
@@ -435,7 +442,7 @@
     "stat_money": "{#0}핑",
     "stat_roomLimit": "참여자 {#0} / {#1}",
 
-    "alert_botdFailed": "클라이언트 문제로 서버와 연결할 수 없습니다.",
+    "alert_botdFailed": "클라이언트 문제로 서버와 연결하지 못했어요.",
     "alert_botdDetected": "비인가 프로그램을 감지했습니다.<{BR}>서버와 연결을 종료합니다.",
     "alert_friendRequest": "{#0}님께 친구 추가 요청을 보냈어요.",
     "alert_kicked": "방에서 추방되었어요.",
@@ -468,7 +475,9 @@
     "notice_handover": "{#0}님으로 방장이 바뀌었어요.",
 
     "notification_whisper": "{#0}님의 새 메시지 {#1}개",
-    "notification_invite": "{#0}번 방에서 초대"
+    "notification_invite": "{#0}번 방에서 초대",
+
+    "underDevelopment": "준비 중입니다."
   },
   "Login": {
     "title": "BF끄투 - 로그인",

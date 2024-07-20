@@ -55,4 +55,16 @@ export function reduceToTable<T, U, V extends number | string>(
     return pv;
   }, {} as { [key in V]: U });
 }
+export function sum(...arr: number[]): number;
+export function sum(arr: number[]): number;
+export function sum(arr: number | number[], ...args: number[]): number {
+  if (typeof arr === "number") {
+    let sum = arr;
+    for (let i = 0; i < args.length; ++i) {
+      sum += args[i];
+    }
+    return sum;
+  }
+  return sum(...arr);
+}
 

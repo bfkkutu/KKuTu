@@ -8,6 +8,7 @@ import ImprovedMap from "back/utils/ImprovedMap";
 import Word from "back/models/Word";
 import { KKuTu } from "../../common/KKuTu";
 import { WebSocketMessage } from "../../common/WebSocket";
+import { sum } from "../../common/Utility";
 
 const DEFAULT_PROMPTS: Record<KKuTu.Game.Language, string> = {
   [KKuTu.Game.Language.Korean]: "가나다라마바사아자차",
@@ -23,6 +24,7 @@ abstract class Game<T extends KKuTu.Game.Interface>
    * 로봇은 포함하지 않는다.
    */
   protected readonly clients: ImprovedMap<string, WebSocket>;
+  protected readonly scores = new ImprovedMap<string, number>();
   protected readonly mode: KKuTu.Game.ModeConfiguration;
   protected readonly repository: TypeORM.Repository<Word>;
   /**
@@ -36,13 +38,16 @@ abstract class Game<T extends KKuTu.Game.Interface>
   protected round: number;
   protected roundTime = 0;
 
-  constructor(room: Room, clients: WebSocket[]) {
+  constructor(room: Room, clients: WebSocket[], robots: string[]) {
     super();
 
     this.room = room;
     this.clients = new ImprovedMap(
       clients.map((client) => [client.user.id, client])
     );
+    for (const id of [...clients.map((client) => client.user.id), ...robots]) {
+      this.scores.set(id, 0);
+    }
     this.mode = KKuTu.Game.MODES[this.room.settings.mode];
     this.repository = DB.Manager.getRepository(Word[this.mode.language]);
     this.round = 0;
@@ -87,7 +92,33 @@ abstract class Game<T extends KKuTu.Game.Interface>
 
   public abstract isSubmitable(content: string): boolean;
   public abstract submit(content: string): Promise<void>;
+  /**
+   * 임시 (테스트 용)
+   */
   protected abstract robotSubmit(): Promise<void>;
+  protected abstract getMultiplier(): number;
+  public getResult(): ImprovedMap<string, KKuTu.Game.Result.Score> {
+    const R = new ImprovedMap<string, KKuTu.Game.Result.Score>();
+
+    const sortedScores = this.scores
+      .entriesAsArray()
+      .sort((a, b) => b[1] - a[1]);
+    const sumOfScores = sum(this.scores.valuesAsArray());
+    for (let rank = 0; rank < sortedScores.length; ++rank) {
+      const [key, value] = sortedScores[rank];
+      const score =
+        value *
+        this.getMultiplier() *
+        (0.77 + (this.scores.size - rank) ** 2 / 20) *
+        (1.25 / (1 + 1.25 * (value / sumOfScores) ** 2));
+      R.set(key, {
+        value,
+        gain: isNaN(score) ? 0 : Math.floor(score),
+      });
+    }
+
+    return R;
+  }
 
   /**
    * 게임 도중 입장. (바로 참여)
@@ -96,6 +127,7 @@ abstract class Game<T extends KKuTu.Game.Interface>
    */
   public add(socket: WebSocket): void {
     this.clients.set(socket.user.id, socket);
+    this.scores.set(socket.user.id, 0);
   }
   /**
    * 게임 도중 퇴장.
@@ -104,6 +136,7 @@ abstract class Game<T extends KKuTu.Game.Interface>
    */
   public remove(id: string): void {
     this.clients.delete(id);
+    this.scores.delete(id);
   }
   /**
    * 특정 유저가 현재 이 게임에 참여하고
@@ -115,7 +148,12 @@ abstract class Game<T extends KKuTu.Game.Interface>
   public has(id: string): boolean {
     return this.clients.has(id);
   }
-  public destruct(): void {}
+  /**
+   * 게임이 종료될 때 호출된다.
+   * 게임 중 외부 자원을 사용했다면
+   * 이 곳에서 반환해야 한다.
+   */
+  public deinitialize(): void {}
 
   public abstract serialize(): KKuTu.Game.Interface.Serialized[T];
 }
