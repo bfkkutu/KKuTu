@@ -457,6 +457,7 @@
     "confirm_handover": "{#0}님께 방장을 인계할까요?",
     "confirm_kick": "{#0}님을 추방할까요?",
     "confirm_invite": "{#0}님을 초대할까요?",
+    "confirm_leave": "지금 나가면 경험치와 핑을 얻을 수 없어요.<{BR}>정말 방에서 나갈까요?",
     "confirm_follow": "{#0}님이 있는 {#1}번 방으로 이동할까요?",
     "confirm_inviteResponse": "{#0}님으로부터 {#1}번 방의 초대를 받았습니다.<{BR}>수락하시겠습니까?",
     "confirm_friendRemove": "{#0}님을 친구 목록에서 삭제할까요?",

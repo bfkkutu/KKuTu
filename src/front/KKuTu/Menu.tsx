@@ -297,14 +297,20 @@ export namespace Menu {
                 };
                 break;
               case Type.Leave:
-                props.onClick = () => {
+                props.onClick = async () => {
                   if (room === undefined) {
                     return;
                   }
-                  socket.send(WebSocketMessage.Type.LeaveRoom, {});
-                  socket.messageReceiver
-                    .wait(WebSocketMessage.Type.LeaveRoom)
-                    .then(() => leaveRoom());
+                  if (
+                    room.game === undefined ||
+                    (await window.confirm(L.render("confirm_leave")))
+                  ) {
+                    socket.send(WebSocketMessage.Type.LeaveRoom, {});
+                    await socket.messageReceiver.wait(
+                      WebSocketMessage.Type.LeaveRoom
+                    );
+                    leaveRoom();
+                  }
                 };
                 break;
             }
