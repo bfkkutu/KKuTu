@@ -26,17 +26,18 @@ export default class TimeGauge extends React.Component<Props> {
           height: `${this.props.height}px`,
         }}
       >
-        <div
-          className="bar"
+        <span
+          className="gauge-bar"
           style={{
             width: `${(this.props.value / this.props.max) * 100}%`,
           }}
         >
-          <label className="text">
+          <span className="gauge-text">
             {L.get("unitSecond", (this.props.value / 1000).toFixed(1))}
-          </label>
-        </div>
+          </span>
+        </span>
       </div>
     );
   }
 }
+

@@ -69,7 +69,7 @@ export default class ResultDialog extends Dialog {
                   <span className="level">{level}</span>
                 </div>
                 <Gauge
-                  className="gauge-exp"
+                  className="gauge-score"
                   value={me.score - prev}
                   max={goal - prev}
                   width={280}

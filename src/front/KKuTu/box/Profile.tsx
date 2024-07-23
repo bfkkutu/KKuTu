@@ -37,7 +37,7 @@ export namespace Profile {
           </div>
           <div className="level">{L.get("unitLevel", level)}</div>
           <Gauge
-            className="gauge-exp"
+            className="gauge-score"
             value={me.score - prev}
             max={goal - prev}
             width={190}

@@ -1,14 +1,30 @@
 import React from "react";
 
+type Format = React.FC<{ value: number; max: number }>;
 interface Props {
   className?: string;
   max: number;
   value: number;
   width: number;
   height: number;
+  format?: Format;
 }
+interface State {
+  format: Format;
+}
+export default class Gauge extends React.PureComponent<Props, State> {
+  private static readonly DEFAULT_FORMAT: Format = (props) => (
+    <>
+      {props.value.toLocaleString()} / {props.max.toLocaleString()}
+    </>
+  );
+  public readonly state: State = {
+    format:
+      this.props.format === undefined
+        ? Gauge.DEFAULT_FORMAT
+        : this.props.format,
+  };
 
-export default class Gauge extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
       <div
@@ -18,17 +34,17 @@ export default class Gauge extends React.PureComponent<Props> {
           height: `${this.props.height}px`,
         }}
       >
-        <div
-          className="bar"
+        <span
+          className="gauge-bar"
           style={{
             width: `${(this.props.value / this.props.max) * 100}%`,
           }}
         />
-        <label className="text" style={{ width: `${this.props.width}px` }}>
-          {this.props.value.toLocaleString()} /{" "}
-          {this.props.max.toLocaleString()}
-        </label>
+        <span className="gauge-text" style={{ width: `${this.props.width}px` }}>
+          <this.state.format value={this.props.value} max={this.props.max} />
+        </span>
       </div>
     );
   }
 }
+

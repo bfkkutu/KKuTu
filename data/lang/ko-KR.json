@@ -11,6 +11,7 @@
     "total": "총",
     "unitPeople": "{#0}명",
     "unitSecond": "{#0}초",
+    "unitPercent": "{#0}%",
 
     "error_production": "랜더링 중 오류가 발생했습니다.<{BR}>서비스 이용에 불편을 드려 죄송합니다.<{BR}>3초 후 재접속합니다.",
 

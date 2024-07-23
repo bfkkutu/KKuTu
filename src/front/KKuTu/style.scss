@@ -50,6 +50,37 @@
           text-align: center;
           text-shadow: 0px 0px 3px #000000;
         }
+
+        .gauge-wrapper {
+          position: absolute;
+          top: 400px;
+          left: 0px;
+          display: flex;
+          flex-direction: row;
+          justify-content: center;
+          width: 100%;
+
+          .gauge {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-radius: 10px;
+            margin: -5px 0px;
+            overflow: hidden;
+            background-color: #333333;
+
+            .gauge-bar {
+              background-image: url("/media/image/kkutu/scorebar.png");
+            }
+
+            .gauge-text {
+              position: absolute;
+              color: #eee;
+              text-align: center;
+              text-shadow: 0px 1px 1px #141414;
+            }
+          }
+        }
       }
 
       #box-grid {
@@ -932,7 +963,7 @@
                 &.turn-time {
                   background-color: #70712d;
 
-                  .bar {
+                  .gauge-bar {
                     background-color: #e6e846;
                   }
                 }
@@ -942,18 +973,17 @@
                   border-bottom-right-radius: 10px;
                   background-color: #223c6c;
 
-                  .bar {
+                  .gauge-bar {
                     background-color: #3573e4;
                   }
                 }
 
-                .bar {
+                .gauge-bar {
                   display: flex;
                   align-items: center;
                   justify-content: flex-end;
-                  height: 100%;
 
-                  .text {
+                  .gauge-text {
                     color: #eee;
                     text-align: center;
                     text-shadow: 0px 1px 1px #141414;
@@ -1705,7 +1735,7 @@
   }
 }
 
-.gauge-exp {
+.gauge-score {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -1714,16 +1744,19 @@
   overflow: hidden;
   background-color: #333333;
 
-  .body {
+  .gauge-bar {
     background-image: url("/media/image/kkutu/scorebar.png");
   }
 
-  .text {
+  .gauge-text {
     position: absolute;
     color: #eee;
     text-align: center;
     text-shadow: 0px 1px 1px #141414;
   }
+}
+.gauge-bar {
+  height: 100%;
 }
 
 #background {

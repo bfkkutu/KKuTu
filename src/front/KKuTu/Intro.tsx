@@ -4,6 +4,7 @@ import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
 import { getRequiredScore } from "front/@global/Utility";
 import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
+import Gauge from "front/@block/Gauge";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
@@ -29,8 +30,11 @@ export default function Intro(props: Props) {
   const updateMe = useStore((state) => state.updateMe);
   const initializeUsers = useStore((state) => state.initializeUsers);
   const [args, setArgs] = useState<[string, ...string[]]>(["connecting"]);
+  const [progress, setProgress] = useState(0);
 
   const $ = useRef<HTMLDivElement>(null);
+
+  const SOUNDS = Object.entries(CLIENT_SETTINGS.sounds);
 
   useEffect(() => {
     (async () => {
@@ -60,7 +64,9 @@ export default function Intro(props: Props) {
       );
       updateMe(me);
       initializeUsers(users);
-      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sounds)) {
+      for (let i = 0; i < SOUNDS.length; ++i) {
+        setProgress(i);
+        const [id, src] = SOUNDS[i];
         try {
           setArgs(["loading_resource", src]);
           await AudioContext.instance.register(id, `/media/sound${src}`);
@@ -68,6 +74,7 @@ export default function Intro(props: Props) {
           window.alert(L.get("error_soundNotFound", id));
         }
       }
+      setProgress(SOUNDS.length);
       AudioContext.instance.volume = me.settings.bgmVolume;
       AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
       const intro = $.current;
@@ -88,6 +95,16 @@ export default function Intro(props: Props) {
       <img className="image" src="/media/image/kkutu/intro.png" />
       <div className="version">{props.version}</div>
       <div className="text">{L.get(...args)}</div>
+      <div className="gauge-wrapper">
+        <Gauge
+          className="gauge"
+          max={100}
+          value={Math.round((progress / SOUNDS.length) * 100)}
+          width={600}
+          height={20}
+          format={({ value }) => <>{L.get("unitPercent", value)}</>}
+        />
+      </div>
     </div>
   );
 }

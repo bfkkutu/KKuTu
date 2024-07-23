@@ -240,7 +240,7 @@ export default class ProfileDialog extends Dialog {
               </div>
               <div className="item gauge-wrapper">
                 <Gauge
-                  className="gauge-exp"
+                  className="gauge-score"
                   value={this.user.score - prev}
                   max={goal - prev}
                   width={250}
