@@ -7,6 +7,7 @@ import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/KKuTu/Menu";
 import Intro from "front/KKuTu/Intro";
 import { useSocket, useStore } from "front/KKuTu/Store";
+import { useVibration } from "front/KKuTu/Vibration";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
@@ -30,7 +31,7 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
     state.updateUsers,
     state.removeUser,
   ]);
-  const vibration = useStore((state) => state.vibration);
+  const vibration = useVibration((state) => state.vibration);
   const room = Room.useStore((state) => state.room);
   const [notifications, showNotification, hideNotification] =
     Notification.useStore((state) => [

@@ -11,6 +11,7 @@ import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
 import TimeGauge from "front/@block/TimeGauge";
 import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
+import { useVibration } from "front/KKuTu/Vibration";
 import { Room } from "front/KKuTu/box/Room";
 import { Game } from "front/KKuTu/box/Game";
 import { Display } from "front/KKuTu/box/Game/Display";
@@ -27,7 +28,7 @@ function General(props: Game.Props) {
   const detector = useDetector((state) => state.detector);
   const me = useStore((state) => state.me);
   const users = useStore((state) => state.users);
-  const setVibration = useStore((state) => state.setVibration);
+  const setVibration = useVibration((state) => state.setVibration);
   const [room, game, updateGame] = Room.useStore((state) => {
     const room = state.room!;
     return [room, room.game!, state.updateGame];
