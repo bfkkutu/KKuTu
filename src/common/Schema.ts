@@ -79,7 +79,10 @@ export namespace Schema {
       httpsOnly: boolean;
     };
   }
-  export type Sounds = Table<string>;
+  export interface Sounds {
+    lazy: Table<string>;
+    static: Table<string>;
+  }
 
   export interface AuthClientConfig {
     clientID: string;

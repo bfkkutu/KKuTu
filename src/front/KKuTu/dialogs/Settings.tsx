@@ -4,6 +4,7 @@ import L from "front/@global/Language";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import AudioContext from "front/@global/AudioContext";
 import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Spinner } from "front/@global/Bayadere/Spinner";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
@@ -27,6 +28,7 @@ export default class SettingsDialog extends Dialog {
   protected override body(): React.ReactElement {
     const socket = useSocket((state) => state.socket);
     const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
+    const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
     const [valueChanged, setValueChanged] = useState(false);
 
     const updateSettings = (
@@ -94,22 +96,40 @@ export default class SettingsDialog extends Dialog {
             <select
               id="settings-select-bgm"
               value={me.settings.lobbyMusic}
-              onChange={(e) => {
+              onChange={async (e) => {
                 const lobbyMusic = parseInt(e.currentTarget.value);
-                const id = `lobby_${me.settings.lobbyMusic}`;
-                if (AudioContext.instance.isPlaying(id)) {
-                  AudioContext.instance.stop(id);
-                  AudioContext.instance.play(`lobby_${lobbyMusic}`, true);
-                }
+                const prev = `lobby_${me.settings.lobbyMusic}`;
+                const id = `lobby_${lobbyMusic}`;
                 updateSettings({
                   lobbyMusic,
                 });
+
+                if (!AudioContext.instance.isPlaying(prev)) {
+                  return;
+                }
+                if (!AudioContext.instance.isRegistered(id)) {
+                  show();
+                  try {
+                    await AudioContext.instance.register(
+                      id,
+                      `/media/sound${CLIENT_SETTINGS.sounds.lazy[id]}`
+                    );
+                  } catch (e) {
+                    window.alert(L.get("error_soundNotFound", id));
+                    return;
+                  } finally {
+                    hide();
+                  }
+                }
+                AudioContext.instance.stop(prev);
+                AudioContext.instance.play(id, true);
               }}
             >
-              {Object.keys(CLIENT_SETTINGS.sounds)
+              {Object.keys(CLIENT_SETTINGS.sounds.lazy)
                 .filter((key) => key.startsWith("lobby_"))
                 .map((key, index) => {
                   const id = key.split("_").at(-1);
+
                   return (
                     <option key={index} value={id}>
                       {id}. {L.get(`bgm_${key}`)}

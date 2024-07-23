@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from "react";
 import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
 import { getRequiredScore } from "front/@global/Utility";
+import { Spinner } from "front/@global/Bayadere/Spinner";
 import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import Gauge from "front/@block/Gauge";
 import { WebSocketMessage } from "../../common/WebSocket";
@@ -29,14 +30,17 @@ export default function Intro(props: Props) {
   const load = useDetector((state) => state.load);
   const updateMe = useStore((state) => state.updateMe);
   const initializeUsers = useStore((state) => state.initializeUsers);
+  const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
   const [args, setArgs] = useState<[string, ...string[]]>(["connecting"]);
   const [progress, setProgress] = useState(0);
 
   const $ = useRef<HTMLDivElement>(null);
 
-  const SOUNDS = Object.entries(CLIENT_SETTINGS.sounds);
+  const SOUNDS = Object.entries(CLIENT_SETTINGS.sounds.static);
 
   useEffect(() => {
+    show();
+
     (async () => {
       try {
         const detector = await load();
@@ -62,6 +66,7 @@ export default function Intro(props: Props) {
       const { me, users } = await socket.messageReceiver.wait(
         WebSocketMessage.Type.Initialize
       );
+      hide();
       updateMe(me);
       initializeUsers(users);
       for (let i = 0; i < SOUNDS.length; ++i) {
@@ -75,6 +80,13 @@ export default function Intro(props: Props) {
         }
       }
       setProgress(SOUNDS.length);
+      show();
+      const id = `lobby_${me.settings.lobbyMusic}`;
+      await AudioContext.instance.register(
+        id,
+        `/media/sound${CLIENT_SETTINGS.sounds.lazy[id]}`
+      );
+      hide();
       AudioContext.instance.volume = me.settings.bgmVolume;
       AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
       const intro = $.current;

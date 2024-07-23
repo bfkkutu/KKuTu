@@ -33,6 +33,9 @@ class AudioContext extends C {
       await (await fetch(url)).arrayBuffer()
     );
   }
+  public unregister(id: string): boolean {
+    return delete this.buffers[id];
+  }
   public play(id: string, loop: boolean = false): void {
     this.stop(id);
     if (!(id in this.buffers)) {
@@ -62,6 +65,9 @@ class AudioContext extends C {
       audioSource.addEventListener("ended", () => resolve());
       audioSource.start();
     });
+  }
+  public isRegistered(id: string): boolean {
+    return id in this.buffers;
   }
   public isPlaying(id?: string): boolean {
     if (id === undefined) {
