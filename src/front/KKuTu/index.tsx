@@ -1,18 +1,15 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect } from "react";
 
 import Bind from "front/ReactBootstrap";
-import L from "front/@global/Language";
-import AudioContext from "front/@global/AudioContext";
-import { getRequiredScore } from "front/@global/Utility";
 import WebSocket from "front/@global/WebSocket";
 import { Notification } from "front/@global/Bayadere/Notification";
 import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/KKuTu/Menu";
-import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
+import Intro from "front/KKuTu/Intro";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 import InviteNotification from "front/KKuTu/notifications/Invite";
 import WhisperNotification from "front/KKuTu/notifications/Whisper";
@@ -23,31 +20,16 @@ import { UserList } from "front/KKuTu/box/UserList";
 import { Profile } from "front/KKuTu/box/Profile";
 import { Chat } from "front/KKuTu/box/Chat";
 
-CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
-for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
-  CLIENT_SETTINGS.expTable.push(
-    CLIENT_SETTINGS.expTable[i - 2] + getRequiredScore(i)
-  );
-CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
-CLIENT_SETTINGS.expTable.push(Infinity);
-
 function Component(props: Nest.Page.Props<"KKuTu">) {
-  const [socket, connect, disconnect] = useSocket((state) => [
-    state.socket,
-    state.connect,
-    state.disconnect,
-  ]);
-  const load = useDetector((state) => state.load);
+  const socket = useSocket((state) => state.socket);
   const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
   const updateCommunity = useStore((state) => state.updateCommunity);
-  const [users, initializeUsers, updateUser, updateUsers, removeUser] =
-    useStore((state) => [
-      state.users,
-      state.initializeUsers,
-      state.updateUser,
-      state.updateUsers,
-      state.removeUser,
-    ]);
+  const [users, updateUser, updateUsers, removeUser] = useStore((state) => [
+    state.users,
+    state.updateUser,
+    state.updateUsers,
+    state.removeUser,
+  ]);
   const vibration = useStore((state) => state.vibration);
   const room = Room.useStore((state) => state.room);
   const [notifications, showNotification, hideNotification] =
@@ -56,58 +38,18 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
       state.show,
       state.hide,
     ]);
-  const [whisperDialogs, whisperLogs, appendWhisper] = Whisper.useStore(
-    (state) => [state.dialogs, state.logs, state.append]
-  );
-  const [loading, setLoading] = useState(L.get("connecting"));
+  const [whisperDialogs, appendWhisper] = Whisper.useStore((state) => [
+    state.dialogs,
+    state.append,
+  ]);
 
   const server = parseInt(props.path.match(/\/game\/(.*)/)![1]);
-
-  const $intro = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const detector = await load();
-        if (detector.detect().bot) {
-          window.alert(L.get("alert_botdDetected"));
-          disconnect();
-        }
-      } catch (e) {
-        window.alert(L.get("alert_botdFailed"));
-        disconnect();
-      }
-    })();
-
-    connect(props.data.ws);
-  }, []);
 
   useEffect(() => {
     if (socket === undefined) {
       return;
     }
 
-    socket.on("open", async () => {
-      const { me, users } = await socket.messageReceiver.wait(
-        WebSocketMessage.Type.Initialize
-      );
-      updateMe(me);
-      initializeUsers(users);
-      for (const [id, src] of Object.entries(CLIENT_SETTINGS.sounds)) {
-        try {
-          setLoading(L.get("loading_resource", src));
-          await AudioContext.instance.register(id, `/media/sound${src}`);
-        } catch (e) {
-          window.alert(L.get("error_soundNotFound", id));
-        }
-      }
-      AudioContext.instance.volume = me.settings.bgmVolume;
-      AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
-      const intro = $intro.current!;
-      intro.style.opacity = "0";
-      socket.send(WebSocketMessage.Type.Initialize, {});
-      window.setTimeout(() => intro.remove(), 2000);
-    });
     socket.messageReceiver.on(
       WebSocketMessage.Type.UpdateCommunity,
       ({ community }) => updateCommunity(community)
@@ -128,10 +70,6 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
       WebSocketMessage.Type.UpdateUserList,
       ({ users }) => updateUsers(users)
     );
-    socket.on("close", (e) => {
-      AudioContext.instance.stopAll();
-      window.alert(L.get("error_closed", e.code));
-    });
 
     return () => {
       socket.messageReceiver.off(WebSocketMessage.Type.Join);
@@ -196,11 +134,7 @@ function Component(props: Nest.Page.Props<"KKuTu">) {
   return (
     <article id="main" style={{ paddingTop: vibration }}>
       <div id="game">
-        <div id="intro" ref={$intro}>
-          <img className="image" src="/media/image/kkutu/intro.png" />
-          <div className="version">{props.version}</div>
-          <div className="text">{loading}</div>
-        </div>
+        <Intro url={props.data.ws} version={props.version} />
         {me ? (
           <>
             <Menu.Component />
