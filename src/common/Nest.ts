@@ -47,7 +47,7 @@ export namespace Nest {
   }
   export type ClientSettings = Pick<
     Schema.Settings["application"],
-    "maxLevel" | "expTable" | "moremiPart" | "itemCategory" | "roundTimes"
+    "expTable" | "moremiPart" | "itemCategory"
   > & {
     sounds: Schema.Sounds;
     languageSupport: Table<string>;

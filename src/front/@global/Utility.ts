@@ -1,3 +1,4 @@
+import { KKuTu } from "../../common/KKuTu";
 import { CLIENT_SETTINGS, FRONT } from "back/utils/Utility";
 
 const PROFANITIES =
@@ -19,7 +20,7 @@ export function getRequiredScore(level: number) {
   );
 }
 export function getLevel(score: number) {
-  for (let i = 0; i <= CLIENT_SETTINGS.maxLevel; i++) {
+  for (let i = 0; i <= KKuTu.LEVEL_MAX; i++) {
     if (score < CLIENT_SETTINGS.expTable[i]) {
       return i + 1;
     }

@@ -7,14 +7,15 @@ import { Spinner } from "front/@global/Bayadere/Spinner";
 import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import Gauge from "front/@block/Gauge";
 import { WebSocketMessage } from "../../common/WebSocket";
+import { KKuTu } from "../../common/KKuTu";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 CLIENT_SETTINGS.expTable.push(getRequiredScore(1));
-for (let i = 2; i < CLIENT_SETTINGS.maxLevel; i++)
+for (let i = 2; i < KKuTu.LEVEL_MAX; i++)
   CLIENT_SETTINGS.expTable.push(
     CLIENT_SETTINGS.expTable[i - 2] + getRequiredScore(i)
   );
-CLIENT_SETTINGS.expTable[CLIENT_SETTINGS.maxLevel - 1] = Infinity;
+CLIENT_SETTINGS.expTable[KKuTu.LEVEL_MAX - 1] = Infinity;
 CLIENT_SETTINGS.expTable.push(Infinity);
 
 interface Props {

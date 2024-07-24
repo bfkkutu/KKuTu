@@ -6,7 +6,6 @@ import Room from "front/KKuTu/box/RoomList";
 import { WebSocketMessage } from "../../../../common/WebSocket";
 import { KKuTu } from "../../../../common/KKuTu";
 import { EnumValueIterator, reduceToTable } from "../../../../common/Utility";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default function SearchRoom() {
   const socket = useSocket((state) => state.socket);
@@ -133,13 +132,13 @@ export default function SearchRoom() {
                     })
                   }
                 >
-                  {CLIENT_SETTINGS.roundTimes
-                    .filter((v) => v <= room.roundTime[1])
-                    .map((roundTime, index) => (
-                      <option key={index} value={roundTime}>
-                        {L.get("unitSecond", roundTime)}
-                      </option>
-                    ))}
+                  {KKuTu.Game.ROUND_TIMES.filter(
+                    (v) => v <= room.roundTime[1]
+                  ).map((roundTime, index) => (
+                    <option key={index} value={roundTime}>
+                      {L.get("unitSecond", roundTime)}
+                    </option>
+                  ))}
                 </select>
                 <select
                   id="searchRoom-select-roundTime-end"
@@ -151,13 +150,13 @@ export default function SearchRoom() {
                     })
                   }
                 >
-                  {CLIENT_SETTINGS.roundTimes
-                    .filter((v) => room.roundTime[0] <= v)
-                    .map((roundTime, index) => (
-                      <option key={index} value={roundTime}>
-                        {L.get("unitSecond", roundTime)}
-                      </option>
-                    ))}
+                  {KKuTu.Game.ROUND_TIMES.filter(
+                    (v) => room.roundTime[0] <= v
+                  ).map((roundTime, index) => (
+                    <option key={index} value={roundTime}>
+                      {L.get("unitSecond", roundTime)}
+                    </option>
+                  ))}
                 </select>
               </label>
             </label>

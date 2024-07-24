@@ -11,7 +11,6 @@ import ThemeSelectDialog from "front/KKuTu/dialogs/ThemeSelect";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator, reduceToTable } from "../../../common/Utility";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class CreateRoomDialog extends Dialog {
   public static readonly instance = new CreateRoomDialog();
@@ -178,7 +177,7 @@ export default class CreateRoomDialog extends Dialog {
               value={room.roundTime}
               onChange={updateIntegerField}
             >
-              {CLIENT_SETTINGS.roundTimes.map((roundTime, index) => (
+              {KKuTu.Game.ROUND_TIMES.map((roundTime, index) => (
                 <option key={index} value={roundTime}>
                   {L.get("unitSecond", roundTime)}
                 </option>
@@ -233,11 +232,15 @@ export default class CreateRoomDialog extends Dialog {
                   password: sha256(room.password),
                 },
               });
-              const res = await socket.messageReceiver.wait(
-                WebSocketMessage.Type.CreateRoom
-              );
-              this.hide();
-              updateRoom(res.room);
+              try {
+                const res = await socket.messageReceiver.wait(
+                  WebSocketMessage.Type.CreateRoom
+                );
+                this.hide();
+                updateRoom(res.room);
+              } catch (e) {
+                window.alert(L.get("error_roomInvalid"));
+              }
             }}
           >
             {L.get("ok")}

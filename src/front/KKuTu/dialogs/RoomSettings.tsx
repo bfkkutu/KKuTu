@@ -11,7 +11,6 @@ import ThemeSelectDialog from "front/KKuTu/dialogs/ThemeSelect";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 import { EnumValueIterator } from "../../../common/Utility";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class RoomSettingsDialog extends Dialog {
   public static readonly instance = new RoomSettingsDialog();
@@ -191,7 +190,7 @@ export default class RoomSettingsDialog extends Dialog {
               value={room.roundTime}
               onChange={updateIntegerField}
             >
-              {CLIENT_SETTINGS.roundTimes.map((roundTime, index) => (
+              {KKuTu.Game.ROUND_TIMES.map((roundTime, index) => (
                 <option key={index} value={roundTime}>
                   {L.get("unitSecond", roundTime)}
                 </option>

@@ -4,7 +4,6 @@
     "kakao": { "unit": "" }
   },
   "application": {
-    "maxLevel": 360,
     "expTable": [],
     "moremiPart": [
       "background",
@@ -29,8 +28,7 @@
       "hair",
       "hand",
       "badge"
-    ],
-    "roundTimes": [10, 30, 60, 90, 120, 150]
+    ]
   },
   "cookie": {
     "age": 604800000,
@@ -87,3 +85,4 @@
     "httpsOnly": false
   }
 }
+

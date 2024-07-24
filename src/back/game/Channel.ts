@@ -144,6 +144,13 @@ export default class Channel extends WebSocketServer {
             break;
           case WebSocketMessage.Type.CreateRoom:
             {
+              if (!Room.Settings.isValid(message.room)) {
+                socket.sendError(WebSocketError.Type.BadRequest, {
+                  isFatal: false,
+                });
+                return;
+              }
+
               while (this.rooms.get(++Channel.roomIdCount));
 
               const id = Channel.roomIdCount;

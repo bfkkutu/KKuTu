@@ -25,11 +25,9 @@ export namespace Schema {
       kakao: KakaoAdvertisement;
     };
     application: {
-      maxLevel: number;
       expTable: number[];
       moremiPart: string[];
       itemCategory: string[];
-      roundTimes: number[];
     };
     cookie: {
       age: number;

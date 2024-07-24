@@ -134,11 +134,9 @@ export function writeClientConstants(): void {
   const data: Partial<Nest.ClientSettings> = {
     languageSupport: SETTINGS.languageSupport,
     sounds: SOUNDS,
-    maxLevel: SETTINGS.application.maxLevel,
     expTable: [],
     moremiPart: SETTINGS.application.moremiPart,
     itemCategory: SETTINGS.application.itemCategory,
-    roundTimes: SETTINGS.application.roundTimes,
   };
   FS.writeFileSync(
     resolve("dist", "constants.js"),

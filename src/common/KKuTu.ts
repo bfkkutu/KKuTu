@@ -2,6 +2,7 @@ import { HasId } from "common/mixins/HasId";
 
 export namespace KKuTu {
   export namespace Game {
+    export const ROUND_TIMES = [10, 30, 60, 90, 120, 150];
     export enum Mode {
       /**
        * 한국어 끝말잇기
@@ -464,6 +465,7 @@ export namespace KKuTu {
   }
   export interface Room extends HasId<number>, Room.Base {}
 
+  export const LEVEL_MAX = 360;
   /**
    * 31레벨 경험치 0일 때의 누적 점수 값.
    */

@@ -22,14 +22,11 @@ const TYPES: Record<any, any> = {
   [KKuTu.Game.Mode.EnglishWordCompetition]: WordCompetition,
 };
 const EMPTY_PASSWORD = sha256("");
-export default class Room
-  extends WebSocketGroup
-  implements Serializable<KKuTu.Room>
-{
+class Room extends WebSocketGroup implements Serializable<KKuTu.Room> {
   private readonly channel: Channel;
   private readonly robots = new ImprovedMap<string, Robot>();
   public readonly id: number;
-  public readonly settings: KKuTu.Room.Settings;
+  public readonly settings: Room.Settings;
   public game?: Game<KKuTu.Game.Interface>;
   public master: string;
 
@@ -94,7 +91,7 @@ export default class Room
 
     this.channel = channel;
     this.id = id;
-    this.settings = settings;
+    this.settings = new Room.Settings(settings);
     this.master = master;
   }
 
@@ -104,13 +101,9 @@ export default class Room
    * @param settings 방 설정 객체.
    */
   public configure(settings: Partial<KKuTu.Room.Settings>): void {
-    const allowed = Object.keys(this.settings);
-    Object.assign(
-      this.settings,
-      Object.fromEntries(
-        Object.entries(settings).filter(([name]) => allowed.includes(name))
-      )
-    );
+    for (const key in settings) {
+      this.settings.set(key, settings[key as keyof KKuTu.Room.Settings]);
+    }
   }
   /**
    * 방에 클라이언트를 추가한다.
@@ -302,4 +295,79 @@ export default class Room
     };
   }
 }
+
+namespace Room {
+  export class Settings implements KKuTu.Room.Settings {
+    public title: string;
+    public policy: Record<KKuTu.Room.Policy, boolean>;
+    public limit: number;
+    public mode: KKuTu.Game.Mode;
+    public round: number;
+    public roundTime: number;
+    public rules: Record<KKuTu.Game.Rule, boolean>;
+    public themes: string[];
+    public password: string;
+
+    constructor(settings: KKuTu.Room.Settings) {
+      this.title = settings.title;
+      this.policy = settings.policy;
+      this.limit = settings.limit;
+      this.mode = settings.mode;
+      this.round = settings.round;
+      this.roundTime = settings.roundTime;
+      this.rules = settings.rules;
+      this.themes = settings.themes;
+      this.password = settings.password;
+    }
+
+    public set(key: string, value: any): void {
+      if (!Settings.validate(key, value)) {
+        return;
+      }
+      if (value === undefined || value === null) {
+        return;
+      }
+      Object.defineProperty(this, key, {
+        value,
+      });
+    }
+    public static isValid(settings: KKuTu.Room.Settings): boolean {
+      for (const key in settings) {
+        if (
+          !Settings.validate(key, settings[key as keyof KKuTu.Room.Settings])
+        ) {
+          return false;
+        }
+      }
+      return true;
+    }
+    private static validate(key: string, value: any): boolean {
+      switch (key) {
+        case "title":
+        case "password":
+          return typeof value === "string";
+        case "policy":
+        case "rules":
+          return typeof value === "object";
+        case "limit":
+          return Number.isInteger(value) && 1 < value && value < 9;
+        case "mode":
+          return (
+            Number.isInteger(value) &&
+            Object.values(KKuTu.Game.Mode).includes(value)
+          );
+        case "round":
+          return Number.isInteger(value) && 0 < value && value < 11;
+        case "roundTime":
+          return KKuTu.Game.ROUND_TIMES.includes(value);
+        case "themes":
+          return Array.isArray(value);
+        default:
+          return false;
+      }
+    }
+  }
+}
+
+export default Room;
 
