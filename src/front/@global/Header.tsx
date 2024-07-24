@@ -3,17 +3,13 @@ import React from "react";
 import { Schema } from "common/Schema";
 import L from "front/@global/Language";
 
-interface Props {
-  profile?: Schema.Profile;
-}
-
 interface MenuItem {
   key: string;
   props: any;
   children: MenuItem[];
 }
 
-const Menu: MenuItem[] = [
+const MENU: MenuItem[] = [
   {
     key: "home",
     props: {
@@ -35,12 +31,15 @@ const Menu: MenuItem[] = [
   },
 ];
 
+interface Props {
+  profile?: Schema.Profile;
+}
 export default class Header extends React.PureComponent<Props> {
   public render(): React.ReactNode {
     return (
       <header>
-        <div id="menu">
-          {Menu.map((item, index) => (
+        <nav id="menu">
+          {MENU.map((item, index) => (
             <React.Fragment key={index}>
               <a className="menu-btn" {...item.props}>
                 {L.render(item.key)}
@@ -62,15 +61,22 @@ export default class Header extends React.PureComponent<Props> {
           <div
             id="account-info"
             onClick={async () => {
-              if (this.props.profile === undefined) location.href = "/login";
-              else if (await window.confirm(L.get("askLogout")))
+              if (this.props.profile === undefined) {
+                location.href = "/login";
+                return;
+              }
+              if (await window.confirm(L.get("askLogout"))) {
                 location.href = "/logout";
+              }
             }}
           >
-            {this.props.profile ? this.props.profile.name : L.get("login")}
+            {this.props.profile === undefined
+              ? L.get("login")
+              : this.props.profile.name}
           </div>
-        </div>
+        </nav>
       </header>
     );
   }
 }
+
