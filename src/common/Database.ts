@@ -1,3 +1,5 @@
+import { HasId } from "common/mixins/HasId";
+
 export namespace Database {
   export type PaginateOptions = {
     skip: number;
@@ -88,8 +90,7 @@ export namespace Database {
 
   // table interfaces
   export namespace User {
-    export interface Summarized {
-      id: string;
+    export interface Summarized extends HasId<string> {
       score: number;
       record: JSON.Types.User.record;
       equipment: JSON.Types.User.equipment;
@@ -107,35 +108,31 @@ export namespace Database {
     punishment: JSON.Types.User.punishment;
     settings: JSON.Types.User.settings;
   }
-  export interface Chat {
-    id: string;
+  export interface Chat extends HasId<string> {
     room: Nullable<number>;
     sender: string;
     content: string;
     createdAt: number;
   }
-  export interface Whisper {
-    id: string;
+  export interface Whisper extends HasId<string> {
     sender: string;
     target: string;
     content: string;
     createdAt: number;
   }
-  export interface Report {
-    id: string;
+  export interface Report extends HasId<string> {
     submitter: string;
     target: string;
     reason: number;
     comment: string;
   }
-  export interface Word {
-    id: string;
+  export interface Word extends HasId<string> {
     data: string;
-    means: Table<string>;
+    means: Table<string[]>;
   }
-  export interface Mean {
-    data: string;
-    wide: boolean;
-  }
+  export type Mean = {
+    theme: string;
+    data: string[];
+  };
 }
 

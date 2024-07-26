@@ -12,7 +12,7 @@ export default class Word {
   public static en: typeof Word;
 
   @TypeORM.PrimaryColumn({ name: "_id", type: "varchar", length: 256 })
-  public id!: string;
+  public declare id: string;
 
   @TypeORM.Column({
     name: "type",
@@ -20,16 +20,16 @@ export default class Word {
     nullable: true,
     transformer: ListTransformer,
   })
-  public type!: string;
+  public declare type: string;
 
   @TypeORM.Column({ name: "mean", type: "text", nullable: false })
-  public mean!: string;
+  public declare mean: string;
 
   @TypeORM.Column({ name: "hit", type: "int4", default: 0, nullable: false })
-  public hit!: number;
+  public declare hit: number;
 
   @TypeORM.Column({ name: "flag", type: "int4", nullable: true })
-  public flag!: number;
+  public declare flag: number;
 
   @TypeORM.Column({
     name: "theme",
@@ -37,11 +37,14 @@ export default class Word {
     nullable: true,
     transformer: ListTransformer,
   })
-  public theme!: string[];
+  public declare theme: string[];
 }
 
 for (const language of LANGUAGES) {
   @TypeORM.Entity({ name: `kkutu_${language}` })
-  class Entity extends Word {}
+  class Entity extends Word {
+    public static readonly name = `Word_${language}`;
+  }
   Word[language] = Entity;
 }
+

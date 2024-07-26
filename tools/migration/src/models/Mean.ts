@@ -15,25 +15,17 @@ export default class Mean {
   @TypeORM.Column({
     name: "m_theme",
     type: "text",
-    nullable: true,
+    nullable: false,
   })
-  public declare theme: string | null;
+  public declare theme: string;
 
   @TypeORM.Column({
     name: "m_data",
-    type: "text",
-    default: "",
+    type: "json",
+    default: [],
     nullable: false,
   })
-  public declare data: string;
-
-  @TypeORM.Column({
-    name: "m_wide",
-    type: "boolean",
-    default: false,
-    nullable: false,
-  })
-  public declare wide: boolean;
+  public declare data: string[];
 
   @TypeORM.Column({
     name: "w_createdAt",
@@ -47,6 +39,8 @@ export default class Mean {
 for (const language of LANGUAGES) {
   @TypeORM.Entity({ name: `kkutu_means_${language}` })
   class Entity extends Mean {
+    public static readonly name = `Mean_${language}`;
+
     @TypeORM.ManyToOne(() => Word[language], (word) => word.means)
     @TypeORM.JoinColumn({
       name: "m_word",

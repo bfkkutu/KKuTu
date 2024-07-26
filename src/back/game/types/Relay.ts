@@ -13,6 +13,8 @@ import * as Cache from "back/models/cache";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
 
+const WIDE = KKuTu.Game.THEMES_WIDE.join(",");
+
 @Game.HasTurn
 export default class Relay
   extends Game<KKuTu.Game.Interface.General>
@@ -113,7 +115,9 @@ export default class Relay
       .orderBy("RANDOM()")
       .limit(1);
     if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+      builder
+        .innerJoin("w.means", "m")
+        .andWhere(`m.theme != ALL('{${WIDE}}'::text[])`);
     }
     const word = await builder.getOne();
     if (word === null) {
@@ -141,7 +145,9 @@ export default class Relay
       .orderBy("RANDOM()")
       .limit(1);
     if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+      builder
+        .innerJoin("w.means", "m")
+        .andWhere(`m.theme != ALL('{${WIDE}}'::text[])`);
     }
     const word = await builder.getOne();
     if (word === null) {
@@ -166,7 +172,7 @@ export default class Relay
       .where("w.data = :data", { data: content })
       .innerJoinAndSelect("w.means", "m");
     if (!this.room.settings.rules.wide) {
-      builder.andWhere("m.wide = false");
+      builder.andWhere(`m.theme != ALL('{${WIDE}}'::text[])`);
     }
     const word = await builder.getOne();
     if (word === null) {
@@ -260,7 +266,9 @@ export default class Relay
       .orderBy("RANDOM()")
       .limit(1);
     if (!this.room.settings.rules.wide) {
-      builder.innerJoin("w.means", "m").andWhere("m.wide = false");
+      builder
+        .innerJoin("w.means", "m")
+        .andWhere(`m.theme != ALL('{${WIDE}}'::text[])`);
     }
     const word = await builder.getOne();
     if (word === null) {

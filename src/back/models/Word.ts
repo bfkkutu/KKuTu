@@ -38,8 +38,11 @@ export default class Word implements Serializable<Database.Word> {
 for (const language of Object.values(KKuTu.Game.Language)) {
   @TypeORM.Entity({ name: `kkutu_words_${language}` })
   class Entity extends Word {
+    public static readonly name = `Word_${language}`;
+
     @TypeORM.OneToMany(() => Mean[language], (mean) => mean.word)
     public declare means: Mean[];
   }
   Word[language] = Entity;
 }
+

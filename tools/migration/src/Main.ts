@@ -38,7 +38,7 @@ async function migrateWords(from: string, to: { word: string; mean: string }) {
       type: new Mean(),
       name: to.mean,
     });
-    const words = [];
+    const words: Word[] = [];
     progress.start(legacy.length, 0);
 
     for (const item of legacy) {
@@ -49,29 +49,27 @@ async function migrateWords(from: string, to: { word: string; mean: string }) {
       for (let i = 0; i < item.type.length; ++i) {
         const mean = new Mean();
         mean.word = word;
-        mean.theme = item.theme[i];
-        mean.data = means[i] || "";
-        mean.wide = item.type[i] === "INJEONG";
+        mean.theme = item.theme[i] || "0";
+        mean.data = [means[i] || ""];
         word.means.push(mean);
       }
-      await meanRepository
-        .createQueryBuilder()
-        .insert()
-        .values(word.means)
-        .execute();
 
       words.push(word);
       if (words.length === 100) {
-        await wordRepository.save(words);
-        words.length = 0;
-        progress.increment(100);
+        await save();
       }
     }
-    await wordRepository.save(words);
-    progress.increment(words.length);
+    await save();
 
     progress.stop();
     console.log("Migration succeeded.");
+
+    async function save() {
+      await wordRepository.save(words);
+      await meanRepository.save(words.flatMap((word) => word.means));
+      progress.increment(words.length);
+      words.length = 0;
+    }
   } catch (e) {
     progress.stop();
     console.log("Migration failed: ", e);
@@ -89,3 +87,4 @@ function transformMean(mean: string): string[] {
   }
   return R;
 }
+
