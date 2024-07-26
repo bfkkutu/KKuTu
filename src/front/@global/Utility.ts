@@ -31,6 +31,24 @@ export function filterProfanities(raw: string) {
   return raw.replace(PROFANITIES, (s) => "*".repeat(s.length));
 }
 
+/**
+ * 상태 관리 함수 안에서 다른 상태 관리 함수를
+ * 호출할 수 있도록 화살표 함수를 제외한
+ * 메서드들을 상태 객체에 바인드한다.
+ *
+ * @param state 상태 객체 참조.
+ * @returns state 참조 값을 그대로 반환한다.
+ */
+export function bind<T extends object>(state: T): T {
+  for (const key in state) {
+    const name = key as keyof T;
+    const value = state[name];
+    if (typeof value === "function") {
+      (state[name] as typeof value) = value.bind(state);
+    }
+  }
+  return state;
+}
 export type Chain = (f: () => void) => void;
 type ChainCondition<P extends Array<any>> = (...args: P) => boolean;
 export class ChainedFunction<P extends Array<any>> {

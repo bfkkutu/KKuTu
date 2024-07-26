@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { create, UseBoundStore, StoreApi } from "zustand";
 
 import { Point } from "front/@global/Point";
-import { Chain, ChainedFunction } from "front/@global/Utility";
+import { bind, ChainedFunction } from "front/@global/Utility";
 
 export abstract class Dialog {
   private static id = 0;
@@ -92,50 +92,43 @@ export namespace Dialog {
     hide: (dialog: Dialog) => void;
     toggle: (dialog: Dialog) => void;
   }
-  export const useStore = create<State>((setState) => ({
-    dialogs: [],
-    show: (dialog) => {
-      if (dialog.visible) {
-        return;
-      }
-      hideActive.push(createChain(dialog));
-      dialog.initialize();
-      dialog.visible = true;
-      setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
-    },
-    hide: (dialog) => {
-      if (!dialog.visible) {
-        return;
-      }
-      dialog.onHide?.();
-      dialog.visible = false;
-      setState(({ dialogs }) => ({
-        dialogs: dialogs.filter((v) => v !== dialog),
-      }));
-    },
-    toggle: (dialog) => {
-      if (dialog.visible) {
+  export const useStore = create<State>((setState) =>
+    bind({
+      dialogs: [],
+      show(dialog): void {
+        if (dialog.visible) {
+          return;
+        }
+        hideActive.push((pass) => {
+          if (dialog.visible) {
+            this.hide(dialog);
+            return;
+          }
+          return pass();
+        });
+        dialog.initialize();
+        dialog.visible = true;
+        setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
+      },
+      hide(dialog): void {
+        if (!dialog.visible) {
+          return;
+        }
         dialog.onHide?.();
+        dialog.visible = false;
         setState(({ dialogs }) => ({
           dialogs: dialogs.filter((v) => v !== dialog),
         }));
-      } else {
-        hideActive.push(createChain(dialog));
-        dialog.initialize();
-        setState(({ dialogs }) => ({ dialogs: [...dialogs, dialog] }));
-      }
-      dialog.visible = !dialog.visible;
-    },
-  }));
-  function createChain(dialog: Dialog): Chain {
-    return (pass) => {
-      if (dialog.visible) {
-        Dialog.useStore.getState().hide(dialog);
-        return;
-      }
-      return pass();
-    };
-  }
+      },
+      toggle(dialog): void {
+        if (dialog.visible) {
+          this.hide(dialog);
+        } else {
+          this.show(dialog);
+        }
+      },
+    })
+  );
 
   interface Props {
     instance: Dialog;
