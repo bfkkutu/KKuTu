@@ -519,6 +519,8 @@
     "title": "BF끄투 - 관리 도구",
     "welcome": "BF끄투 관리 도구입니다.",
 
+    "icon_remove": "<{FA|xmark}>",
+
     "language": "데이터베이스(언어)",
     "language_ko": "한국어",
     "language_en": "영어",
@@ -530,6 +532,7 @@
     "error_400": "잘못된 요청이에요.",
     "error_401": "세션이 만료되었어요.<{BR}>다시 로그인해주세요.",
     "error_403": "권한이 없어요.",
+    "error_409": "데이터가 이미 존재해요.<{BR}>(데이터 충돌)",
     "error_500": "서버 오류가 발생했어요.",
 
     "themePrompt_title": "주제 선택",
@@ -548,13 +551,18 @@
     "departure4_mean": "뜻",
     "departure4_menu0": "추가",
     "departure4_menu0_errorAlreadyExist": "주제는 중복해서 추가할 수 없어요.<{BR}>대신 뜻 추가 버튼을 눌러 뜻을 더 추가해보세요.",
+    "departure4_menu0_language_desc": "먼저, 조작할 데이터베이스를 선택해주세요.",
     "departure4_menu0_title_direct": "직접 추가",
+    "departure4_menu0_desc_direct": "※ 한 번에 하나의 단어만 추가할 수 있어요.<{BR}>(단, 하나의 단어에 대해 주제와 뜻을 여러 개 입력할 수는 있어요)<{BR}>※ 같은 단어가 데이터베이스에 존재하는 경우 조회 & 수정 탭을 이용하세요.",
     "departure4_menu0_direct_wordPlaceholder": "추가할 단어를 입력하세요.",
     "departure4_menu0_direct_meanPlaceholder": "뜻을 입력하세요.",
     "departure4_menu0_direct_addTheme": "주제 추가",
     "departure4_menu0_direct_addMean": "뜻 추가",
     "departure4_menu0_direct_remove": "<{FA|xmark}>",
     "departure4_menu0_title_fromList": "목록으로 추가",
+    "departure4_menu0_desc_fromList": "※ 하나의 공통된 주제를 가진 여러 개의 단어를 한 번에 추가할 수 있어요.<{BR}>※ 같은 단어가 데이터베이스에 존재하는 경우 해당 단어에 대해서는 주제만 새로 추가해요.<{BR}>※ 뜻을 추가해야 하는 경우 단어 추가 후 조회 & 수정 탭에서 뜻을 추가하세요.<{BR}>※ 가능하다면 이 기능의 사용은 지양해 주세요.",
+    "departure4_menu0_fromList_legacyView": "구버전 보기",
+    "departure4_menu0_fromList_addWord": "단어 추가",
     "departure4_menu1": "조회 & 수정",
     "departure4_menu2": "삭제",
 

@@ -117,6 +117,14 @@ export default function (App: Express.Application): void {
         return res.sendStatus(400);
       }
 
+      if (
+        await DB.Manager.createQueryBuilder(Word[language], "w")
+          .where("w.data = :data", { data: data.data })
+          .getExists()
+      ) {
+        return res.sendStatus(409);
+      }
+
       const word = new Word[language]();
       word.data = data.data;
       word.means = [];
@@ -131,7 +139,75 @@ export default function (App: Express.Application): void {
         await DB.Manager.save(word);
         await DB.Manager.save(word.means);
       } catch (e) {
-        console.log(e);
+        return res.sendStatus(500);
+      }
+
+      return res.sendStatus(200);
+    }
+  );
+  App.post<"/admin/database/words", {}, any, API.POST["/admin/database/words"]>(
+    "/admin/database/words",
+    async (req, res) => {
+      if (req.session.profile === undefined) {
+        return res.sendStatus(401);
+      }
+
+      const user = await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.oid = :oid", { oid: req.session.profile.id })
+        .getOne();
+      if (user === null) {
+        return res.sendStatus(401);
+      }
+
+      if (user.departures === Database.Departure.None) {
+        return res.sendStatus(403);
+      }
+
+      const { language, theme, words } = req.body;
+      if (!KKuTu.Game.LANGUAGES.includes(language)) {
+        return res.sendStatus(400);
+      }
+      if (
+        !KKuTu.Game.THEMES.includes(theme) &&
+        !KKuTu.Game.THEMES_WIDE.includes(theme)
+      ) {
+        return res.sendStatus(400);
+      }
+      if (!Array.isArray(words)) {
+        return res.sendStatus(400);
+      }
+
+      const wordsToBeSaved = [];
+      const meansToBeSaved = [];
+      for (const data of words) {
+        const word = await DB.Manager.createQueryBuilder(Word[language], "w")
+          .where("w.data = :data", { data })
+          .innerJoinAndSelect("w.means", "m")
+          .getOne();
+        const mean = new Mean[language]();
+        mean.data = [""];
+        if (word === null) {
+          const word = new Word[language]();
+          word.data = data;
+          mean.word = word;
+          mean.theme = theme;
+          word.means = [mean];
+          wordsToBeSaved.push(word);
+        } else {
+          if (word.means.map((mean) => mean.theme).includes(theme)) {
+            continue;
+          }
+          mean.word = word;
+          mean.theme = theme;
+          word.means.push(mean);
+          wordsToBeSaved.push(word);
+        }
+        meansToBeSaved.push(mean);
+      }
+      try {
+        await DB.Manager.save(wordsToBeSaved);
+        await DB.Manager.save(meansToBeSaved);
+      } catch (e) {
         return res.sendStatus(500);
       }
 

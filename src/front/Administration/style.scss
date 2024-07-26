@@ -50,6 +50,11 @@ main {
 
     .body {
       height: 100%;
+      overflow-y: scroll;
+
+      .checkbox {
+        display: flex;
+      }
 
       .page {
         &-main {
@@ -77,10 +82,6 @@ main {
               height: fit-content;
             }
 
-            span {
-              text-align: center;
-            }
-
             .wrapper {
               display: flex;
               flex-direction: row;
@@ -88,15 +89,34 @@ main {
               gap: 3px;
             }
 
-            .themes {
-              .theme-item {
-                display: grid;
-                grid-template-columns: 1fr 3fr;
+            .form-direct {
+              .themes {
+                .theme-item {
+                  display: grid;
+                  grid-template-columns: 1fr 3fr;
 
-                .means {
-                  .mean-item {
-                    display: grid;
-                    grid-template-columns: 95% 5%;
+                  span {
+                    text-align: center;
+                  }
+
+                  .means {
+                    .mean-item {
+                      display: grid;
+                      grid-template-columns: 95% 5%;
+                    }
+                  }
+                }
+              }
+            }
+
+            .form-fromList {
+              ul {
+                li {
+                  display: flex;
+                  flex-direction: row;
+
+                  input {
+                    width: 100%;
                   }
                 }
               }

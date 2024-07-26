@@ -7,6 +7,11 @@ namespace API {
       language: KKuTu.Game.Language;
       word: Omit<DB.Word, "id">;
     };
+    ["/admin/database/words"]: {
+      language: KKuTu.Game.Language;
+      theme: string;
+      words: string[];
+    };
   }
 }
 
