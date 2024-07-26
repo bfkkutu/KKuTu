@@ -134,6 +134,7 @@ function General(props: Game.Props) {
       ({ errorType, display: content }) => {
         clearTimeout(errorTimeout.current);
         AudioContext.instance.playEffect("fail");
+        const previous = display.content;
         setDisplay({
           type: Display.Type.Error,
           content: L.get(`turnError_${errorType}`, content),
@@ -144,7 +145,7 @@ function General(props: Game.Props) {
           () =>
             setDisplay({
               type: Display.Type.None,
-              content: display.content,
+              content: previous,
               isAnimating: false,
               submitting: undefined,
             }),
