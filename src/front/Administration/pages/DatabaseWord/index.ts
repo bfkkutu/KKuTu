@@ -1,7 +1,8 @@
-import Query from "front/Administration/pages/DatabaseWord/menus/Query";
+import Insert from "front/Administration/pages/DatabaseWord/menus/Insert";
+import Update from "front/Administration/pages/DatabaseWord/menus/Update";
 
 namespace DatabaseWord {
-  export const MENUS: React.FC<{}>[] = [Query];
+  export const MENUS: React.FC<{}>[] = [Insert, Update];
 }
 
 export default DatabaseWord;

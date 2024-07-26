@@ -59,6 +59,50 @@ main {
           font-size: 20pt;
           height: 100%;
         }
+
+        &-databaseWord {
+          &-insert {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            form {
+              display: flex;
+              flex-direction: column;
+              gap: 10px;
+            }
+
+            input,
+            select {
+              height: fit-content;
+            }
+
+            span {
+              text-align: center;
+            }
+
+            .wrapper {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              gap: 3px;
+            }
+
+            .themes {
+              .theme-item {
+                display: grid;
+                grid-template-columns: 1fr 3fr;
+
+                .means {
+                  .mean-item {
+                    display: grid;
+                    grid-template-columns: 95% 5%;
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }

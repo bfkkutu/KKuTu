@@ -455,14 +455,14 @@ function General(props: Game.Props) {
             <div key={word.id} className="item">
               <label className="word ellipse">{word.data}</label>
               <div className="means ellipse">
-                {Object.entries(word.means).map(([theme, mean], index) => {
+                {Object.entries(word.means).map(([theme, means], index) => {
                   const display = L.get(`theme_${theme}`);
                   return (
                     <React.Fragment key={index}>
                       {display.length === 0 ? null : (
                         <label className="theme">{display}</label>
                       )}
-                      {mean.length === 0 ? null : mean}
+                      {means.length === 0 ? null : means.join(" ")}
                     </React.Fragment>
                   );
                 })}

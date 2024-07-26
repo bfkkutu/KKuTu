@@ -32,14 +32,22 @@ export default class DictionaryDialog extends Dialog {
             {result === undefined ? (
               <li>{L.get("dictionary_notFound")}</li>
             ) : (
-              Object.entries(result.means).map(([theme, mean], index) => {
+              Object.entries(result.means).map(([theme, means], index) => {
                 const display = L.get(`theme_${theme}`);
                 return (
-                  <li key={index}>
+                  <li key={index} className="item">
                     {display.length === 0 ? null : (
                       <label className="theme">{display}</label>
                     )}
-                    {mean}
+                    {means.length === 0 ? null : means.length === 1 ? (
+                      means[0]
+                    ) : (
+                      <ol type="1">
+                        {means.map((mean, index) => (
+                          <li key={index}>{mean}</li>
+                        ))}
+                      </ol>
+                    )}
                   </li>
                 );
               })

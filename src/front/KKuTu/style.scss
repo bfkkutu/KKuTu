@@ -1531,7 +1531,7 @@
         color: #bbb;
         background-color: #111;
 
-        li {
+        .item {
           display: flex;
           flex-direction: row;
           white-space: initial;
@@ -1546,6 +1546,10 @@
             &::after {
               content: "〉";
             }
+          }
+
+          ol {
+            padding-inline-start: 20px;
           }
         }
       }
