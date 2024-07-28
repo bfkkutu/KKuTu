@@ -74,24 +74,28 @@ export namespace Chat {
     }, []);
 
     useEffect(() => {
-      if ($input.current) {
-        $input.current.onkeydown = (e) => {
-          if (e.code === "Enter" || e.code === "NumpadEnter") {
-            if (e.isComposing) {
-              return;
-            }
-            if (!e.shiftKey) {
-              e.preventDefault();
-              send();
-            }
-          }
-        };
+      if ($input.current === null) {
+        return;
       }
 
-      return () => {
-        if ($input.current) {
-          $input.current.onkeydown = null;
+      $input.current.onkeydown = (e) => {
+        if (e.code === "Enter" || e.code === "NumpadEnter") {
+          if (e.isComposing) {
+            return;
+          }
+          if (!e.shiftKey) {
+            e.preventDefault();
+            send();
+          }
         }
+      };
+
+      return () => {
+        if ($input.current === null) {
+          return;
+        }
+
+        $input.current.onkeydown = null;
       };
     }, [send]);
 

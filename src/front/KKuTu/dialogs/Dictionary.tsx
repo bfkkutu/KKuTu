@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import L from "front/@global/Language";
@@ -17,12 +17,51 @@ export default class DictionaryDialog extends Dialog {
     const [input, setInput] = useState("");
     const [result, setResult] = useState<Database.Word | undefined>(undefined);
 
+    const $ = useRef<HTMLInputElement>(null);
+
+    const search = useCallback(async () => {
+      socket.send(WebSocketMessage.Type.Dictionary, { content: input });
+      try {
+        const res = await socket.messageReceiver.wait(
+          WebSocketMessage.Type.Dictionary
+        );
+        setResult(res.word);
+      } catch (e) {
+        setResult(undefined);
+      }
+    }, [input]);
+
+    useEffect(() => {
+      if ($.current === null) {
+        return;
+      }
+
+      $.current.onkeydown = (e) => {
+        if (e.code === "Enter" || e.code === "NumpadEnter") {
+          if (e.isComposing) {
+            return;
+          }
+          e.preventDefault();
+          search();
+        }
+      };
+
+      return () => {
+        if ($.current === null) {
+          return;
+        }
+
+        $.current.onkeydown = null;
+      };
+    }, [search]);
+
     return (
       <div className="dialog-dictionary">
         <div className="body">
           <div>
             <h4>{L.get("dictionary_input")}</h4>
             <input
+              ref={$}
               value={input}
               onChange={(e) => setInput(e.currentTarget.value)}
               placeholder={L.get("dictionary_input_placeholder")}
@@ -55,21 +94,7 @@ export default class DictionaryDialog extends Dialog {
           </ul>
         </div>
         <div className="footer buttons">
-          <button
-            onClick={async () => {
-              socket.send(WebSocketMessage.Type.Dictionary, { content: input });
-              try {
-                const res = await socket.messageReceiver.wait(
-                  WebSocketMessage.Type.Dictionary
-                );
-                setResult(res.word);
-              } catch (e) {
-                setResult(undefined);
-              }
-            }}
-          >
-            {L.get("search")}
-          </button>
+          <button onClick={() => search()}>{L.get("search")}</button>
         </div>
       </div>
     );
