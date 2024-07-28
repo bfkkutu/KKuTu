@@ -1216,6 +1216,15 @@
         }
       }
     }
+
+    .uid {
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      margin: 5px;
+      color: gray;
+      font-size: small;
+    }
   }
 
   &-community {

@@ -282,6 +282,7 @@ export default class SettingsDialog extends Dialog {
             {L.get("save")}
           </button>
         </div>
+        <span className="uid">UID: {me.id}</span>
       </div>
     );
   }
