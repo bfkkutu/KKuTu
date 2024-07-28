@@ -3,16 +3,17 @@ import React, { useState } from "react";
 import L from "front/@global/Language";
 import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Spinner } from "front/@global/Bayadere/Spinner";
+import Checkbox from "front/@block/Checkbox";
+import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../../common/KKuTu";
 import API from "common/API";
-import Checkbox from "front/@block/Checkbox";
 
 function Insert() {
   const [language, setLanguage] = useState(KKuTu.Game.Language.Korean);
 
   return (
     <article className="page-databaseWord-insert">
-      <span>{L.get("departure4_menu0_language_desc")}</span>
+      <span>{L.get("departure4_desc_language")}</span>
       <label className="wrapper">
         <label htmlFor="select-language">{L.get("language")}</label>
         <select
@@ -56,7 +57,7 @@ namespace Insert {
           onChange={(e) => setWord({ ...word, data: e.currentTarget.value })}
         />
         <ul className="themes">
-          <li className="theme-item">
+          <li className="theme-item title">
             <span>{L.get("departure4_theme")}</span>
             <span>{L.get("departure4_mean")}</span>
           </li>
@@ -80,7 +81,7 @@ namespace Insert {
                 {[...KKuTu.Game.THEMES, ...KKuTu.Game.THEMES_WIDE].map(
                   (theme, index) => (
                     <option key={index} value={theme}>
-                      {L.get(`theme_${theme}`)}
+                      {renderTheme(theme)}
                     </option>
                   )
                 )}
@@ -166,24 +167,22 @@ namespace Insert {
               return;
             }
             show();
-            try {
-              await fetch("/admin/database/word", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  language,
-                  word,
-                }),
-              });
+            const res = await fetch("/admin/database/word", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                language,
+                word,
+              }),
+            });
+            if (res.status === 200) {
               window.alert(L.get("alert_saved"));
-            } catch (e) {
-              const { status } = e as Response;
-              window.alert(L.render(`error_${status}`));
-            } finally {
-              hide();
+            } else {
+              window.alert(L.render(`error_${res.status}`));
             }
+            hide();
           }}
         >
           {L.get("save")}
@@ -210,7 +209,7 @@ namespace Insert {
             {[...KKuTu.Game.THEMES, ...KKuTu.Game.THEMES_WIDE].map(
               (theme, index) => (
                 <option key={index} value={theme}>
-                  {L.get(`theme_${theme}`)}
+                  {renderTheme(theme)}
                 </option>
               )
             )}
@@ -269,25 +268,23 @@ namespace Insert {
               return;
             }
             show();
-            try {
-              await fetch("/admin/database/words", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  language,
-                  theme,
-                  words,
-                }),
-              });
+            const res = await fetch("/admin/database/words", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                language,
+                theme,
+                words,
+              }),
+            });
+            if (res.status === 200) {
               window.alert(L.get("alert_saved"));
-            } catch (e) {
-              const { status } = e as Response;
-              window.alert(L.render(`error_${status}`));
-            } finally {
-              hide();
+            } else {
+              window.alert(L.render(`error_${res.status}`));
             }
+            hide();
           }}
         >
           {L.get("save")}
@@ -319,7 +316,7 @@ namespace Insert {
               {[...KKuTu.Game.THEMES, ...KKuTu.Game.THEMES_WIDE].map(
                 (theme, index) => (
                   <option key={index} value={theme}>
-                    {L.get(`theme_${theme}`)}
+                    {renderTheme(theme)}
                   </option>
                 )
               )}

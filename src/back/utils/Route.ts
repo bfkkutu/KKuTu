@@ -8,7 +8,7 @@ import { PACKAGE, SETTINGS } from "back/utils/System";
 import DB from "back/utils/Database";
 import { Database } from "../../common/Database";
 import { KKuTu } from "../../common/KKuTu";
-import API from "common/API";
+import API from "../../common/API";
 
 import User from "back/models/User";
 import Word from "back/models/Word";
@@ -88,6 +88,65 @@ export default function (App: Express.Application): void {
       next
     );
   });
+  App.get<
+    "/admin/database/words",
+    {},
+    any,
+    any,
+    API.GET["/admin/database/words"]
+  >("/admin/database/words", async (req, res) => {
+    if (req.session.profile === undefined) {
+      return res.sendStatus(401);
+    }
+
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) {
+      return res.sendStatus(401);
+    }
+
+    if (!(user.departures & Database.Departure.DatabaseWord)) {
+      return res.sendStatus(403);
+    }
+
+    const { language, type: type_, data } = req.query;
+    if (!KKuTu.Game.LANGUAGES.includes(language)) {
+      return res.sendStatus(400);
+    }
+    const type = parseInt(type_);
+    if (
+      !Number.isInteger(type) ||
+      !Object.values(API.QueryType).includes(type)
+    ) {
+      return res.sendStatus(400);
+    }
+    if (typeof data !== "string") {
+      return res.sendStatus(400);
+    }
+
+    const builder = DB.Manager.createQueryBuilder(
+      Word[language],
+      "w"
+    ).innerJoinAndSelect("w.means", "m");
+
+    switch (type) {
+      case API.QueryType.Exact:
+        builder.where("w.data = :data", { data });
+        break;
+      case API.QueryType.Includes:
+        builder.where("w.data LIKE :like", { like: `%${data}%` });
+        break;
+      case API.QueryType.StartsWith:
+        builder.where("w.data LIKE :like", { like: `${data}%` });
+        break;
+      case API.QueryType.EndsWith:
+        builder.where("w.data LIKE :like", { like: `%${data}` });
+        break;
+    }
+
+    return res.send((await builder.getMany()).map((word) => word.serialize()));
+  });
   App.post<"/admin/database/word", {}, any, API.POST["/admin/database/word"]>(
     "/admin/database/word",
     async (req, res) => {
@@ -102,7 +161,7 @@ export default function (App: Express.Application): void {
         return res.sendStatus(401);
       }
 
-      if (user.departures === Database.Departure.None) {
+      if (!(user.departures & Database.Departure.DatabaseWord)) {
         return res.sendStatus(403);
       }
 
@@ -159,7 +218,7 @@ export default function (App: Express.Application): void {
         return res.sendStatus(401);
       }
 
-      if (user.departures === Database.Departure.None) {
+      if (!(user.departures & Database.Departure.DatabaseWord)) {
         return res.sendStatus(403);
       }
 
