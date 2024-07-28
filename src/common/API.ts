@@ -1,4 +1,4 @@
-import { Database as DB } from "common/Database";
+import { Database } from "common/Database";
 import { KKuTu } from "common/KKuTu";
 
 namespace API {
@@ -9,6 +9,10 @@ namespace API {
     EndsWith,
   }
   export interface GET {
+    ["/admin/owner/appointment"]: {
+      id: string;
+    };
+
     ["/admin/database/word"]: {
       language: KKuTu.Game.Language;
       data: string;
@@ -22,12 +26,18 @@ namespace API {
   export interface POST {
     ["/admin/database/word"]: {
       language: KKuTu.Game.Language;
-      word: Omit<DB.Word, "id">;
+      word: Omit<Database.Word, "id">;
     };
     ["/admin/database/words"]: {
       language: KKuTu.Game.Language;
       theme: string;
       words: string[];
+    };
+  }
+  export interface PUT {
+    ["/admin/owner/appointment"]: {
+      id: string;
+      departures: number;
     };
   }
   export interface DELETE {

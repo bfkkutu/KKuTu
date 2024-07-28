@@ -81,12 +81,11 @@ namespace Query {
               const res = await fetch(`/admin/database/words?${params}`, {
                 method: "GET",
               });
-              if (res.status === 200) {
-                setResult(await res.json());
-              } else {
+              hide();
+              if (res.status !== 200) {
                 window.alert(L.render(`error_${res.status}`));
               }
-              hide();
+              setResult(await res.json());
             }}
           >
             {L.get("departure4_menu1_byData_search")}

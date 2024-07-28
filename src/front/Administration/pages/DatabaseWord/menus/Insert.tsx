@@ -177,12 +177,12 @@ namespace Insert {
                 word,
               }),
             });
+            hide();
             if (res.status === 200) {
               window.alert(L.get("alert_saved"));
             } else {
               window.alert(L.render(`error_${res.status}`));
             }
-            hide();
           }}
         >
           {L.get("save")}
@@ -279,12 +279,12 @@ namespace Insert {
                 words,
               }),
             });
+            hide();
             if (res.status === 200) {
               window.alert(L.get("alert_saved"));
             } else {
               window.alert(L.render(`error_${res.status}`));
             }
-            hide();
           }}
         >
           {L.get("save")}

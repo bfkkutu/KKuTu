@@ -81,12 +81,12 @@ namespace Delete {
                     id: word.id,
                   }),
                 });
+                hide();
                 if (res.status === 200) {
                   window.alert(L.get("alert_saved"));
                 } else {
                   window.alert(L.get(`error_${res.status}`));
                 }
-                hide();
               }
             }}
           >

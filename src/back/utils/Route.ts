@@ -89,6 +89,87 @@ export default function (App: Express.Application): void {
     );
   });
   App.get<
+    "/admin/owner/appointment",
+    {},
+    any,
+    any,
+    API.GET["/admin/owner/appointment"]
+  >("/admin/owner/appointment", async (req, res) => {
+    if (req.session.profile === undefined) {
+      return res.sendStatus(401);
+    }
+
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) {
+      return res.sendStatus(401);
+    }
+
+    if (!(user.departures & Database.Departure.Owner)) {
+      return res.sendStatus(403);
+    }
+
+    const { id } = req.query;
+    if (typeof id !== "string") {
+      return res.sendStatus(400);
+    }
+
+    const target = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.id = :id", { id })
+      .getOne();
+    if (target === null) {
+      return res.sendStatus(404);
+    }
+
+    return res.send({ departures: target.departures });
+  });
+  App.put<
+    "/admin/owner/appointment",
+    {},
+    any,
+    API.PUT["/admin/owner/appointment"]
+  >("/admin/owner/appointment", async (req, res) => {
+    if (req.session.profile === undefined) {
+      return res.sendStatus(401);
+    }
+
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) {
+      return res.sendStatus(401);
+    }
+
+    if (!(user.departures & Database.Departure.Owner)) {
+      return res.sendStatus(403);
+    }
+
+    const { id, departures } = req.body;
+    if (typeof id !== "string") {
+      return res.sendStatus(400);
+    }
+    if (!Number.isInteger(departures)) {
+      return res.sendStatus(400);
+    }
+
+    const target = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.id = :id", { id })
+      .getOne();
+    if (target === null) {
+      return res.sendStatus(404);
+    }
+
+    target.departures = departures;
+    try {
+      await DB.Manager.save(target);
+    } catch (e) {
+      return res.sendStatus(500);
+    }
+
+    return res.sendStatus(200);
+  });
+  App.get<
     "/admin/database/word",
     {},
     any,

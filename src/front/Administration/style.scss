@@ -52,6 +52,12 @@ main {
       padding: 10px;
       overflow-y: scroll;
 
+      article {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+      }
+
       form {
         display: flex;
         flex-direction: column;
@@ -60,6 +66,7 @@ main {
 
       .checkbox {
         display: flex;
+        flex-direction: row;
       }
 
       .wrapper {
@@ -78,12 +85,22 @@ main {
           height: 100%;
         }
 
+        &-owner {
+          &-appointment {
+            .query {
+              display: flex;
+              flex-direction: row;
+            }
+
+            .checkbox-group {
+              display: flex;
+              flex-direction: row;
+            }
+          }
+        }
+
         &-databaseWord {
           &-insert {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-
             input,
             select {
               height: fit-content;
@@ -124,10 +141,6 @@ main {
           }
 
           &-query {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-
             .query-byData {
               .query {
                 display: flex;
@@ -155,10 +168,6 @@ main {
           }
 
           &-delete {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-
             .delete-byData {
               div {
                 display: flex;
