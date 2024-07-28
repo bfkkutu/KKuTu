@@ -89,6 +89,45 @@ export default function (App: Express.Application): void {
     );
   });
   App.get<
+    "/admin/database/word",
+    {},
+    any,
+    any,
+    API.GET["/admin/database/word"]
+  >("/admin/database/word", async (req, res) => {
+    if (req.session.profile === undefined) {
+      return res.sendStatus(401);
+    }
+
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) {
+      return res.sendStatus(401);
+    }
+
+    if (!(user.departures & Database.Departure.DatabaseWord)) {
+      return res.sendStatus(403);
+    }
+
+    const { language, data } = req.query;
+    if (!KKuTu.Game.LANGUAGES.includes(language)) {
+      return res.sendStatus(400);
+    }
+    if (typeof data !== "string") {
+      return res.sendStatus(400);
+    }
+
+    const word = await DB.Manager.createQueryBuilder(Word[language], "w")
+      .where("w.data = :data", { data })
+      .getOne();
+    if (word === null) {
+      return res.sendStatus(404);
+    }
+
+    return res.send(word);
+  });
+  App.get<
     "/admin/database/words",
     {},
     any,
@@ -273,6 +312,54 @@ export default function (App: Express.Application): void {
       return res.sendStatus(200);
     }
   );
+  App.delete<
+    "/admin/database/word",
+    {},
+    any,
+    API.DELETE["/admin/database/word"]
+  >("/admin/database/word", async (req, res) => {
+    if (req.session.profile === undefined) {
+      return res.sendStatus(401);
+    }
+
+    const user = await DB.Manager.createQueryBuilder(User, "u")
+      .where("u.oid = :oid", { oid: req.session.profile.id })
+      .getOne();
+    if (user === null) {
+      return res.sendStatus(401);
+    }
+
+    if (!(user.departures & Database.Departure.DatabaseWord)) {
+      return res.sendStatus(403);
+    }
+
+    const { language, id } = req.body;
+    if (!KKuTu.Game.LANGUAGES.includes(language)) {
+      return res.sendStatus(400);
+    }
+    try {
+      parseInt(id);
+    } catch (e) {
+      return res.sendStatus(400);
+    }
+
+    const word = await DB.Manager.createQueryBuilder(Word[language], "w")
+      .where("w.id = :id", { id })
+      .innerJoinAndSelect("w.means", "m")
+      .getOne();
+    if (word === null) {
+      return res.sendStatus(404);
+    }
+
+    try {
+      await DB.Manager.remove(word.means);
+      await DB.Manager.remove(word);
+    } catch (e) {
+      return res.sendStatus(500);
+    }
+
+    return res.sendStatus(200);
+  });
   App.get("/admin/load-languages", (req, res) => {
     loadLanguages();
     return res.sendStatus(200);

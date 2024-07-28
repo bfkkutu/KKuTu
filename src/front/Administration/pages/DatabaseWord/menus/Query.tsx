@@ -80,9 +80,6 @@ namespace Query {
               params.set("data", input);
               const res = await fetch(`/admin/database/words?${params}`, {
                 method: "GET",
-                headers: {
-                  "Content-Type": "application/json",
-                },
               });
               if (res.status === 200) {
                 setResult(await res.json());

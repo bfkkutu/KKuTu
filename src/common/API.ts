@@ -9,6 +9,10 @@ namespace API {
     EndsWith,
   }
   export interface GET {
+    ["/admin/database/word"]: {
+      language: KKuTu.Game.Language;
+      data: string;
+    };
     ["/admin/database/words"]: {
       language: KKuTu.Game.Language;
       type: `${QueryType}`;
@@ -24,6 +28,12 @@ namespace API {
       language: KKuTu.Game.Language;
       theme: string;
       words: string[];
+    };
+  }
+  export interface DELETE {
+    ["/admin/database/word"]: {
+      language: KKuTu.Game.Language;
+      id: string;
     };
   }
 }

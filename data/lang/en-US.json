@@ -536,6 +536,7 @@
     "error_400": "잘못된 요청이에요.",
     "error_401": "세션이 만료되었어요.<{BR}>다시 로그인해주세요.",
     "error_403": "권한이 없어요.",
+    "error_404": "대상을 찾을 수 없어요.",
     "error_409": "데이터가 이미 존재해요.<{BR}>(데이터 충돌)",
     "error_500": "서버 오류가 발생했어요.",
 
@@ -577,6 +578,10 @@
     "departure4_menu1_title_update": "단어 수정하기",
     "departure4_menu1_title_meaning": "뜻 수정하기",
     "departure4_menu2": "삭제",
+    "departure4_menu2_title_byData": "단어 삭제하기",
+    "departure4_menu2_desc_byData": "※ 데이터베이스에서 단어를 삭제해요.<{BR}>※ 이 기능은 단어에서 주제를 삭제하는 기능이 <{HTML|<b>아니에요</b>}>.<{BR}>※ 의도하지 않은 데이터 손실이 발생할 수 있으니 사용 시 주의하세요.",
+    "departure4_menu2_byData_confirm": "단어 \"{#0}\"#{을} 삭제합니다.<{BR}>계속할까요?",
+    "departure4_menu2_title_theme": "단어에서 주제 삭제하기",
 
     "departure8": "상점 데이터베이스",
     "departure8_menu0": "조회"

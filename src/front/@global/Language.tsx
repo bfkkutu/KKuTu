@@ -64,7 +64,7 @@ export default class L {
   }
   public static render(key: string, ...args: any[]): React.ReactNode {
     if (key in TABLE) {
-      return L.parse(josa(TABLE[key]), ...args);
+      return L.parse(TABLE[key], ...args);
     } else {
       return `(L#${key})`;
     }
@@ -76,14 +76,16 @@ export default class L {
     let execArray: RegExpExecArray | null;
     let prevIndex: number = 0;
 
-    value = value
-      .replace(L.REGEXP_STRICT_ARGS, (p, v1) => {
-        return args[v1];
-      })
-      .replace(L.REGEXP_ARGS, (p, v1) => {
-        blockBank.push(args[v1]);
-        return "<{__}>";
-      });
+    value = josa(
+      value
+        .replace(L.REGEXP_STRICT_ARGS, (p, v1) => {
+          return args[v1];
+        })
+        .replace(L.REGEXP_ARGS, (p, v1) => {
+          blockBank.push(args[v1]);
+          return "<{__}>";
+        })
+    );
     while ((execArray = PATTERN.exec(value))) {
       if (execArray.index - prevIndex > 0) {
         R.push(value.slice(prevIndex, execArray.index));
@@ -100,7 +102,9 @@ export default class L {
       }
       prevIndex = PATTERN.lastIndex;
     }
-    if (prevIndex < value.length) R.push(value.slice(prevIndex));
+    if (prevIndex < value.length) {
+      R.push(value.slice(prevIndex));
+    }
     return R.map((node, index) => (
       <React.Fragment key={index}>{node}</React.Fragment>
     ));

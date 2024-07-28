@@ -153,6 +153,24 @@ main {
               }
             }
           }
+
+          &-delete {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+
+            .delete-byData {
+              div {
+                display: flex;
+                flex-direction: row;
+
+                button {
+                  font-weight: bold;
+                  color: red;
+                }
+              }
+            }
+          }
         }
       }
     }

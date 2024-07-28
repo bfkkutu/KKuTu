@@ -50,7 +50,7 @@ namespace Insert {
     return (
       <form className="form-direct">
         <h2>{L.get("departure4_menu0_title_direct")}</h2>
-        <div>{L.render("departure4_menu0_desc_direct")}</div>
+        <span>{L.render("departure4_menu0_desc_direct")}</span>
         <input
           placeholder={L.get("departure4_menu0_direct_wordPlaceholder")}
           value={word.data}
@@ -199,7 +199,7 @@ namespace Insert {
     return (
       <form className="form-fromList">
         <h2>{L.get("departure4_menu0_title_fromList")}</h2>
-        <div>{L.render("departure4_menu0_desc_fromList")}</div>
+        <span>{L.render("departure4_menu0_desc_fromList")}</span>
         <label className="wrapper">
           <label>{L.get("departure4_theme")}</label>
           <select
