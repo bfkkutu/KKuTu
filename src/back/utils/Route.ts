@@ -191,7 +191,7 @@ export default function (App: Express.Application): void {
       return res.sendStatus(403);
     }
 
-    const { language, data } = req.query;
+    const { language, data, full } = req.query;
     if (!KKuTu.Game.LANGUAGES.includes(language)) {
       return res.sendStatus(400);
     }
@@ -199,14 +199,20 @@ export default function (App: Express.Application): void {
       return res.sendStatus(400);
     }
 
-    const word = await DB.Manager.createQueryBuilder(Word[language], "w")
-      .where("w.data = :data", { data })
-      .getOne();
+    const builder = DB.Manager.createQueryBuilder(Word[language], "w").where(
+      "w.data = :data",
+      { data }
+    );
+    if (full === "1") {
+      builder.innerJoinAndSelect("w.means", "m");
+    }
+
+    const word = await builder.getOne();
     if (word === null) {
       return res.sendStatus(404);
     }
 
-    return res.send(word);
+    return res.send(word.serialize());
   });
   App.get<
     "/admin/database/words",
@@ -386,6 +392,75 @@ export default function (App: Express.Application): void {
       try {
         await DB.Manager.save(wordsToBeSaved);
         await DB.Manager.save(meansToBeSaved);
+      } catch (e) {
+        return res.sendStatus(500);
+      }
+
+      return res.sendStatus(200);
+    }
+  );
+  App.put<"/admin/database/word", {}, any, API.PUT["/admin/database/word"]>(
+    "/admin/database/word",
+    async (req, res) => {
+      if (req.session.profile === undefined) {
+        return res.sendStatus(401);
+      }
+
+      const user = await DB.Manager.createQueryBuilder(User, "u")
+        .where("u.oid = :oid", { oid: req.session.profile.id })
+        .getOne();
+      if (user === null) {
+        return res.sendStatus(401);
+      }
+
+      if (!(user.departures & Database.Departure.DatabaseWord)) {
+        return res.sendStatus(403);
+      }
+
+      const { language, word: data } = req.body;
+      if (!KKuTu.Game.LANGUAGES.includes(language)) {
+        return res.sendStatus(400);
+      }
+      if (typeof data.data !== "string" || data.data.length === 0) {
+        return res.sendStatus(400);
+      }
+      if (typeof data.means !== "object") {
+        return res.sendStatus(400);
+      }
+
+      const word = await DB.Manager.createQueryBuilder(Word[language], "w")
+        .where("w.id = :id", { id: data.id })
+        .innerJoinAndSelect("w.means", "m")
+        .getOne();
+      if (word === null) {
+        return res.sendStatus(404);
+      }
+
+      const means: Mean[] = []; // 삭제될 주제
+      for (const mean of word.means) {
+        if (!(mean.theme in data.means)) {
+          means.push(mean);
+        }
+      }
+      word.means = word.means.filter((mean) => !means.includes(mean));
+
+      for (const [theme, means] of Object.entries(data.means)) {
+        const mean = word.means.find((mean) => mean.theme === theme);
+        if (mean === undefined) {
+          const mean = new Mean[language]();
+          mean.word = word;
+          mean.theme = theme;
+          mean.data = means;
+          word.means.push(mean);
+        } else {
+          mean.data = means;
+          word.means.push(mean);
+        }
+      }
+      try {
+        await DB.Manager.remove(means);
+        await DB.Manager.save(word.means);
+        await DB.Manager.save(word);
       } catch (e) {
         return res.sendStatus(500);
       }

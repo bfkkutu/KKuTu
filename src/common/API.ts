@@ -2,6 +2,7 @@ import { Database } from "common/Database";
 import { KKuTu } from "common/KKuTu";
 
 namespace API {
+  type bool = `${0 | 1}`;
   export enum QueryType {
     Exact,
     Includes,
@@ -16,6 +17,7 @@ namespace API {
     ["/admin/database/word"]: {
       language: KKuTu.Game.Language;
       data: string;
+      full?: bool;
     };
     ["/admin/database/words"]: {
       language: KKuTu.Game.Language;
@@ -38,6 +40,11 @@ namespace API {
     ["/admin/owner/appointment"]: {
       id: string;
       departures: number;
+    };
+
+    ["/admin/database/word"]: {
+      language: KKuTu.Game.Language;
+      word: Database.Word;
     };
   }
   export interface DELETE {

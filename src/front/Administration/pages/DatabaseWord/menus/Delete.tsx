@@ -9,7 +9,7 @@ function Delete() {
   const [language, setLanguage] = useState(KKuTu.Game.Language.Korean);
 
   return (
-    <article className="page-databaseWord-delete">
+    <article className="page-databaseWord delete">
       <span>{L.get("departure4_desc_language")}</span>
       <label className="wrapper">
         <label htmlFor="select-language">{L.get("language")}</label>
@@ -41,7 +41,7 @@ namespace Delete {
     const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
 
     return (
-      <form className="delete-byData">
+      <form className="form-byData">
         <h2>{L.get("departure4_menu2_title_byData")}</h2>
         <span>{L.render("departure4_menu2_desc_byData")}</span>
         <div>

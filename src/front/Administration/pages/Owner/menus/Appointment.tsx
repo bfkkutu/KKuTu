@@ -12,7 +12,7 @@ export default function Appointment() {
   const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
 
   return (
-    <article className="page-owner-appointment">
+    <article className="page-owner appointment">
       <h2>{L.get("departure1_menu0")}</h2>
       <form>
         <div className="query">

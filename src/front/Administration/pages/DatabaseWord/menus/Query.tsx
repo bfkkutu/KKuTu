@@ -2,6 +2,7 @@ import React, { useState } from "react";
 
 import L from "front/@global/Language";
 import { Spinner } from "front/@global/Bayadere/Spinner";
+import WordEditor from "front/Administration/pages/DatabaseWord/WordEditor";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../../common/KKuTu";
 import { EnumValueIterator } from "../../../../../common/Utility";
@@ -12,7 +13,7 @@ function Query() {
   const [language, setLanguage] = useState(KKuTu.Game.Language.Korean);
 
   return (
-    <article className="page-databaseWord-query">
+    <article className="page-databaseWord query">
       <span>{L.get("departure4_desc_language")}</span>
       <label className="wrapper">
         <label htmlFor="select-language">{L.get("language")}</label>
@@ -47,7 +48,7 @@ namespace Query {
     const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
 
     return (
-      <form className="query-byData">
+      <form className="form-byData">
         <h2>{L.get("departure4_menu1_title_byData")}</h2>
         <div className="query">
           <input
@@ -128,9 +129,78 @@ namespace Query {
     );
   }
   export function Update({ language }: Props) {
+    const [input, setInput] = useState("");
+    const [word, setWord] = useState<Database.Word>();
+    const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
+
     return (
-      <form className="query-update">
+      <form className="form-update">
         <h2>{L.get("departure4_menu1_title_update")}</h2>
+        <div className="query">
+          <input
+            value={input}
+            onChange={(e) => setInput(e.currentTarget.value)}
+          />
+          <button
+            type="button"
+            onClick={async () => {
+              if (input.length === 0) {
+                window.alert(L.get("departure4_menu1_errorNoInput"));
+                return;
+              }
+              show();
+              const params = new URLSearchParams();
+              params.set("language", language);
+              params.set("data", input);
+              params.set("full", "1");
+              const res = await fetch(`/admin/database/word?${params}`, {
+                method: "GET",
+              });
+              hide();
+              if (res.status !== 200) {
+                window.alert(L.render(`error_${res.status}`));
+              }
+              setWord(await res.json());
+            }}
+          >
+            {L.get("query")}
+          </button>
+        </div>
+        {word === undefined ? (
+          L.get("departure4_menu1_update_noResult")
+        ) : (
+          <WordEditor
+            value={word}
+            onChange={(value) => setWord({ ...word, ...value })}
+          />
+        )}
+        <button
+          type="button"
+          onClick={async () => {
+            if (!(await window.confirm(L.render("alert_save")))) {
+              return;
+            }
+            show();
+            const res = await fetch("/admin/database/word", {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                language,
+                word,
+              }),
+            });
+            hide();
+            if (res.status === 200) {
+              window.alert(L.get("alert_saved"));
+            } else {
+              window.alert(L.render(`error_${res.status}`));
+            }
+          }}
+        >
+          {L.get("save")}
+        </button>
       </form>
     );
   }
