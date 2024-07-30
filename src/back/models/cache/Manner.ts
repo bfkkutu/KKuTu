@@ -34,11 +34,15 @@ export default class Manner {
 
 for (const language of Object.values(KKuTu.Game.Language)) {
   @TypeORM.Entity({ name: `kkutu_cache_manner_${language}` })
-  class Entity extends Manner {}
+  class Entity extends Manner {
+    public static readonly name = `Manner_${language}`;
+  }
   Manner[language] = Entity;
 }
 
 @TypeORM.Entity({ name: "kkutu_cache_manner_koNoInitial" })
-class koNoInitial extends Manner {}
+class koNoInitial extends Manner {
+  public static readonly name = "Manner_koNoInitial";
+}
 Manner.koNoInitial = koNoInitial;
 

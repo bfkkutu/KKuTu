@@ -13,6 +13,7 @@ import API from "../../common/API";
 import User from "back/models/User";
 import Word from "back/models/Word";
 import Mean from "back/models/Mean";
+import { Manner } from "back/models/cache";
 
 export default function (App: Express.Application): void {
   const WEBSOCKET_PROTOCOL =
@@ -320,9 +321,11 @@ export default function (App: Express.Application): void {
         mean.data = means;
         word.means.push(mean);
       }
+
       try {
         await DB.Manager.save(word);
         await DB.Manager.save(word.means);
+        await purgeCache(language, word.data);
       } catch (e) {
         return res.sendStatus(500);
       }
@@ -389,6 +392,7 @@ export default function (App: Express.Application): void {
         }
         meansToBeSaved.push(mean);
       }
+
       try {
         await DB.Manager.save(wordsToBeSaved);
         await DB.Manager.save(meansToBeSaved);
@@ -510,6 +514,7 @@ export default function (App: Express.Application): void {
     try {
       await DB.Manager.remove(word.means);
       await DB.Manager.remove(word);
+      await purgeCache(language, word.data);
     } catch (e) {
       return res.sendStatus(500);
     }
@@ -520,5 +525,39 @@ export default function (App: Express.Application): void {
     loadLanguages();
     return res.sendStatus(200);
   });
+
+  async function purgeCache(
+    language: KKuTu.Game.Language,
+    word: string
+  ): Promise<void> {
+    const caches = [];
+    const first = await DB.Manager.createQueryBuilder(Manner[language], "m")
+      .where("m.last = :first", { first: word[0] })
+      .getOne();
+    if (first !== null) {
+      caches.push(first);
+    }
+    const last = await DB.Manager.createQueryBuilder(Manner[language], "m")
+      .where("m.last = :last", { last: word[word.length - 1] })
+      .getOne();
+    if (last !== null) {
+      caches.push(last);
+    }
+    if (language === KKuTu.Game.Language.Korean) {
+      const first = await DB.Manager.createQueryBuilder(Manner.koNoInitial, "m")
+        .where("m.last = :first", { first: word[0] })
+        .getOne();
+      if (first !== null) {
+        caches.push(first);
+      }
+      const last = await DB.Manager.createQueryBuilder(Manner.koNoInitial, "m")
+        .where("m.last = :last", { last: word[word.length - 1] })
+        .getOne();
+      if (last !== null) {
+        caches.push(last);
+      }
+    }
+    await DB.Manager.remove(caches);
+  }
 }
 
