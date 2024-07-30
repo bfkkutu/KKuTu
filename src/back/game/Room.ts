@@ -16,6 +16,7 @@ import WordCompetition from "back/game/types/WordCompetition";
 // TODO
 const TYPES: Record<any, any> = {
   [KKuTu.Game.Mode.KoreanRelay]: Relay,
+  [KKuTu.Game.Mode.KoreanThree]: Relay,
   [KKuTu.Game.Mode.KoreanWordCompetition]: WordCompetition,
 
   [KKuTu.Game.Mode.EnglishRelay]: Relay,

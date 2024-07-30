@@ -135,13 +135,7 @@ export namespace KKuTu {
       [Mode.KoreanRelay]: {
         interface: Interface.General,
         language: Language.Korean,
-        rules: [
-          Rule.Manner,
-          Rule.Wide,
-          Rule.Mission,
-          Rule.NoInitial,
-          Rule.Item,
-        ],
+        rules: [Rule.Manner, Rule.Wide, Rule.Mission, Rule.NoInitial],
         themeSelect: false,
       },
       [Mode.KoreanRelayReversed]: {
@@ -151,9 +145,9 @@ export namespace KKuTu {
         themeSelect: false,
       },
       [Mode.KoreanThree]: {
-        interface: Interface.TODO,
+        interface: Interface.General,
         language: Language.Korean,
-        rules: [Rule.Manner, Rule.Wide, Rule.Mission],
+        rules: [Rule.Manner, Rule.Wide, Rule.Mission, Rule.NoInitial],
         themeSelect: false,
       },
       [Mode.KoreanKKuTu]: {

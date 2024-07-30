@@ -243,8 +243,32 @@ function General(props: Game.Props) {
         }
       }
 
-      AudioContext.instance.playEffect(`submitted_${turn.speed}`);
-      for (let i = 0; i < 3; ++i) {
+      if (props.mode === KKuTu.Game.Mode.KoreanThree) {
+        AudioContext.instance.playEffect("submitted_three");
+        await animate();
+        await sleep(tick * 2);
+        AudioContext.instance.playEffect("submitted_three");
+        await animate();
+      } else {
+        AudioContext.instance.playEffect(`submitted_${turn.speed}`);
+        for (let i = 0; i < 3; ++i) {
+          await animate();
+        }
+      }
+
+      const history = [word, ...chain.history];
+      if (history.length > 6) {
+        history.pop();
+      }
+      setChain({
+        history,
+        length: chain.length + 1,
+      });
+
+      function sleep(ms: number): Promise<void> {
+        return new Promise((resolve) => window.setTimeout(resolve, ms));
+      }
+      async function animate() {
         setDisplay({
           type,
           content: word.data,
@@ -260,19 +284,6 @@ function General(props: Game.Props) {
           submitting: undefined,
         });
         await sleep(tick);
-      }
-
-      const history = [word, ...chain.history];
-      if (history.length > 6) {
-        history.pop();
-      }
-      setChain({
-        history,
-        length: chain.length + 1,
-      });
-
-      function sleep(ms: number): Promise<void> {
-        return new Promise((resolve) => window.setTimeout(resolve, ms));
       }
     };
     socket.messageReceiver.on(WebSocketMessage.Type.RoundEnd, onRoundEnd);

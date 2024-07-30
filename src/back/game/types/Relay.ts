@@ -141,9 +141,17 @@ export default class Relay
           }
         })
       )
-      .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
       .limit(1);
+    switch (this.room.settings.mode) {
+      case KKuTu.Game.Mode.KoreanRelay:
+      case KKuTu.Game.Mode.EnglishRelay:
+        builder.andWhere("LENGTH(w.data) > 1");
+        break;
+      case KKuTu.Game.Mode.KoreanThree:
+        builder.andWhere("LENGTH(w.data) = 3");
+        break;
+    }
     if (!this.room.settings.rules.wide) {
       builder
         .innerJoin("w.means", "m")
@@ -157,8 +165,18 @@ export default class Relay
   }
 
   public override isSubmitable(content: string): boolean {
-    if (content.length < 2) {
-      return false;
+    switch (this.room.settings.mode) {
+      case KKuTu.Game.Mode.KoreanRelay:
+      case KKuTu.Game.Mode.EnglishRelay:
+        if (content.length < 2) {
+          return false;
+        }
+        break;
+      case KKuTu.Game.Mode.KoreanThree:
+        if (content.length !== 3) {
+          return false;
+        }
+        break;
     }
     return (
       content.startsWith(this.last) ||
@@ -186,25 +204,31 @@ export default class Relay
       const last = word.data.at(-1)!;
       let cache = await this.manner
         .createQueryBuilder("c_m")
-        .select(["c_m.modes"])
         .where("c_m.last = :last", { last })
         .getOne();
       if (cache === null) {
         // cache miss
         cache = new Cache.Manner();
         cache.last = last;
-        cache.modes = [];
-        if (
-          !(await this.repository
-            .createQueryBuilder("w")
-            .where("w.data LIKE :last", { last: `${last}%` })
-            .getExists())
-        ) {
-          cache.modes.push(this.room.settings.mode);
+        cache.modes = {};
+      }
+      if (cache.modes[this.room.settings.mode] === undefined) {
+        const builder = this.repository
+          .createQueryBuilder("w")
+          .where("w.data LIKE :last", { last: `${last}%` });
+        switch (this.room.settings.mode) {
+          case KKuTu.Game.Mode.KoreanRelay:
+          case KKuTu.Game.Mode.EnglishRelay:
+            builder.andWhere("LENGTH(w.data) > 1");
+            break;
+          case KKuTu.Game.Mode.KoreanThree:
+            builder.andWhere("LENGTH(w.data) = 3");
+            break;
         }
+        cache.modes[this.room.settings.mode] = await builder.getExists();
         await this.manner.save(cache);
       }
-      if (cache.modes.includes(this.room.settings.mode)) {
+      if (!cache.modes[this.room.settings.mode]) {
         this.room.broadcast(WebSocketMessage.Type.TurnError, {
           errorType: "manner",
           display: content,
@@ -262,9 +286,17 @@ export default class Relay
           }
         })
       )
-      .andWhere("LENGTH(w.data) > 1")
       .orderBy("RANDOM()")
       .limit(1);
+    switch (this.room.settings.mode) {
+      case KKuTu.Game.Mode.KoreanRelay:
+      case KKuTu.Game.Mode.EnglishRelay:
+        builder.andWhere("LENGTH(w.data) > 1");
+        break;
+      case KKuTu.Game.Mode.KoreanThree:
+        builder.andWhere("LENGTH(w.data) = 3");
+        break;
+    }
     if (!this.room.settings.rules.wide) {
       builder
         .innerJoin("w.means", "m")
@@ -277,11 +309,15 @@ export default class Relay
     this.submit(word.data);
   }
   protected getMultiplier(): number {
-    switch (this.mode.language) {
-      case KKuTu.Game.Language.Korean:
+    switch (this.room.settings.mode) {
+      case KKuTu.Game.Mode.KoreanRelay:
         return 0.55;
-      case KKuTu.Game.Language.English:
+      case KKuTu.Game.Mode.EnglishRelay:
         return 0.5;
+      case KKuTu.Game.Mode.KoreanThree:
+        return 1.42;
+      default: // TODO
+        return 0;
     }
   }
 

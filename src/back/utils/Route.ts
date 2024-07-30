@@ -531,27 +531,33 @@ export default function (App: Express.Application): void {
     word: string
   ): Promise<void> {
     const caches = [];
-    const first = await DB.Manager.createQueryBuilder(Manner[language], "m")
-      .where("m.last = :first", { first: word[0] })
+    const first = await DB.Manager.createQueryBuilder(Manner[language], "c_m")
+      .where("c_m.last = :first", { first: word[0] })
       .getOne();
     if (first !== null) {
       caches.push(first);
     }
-    const last = await DB.Manager.createQueryBuilder(Manner[language], "m")
-      .where("m.last = :last", { last: word[word.length - 1] })
+    const last = await DB.Manager.createQueryBuilder(Manner[language], "c_m")
+      .where("c_m.last = :last", { last: word[word.length - 1] })
       .getOne();
     if (last !== null) {
       caches.push(last);
     }
     if (language === KKuTu.Game.Language.Korean) {
-      const first = await DB.Manager.createQueryBuilder(Manner.koNoInitial, "m")
-        .where("m.last = :first", { first: word[0] })
+      const first = await DB.Manager.createQueryBuilder(
+        Manner.koNoInitial,
+        "c_m"
+      )
+        .where("c_m.last = :first", { first: word[0] })
         .getOne();
       if (first !== null) {
         caches.push(first);
       }
-      const last = await DB.Manager.createQueryBuilder(Manner.koNoInitial, "m")
-        .where("m.last = :last", { last: word[word.length - 1] })
+      const last = await DB.Manager.createQueryBuilder(
+        Manner.koNoInitial,
+        "c_m"
+      )
+        .where("c_m.last = :last", { last: word[word.length - 1] })
         .getOne();
       if (last !== null) {
         caches.push(last);

@@ -16,12 +16,11 @@ export default class Manner {
 
   @TypeORM.Column({
     name: "c_m_modes",
-    type: "text",
-    default: "",
+    type: "json",
+    default: {},
     nullable: false,
-    transformer: Transformer.IntegerList,
   })
-  public declare modes: KKuTu.Game.Mode[];
+  public declare modes: Partial<Record<KKuTu.Game.Mode, boolean>>;
 
   @TypeORM.Column({
     name: "c_m_createdAt",
