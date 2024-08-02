@@ -5,7 +5,7 @@ import { Spinner } from "front/@global/Bayadere/Spinner";
 import WordEditor from "front/Administration/pages/DatabaseWord/WordEditor";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../../common/KKuTu";
-import { EnumValueIterator } from "../../../../../common/Utility";
+import { enumValues } from "../../../../../common/Utility";
 import API from "../../../../../common/API";
 import { Database } from "common/Database";
 
@@ -61,7 +61,7 @@ namespace Query {
               setType(parseInt(e.currentTarget.value) as API.QueryType)
             }
           >
-            {EnumValueIterator(API.QueryType).map((type, index) => (
+            {enumValues(API.QueryType).map((type, index) => (
               <option key={index} value={type}>
                 {L.get(`queryType${type}`)}
               </option>

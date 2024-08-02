@@ -5,7 +5,7 @@ import L from "front/@global/Language";
 import Room from "front/KKuTu/box/RoomList";
 import { WebSocketMessage } from "../../../../common/WebSocket";
 import { KKuTu } from "../../../../common/KKuTu";
-import { EnumValueIterator, reduceToTable } from "../../../../common/Utility";
+import { enumValues, reduceToTable } from "../../../../common/Utility";
 
 export default function SearchRoom() {
   const socket = useSocket((state) => state.socket);
@@ -76,7 +76,7 @@ export default function SearchRoom() {
                   setRoom({ ...room, mode: parseInt(target.value) })
                 }
               >
-                {EnumValueIterator(KKuTu.Game.Mode).map((mode, index) => (
+                {enumValues(KKuTu.Game.Mode).map((mode, index) => (
                   <option key={index} value={mode}>
                     {L.get(`game_mode_${mode}`)}
                   </option>

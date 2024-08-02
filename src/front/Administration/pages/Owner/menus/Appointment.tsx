@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import L from "front/@global/Language";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import { Database } from "../../../../../common/Database";
-import { EnumValueIterator } from "../../../../../common/Utility";
+import { enumValues } from "../../../../../common/Utility";
 import Checkbox from "front/@block/Checkbox";
 
 export default function Appointment() {
@@ -38,7 +38,7 @@ export default function Appointment() {
           </button>
         </div>
         <label className="checkbox-group">
-          {EnumValueIterator(Database.Departure).map((departure, index) => {
+          {enumValues(Database.Departure).map((departure, index) => {
             if (departure === Database.Departure.None) {
               return null;
             }

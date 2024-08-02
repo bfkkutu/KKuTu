@@ -5,7 +5,7 @@ import L from "front/@global/Language";
 import Main from "front/Administration/pages";
 import { Nest } from "common/Nest";
 import { Database } from "../../common/Database";
-import { EnumValueIterator } from "../../common/Utility";
+import { enumValues } from "../../common/Utility";
 
 import Owner from "front/Administration/pages/Owner";
 import Management from "front/Administration/pages/Management";
@@ -39,7 +39,7 @@ export default class Administration extends React.PureComponent<
       <article id="main">
         <aside>
           <ul className="menu">
-            {EnumValueIterator(Database.Departure).map((departure, index) => {
+            {enumValues(Database.Departure).map((departure, index) => {
               if (
                 departure !== Database.Departure.None &&
                 !(this.props.data.departures & departure)

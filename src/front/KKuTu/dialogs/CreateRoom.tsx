@@ -10,7 +10,7 @@ import { Room } from "front/KKuTu/box/Room";
 import ThemeSelectDialog from "front/KKuTu/dialogs/ThemeSelect";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { KKuTu } from "../../../common/KKuTu";
-import { EnumValueIterator, reduceToTable } from "../../../common/Utility";
+import { enumValues, reduceToTable } from "../../../common/Utility";
 
 export default class CreateRoomDialog extends Dialog {
   public static readonly instance = new CreateRoomDialog();
@@ -146,7 +146,7 @@ export default class CreateRoomDialog extends Dialog {
               value={room.mode}
               onChange={updateIntegerField}
             >
-              {EnumValueIterator(KKuTu.Game.Mode).map((mode, index) => (
+              {enumValues(KKuTu.Game.Mode).map((mode, index) => (
                 <option key={index} value={mode}>
                   {L.get(`game_mode_${mode}`)}
                 </option>
