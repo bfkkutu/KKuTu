@@ -38,14 +38,14 @@ function General(props: Game.Props) {
   );
   const [now, setNow] = useState(0);
   const [round, setRound] = useState(0);
-  const [turn, setTurn] = useState<General.Turn>({
+  const [turn, setTurn] = useState<State<General.Turn>>({
     player: 0,
     speed: 0,
     time: 0,
     roundTime: 0,
     at: 0,
   });
-  const [chain, setChain] = useState<General.Chain>({
+  const [chain, setChain] = useState<State<General.Chain>>({
     history: [],
     length: 0,
   });
@@ -562,7 +562,7 @@ namespace General {
     at: number;
   }
   export interface Chain {
-    readonly history: Database.Word[];
+    history: Database.Word[];
     length: number;
   }
 

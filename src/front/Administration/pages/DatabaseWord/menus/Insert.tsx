@@ -41,7 +41,9 @@ namespace Insert {
     language: KKuTu.Game.Language;
   }
   export function Direct({ language }: Props) {
-    const [word, setWord] = useState<API.POST["/admin/database/word"]["word"]>({
+    const [word, setWord] = useState<
+      State<API.POST["/admin/database/word"]["word"]>
+    >({
       data: "",
       means: { "0": [""] },
     });

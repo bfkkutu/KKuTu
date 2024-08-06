@@ -13,7 +13,7 @@ export default function SearchRoom() {
     state.rooms,
     state.updateRoomList,
   ]);
-  const [room, setRoom] = useState<KKuTu.Room.SearchOptions>({
+  const [room, setRoom] = useState<State<KKuTu.Room.SearchOptions>>({
     title: "",
     mode: 0,
     round: [1, 10],

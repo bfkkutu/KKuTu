@@ -33,7 +33,7 @@ export default class RoomSettingsDialog extends Dialog {
     const nickname = useStore((state) => state.me.nickname);
     const data = Room.useStore((state) => state.room!);
     const show = Dialog.useStore((state) => state.show);
-    const [room, setRoom] = useState<KKuTu.Room.Settings>({
+    const [room, setRoom] = useState<State<KKuTu.Room.Settings>>({
       title: data.title,
       password: "",
       policy: data.policy,

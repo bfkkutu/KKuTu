@@ -26,7 +26,7 @@ export default class CreateRoomDialog extends Dialog {
     ]);
     const updateRoom = Room.useStore((state) => state.updateRoom);
     const show = Dialog.useStore((state) => state.show);
-    const [room, setRoom] = useState<KKuTu.Room.Settings>({
+    const [room, setRoom] = useState<State<KKuTu.Room.Settings>>({
       title: L.get("roomSettings_title_default", nickname),
       password: "",
       policy: reduceToTable(Object.values(KKuTu.Room.Policy), () => false),

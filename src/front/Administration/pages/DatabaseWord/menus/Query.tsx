@@ -130,7 +130,7 @@ namespace Query {
   }
   export function Update({ language }: Props) {
     const [input, setInput] = useState("");
-    const [word, setWord] = useState<Database.Word>();
+    const [word, setWord] = useState<State<Database.Word>>();
     const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
 
     return (
