@@ -299,6 +299,7 @@ export namespace Room {
 
   interface State {
     room?: KKuTu.Room.Detailed;
+
     updateRoom: (room: KKuTu.Room.Detailed) => void;
     updateMember: (member: Partial<KKuTu.Room.Member>) => void;
     leaveRoom: () => void;
@@ -310,6 +311,7 @@ export namespace Room {
   }
   export const useStore = create<State>((setState) => ({
     room: undefined,
+
     updateRoom: (room) => setState({ room }),
     updateMember: (member) =>
       setState(({ room }) => {

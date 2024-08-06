@@ -58,13 +58,15 @@ export default function (App: Express.Application): void {
       dependencies: DEPENDENCIES,
     })
   );
-  App.get("/servers", (req, res) =>
+  App.get("/servers", (_, res) =>
     res.send({
-      list: Channel.instances.map((v) => v.getActiveUserCount()),
+      list: Channel.instances.map((v) =>
+        v.alive ? v.getActiveUserCount() : null
+      ),
       max: SETTINGS.max[0],
     })
   );
-  App.get("//servers", (req, res) => res.redirect("/servers"));
+  App.get("//servers", (_, res) => res.redirect("/servers"));
 
   App.get("/admin", async (req, res, next) => {
     if (req.session.profile === undefined) {

@@ -31,6 +31,8 @@ export default class Channel extends WebSocketServer {
    * 이 채널에 만들어진 방 맵.
    */
   private readonly rooms = new ImprovedMap<number, Room>();
+  private readonly heartbeat: NodeJS.Timer;
+  public alive = true;
 
   constructor(port: number, isSecure: boolean = false) {
     super(port, isSecure);
@@ -876,7 +878,12 @@ export default class Channel extends WebSocketServer {
         (client) => client.user.id !== user.id
       );
     });
-    setInterval(
+    this.on("close", () => {
+      this.alive = false;
+      clearInterval(this.heartbeat);
+    });
+
+    this.heartbeat = setInterval(
       () => this.broadcast(WebSocketMessage.Type.Heartbeat, {}),
       95000 // CloudFlare timeout (100 seconds)
     );
