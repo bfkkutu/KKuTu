@@ -10,9 +10,9 @@ export abstract class Notification {
    * 소멸한다는 보장이 없다.
    * 따라서 Notification마다 고유값을 부여한다.
    */
-  public id = Notification.id++;
+  public readonly id = Notification.id++;
 
-  public Component = React.memo(this.body.bind(this));
+  public readonly Component = React.memo(this.body.bind(this));
 
   protected abstract body(): React.ReactElement;
 

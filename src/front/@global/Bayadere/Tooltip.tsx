@@ -1,8 +1,9 @@
 import React, { useRef } from "react";
 import { create } from "zustand";
+import { bind } from "../Utility";
 
 export class Tooltip {
-  public content: React.ReactNode;
+  public readonly content: React.ReactNode;
 
   constructor(content: React.ReactNode) {
     this.content = content;
@@ -13,33 +14,37 @@ export namespace Tooltip {
     x: number;
     y: number;
     instance?: Tooltip;
+
     createOnMouseEnter: (instance: Tooltip) => React.MouseEventHandler;
     onMouseMove: React.MouseEventHandler;
     onMouseLeave: React.MouseEventHandler;
     hide: () => void;
   }
-
-  export const useStore = create<State>((setState) => {
-    const hide = () => setState({ instance: undefined });
-
-    return {
+  export const useStore = create<State>((setState) =>
+    bind({
       x: 0,
       y: 0,
       instance: undefined,
-      createOnMouseEnter:
-        (instance) =>
-        ({ clientX, clientY }) =>
+
+      createOnMouseEnter(instance): React.MouseEventHandler {
+        return ({ clientX, clientY }) =>
           setState({
             x: clientX,
             y: clientY,
             instance,
-          }),
-      onMouseMove: ({ movementX, movementY }) =>
-        setState(({ x, y }) => ({ x: x + movementX, y: y + movementY })),
-      onMouseLeave: hide,
-      hide,
-    };
-  });
+          });
+      },
+      onMouseMove({ movementX, movementY }): void {
+        setState(({ x, y }) => ({ x: x + movementX, y: y + movementY }));
+      },
+      onMouseLeave(): void {
+        this.hide();
+      },
+      hide() {
+        setState({ instance: undefined });
+      },
+    })
+  );
 
   export function Manager() {
     const [x, y, instance] = useStore((state) => [

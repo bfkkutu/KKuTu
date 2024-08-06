@@ -5,12 +5,14 @@ import { create } from "zustand";
 export namespace Spinner {
   interface State {
     visible: boolean;
+
     show: () => void;
     hide: () => void;
     toggle: () => void;
   }
   export const useStore = create<State>((setState) => ({
     visible: false,
+
     show: () => setState({ visible: true }),
     hide: () => setState({ visible: false }),
     toggle: () => setState(({ visible }) => ({ visible: !visible })),
@@ -19,7 +21,9 @@ export namespace Spinner {
   export function Manager() {
     const visible = useStore((state) => state.visible);
 
-    if (!visible) return null;
+    if (!visible) {
+      return null;
+    }
     return (
       <Oval
         height={80}
@@ -35,3 +39,4 @@ export namespace Spinner {
     );
   }
 }
+
