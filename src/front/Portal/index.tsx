@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 
 import L from "front/@global/Language";
+import ClassName from "front/@global/ClassName";
 import { Spinner } from "front/@global/Bayadere/Spinner";
 import Icon from "front/@block/Icon";
 import GoogleAdvertisement from "front/@block/GoogleAdvertisement";
@@ -126,40 +127,40 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
             </h3>
             <div id="server-list">
               {list.map((v, index) => {
-                let status = v === null ? "x" : "o";
-                const people = status == "x" ? "-" : v + " / " + 100;
-                const limp = v === null ? 0 : (v / 100) * 100;
-
-                if (status == "o") {
-                  if (limp >= 99) {
-                    status = "q";
-                  } else if (limp >= 90) {
-                    status = "p";
-                  }
+                if (v === null) {
+                  return (
+                    <div key={index} className="server">
+                      <div className="server-status ss-x" />
+                      <div className="server-name">
+                        {L.render(`server_${index}`)}
+                      </div>
+                      <LegacyGraph className="server-people graph" />
+                      <div className="server-enter">
+                        {L.render("serverEnter")}
+                      </div>
+                    </div>
+                  );
                 }
+
                 return (
                   <div
                     key={index}
                     className="server"
-                    onClick={() => {
-                      if (status != "x") {
-                        location.href = `/game/${index}`;
-                      }
-                    }}
+                    onClick={() => (location.href = `/game/${index}`)}
                   >
-                    <div className={`server-status ss-${status}`} />
+                    <div
+                      className={new ClassName("server-status")
+                        .if(v >= 99, "ss-q")
+                        .elif(v >= 90, "ss-p")
+                        .else("ss-o")
+                        .toString()}
+                    />
                     <div className="server-name">
                       {L.render(`server_${index}`)}
                     </div>
-                    <div className="server-people graph">
-                      <div
-                        className="graph-bar"
-                        style={{ width: `${limp}%` }}
-                      />
-                      <label>{people}</label>
-                    </div>
+                    <LegacyGraph className="server-people graph" value={v} />
                     <div className="server-enter">
-                      {status == "x" ? "-" : L.render("serverEnter")}
+                      {L.render("serverEnter")}
                     </div>
                   </div>
                 );
@@ -196,4 +197,26 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
   );
 }
 Bind(Portal);
+
+interface Props {
+  className: string;
+  value?: number;
+}
+function LegacyGraph(props: Props) {
+  if (props.value === undefined) {
+    return (
+      <div className={props.className}>
+        <div className="graph-bar" style={{ width: "0" }} />
+        <label>-</label>
+      </div>
+    );
+  }
+
+  return (
+    <div className={props.className}>
+      <div className="graph-bar" style={{ width: `${props.value}%` }} />
+      <label>{props.value} / 100</label>
+    </div>
+  );
+}
 
