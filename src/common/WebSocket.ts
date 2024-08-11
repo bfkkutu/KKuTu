@@ -51,6 +51,7 @@ export namespace WebSocketMessage {
     TurnStart = "turnStart",
     TurnError = "turnError",
     TurnEnd = "turnEnd",
+    UpdateGame = "updateGame",
     UpdateRoomList = "updateRoomList",
     /**
      * @sender Server & Client.
@@ -131,10 +132,7 @@ export namespace WebSocketMessage {
       [Type.Ready]: {
         member: KKuTu.Room.Member;
       };
-      [Type.Start]: {
-        // TODO: 임시.
-        game: KKuTu.Game.Interface.Serialized[KKuTu.Game.Interface];
-      };
+      [Type.Start]: {};
       [Type.End]: {
         result: KKuTu.Game.Result;
       };
@@ -182,6 +180,9 @@ export namespace WebSocketMessage {
       [Type.TurnEnd]: {
         word: Database.Word;
         gain: number;
+      };
+      [Type.UpdateGame]: {
+        game: KKuTu.Game.Interface.Serialized[KKuTu.Game.Interface];
       };
       [Type.UpdateRoomList]: {
         rooms: KKuTu.Room.Summarized[];
@@ -276,6 +277,7 @@ export namespace WebSocketMessage {
       [Type.TurnStart]: {};
       [Type.TurnError]: {};
       [Type.TurnEnd]: {};
+      [Type.UpdateGame]: {};
       [Type.UpdateRoomList]: {};
       [Type.FriendRequest]: {
         /**

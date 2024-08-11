@@ -13,7 +13,7 @@ import TimeGauge from "front/@block/TimeGauge";
 import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import { useVibration } from "front/KKuTu/Vibration";
 import { Room } from "front/KKuTu/box/Room";
-import { Game } from "front/KKuTu/box/Game";
+import Game from "front/KKuTu/box/Game";
 import { Display } from "front/KKuTu/box/Game/Display";
 import { Iterator } from "../../../../../common/Utility";
 import { WebSocketMessage } from "../../../../../common/WebSocket";
@@ -29,10 +29,8 @@ function General(props: Game.Props) {
   const me = useStore((state) => state.me);
   const users = useStore((state) => state.users);
   const setVibration = useVibration((state) => state.setVibration);
-  const [room, game, updateGame] = Room.useStore((state) => {
-    const room = state.room!;
-    return [room, room.game!, state.updateGame];
-  });
+  const room = Room.useStore((state) => state.room!);
+  const [game, update] = Game.useStore((state) => [state.game!, state.update]);
   const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
     (state) => [state.createOnMouseEnter, state.onMouseMove, state.onMouseLeave]
   );
@@ -119,11 +117,16 @@ function General(props: Game.Props) {
         AudioContext.instance.play(`turn_${speed}`);
       }
     );
+    const onUpdate: WebSocket.EventListener<
+      WebSocketMessage.Type.UpdateGame
+    > = ({ game }) => update(game);
+    socket.messageReceiver.on(WebSocketMessage.Type.UpdateGame, onUpdate);
 
     return () => {
       window.cancelAnimationFrame(timer.current);
       socket.messageReceiver.off(WebSocketMessage.Type.RoundStart);
       socket.messageReceiver.off(WebSocketMessage.Type.TurnStart);
+      socket.messageReceiver.off(WebSocketMessage.Type.UpdateGame, onUpdate);
       AudioContext.instance.play(`lobby_${me.settings.lobbyMusic}`, true);
     };
   }, []);
@@ -300,8 +303,7 @@ function General(props: Game.Props) {
       WebSocketMessage.Type.RoundEnd
     > = ({ loss }) => {
       const id = game.players[turn.player];
-      updateGame({
-        ...game,
+      update({
         scores: {
           ...game.scores,
           [id]: game.scores[id] - loss,
@@ -312,8 +314,7 @@ function General(props: Game.Props) {
       gain,
     }) => {
       const id = game.players[turn.player];
-      updateGame({
-        ...game,
+      update({
         scores: {
           ...game.scores,
           [id]: game.scores[id] + gain,

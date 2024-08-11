@@ -120,10 +120,13 @@ class Room extends WebSocketGroup implements Serializable<KKuTu.Room> {
     socket.user.roomId = this.id;
     socket.user.isReady = socket.user.settings.game.autoReady;
     socket.user.isSpectator = false;
-    if (this.game !== undefined && this.settings.policy.joinWhileGaming) {
-      this.game.add(socket);
-    }
     this.update();
+    if (this.game !== undefined) {
+      if (this.settings.policy.joinWhileGaming) {
+        this.game.add(socket);
+      }
+      this.game.update();
+    }
   }
   /**
    * 방에서 특정 유저를 제거한다.
@@ -152,8 +155,11 @@ class Room extends WebSocketGroup implements Serializable<KKuTu.Room> {
       client.user.isReady = true;
     }
 
-    if (this.game !== undefined && this.game.has(id)) {
-      this.game.remove(id);
+    if (this.game !== undefined) {
+      if (this.game.has(id)) {
+        this.game.remove(id);
+      }
+      this.game.update();
     }
     this.update();
   }
@@ -292,7 +298,6 @@ class Room extends WebSocketGroup implements Serializable<KKuTu.Room> {
           ...this.robots.values(),
         ].map((user) => [user.id, user.asRoomMember()])
       ),
-      game: this.game?.serialize(),
     };
   }
 }

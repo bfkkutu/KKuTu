@@ -6,6 +6,7 @@ import { Dialog } from "front/@global/Bayadere/Dialog";
 import Icon from "front/@block/Icon";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
+import Game from "front/KKuTu/box/Game";
 import ListBox from "front/KKuTu/box/RoomList";
 import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
@@ -164,8 +165,9 @@ export namespace Menu {
     const me = useStore((state) => state.me);
     const [room, leaveRoom] = Room.useStore((state) => [
       state.room,
-      state.leaveRoom,
+      state.leave,
     ]);
+    const isGaming = Game.useStore((state) => state.game !== undefined);
     const toggle = Dialog.useStore((state) => state.toggle);
     const [currentListBox, changeListBox] = ListBox.useStore((state) => [
       state.current,
@@ -179,7 +181,7 @@ export namespace Menu {
       contexts.push(Context.Lobby);
     } else {
       contexts.push(room.master === me.id ? Context.Master : Context.Room);
-      if (room.game !== undefined) {
+      if (isGaming) {
         contexts.push(Context.Gaming);
       }
     }
@@ -302,7 +304,7 @@ export namespace Menu {
                     return;
                   }
                   if (
-                    room.game === undefined ||
+                    !isGaming ||
                     (await window.confirm(L.render("confirm_leave")))
                   ) {
                     socket.send(WebSocketMessage.Type.LeaveRoom, {});

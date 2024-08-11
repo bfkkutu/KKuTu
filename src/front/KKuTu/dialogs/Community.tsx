@@ -26,8 +26,8 @@ export default class CommunityDialog extends Dialog {
     const onlineUsers = useStore((state) => state.users);
     const [room, updateRoom, leaveRoom] = Room.useStore((state) => [
       state.room,
-      state.updateRoom,
-      state.leaveRoom,
+      state.update,
+      state.leave,
     ]);
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
       (state) => [

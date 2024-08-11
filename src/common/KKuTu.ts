@@ -454,7 +454,6 @@ export namespace KKuTu {
       extends Room {
       members: Table<Member>;
       master: string;
-      game?: Game.Interface.Serialized[T];
     }
   }
   export interface Room extends HasId<number>, Room.Base {}

@@ -13,7 +13,7 @@ import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
 import Mode from "front/@block/Mode";
 import { useStore as useGlobalStore, useSocket } from "front/KKuTu/Store";
-import { Game } from "front/KKuTu/box/Game";
+import Game from "front/KKuTu/box/Game";
 import ProfileDialog from "front/KKuTu/dialogs/Profile";
 import RobotProfileDialog from "front/KKuTu/dialogs/RobotProfile";
 import ResultDialog from "front/KKuTu/dialogs/Result";
@@ -33,18 +33,23 @@ export namespace Room {
         state.onMouseLeave,
       ]
     );
-    const [room, updateRoom, updateMember, leaveRoom] = useStore((state) => [
+    const [room, update, updateMember, leave] = useStore((state) => [
       state.room!,
-      state.updateRoom,
+      state.update,
       state.updateMember,
-      state.leaveRoom,
+      state.leave,
+    ]);
+    const [isGaming, initialize, deinitialize] = Game.useStore((state) => [
+      state.game !== undefined,
+      state.initialize,
+      state.deinitialize,
     ]);
     const [modified, setModified] = useState<string[]>([]);
 
     useEffect(() => {
       socket.messageReceiver.on(WebSocketMessage.Type.Kick, () => {
         window.alert(L.get("alert_kicked"));
-        leaveRoom();
+        leave();
       });
       socket.messageReceiver.on(WebSocketMessage.Type.Spectate, ({ member }) =>
         updateMember(member)
@@ -58,18 +63,31 @@ export namespace Room {
         if (room.id !== data.id) {
           return;
         }
-        updateRoom(data);
+        update(data);
       };
       socket.messageReceiver.on(WebSocketMessage.Type.UpdateRoom, onUpdate);
-      socket.messageReceiver.on(WebSocketMessage.Type.End, ({ result }) =>
-        show(new ResultDialog(result))
-      );
+      socket.messageReceiver.on(WebSocketMessage.Type.End, ({ result }) => {
+        deinitialize();
+        show(new ResultDialog(result));
+      });
+      const onUpdateGame: WebSocket.EventListener<
+        WebSocketMessage.Type.UpdateGame
+      > = ({ game }) => {
+        if (!isGaming) {
+          initialize(game);
+        }
+      };
+      socket.messageReceiver.on(WebSocketMessage.Type.UpdateGame, onUpdateGame);
 
       return () => {
         socket.messageReceiver.off(WebSocketMessage.Type.Spectate);
         socket.messageReceiver.off(WebSocketMessage.Type.Ready);
         socket.messageReceiver.off(WebSocketMessage.Type.UpdateRoom, onUpdate);
         socket.messageReceiver.off(WebSocketMessage.Type.End);
+        socket.messageReceiver.off(
+          WebSocketMessage.Type.UpdateGame,
+          onUpdateGame
+        );
       };
     }, []);
 
@@ -88,11 +106,9 @@ export namespace Room {
     }, [users]);
 
     useEffect(() => {
-      socket.messageReceiver.on(WebSocketMessage.Type.Start, ({ game }) => {
-        const audioContext = AudioContext.instance;
-        audioContext.stopAll();
-        audioContext.playEffect("gameStart");
-        updateRoom({ ...room, game });
+      socket.messageReceiver.on(WebSocketMessage.Type.Start, () => {
+        AudioContext.instance.stopAll();
+        AudioContext.instance.playEffect("gameStart");
       });
       const updateAnimation: WebSocket.EventListener<
         WebSocketMessage.Type.UpdateRoom
@@ -155,7 +171,7 @@ export namespace Room {
     return (
       <section
         id="box-room"
-        className={`product ${room.game === undefined ? "room" : "game"}`}
+        className={`product ${isGaming ? "game" : "room"}`}
       >
         <div className="product-title">
           <h5 className="id">[{room.id}]</h5>
@@ -218,7 +234,12 @@ export namespace Room {
             {L.get("unitSecond", room.roundTime)}
           </h5>
         </div>
-        {room.game === undefined ? (
+        {isGaming ? (
+          React.createElement(
+            Game.INTERFACES[KKuTu.Game.MODES[room.mode].interface],
+            { mode: room.mode }
+          )
+        ) : (
           <div className="product-body">
             <div className="user-list">
               {Object.values(room.members).map((member, index) => (
@@ -226,11 +247,6 @@ export namespace Room {
               ))}
             </div>
           </div>
-        ) : (
-          React.createElement(
-            Game.INTERFACES[KKuTu.Game.MODES[room.mode].interface],
-            { mode: room.mode }
-          )
         )}
       </section>
     );
@@ -300,19 +316,14 @@ export namespace Room {
   interface State {
     room?: KKuTu.Room.Detailed;
 
-    updateRoom: (room: KKuTu.Room.Detailed) => void;
+    update: (room: KKuTu.Room.Detailed) => void;
     updateMember: (member: Partial<KKuTu.Room.Member>) => void;
-    leaveRoom: () => void;
-
-    // 아마도 임시. 더 깔끔한 방법 찾기.
-    updateGame: (
-      game: KKuTu.Game.Interface.Serialized[KKuTu.Game.Interface]
-    ) => void;
+    leave: () => void;
   }
   export const useStore = create<State>((setState) => ({
     room: undefined,
 
-    updateRoom: (room) => setState({ room }),
+    update: (room) => setState({ room }),
     updateMember: (member) =>
       setState(({ room }) => {
         if (member.id === undefined || room === undefined) {
@@ -331,17 +342,7 @@ export namespace Room {
           },
         };
       }),
-    leaveRoom: () => setState({ room: undefined }),
-
-    updateGame: (game) =>
-      setState(({ room }) => {
-        if (room === undefined) {
-          return {};
-        }
-        return {
-          room: { ...room, game },
-        };
-      }),
+    leave: () => setState({ room: undefined }),
   }));
 }
 

@@ -32,7 +32,11 @@ export default class InviteNotification extends Notification {
       return;
     }
 
-    const { room, updateRoom, leaveRoom } = Room.useStore.getState();
+    const {
+      room,
+      update: updateRoom,
+      leave: leaveRoom,
+    } = Room.useStore.getState();
     if (room !== undefined) {
       socket.send(WebSocketMessage.Type.LeaveRoom, {});
       await socket.messageReceiver.wait(WebSocketMessage.Type.LeaveRoom);

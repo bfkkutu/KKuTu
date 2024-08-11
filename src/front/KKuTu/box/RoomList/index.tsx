@@ -1,13 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { create } from "zustand";
 import sha256 from "sha256";
 
 import L from "front/@global/Language";
+import WebSocket from "front/@global/WebSocket";
 import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import Mode from "front/@block/Mode";
 import Icon from "front/@block/Icon";
 import { useSocket } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
+import Game from "front/KKuTu/box/Game";
 import RoomListBox from "front/KKuTu/box/RoomList/RoomList";
 import SearchRoom from "front/KKuTu/box/RoomList/SearchRoom";
 import { KKuTu } from "../../../../common/KKuTu";
@@ -35,7 +37,8 @@ namespace ListBox {
   }
   export function Item(props: Props) {
     const socket = useSocket((state) => state.socket);
-    const updateRoom = Room.useStore((state) => state.updateRoom);
+    const update = Room.useStore((state) => state.update);
+    const initialize = Game.useStore((state) => state.initialize);
     const [createOnMouseEnter, onMouseMove, onMouseLeave] = Tooltip.useStore(
       (state) => [
         state.createOnMouseEnter,
@@ -43,6 +46,17 @@ namespace ListBox {
         state.onMouseLeave,
       ]
     );
+
+    useEffect(() => {
+      const onUpdate: WebSocket.EventListener<
+        WebSocketMessage.Type.UpdateGame
+      > = ({ game }) => initialize(game); // 게임 중 참여
+      socket.messageReceiver.on(WebSocketMessage.Type.UpdateGame, onUpdate);
+
+      return () => {
+        socket.messageReceiver.off(WebSocketMessage.Type.UpdateGame, onUpdate);
+      };
+    }, []);
 
     return (
       <div
@@ -55,7 +69,7 @@ namespace ListBox {
             const res = await socket.messageReceiver.wait(
               WebSocketMessage.Type.InitializeRoom
             );
-            updateRoom(res.room);
+            update(res.room);
           } catch (e) {
             const { errorType } =
               e as WebSocketError.Message[WebSocketError.Type];
@@ -88,7 +102,7 @@ namespace ListBox {
                   const res = await socket.messageReceiver.wait(
                     WebSocketMessage.Type.InitializeRoom
                   );
-                  updateRoom(res.room);
+                  update(res.room);
                 } catch (e) {
                   const { errorType } =
                     e as WebSocketError.Message[WebSocketError.Type];

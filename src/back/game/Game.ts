@@ -57,9 +57,8 @@ abstract class Game<T extends KKuTu.Game.Interface>
     const word = await this.getPrompt();
     this.prompt =
       word === undefined ? DEFAULT_PROMPTS[this.mode.language] : word;
-    this.room.broadcast(WebSocketMessage.Type.Start, {
-      game: this.serialize(),
-    });
+    this.room.broadcast(WebSocketMessage.Type.Start, {});
+    this.update();
     setTimeout(() => this.startRound(), 2000);
   }
   protected startRound(): void {
@@ -147,6 +146,11 @@ abstract class Game<T extends KKuTu.Game.Interface>
    */
   public has(id: string): boolean {
     return this.clients.has(id);
+  }
+  public update(): void {
+    this.room.broadcast(WebSocketMessage.Type.UpdateGame, {
+      game: this.serialize(),
+    });
   }
   /**
    * 게임이 종료될 때 호출된다.
