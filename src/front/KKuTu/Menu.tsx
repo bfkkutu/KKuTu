@@ -167,7 +167,10 @@ export namespace Menu {
       state.room,
       state.leave,
     ]);
-    const isGaming = Game.useStore((state) => state.game !== undefined);
+    const [isGaming, deinitialize] = Game.useStore((state) => [
+      state.game !== undefined,
+      state.deinitialize,
+    ]);
     const toggle = Dialog.useStore((state) => state.toggle);
     const [currentListBox, changeListBox] = ListBox.useStore((state) => [
       state.current,
@@ -311,6 +314,7 @@ export namespace Menu {
                     await socket.messageReceiver.wait(
                       WebSocketMessage.Type.LeaveRoom
                     );
+                    deinitialize();
                     leaveRoom();
                   }
                 };
