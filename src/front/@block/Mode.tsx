@@ -1,20 +1,24 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
+import lKKuTu from "front/@global/languages/l.kkutu";
 import { KKuTu } from "common/KKuTu";
-import L from "front/@global/Language";
 
 interface Props {
   room: KKuTu.Room;
 }
 export default function Mode({ room }: Props) {
+  const { l } = useLexicon(lKKuTu);
+
   return (
     <>
       {[
-        L.get(`game_mode_${room.mode}`),
+        l("game_mode", room.mode),
         ...Object.entries(room.rules)
           .filter(([_, v]) => v)
-          .map(([k]) => L.get(`game_rule_${k}`)),
+          .map(([k]) => l("game_rule", k as KKuTu.Game.Rule)),
       ].join(" / ")}
     </>
   );
 }
+

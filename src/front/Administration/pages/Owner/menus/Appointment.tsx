@@ -1,19 +1,22 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import lCommon from "front/@global/languages/l.common";
+import lAdministration from "front/@global/languages/l.administration";
 import { Database } from "../../../../../common/Database";
 import { enumValues } from "../../../../../common/Utility";
 import Checkbox from "front/@block/Checkbox";
 
 export default function Appointment() {
+  const { l } = useLexicon(lCommon, lAdministration);
   const [id, setId] = useState("");
   const [departures, setDepartures] = useState<number>(Database.Departure.None);
   const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
 
   return (
     <article className="page-owner appointment">
-      <h2>{L.get("departure1_menu0")}</h2>
+      <h2>{l("departure1_menu0")}</h2>
       <form>
         <div className="query">
           <input value={id} onChange={(e) => setId(e.currentTarget.value)} />
@@ -28,13 +31,13 @@ export default function Appointment() {
               });
               hide();
               if (res.status !== 200) {
-                window.alert(L.get(`error_${res.status}`));
+                window.alert(l("error", res.status));
               }
               const { departures } = await res.json();
               setDepartures(departures);
             }}
           >
-            {L.get("query")}
+            {l("query")}
           </button>
         </div>
         <label className="checkbox-group">
@@ -57,7 +60,7 @@ export default function Appointment() {
                   )
                 }
               >
-                {L.get(`departure${departure}`)}
+                {l("departure", departure)}
               </Checkbox>
             );
           })}
@@ -78,13 +81,13 @@ export default function Appointment() {
             });
             hide();
             if (res.status === 200) {
-              window.alert(L.get("alert_saved"));
+              window.alert(l("alert_saved"));
             } else {
-              window.alert(L.get(`error_${res.status}`));
+              window.alert(l("error", res.status));
             }
           }}
         >
-          {L.get("save")}
+          {l("save")}
         </button>
       </form>
     </article>

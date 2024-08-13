@@ -1,6 +1,5 @@
 import Express from "express";
 
-import { loadLanguages } from "back/utils/Language";
 import { PageBuilder } from "back/utils/ReactNest";
 import { getLoginMethods } from "back/utils/LoginRoute";
 import Channel from "back/game/Channel";
@@ -521,10 +520,6 @@ export default function (App: Express.Application): void {
       return res.sendStatus(500);
     }
 
-    return res.sendStatus(200);
-  });
-  App.get("/admin/load-languages", (req, res) => {
-    loadLanguages();
     return res.sendStatus(200);
   });
 

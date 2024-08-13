@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import { getLevel } from "front/@global/Utility";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import Icon from "front/@block/Icon";
@@ -16,11 +18,13 @@ export default class CommunityDialog extends Dialog {
   public static readonly instance = new CommunityDialog();
 
   protected override head(): React.ReactElement {
+    const { l } = useLexicon(lKKuTu);
     const friends = useStore((state) => state.community.friends);
 
-    return <>{L.render("community_title", friends.length)}</>;
+    return <>{l("community_title", friends.length)}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);
@@ -38,13 +42,13 @@ export default class CommunityDialog extends Dialog {
     );
     const [users, setUsers] = useState({ ...onlineUsers });
 
-    const tooltipAccept = new Tooltip(L.get("accept"));
-    const tooltipDecline = new Tooltip(L.get("decline"));
+    const tooltipAccept = new Tooltip(l("accept"));
+    const tooltipDecline = new Tooltip(l("decline"));
 
-    const tooltipWhisper = new Tooltip(L.get("whisper"));
-    const tooltipInvite = new Tooltip(L.get("invite"));
-    const tooltipFollow = new Tooltip(L.get("follow"));
-    const tooltipRemove = new Tooltip(L.get("remove"));
+    const tooltipWhisper = new Tooltip(l("whisper"));
+    const tooltipInvite = new Tooltip(l("invite"));
+    const tooltipFollow = new Tooltip(l("follow"));
+    const tooltipRemove = new Tooltip(l("remove"));
 
     useEffect(() => {
       async function loadOfflineUsers() {
@@ -154,16 +158,14 @@ export default class CommunityDialog extends Dialog {
                           onClick={async () => {
                             if (
                               !(await window.confirm(
-                                L.get("confirm_invite", friend.nickname)
+                                l("confirm_invite", friend.nickname)
                               ))
                             )
                               return;
                             socket.send(WebSocketMessage.Type.Invite, {
                               target: friend.id,
                             });
-                            window.alert(
-                              L.get("alert_invite", friend.nickname)
-                            );
+                            window.alert(l("alert_invite", friend.nickname));
                           }}
                         >
                           <Icon type={Icon.Type.NORMAL} name="envelope" />
@@ -179,7 +181,7 @@ export default class CommunityDialog extends Dialog {
                             if (
                               friend.roomId === undefined ||
                               !(await window.confirm(
-                                L.get(
+                                l(
                                   "confirm_follow",
                                   friend.nickname,
                                   friend.roomId
@@ -215,7 +217,7 @@ export default class CommunityDialog extends Dialog {
                         onClick={async () => {
                           if (
                             !(await window.confirm(
-                              L.get("confirm_friendRemove", friend.nickname)
+                              l("confirm_friendRemove", friend.nickname)
                             ))
                           )
                             return;
@@ -226,7 +228,7 @@ export default class CommunityDialog extends Dialog {
                             WebSocketMessage.Type.UpdateCommunity
                           );
                           window.alert(
-                            L.get("alert_friendRemove", friend.nickname)
+                            l("alert_friendRemove", friend.nickname)
                           );
                         }}
                       >

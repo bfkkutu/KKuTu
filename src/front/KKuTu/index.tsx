@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 
 import Bind from "front/ReactBootstrap";
 import WebSocket from "front/@global/WebSocket";
-import { Notification } from "front/@global/Bayadere/Notification";
+import { Notification } from "front/@global/bayadere/Notification";
 import KakaoAdvertisement from "front/@block/KakaoAdvertisement";
 import { Menu } from "front/KKuTu/Menu";
 import Intro from "front/KKuTu/Intro";

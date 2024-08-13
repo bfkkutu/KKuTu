@@ -1,6 +1,11 @@
-import L from "front/@global/Language";
+import { LFunction } from "@daldalso/i18n/dist/types";
 
-export function renderTheme(theme: string) {
-  const R = L.get(`theme_${theme}`);
-  return R.length === 0 ? L.get("departure4_noTheme") : R;
+import lCommon from "front/@global/languages/l.common";
+import lAdministration from "front/@global/languages/l.administration";
+
+export function renderTheme(
+  l: LFunction<[typeof lCommon, typeof lAdministration]>,
+  theme: string
+) {
+  return theme === "0" ? l("departure4_noTheme") : l("theme", theme);
 }

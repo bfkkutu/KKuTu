@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { create as createStoreHook } from "zustand";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
 import WebSocket from "front/@global/WebSocket";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import { useStore as useGlobalStore, useSocket } from "front/KKuTu/Store";
 import { Database } from "common/Database";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
@@ -20,9 +22,12 @@ export default class WhisperDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.render("whisper_title", this.user.nickname)}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("whisper_title", this.user.nickname)}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const filterEnabled = useGlobalStore(
       (state) => state.me.settings.filterProfanities
@@ -97,9 +102,7 @@ export default class WhisperDialog extends Dialog {
                       className="report"
                       onClick={async () => {
                         if (
-                          !(await window.confirm(
-                            L.get("confirm_reportMessage")
-                          ))
+                          !(await window.confirm(l("confirm_reportMessage")))
                         ) {
                           return;
                         }
@@ -110,24 +113,22 @@ export default class WhisperDialog extends Dialog {
                           await socket.messageReceiver.wait(
                             WebSocketMessage.Type.ReportWhisper
                           );
-                          window.alert(L.get("alert_reportSubmitted"));
+                          window.alert(l("alert_reportSubmitted"));
                         } catch (e) {
                           const { errorType } =
                             e as WebSocketError.Message[WebSocketError.Type];
                           switch (errorType) {
                             case WebSocketError.Type.NotFound:
-                              window.alert(L.get("error_404"));
+                              window.alert(l("error", 404));
                               break;
                             case WebSocketError.Type.Conflict:
-                              window.alert(
-                                L.get("error_alreadyReportedMessage")
-                              );
+                              window.alert(l("error_alreadyReportedMessage"));
                               break;
                           }
                         }
                       }}
                     >
-                      {L.render("icon_report")}
+                      {l("icon_report")}
                     </button>
                   ) : null}
                 </div>
@@ -144,7 +145,7 @@ export default class WhisperDialog extends Dialog {
             onChange={(e) => setContent(e.currentTarget.value)}
           />
           <button type="button" className="button-send" onClick={send}>
-            {L.get("send")}
+            {l("send")}
           </button>
         </div>
       </div>

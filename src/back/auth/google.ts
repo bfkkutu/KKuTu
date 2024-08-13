@@ -22,7 +22,6 @@ export const config = {
   image: "",
   fontColor: "#000000",
   vendor: "google",
-  displayName: "withGoogle",
   useOAuthButtons: true,
 };
 export const options = {
@@ -47,3 +46,4 @@ export const createProfile: AuthModule["createProfile"] = (
   image: profile.photos[0].value,
   exordial: "",
 });
+

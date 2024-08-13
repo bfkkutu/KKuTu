@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import lCommon from "front/@global/languages/l.common";
+import lAdministration from "front/@global/languages/l.administration";
 import WordEditor from "front/Administration/pages/DatabaseWord/WordEditor";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../../common/KKuTu";
@@ -10,13 +12,14 @@ import API from "../../../../../common/API";
 import { Database } from "common/Database";
 
 function Query() {
+  const { l } = useLexicon(lAdministration);
   const [language, setLanguage] = useState(KKuTu.Game.Language.Korean);
 
   return (
     <article className="page-databaseWord query">
-      <span>{L.get("departure4_desc_language")}</span>
+      <span>{l("departure4_desc_language")}</span>
       <label className="wrapper">
-        <label htmlFor="select-language">{L.get("language")}</label>
+        <label htmlFor="select-language">{l("language")}</label>
         <select
           id="select-language"
           value={language}
@@ -26,7 +29,7 @@ function Query() {
         >
           {KKuTu.Game.LANGUAGES.map((language, index) => (
             <option key={index} value={language}>
-              {L.get(`language_${language}`)}
+              {l("language", language)}
             </option>
           ))}
         </select>
@@ -42,6 +45,7 @@ namespace Query {
     language: KKuTu.Game.Language;
   }
   export function ByData({ language }: Props) {
+    const { l } = useLexicon(lCommon, lAdministration);
     const [input, setInput] = useState("");
     const [type, setType] = useState(API.QueryType.Exact);
     const [result, setResult] = useState<Database.Word[]>([]);
@@ -49,7 +53,7 @@ namespace Query {
 
     return (
       <form className="form-byData">
-        <h2>{L.get("departure4_menu1_title_byData")}</h2>
+        <h2>{l("departure4_menu1_title_byData")}</h2>
         <div className="query">
           <input
             value={input}
@@ -63,7 +67,7 @@ namespace Query {
           >
             {enumValues(API.QueryType).map((type, index) => (
               <option key={index} value={type}>
-                {L.get(`queryType${type}`)}
+                {l("queryType", type)}
               </option>
             ))}
           </select>
@@ -71,7 +75,7 @@ namespace Query {
             type="button"
             onClick={async () => {
               if (input.length === 0) {
-                window.alert(L.get("departure4_menu1_errorNoInput"));
+                window.alert(l("departure4_menu1_errorNoInput"));
                 return;
               }
               show();
@@ -84,24 +88,22 @@ namespace Query {
               });
               hide();
               if (res.status !== 200) {
-                window.alert(L.render(`error_${res.status}`));
+                window.alert(l("error", res.status));
               }
               setResult(await res.json());
             }}
           >
-            {L.get("departure4_menu1_byData_search")}
+            {l("departure4_menu1_byData_search")}
           </button>
         </div>
         {result.length === 0 ? (
-          <div className="result">
-            {L.get("departure4_menu1_byData_noResult")}
-          </div>
+          <div className="result">{l("departure4_menu1_byData_noResult")}</div>
         ) : (
           <div className="result">
             <div className="result-item title">
               <span>#</span>
-              <span>{L.get("departure4_word")}</span>
-              <span>{L.get("departure4_mean")}</span>
+              <span>{l("departure4_word")}</span>
+              <span>{l("departure4_mean")}</span>
             </div>
             <ul className="result-list">
               {result.map((word, index) => (
@@ -111,7 +113,7 @@ namespace Query {
                   <ul>
                     {Object.entries(word.means).map(([theme, means], index) => (
                       <li key={index}>
-                        <span>〈{renderTheme(theme)}〉</span>
+                        <span>〈{renderTheme(l, theme)}〉</span>
                         <ul>
                           {means.map((mean, index) => (
                             <li key={index}>{mean}</li>
@@ -129,13 +131,14 @@ namespace Query {
     );
   }
   export function Update({ language }: Props) {
+    const { l } = useLexicon(lCommon, lAdministration);
     const [input, setInput] = useState("");
     const [word, setWord] = useState<State<Database.Word>>();
     const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
 
     return (
       <form className="form-update">
-        <h2>{L.get("departure4_menu1_title_update")}</h2>
+        <h2>{l("departure4_menu1_title_update")}</h2>
         <div className="query">
           <input
             value={input}
@@ -145,7 +148,7 @@ namespace Query {
             type="button"
             onClick={async () => {
               if (input.length === 0) {
-                window.alert(L.get("departure4_menu1_errorNoInput"));
+                window.alert(l("departure4_menu1_errorNoInput"));
                 return;
               }
               show();
@@ -158,16 +161,16 @@ namespace Query {
               });
               hide();
               if (res.status !== 200) {
-                window.alert(L.render(`error_${res.status}`));
+                window.alert(l("error", res.status));
               }
               setWord(await res.json());
             }}
           >
-            {L.get("query")}
+            {l("query")}
           </button>
         </div>
         {word === undefined ? (
-          L.get("departure4_menu1_update_noResult")
+          l("departure4_menu1_update_noResult")
         ) : (
           <WordEditor
             value={word}
@@ -177,7 +180,7 @@ namespace Query {
         <button
           type="button"
           onClick={async () => {
-            if (!(await window.confirm(L.render("alert_save")))) {
+            if (!(await window.confirm(l("alert_save")))) {
               return;
             }
             show();
@@ -193,13 +196,13 @@ namespace Query {
             });
             hide();
             if (res.status === 200) {
-              window.alert(L.get("alert_saved"));
+              window.alert(l("alert_saved"));
             } else {
-              window.alert(L.render(`error_${res.status}`));
+              window.alert(l("error", res.status));
             }
           }}
         >
-          {L.get("save")}
+          {l("save")}
         </button>
       </form>
     );

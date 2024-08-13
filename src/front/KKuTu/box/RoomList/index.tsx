@@ -1,10 +1,12 @@
 import React, { useEffect } from "react";
 import { create } from "zustand";
+import { useLexicon } from "@daldalso/i18n";
 import sha256 from "sha256";
 
-import L from "front/@global/Language";
 import WebSocket from "front/@global/WebSocket";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Mode from "front/@block/Mode";
 import Icon from "front/@block/Icon";
 import { useSocket } from "front/KKuTu/Store";
@@ -36,6 +38,7 @@ namespace ListBox {
     room: KKuTu.Room.Summarized;
   }
   export function Item(props: Props) {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const update = Room.useStore((state) => state.update);
     const initialize = Game.useStore((state) => state.initialize);
@@ -75,18 +78,18 @@ namespace ListBox {
               e as WebSocketError.Message[WebSocketError.Type];
             switch (errorType) {
               case WebSocketError.Type.NotFound:
-                window.alert(L.get("error_roomNotFound"));
+                window.alert(l("error_roomNotFound"));
                 break;
               case WebSocketError.Type.Conflict:
-                window.alert(L.get("error_roomFull"));
+                window.alert(l("error_roomFull"));
                 break;
               case WebSocketError.Type.BadRequest:
-                window.alert(L.get("error_roomNewbie"));
+                window.alert(l("error_roomNewbie"));
                 break;
               case WebSocketError.Type.Unauthorized:
                 const password = await window.prompt(
-                  L.render("prompt_title_roomPassword"),
-                  L.get("prompt_roomPassword"),
+                  l("prompt_title_roomPassword"),
+                  l("prompt_roomPassword"),
                   "password"
                 );
 
@@ -108,10 +111,10 @@ namespace ListBox {
                     e as WebSocketError.Message[WebSocketError.Type];
                   switch (errorType) {
                     case WebSocketError.Type.NotFound:
-                      window.alert(L.get("error_roomNotFound"));
+                      window.alert(l("error_roomNotFound"));
                       break;
                     case WebSocketError.Type.Forbidden:
-                      window.alert(L.get("error_passwordMismatch"));
+                      window.alert(l("error_passwordMismatch"));
                       break;
                   }
                 }
@@ -132,7 +135,7 @@ namespace ListBox {
               onMouseEnter={createOnMouseEnter(
                 new Tooltip(
                   props.room.themes
-                    .map((theme) => L.get(`theme_${theme}`))
+                    .map((theme) => l("theme", theme))
                     .join(" / ")
                 )
               )}
@@ -146,10 +149,8 @@ namespace ListBox {
               <Mode room={props.room} />
             </div>
           )}
-          <div className="round">{L.get("unitRound", props.room.round)}</div>
-          <div className="time">
-            {L.get("unitSecond", props.room.roundTime)}
-          </div>
+          <div className="round">{l("unitRound", props.room.round)}</div>
+          <div className="time">{l("unitSecond", props.room.roundTime)}</div>
         </div>
         <div className="lock">
           <Icon

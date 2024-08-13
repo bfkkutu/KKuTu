@@ -1,16 +1,18 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { useSocket, useStore } from "front/KKuTu/Store";
-import Moremi from "front/@block/Moremi";
-import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import { getLevel } from "front/@global/Utility";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
+import Moremi from "front/@block/Moremi";
+import ProfileImage from "front/@block/ProfileImage";
 import Gauge from "front/@block/Gauge";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
-import { Room } from "front/KKuTu/box/Room";
 import ReportDialog from "front/KKuTu/dialogs/Report";
+import { Room } from "front/KKuTu/box/Room";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
@@ -25,9 +27,12 @@ export default class ProfileDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.render("profile_title", this.user.nickname)}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("profile_title", this.user.nickname)}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
@@ -44,7 +49,7 @@ export default class ProfileDialog extends Dialog {
     if (this.user.id !== id) {
       footerButtons.push(
         <button key={footerButtons.length} onClick={() => toggle(reportDialog)}>
-          {L.get("report")}
+          {l("report")}
         </button>
       );
       if (room !== undefined && room.master === id) {
@@ -54,7 +59,7 @@ export default class ProfileDialog extends Dialog {
             onClick={async () => {
               if (
                 !(await window.confirm(
-                  L.render("confirm_handover", this.user.nickname)
+                  l("confirm_handover", this.user.nickname)
                 ))
               ) {
                 return;
@@ -70,21 +75,11 @@ export default class ProfileDialog extends Dialog {
               } catch (e) {
                 const { errorType } =
                   e as WebSocketError.Message[WebSocketError.Type];
-                switch (errorType) {
-                  case WebSocketError.Type.BadRequest:
-                    window.alert(L.get("error_400"));
-                    break;
-                  case WebSocketError.Type.NotFound:
-                    window.alert(L.get("error_404"));
-                    break;
-                  case WebSocketError.Type.Forbidden:
-                    window.alert(L.get("error_403"));
-                    break;
-                }
+                window.alert(l("error", errorType));
               }
             }}
           >
-            {L.get("handover")}
+            {l("handover")}
           </button>
         );
         footerButtons.push(
@@ -92,9 +87,7 @@ export default class ProfileDialog extends Dialog {
             key={footerButtons.length}
             onClick={async () => {
               if (
-                !(await window.confirm(
-                  L.render("confirm_kick", this.user.nickname)
-                ))
+                !(await window.confirm(l("confirm_kick", this.user.nickname)))
               ) {
                 return;
               }
@@ -109,21 +102,11 @@ export default class ProfileDialog extends Dialog {
               } catch (e) {
                 const { errorType } =
                   e as WebSocketError.Message[WebSocketError.Type];
-                switch (errorType) {
-                  case WebSocketError.Type.BadRequest:
-                    window.alert(L.get("error_400"));
-                    break;
-                  case WebSocketError.Type.NotFound:
-                    window.alert(L.get("error_404"));
-                    break;
-                  case WebSocketError.Type.Forbidden:
-                    window.alert(L.get("error_403"));
-                    break;
-                }
+                window.alert(l("error", errorType));
               }
             }}
           >
-            {L.get("kick")}
+            {l("kick")}
           </button>
         );
         footerButtons.push(
@@ -131,7 +114,7 @@ export default class ProfileDialog extends Dialog {
             key={footerButtons.length}
             onClick={() => Whisper.toggle(this.user)}
           >
-            {L.get("whisper")}
+            {l("whisper")}
           </button>
         );
       }
@@ -143,7 +126,7 @@ export default class ProfileDialog extends Dialog {
             onClick={async () => {
               if (
                 !(await window.confirm(
-                  L.render("confirm_friendRequest", this.user.nickname)
+                  l("confirm_friendRequest", this.user.nickname)
                 ))
               )
                 return;
@@ -159,19 +142,17 @@ export default class ProfileDialog extends Dialog {
                   e as WebSocketError.Message[WebSocketError.Type];
                 switch (errorType) {
                   case WebSocketError.Type.NotFound:
-                    window.alert(L.get("error_404"));
+                    window.alert(l("error", 404));
                     break;
                   case WebSocketError.Type.BadRequest:
-                    window.alert(
-                      L.get("error_friendRequestAlreadyInBlackList")
-                    );
+                    window.alert(l("error_friendRequestAlreadyInBlackList"));
                     break;
                 }
               }
-              window.alert(L.get("alert_friendRequest", this.user.nickname));
+              window.alert(l("alert_friendRequest", this.user.nickname));
             }}
           >
-            {L.get("friendRequest")}
+            {l("friendRequest")}
           </button>
         );
       }
@@ -182,7 +163,7 @@ export default class ProfileDialog extends Dialog {
             onClick={async () => {
               if (
                 !(await window.confirm(
-                  L.render("confirm_blackListAdd", this.user.nickname)
+                  l("confirm_blackListAdd", this.user.nickname)
                 ))
               )
                 return;
@@ -198,17 +179,17 @@ export default class ProfileDialog extends Dialog {
                   e as WebSocketError.Message[WebSocketError.Type];
                 switch (errorType) {
                   case WebSocketError.Type.NotFound:
-                    window.alert(L.get("error_404"));
+                    window.alert(l("error", 404));
                     break;
                   case WebSocketError.Type.BadRequest:
-                    window.alert(L.get("error_blackListAlreadyFriend"));
+                    window.alert(l("error_blackListAlreadyFriend"));
                     break;
                 }
               }
-              window.alert(L.render("alert_blackListAdd", this.user.nickname));
+              window.alert(l("alert_blackListAdd", this.user.nickname));
             }}
           >
-            {L.get("blackListAdd")}
+            {l("blackListAdd")}
           </button>
         );
       }
@@ -232,10 +213,11 @@ export default class ProfileDialog extends Dialog {
                     width={20}
                     height={20}
                   />
-                  {L.get("unitLevel", level)}
+                  {l("unitLevel", level)}
                 </div>
                 <div className="score">
-                  {this.user.score.toLocaleString()} / {goal.toLocaleString()}점
+                  {this.user.score.toLocaleString()} /{" "}
+                  {l("unitScoreWithCommas", goal)}
                 </div>
               </div>
               <div className="item gauge-wrapper">

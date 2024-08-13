@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
 
 interface Props {
   id: string;

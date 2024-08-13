@@ -1,4 +1,4 @@
-import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Spinner } from "front/@global/bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { reduceToTable } from "../../common/Utility";
 import { Database } from "common/Database";

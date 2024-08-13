@@ -18,7 +18,6 @@ export const config = {
   image: "https://daldal.so/media/images/oauth-button.png",
   fontColor: "#FFFFFF",
   vendor: "daldalso",
-  displayName: "withDaldalso",
   useOAuthButtons: true,
 };
 export const options = {
@@ -44,3 +43,4 @@ export const createProfile: AuthModule["createProfile"] = ({
       : "https://daldal.so/media/images/anonymous.png",
   exordial: profile && profile.text ? profile.text : "",
 });
+

@@ -1,13 +1,16 @@
 import React, { useEffect, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import { useSocket, useStore } from "front/KKuTu/Store";
-import L from "front/@global/Language";
 import Room from "front/KKuTu/box/RoomList";
 import { WebSocketMessage } from "../../../../common/WebSocket";
 import { KKuTu } from "../../../../common/KKuTu";
 import { enumValues, reduceToTable } from "../../../../common/Utility";
 
 export default function SearchRoom() {
+  const { l } = useLexicon(lCommon, lKKuTu);
   const socket = useSocket((state) => state.socket);
   const [rooms, updateRoomList] = useStore((state) => [
     state.rooms,
@@ -48,13 +51,13 @@ export default function SearchRoom() {
   });
   return (
     <section id="box-search-room" className="product">
-      <h5 className="product-title">{L.render("searchRoomBox_title")}</h5>
+      <h5 className="product-title">{l("searchRoomBox_title")}</h5>
       <div className="product-body">
         <form className="search-form">
           <div className="options">
             <label className="item-wrapper">
               <label className="dialog-desc" htmlFor="searchRoom-input-title">
-                {L.get("roomTitle")}
+                {l("roomTitle")}
               </label>
               <input
                 type="text"
@@ -67,7 +70,7 @@ export default function SearchRoom() {
             </label>
             <label className="item-wrapper">
               <label className="dialog-desc" htmlFor="searchRoom-select-mode">
-                {L.get("roomMode")}
+                {l("roomMode")}
               </label>
               <select
                 id="searchRoom-select-mode"
@@ -78,13 +81,13 @@ export default function SearchRoom() {
               >
                 {enumValues(KKuTu.Game.Mode).map((mode, index) => (
                   <option key={index} value={mode}>
-                    {L.get(`game_mode_${mode}`)}
+                    {l("game_mode", mode)}
                   </option>
                 ))}
               </select>
             </label>
             <label className="item-wrapper">
-              <label className="dialog-desc">{L.get("roomRound")}</label>
+              <label className="dialog-desc">{l("roomRound")}</label>
               <label className="range">
                 <input
                   type="number"
@@ -119,7 +122,7 @@ export default function SearchRoom() {
                 className="dialog-desc"
                 htmlFor="searchRoom-select-roundTime-begin"
               >
-                {L.get("roomRoundTime")}
+                {l("roomRoundTime")}
               </label>
               <label className="range">
                 <select
@@ -136,7 +139,7 @@ export default function SearchRoom() {
                     (v) => v <= room.roundTime[1]
                   ).map((roundTime, index) => (
                     <option key={index} value={roundTime}>
-                      {L.get("unitSecond", roundTime)}
+                      {l("unitSecond", roundTime)}
                     </option>
                   ))}
                 </select>
@@ -154,7 +157,7 @@ export default function SearchRoom() {
                     (v) => room.roundTime[0] <= v
                   ).map((roundTime, index) => (
                     <option key={index} value={roundTime}>
-                      {L.get("unitSecond", roundTime)}
+                      {l("unitSecond", roundTime)}
                     </option>
                   ))}
                 </select>
@@ -163,7 +166,7 @@ export default function SearchRoom() {
           </div>
           <div className="options-rules">
             <label className="dialog-desc" htmlFor="searchRoom-rules">
-              {L.get("roomRules")}
+              {l("roomRules")}
             </label>
             <div id="searchRoom-rules" className="checkbox-wrapper">
               {KKuTu.Game.MODES[room.mode].rules.map((rule, index) => (
@@ -183,7 +186,7 @@ export default function SearchRoom() {
                     }
                   />
                   <label htmlFor={`searchRoom-checkbox-${rule}`}>
-                    {L.get(`game_rule_${rule}`)}
+                    {l("game_rule", rule)}
                   </label>
                 </label>
               ))}
@@ -192,7 +195,7 @@ export default function SearchRoom() {
         </form>
         <div className="result-list">
           {result.length === 0 ? (
-            <div>{L.get("error_noResult")}</div>
+            <div>{l("error_noResult")}</div>
           ) : (
             result.map((room, index) => <Room.Item key={index} room={room} />)
           )}

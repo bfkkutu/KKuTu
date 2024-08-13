@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import { getLevel } from "front/@global/Utility";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import Icon from "front/@block/Icon";
@@ -14,9 +16,12 @@ export default class BlackListDialog extends Dialog {
   public static readonly instance = new BlackListDialog();
 
   protected override head(): React.ReactElement {
-    return <>{L.render("blackList_title")}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("blackList_title")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const community = useStore((state) => state.community);
     const onlineUsers = useStore((state) => state.users);
@@ -29,7 +34,7 @@ export default class BlackListDialog extends Dialog {
     );
     const [users, setUsers] = useState({ ...onlineUsers });
 
-    const tooltipRemove = new Tooltip(L.get("remove"));
+    const tooltipRemove = new Tooltip(l("remove"));
 
     useEffect(() => {
       async function loadOfflineUsers() {
@@ -79,7 +84,7 @@ export default class BlackListDialog extends Dialog {
                     onClick={async () => {
                       if (
                         !(await window.confirm(
-                          L.get("confirm_blackListRemove", blackedUser.nickname)
+                          l("confirm_blackListRemove", blackedUser.nickname)
                         ))
                       )
                         return;
@@ -90,7 +95,7 @@ export default class BlackListDialog extends Dialog {
                         WebSocketMessage.Type.UpdateCommunity
                       );
                       window.alert(
-                        L.get("alert_blackListRemove", blackedUser.nickname)
+                        l("alert_blackListRemove", blackedUser.nickname)
                       );
                     }}
                   >

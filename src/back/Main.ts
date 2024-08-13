@@ -3,7 +3,6 @@ import https from "https";
 
 import DB from "back/utils/Database";
 import ExpressAgent from "back/utils/ExpressAgent";
-import { loadLanguages } from "back/utils/Language";
 import Route from "back/utils/Route";
 import {
   loadEndpoints,
@@ -19,7 +18,6 @@ const App = Express();
 
 (async () => {
   await DB.initialize();
-  loadLanguages();
   loadEndpoints();
   writeClientConstants();
   ExpressAgent(App);
@@ -48,3 +46,4 @@ process.on("unhandledRejection", (err) => {
 
   Logger.error("Unhandled promise rejection").put(content).out();
 });
+

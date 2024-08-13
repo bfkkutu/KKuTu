@@ -1,8 +1,10 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Icon from "front/@block/Icon";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
@@ -49,8 +51,8 @@ export namespace Menu {
   interface Item {
     type: Type;
     isTiny: boolean;
-    label: React.ReactNode;
-    badge?: () => number;
+    label: React.FC<{}>;
+    badge?: React.FC<{}>;
     contexts: Context[];
   }
 
@@ -58,109 +60,166 @@ export namespace Menu {
     {
       type: Type.Help,
       isTiny: true,
-      label: <Icon type={Icon.Type.NORMAL} name="question-circle" />,
+      label: () => <Icon type={Icon.Type.NORMAL} name="question-circle" />,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Settings,
       isTiny: true,
-      label: <Icon type={Icon.Type.NORMAL} name="wrench" />,
+      label: () => <Icon type={Icon.Type.NORMAL} name="wrench" />,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Community,
       isTiny: true,
-      label: <Icon type={Icon.Type.NORMAL} name="comments" />,
-      badge: () => useStore.getState().community.friendRequests.received.length,
+      label: () => <Icon type={Icon.Type.NORMAL} name="comments" />,
+      badge: () => {
+        const community = useStore((state) => state.community);
+
+        return community.friendRequests.received.length === 0 ? null : (
+          <span className="badge">
+            {community.friendRequests.received.length}
+          </span>
+        );
+      },
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.BlackList,
       isTiny: true,
-      label: <Icon type={Icon.Type.NORMAL} name="ban" />,
+      label: () => <Icon type={Icon.Type.NORMAL} name="ban" />,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Leaderboard,
       isTiny: true,
-      label: <Icon type={Icon.Type.NORMAL} name="trophy" />,
+      label: () => <Icon type={Icon.Type.NORMAL} name="trophy" />,
       contexts: [Context.Lobby],
     },
     {
       type: Type.Spectate,
       isTiny: false,
-      label: L.get("menu_spectate"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_spectate")}</>;
+      },
       contexts: [Context.Room, Context.Master],
     },
     {
       type: Type.RoomSettings,
       isTiny: false,
-      label: L.get("menu_roomSettings"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_roomSettings")}</>;
+      },
       contexts: [Context.Master],
     },
     {
       type: Type.CreateRoom,
       isTiny: false,
-      label: L.get("createRoom"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("createRoom")}</>;
+      },
       contexts: [Context.Lobby],
     },
     {
       type: Type.SearchRoom,
       isTiny: false,
-      label: L.get("menu_searchRoom"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_searchRoom")}</>;
+      },
       contexts: [Context.Lobby],
     },
     {
       type: Type.Shop,
       isTiny: false,
-      label: L.get("menu_shop"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_shop")}</>;
+      },
       contexts: [Context.Lobby],
     },
     {
       type: Type.Dictionary,
       isTiny: false,
-      label: L.get("menu_dict"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_dict")}</>;
+      },
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Invite,
       isTiny: false,
-      label: L.get("menu_invite"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_invite")}</>;
+      },
       contexts: [Context.Room, Context.Master],
     },
     {
       type: Type.Practice,
       isTiny: false,
-      label: L.get("menu_practice"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_practice")}</>;
+      },
       contexts: [Context.Room, Context.Master],
     },
     {
       type: Type.Ready,
       isTiny: false,
-      label: L.get("menu_ready"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_ready")}</>;
+      },
       contexts: [Context.Room],
     },
     {
       type: Type.Start,
       isTiny: false,
-      label: L.get("menu_start"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_start")}</>;
+      },
       contexts: [Context.Master],
     },
     {
       type: Type.Leave,
       isTiny: false,
-      label: L.get("menu_leave"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_leave")}</>;
+      },
       contexts: [Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Replay,
       isTiny: false,
-      label: L.get("menu_replay"),
+      label: () => {
+        const { l } = useLexicon(lKKuTu);
+
+        return <>{l("menu_replay")}</>;
+      },
       contexts: [Context.Lobby],
     },
   ];
 
   export function Component() {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const me = useStore((state) => state.me);
     const [room, leaveRoom] = Room.useStore((state) => [
@@ -280,14 +339,14 @@ export namespace Menu {
                       e as WebSocketError.Message[WebSocketError.Type];
                     switch (errorType) {
                       case WebSocketError.Type.BadRequest:
-                        window.alert(L.get("error_400"));
+                        window.alert(l("error", 400));
                         break;
                       case WebSocketError.Type.Forbidden:
-                        window.alert(L.get("error_403"));
+                        window.alert(l("error", 403));
                         break;
                       case WebSocketError.Type.Conflict:
                         window.alert(
-                          L.get(
+                          l(
                             Object.keys(room.members).length === 1
                               ? "error_startAlone"
                               : "error_startNotReady"
@@ -295,7 +354,7 @@ export namespace Menu {
                         );
                         break;
                       default:
-                        window.alert(L.get("error_unknown"));
+                        window.alert(l("error_unknown"));
                         break;
                     }
                   }
@@ -306,10 +365,7 @@ export namespace Menu {
                   if (room === undefined) {
                     return;
                   }
-                  if (
-                    !isGaming ||
-                    (await window.confirm(L.render("confirm_leave")))
-                  ) {
+                  if (!isGaming || (await window.confirm(l("confirm_leave")))) {
                     socket.send(WebSocketMessage.Type.LeaveRoom, {});
                     await socket.messageReceiver.wait(
                       WebSocketMessage.Type.LeaveRoom
@@ -320,7 +376,6 @@ export namespace Menu {
                 };
                 break;
             }
-            const badge = config.badge && config.badge();
             return (
               <button
                 key={index}
@@ -328,8 +383,8 @@ export namespace Menu {
                 {...props}
                 className={className.toString()}
               >
-                {badge ? <span className="badge">{badge}</span> : null}
-                {config.label}
+                {config.badge === undefined ? null : <config.badge />}
+                <config.label />
               </button>
             );
           })}

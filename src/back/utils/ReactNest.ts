@@ -2,9 +2,7 @@ import Express from "express";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 
-import { setTable } from "front/@global/Language";
 import { Root } from "front/ReactBootstrap";
-import { getLanguageTable, L } from "back/utils/Language";
 import { getProjectData, PACKAGE, SETTINGS } from "back/utils/System";
 import { Nest } from "common/Nest";
 
@@ -70,7 +68,6 @@ export function Engine<T extends Nest.Page.Type>(
       : "";
   let Index: any;
 
-  $.title = L(`${KEY}#title`, ...($.metadata?.titleArgs || []));
   $.version = PACKAGE["version"];
   $.mode = mode;
   // NOTE Express 내부적으로 정의한 정보가 외부에 노출되지 않도록 삭제
@@ -80,7 +77,6 @@ export function Engine<T extends Nest.Page.Type>(
 
   const CLIENT_SETTINGS: Partial<Nest.ClientSettings> = {};
   if (SSR) {
-    setTable(getLanguageTable($.locale, $.page));
     Index = require(`front/${$.page}/index.tsx`).default;
     Object.assign(
       Index["__CLIENT_SETTINGS"],

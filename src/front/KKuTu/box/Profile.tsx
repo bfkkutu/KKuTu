@@ -1,8 +1,9 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Dialog } from "front/@global/Bayadere/Dialog";
 import { getLevel } from "front/@global/Utility";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import LevelIcon from "front/@block/LevelIcon";
 import Moremi from "front/@block/Moremi";
 import Gauge from "front/@block/Gauge";
@@ -12,6 +13,7 @@ import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export namespace Profile {
   export function Box() {
+    const { l } = useLexicon(lKKuTu);
     const me = useStore((state) => state.me);
     const toggle = Dialog.useStore((state) => state.toggle);
 
@@ -26,16 +28,16 @@ export namespace Profile {
         className="product"
         onClick={() => toggle(dialog)}
       >
-        <h5 className="product-title">{L.render("profileBox_title")}</h5>
+        <h5 className="product-title">{l("profileBox_title")}</h5>
         <div className="product-body">
           <Moremi equipment={me.equipment} />
           <div className="stat">
             <LevelIcon className="level" level={level} />
             <div className="name ellipse">{me.nickname}</div>
-            <div className="record">{L.render("stat_record", 0)}</div>
-            <div className="money">{L.render("stat_money", me.money)}</div>
+            <div className="record">{l("stat_record", 0)}</div>
+            <div className="money">{l("stat_money", me.money)}</div>
           </div>
-          <div className="level">{L.get("unitLevel", level)}</div>
+          <div className="level">{l("unitLevel", level)}</div>
           <Gauge
             className="gauge-score"
             value={me.score - prev}

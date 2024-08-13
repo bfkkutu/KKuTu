@@ -1,7 +1,8 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import L from "front/@global/Language";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
 
 export default class AlertDialog extends Dialog.Asynchronous<void> {
   private content: React.ReactNode;
@@ -13,15 +14,19 @@ export default class AlertDialog extends Dialog.Asynchronous<void> {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.get("alert")}</>;
+    const { l } = useLexicon(lCommon);
+
+    return <>{l("alert")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon);
+
     return (
       <>
         <div className="body dialog-alert">{this.content}</div>
         <div className="footer buttons">
           <button type="button" onClick={() => this.resolve()}>
-            {L.get("ok")}
+            {l("ok")}
           </button>
         </div>
       </>

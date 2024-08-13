@@ -14,7 +14,6 @@ export const config = {
   color: "#7289DA",
   fontColor: "#FFFFFF",
   vendor: "discord",
-  displayName: "withDiscord",
   useOAuthButtons: true,
 };
 export const options = {
@@ -34,3 +33,4 @@ export const createProfile: AuthModule["createProfile"] = (
   image: `https://cdn.discordapp.com/avatars/${profile.id}/${profile.avatar}`,
   exordial: "",
 });
+

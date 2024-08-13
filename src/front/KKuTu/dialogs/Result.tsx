@@ -1,8 +1,10 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import L from "front/@global/Language";
 import { getLevel } from "front/@global/Utility";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import LevelIcon from "front/@block/LevelIcon";
 import Gauge from "front/@block/Gauge";
 import { useStore } from "front/KKuTu/Store";
@@ -19,9 +21,12 @@ export default class ResultDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.get("result_title")}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("result_title")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const me = useStore((state) => state.me);
     const users = useStore((state) => state.users);
 
@@ -47,7 +52,7 @@ export default class ResultDialog extends Dialog {
                     height={18}
                   />
                   <span className="ellipse">{user.nickname}</span>
-                  <span>{L.get("unitScore", score.value)}</span>
+                  <span>{l("unitScore", score.value)}</span>
                   <span>+{score.gain}</span>
                 </li>
               );
@@ -57,15 +62,15 @@ export default class ResultDialog extends Dialog {
             <div className="me">
               <div className="gain">
                 <span>
-                  {L.get("result_score")} +{this.result.gain.score}
+                  {l("result_score")} +{this.result.gain.score}
                 </span>
                 <span>
-                  {L.get("result_money")} +{this.result.gain.money}
+                  {l("result_money")} +{this.result.gain.money}
                 </span>
               </div>
               <div className="score">
                 <div className="gauge-desc">
-                  <span>{L.get("level")}</span>
+                  <span>{l("level")}</span>
                   <span className="level">{level}</span>
                 </div>
                 <Gauge
@@ -80,10 +85,10 @@ export default class ResultDialog extends Dialog {
           )}
         </div>
         <div className="footer buttons">
-          <button onClick={() => window.alert(L.get("underDevelopment"))}>
-            {L.get("result_save")}
+          <button onClick={() => window.alert(l("underDevelopment"))}>
+            {l("result_save")}
           </button>
-          <button onClick={() => this.hide()}>{L.get("ok")}</button>
+          <button onClick={() => this.hide()}>{l("ok")}</button>
         </div>
       </div>
     );

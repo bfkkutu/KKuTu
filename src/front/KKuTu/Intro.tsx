@@ -1,11 +1,13 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
 import { getRequiredScore } from "front/@global/Utility";
-import { Spinner } from "front/@global/Bayadere/Spinner";
-import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Gauge from "front/@block/Gauge";
+import { useDetector, useSocket, useStore } from "front/KKuTu/Store";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { KKuTu } from "../../common/KKuTu";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
@@ -23,6 +25,7 @@ interface Props {
   version: React.ReactNode;
 }
 export default function Intro(props: Props) {
+  const { l } = useLexicon(lCommon, lKKuTu);
   const [socket, connect, disconnect] = useSocket((state) => [
     state.socket,
     state.connect,
@@ -32,7 +35,7 @@ export default function Intro(props: Props) {
   const updateMe = useStore((state) => state.updateMe);
   const initializeUsers = useStore((state) => state.initializeUsers);
   const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
-  const [args, setArgs] = useState<[string, ...string[]]>(["connecting"]);
+  const [text, setText] = useState<string>(l("connecting"));
   const [progress, setProgress] = useState(0);
 
   const $ = useRef<HTMLDivElement>(null);
@@ -46,11 +49,11 @@ export default function Intro(props: Props) {
       try {
         const detector = await load();
         if (detector.detect().bot) {
-          window.alert(L.get("alert_botdDetected"));
+          window.alert(l("alert_botdDetected"));
           disconnect();
         }
       } catch (e) {
-        window.alert(L.get("alert_botdFailed"));
+        window.alert(l("alert_botdFailed"));
         disconnect();
       }
     })();
@@ -74,10 +77,10 @@ export default function Intro(props: Props) {
         setProgress(i);
         const [id, src] = SOUNDS[i];
         try {
-          setArgs(["loading_resource", src]);
+          setText(l("loading_resource", src));
           await AudioContext.instance.register(id, `/media/sound${src}`);
         } catch (e) {
-          window.alert(L.get("error_soundNotFound", id));
+          window.alert(l("error_soundNotFound", id));
         }
       }
       setProgress(SOUNDS.length);
@@ -99,7 +102,7 @@ export default function Intro(props: Props) {
     });
     socket.on("close", (e) => {
       AudioContext.instance.stopAll();
-      window.alert(L.get("error_closed", e.code));
+      window.alert(l("error_closed", e.code));
     });
   }, [socket]);
 
@@ -107,7 +110,7 @@ export default function Intro(props: Props) {
     <div ref={$} id="intro">
       <img className="image" src="/media/image/kkutu/intro.png" />
       <div className="version">{props.version}</div>
-      <div className="text">{L.get(...args)}</div>
+      <div className="text">{text}</div>
       <div className="gauge-wrapper">
         <Gauge
           className="gauge"
@@ -115,7 +118,7 @@ export default function Intro(props: Props) {
           value={Math.round((progress / SOUNDS.length) * 100)}
           width={600}
           height={20}
-          format={({ value }) => <>{L.get("unitPercent", value)}</>}
+          format={({ value }) => <>{l("unitPercent", value)}</>}
         />
       </div>
     </div>

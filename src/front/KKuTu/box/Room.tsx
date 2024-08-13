@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { create } from "zustand";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import AudioContext from "front/@global/AudioContext";
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
 import { getLevel } from "front/@global/Utility";
 import ClassName from "front/@global/ClassName";
 import WebSocket from "front/@global/WebSocket";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
@@ -22,6 +24,7 @@ import { KKuTu } from "../../../common/KKuTu";
 
 export namespace Room {
   export function Box() {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const users = useGlobalStore((state) => state.users);
     const notice = useGlobalStore((state) => state.notice);
@@ -48,7 +51,7 @@ export namespace Room {
 
     useEffect(() => {
       socket.messageReceiver.on(WebSocketMessage.Type.Kick, () => {
-        window.alert(L.get("alert_kicked"));
+        window.alert(l("alert_kicked"));
         leave();
       });
       socket.messageReceiver.on(WebSocketMessage.Type.Spectate, ({ member }) =>
@@ -93,10 +96,10 @@ export namespace Room {
 
     useEffect(() => {
       socket.messageReceiver.on(WebSocketMessage.Type.JoinRoom, ({ member }) =>
-        notice(L.get("notice_joinRoom", users[member.id].nickname))
+        notice(l("notice_joinRoom", users[member.id].nickname))
       );
       socket.messageReceiver.on(WebSocketMessage.Type.LeaveRoom, ({ member }) =>
-        notice(L.get("notice_leaveRoom", users[member].nickname))
+        notice(l("notice_leaveRoom", users[member].nickname))
       );
 
       return () => {
@@ -155,7 +158,7 @@ export namespace Room {
           return;
         }
         if (room.master !== data.master) {
-          notice(L.get("notice_handover", users[data.master].nickname));
+          notice(l("notice_handover", users[data.master].nickname));
         }
       };
       socket.messageReceiver.on(WebSocketMessage.Type.UpdateRoom, onHandover);
@@ -189,9 +192,7 @@ export namespace Room {
                 .toString()}
               onMouseEnter={createOnMouseEnter(
                 new Tooltip(
-                  room.themes
-                    .map((theme) => L.get(`theme_${theme}`))
-                    .join(" / ")
+                  room.themes.map((theme) => l("theme", theme)).join(" / ")
                 )
               )}
               onMouseMove={onMouseMove}
@@ -213,25 +214,21 @@ export namespace Room {
               .if(modified.includes("limit"), "modified")
               .toString()}
           >
-            {L.get(
-              "stat_roomLimit",
-              Object.keys(room.members).length,
-              room.limit
-            )}
+            {l("stat_roomLimit", Object.keys(room.members).length, room.limit)}
           </h5>
           <h5
             className={new ClassName("round")
               .if(modified.includes("round"), "modified")
               .toString()}
           >
-            {L.get("unitRound", room.round)}
+            {l("unitRound", room.round)}
           </h5>
           <h5
             className={new ClassName("roundTime")
               .if(modified.includes("roundTime"), "modified")
               .toString()}
           >
-            {L.get("unitSecond", room.roundTime)}
+            {l("unitSecond", room.roundTime)}
           </h5>
         </div>
         {isGaming ? (
@@ -256,6 +253,7 @@ export namespace Room {
     member: KKuTu.Room.Member;
   }
   export function Member({ member }: Props) {
+    const { l } = useLexicon(lKKuTu);
     const room = useStore((state) => state.room!);
     const users = useGlobalStore((state) => state.users);
     const toggle = Dialog.useStore((state) => state.toggle);
@@ -265,20 +263,20 @@ export namespace Room {
     if (room.master === member.id) {
       stats.push(
         <div key={stats.length} className="master">
-          {L.get("master")}
+          {l("master")}
         </div>
       );
     } else if (member.isReady) {
       stats.push(
         <div key={stats.length} className="ready">
-          {L.get("ready")}
+          {l("ready")}
         </div>
       );
     }
     if (member.isSpectator) {
       stats.push(
         <div key={stats.length} className="spectator">
-          {L.get("spectator")}
+          {l("spectator")}
         </div>
       );
     }
@@ -292,7 +290,7 @@ export namespace Room {
           <div className="stat">{stats}</div>
           <div className="title">
             <LevelIcon className="level" level={1} />
-            <div className="nickname">{L.get("robot")}</div>
+            <div className="nickname">{l("robot")}</div>
           </div>
         </div>
       );

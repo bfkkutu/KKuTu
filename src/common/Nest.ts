@@ -33,7 +33,6 @@ export namespace Nest {
       locale: string;
       page: T;
       path: string;
-      title: string;
 
       data: Page.DataTable[T];
       version: string;

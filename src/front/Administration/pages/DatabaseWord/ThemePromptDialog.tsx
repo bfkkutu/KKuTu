@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lAdministration from "front/@global/languages/l.administration";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../common/KKuTu";
 
@@ -9,15 +11,18 @@ export default class ThemePromptDialog extends Dialog.Asynchronous<
   string | null
 > {
   protected override head(): React.ReactElement {
-    return <>{L.get("themePrompt_title")}</>;
+    const { l } = useLexicon(lAdministration);
+
+    return <>{l("themePrompt_title")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lAdministration);
     const [theme, setTheme] = useState("0");
 
     return (
       <>
         <div className="body dialog-prompt">
-          {L.get("themePrompt_body")}
+          {l("themePrompt_body")}
           <select
             value={theme}
             onChange={(e) => setTheme(e.currentTarget.value)}
@@ -25,7 +30,7 @@ export default class ThemePromptDialog extends Dialog.Asynchronous<
             {[...KKuTu.Game.THEMES, ...KKuTu.Game.THEMES_WIDE].map(
               (theme, index) => (
                 <option key={index} value={theme}>
-                  {renderTheme(theme)}
+                  {renderTheme(l, theme)}
                 </option>
               )
             )}
@@ -33,10 +38,10 @@ export default class ThemePromptDialog extends Dialog.Asynchronous<
         </div>
         <div className="footer buttons">
           <button type="button" onClick={() => this.resolve(theme)}>
-            {L.get("ok")}
+            {l("ok")}
           </button>
           <button type="button" onClick={() => this.resolve(null)}>
-            {L.get("cancel")}
+            {l("cancel")}
           </button>
         </div>
       </>

@@ -1,7 +1,9 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lAdministration from "front/@global/languages/l.administration";
 import ThemePromptDialog from "front/Administration/pages/DatabaseWord/ThemePromptDialog";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../common/KKuTu";
@@ -13,12 +15,14 @@ interface Props {
   onChange: (value: Partial<Word>) => void;
 }
 export default function WordEditor(props: Props) {
+  const { l } = useLexicon(lCommon, lAdministration);
+
   return (
     <div className="word-editor">
       <ul className="themes">
         <li className="theme-item title">
-          <span>{L.get("departure4_theme")}</span>
-          <span>{L.get("departure4_mean")}</span>
+          <span>{l("departure4_theme")}</span>
+          <span>{l("departure4_mean")}</span>
         </li>
         {Object.entries(props.value.means).map(([theme, means], j) => (
           <li key={j} className="theme-item">
@@ -27,7 +31,7 @@ export default function WordEditor(props: Props) {
               onChange={(e) => {
                 if (e.currentTarget.value in props.value.means) {
                   window.alert(
-                    L.render("departure4_wordEditor_errorThemeAlreadyExist")
+                    l("departure4_wordEditor_errorThemeAlreadyExist")
                   );
                   return;
                 }
@@ -40,7 +44,7 @@ export default function WordEditor(props: Props) {
               {[...KKuTu.Game.THEMES, ...KKuTu.Game.THEMES_WIDE].map(
                 (theme, index) => (
                   <option key={index} value={theme}>
-                    {renderTheme(theme)}
+                    {renderTheme(l, theme)}
                   </option>
                 )
               )}
@@ -49,7 +53,7 @@ export default function WordEditor(props: Props) {
               {means.map((mean, k) => (
                 <li key={k} className="mean-item">
                   <input
-                    placeholder={L.get("departure4_wordEditor_meanPlaceholder")}
+                    placeholder={l("departure4_wordEditor_meanPlaceholder")}
                     value={mean}
                     onChange={(e) => {
                       const means = { ...props.value.means };
@@ -66,7 +70,7 @@ export default function WordEditor(props: Props) {
                       if (means.length === 1) {
                         if (Object.keys(next).length === 1) {
                           window.alert(
-                            L.get("departure4_wordEditor_errorThemeShouldExist")
+                            l("departure4_wordEditor_errorThemeShouldExist")
                           );
                           return;
                         } else {
@@ -80,7 +84,7 @@ export default function WordEditor(props: Props) {
                       });
                     }}
                   >
-                    {L.render("icon_remove")}
+                    {l("icon_remove")}
                   </button>
                 </li>
               ))}
@@ -95,7 +99,7 @@ export default function WordEditor(props: Props) {
                   })
                 }
               >
-                {L.render("departure4_wordEditor_addMean")}
+                {l("departure4_wordEditor_addMean")}
               </button>
             </ul>
           </li>
@@ -108,9 +112,7 @@ export default function WordEditor(props: Props) {
               return;
             }
             if (theme in props.value.means) {
-              window.alert(
-                L.render("departure4_wordEditor_errorThemeAlreadyExist")
-              );
+              window.alert(l("departure4_wordEditor_errorThemeAlreadyExist"));
               return;
             }
             props.onChange({
@@ -121,7 +123,7 @@ export default function WordEditor(props: Props) {
             });
           }}
         >
-          {L.render("departure4_wordEditor_addTheme")}
+          {l("departure4_wordEditor_addTheme")}
         </button>
       </ul>
     </div>

@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Checkbox from "front/@block/Checkbox";
 import { KKuTu } from "../../../common/KKuTu";
 
@@ -18,9 +20,12 @@ export default class ThemeSelectDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.get("themeSelect")}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("themeSelect")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const [themes, setThemes] = useState(new Set(this.initialValues));
 
     const $common = useRef<HTMLInputElement>(null);
@@ -65,7 +70,7 @@ export default class ThemeSelectDialog extends Dialog {
                 setThemes(new Set(themes));
               }}
             />
-            {L.get("themeSelect_common")}
+            {l("themeSelect_common")}
           </label>
           <section>
             {KKuTu.Game.THEMES.map((theme, index) => (
@@ -82,7 +87,7 @@ export default class ThemeSelectDialog extends Dialog {
                   setThemes(new Set(themes));
                 }}
               >
-                {L.get(`theme_${theme}`)}
+                {l("theme", theme)}
               </Checkbox>
             ))}
           </section>
@@ -109,7 +114,7 @@ export default class ThemeSelectDialog extends Dialog {
                 setThemes(new Set(themes));
               }}
             />
-            {L.get("themeSelect_wide")}
+            {l("themeSelect_wide")}
           </label>
           <section>
             {KKuTu.Game.THEMES_WIDE.map((theme, index) => (
@@ -126,7 +131,7 @@ export default class ThemeSelectDialog extends Dialog {
                   setThemes(new Set(themes));
                 }}
               >
-                {L.get(`theme_${theme}`)}
+                {l("theme", theme)}
               </Checkbox>
             ))}
           </section>
@@ -139,7 +144,7 @@ export default class ThemeSelectDialog extends Dialog {
               this.hide();
             }}
           >
-            {L.get("ok")}
+            {l("ok")}
           </button>
         </div>
       </div>

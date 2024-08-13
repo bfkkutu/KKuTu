@@ -1,12 +1,15 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { useSocket, useStore } from "front/KKuTu/Store";
 import AudioContext from "front/@global/AudioContext";
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
+import { useSocket, useStore } from "front/KKuTu/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
 import { Database } from "../../../common/Database";
+import { Iterator } from "../../../common/Utility";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class SettingsDialog extends Dialog {
@@ -23,9 +26,12 @@ export default class SettingsDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.render("settings_title")}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("settings_title")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const [me, updateMe] = useStore((state) => [state.me, state.updateMe]);
     const [show, hide] = Spinner.useStore((state) => [state.show, state.hide]);
@@ -49,7 +55,7 @@ export default class SettingsDialog extends Dialog {
         <form className="body">
           <label>
             <label className="dialog-desc" htmlFor="settings-input-bgm-volume">
-              {L.get("settings_bgmVolume")}
+              {l("settings_bgmVolume")}
             </label>
             <input
               type="range"
@@ -72,7 +78,7 @@ export default class SettingsDialog extends Dialog {
               className="dialog-desc"
               htmlFor="settings-input-effect-volume"
             >
-              {L.get("settings_effectVolume")}
+              {l("settings_effectVolume")}
             </label>
             <input
               type="range"
@@ -91,7 +97,7 @@ export default class SettingsDialog extends Dialog {
           </label>
           <label>
             <label className="dialog-desc" htmlFor="settings-select-bgm">
-              {L.get("settings_bgm")}
+              {l("settings_bgm")}
             </label>
             <select
               id="settings-select-bgm"
@@ -115,7 +121,7 @@ export default class SettingsDialog extends Dialog {
                       `/media/sound${CLIENT_SETTINGS.sounds.lazy[id]}`
                     );
                   } catch (e) {
-                    window.alert(L.get("error_soundNotFound", id));
+                    window.alert(l("error_soundNotFound", id));
                     return;
                   } finally {
                     hide();
@@ -125,22 +131,18 @@ export default class SettingsDialog extends Dialog {
                 AudioContext.instance.play(id, true);
               }}
             >
-              {Object.keys(CLIENT_SETTINGS.sounds.lazy)
-                .filter((key) => key.startsWith("lobby_"))
-                .map((key, index) => {
-                  const id = key.split("_").at(-1);
-
-                  return (
-                    <option key={index} value={id}>
-                      {id}. {L.get(`bgm_${key}`)}
-                    </option>
-                  );
-                })}
+              {Iterator(4)
+                .map((_, index) => index + 1)
+                .map((id) => (
+                  <option key={id} value={id}>
+                    {id}. {l("bgm_lobby", id)}
+                  </option>
+                ))}
             </select>
           </label>
           <label>
             <label className="dialog-desc" htmlFor="settings-select-locale">
-              {L.get("settings_locale")}
+              {l("settings_locale")}
             </label>
             <select
               id="settings-select-locale"
@@ -149,7 +151,7 @@ export default class SettingsDialog extends Dialog {
                 updateSettings({
                   locale: e.currentTarget.value,
                 });
-                window.alert(L.get("alert_localeChanged"));
+                window.alert(l("alert_localeChanged"));
               }}
             >
               {Object.entries(CLIENT_SETTINGS.languageSupport).map(
@@ -162,7 +164,7 @@ export default class SettingsDialog extends Dialog {
             </select>
           </label>
           <label>
-            <label className="dialog-desc">{L.get("settings_refuse")}</label>
+            <label className="dialog-desc">{l("settings_refuse")}</label>
             <div className="checkbox-wrapper">
               <label>
                 <input
@@ -179,7 +181,7 @@ export default class SettingsDialog extends Dialog {
                   }
                 />
                 <label htmlFor="settings-checkbox-refuse-invite">
-                  {L.get("invite")}
+                  {l("invite")}
                 </label>
               </label>
               <label>
@@ -197,7 +199,7 @@ export default class SettingsDialog extends Dialog {
                   }
                 />
                 <label htmlFor="settings-checkbox-refuse-whisper">
-                  {L.get("whisper")}
+                  {l("whisper")}
                 </label>
               </label>
               <label>
@@ -215,13 +217,13 @@ export default class SettingsDialog extends Dialog {
                   }
                 />
                 <label htmlFor="settings-checkbox-refuse-friendRequest">
-                  {L.get("friendRequest")}
+                  {l("friendRequest")}
                 </label>
               </label>
             </div>
           </label>
           <label>
-            <label className="dialog-desc">{L.get("settings_game")}</label>
+            <label className="dialog-desc">{l("settings_game")}</label>
             <div className="checkbox-wrapper">
               <label>
                 <input
@@ -238,14 +240,14 @@ export default class SettingsDialog extends Dialog {
                   }
                 />
                 <label htmlFor="settings-checkbox-autoReady">
-                  {L.get("autoReady")}
+                  {l("autoReady")}
                 </label>
               </label>
             </div>
           </label>
           <label>
             <label className="dialog-desc">
-              {L.get("settings_filterProfanities")}
+              {l("settings_filterProfanities")}
             </label>
             <div className="checkbox-wrapper">
               <label>
@@ -276,10 +278,10 @@ export default class SettingsDialog extends Dialog {
               );
               this.isSaving = true;
               this.hide();
-              window.alert(L.get("settings_alert_saved"));
+              window.alert(l("settings_alert_saved"));
             }}
           >
-            {L.get("save")}
+            {l("save")}
           </button>
         </div>
         <span className="uid">UID: {me.id}</span>

@@ -1,11 +1,13 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Moremi from "front/@block/Moremi";
 import ProfileImage from "front/@block/ProfileImage";
 import LevelIcon from "front/@block/LevelIcon";
 import Gauge from "front/@block/Gauge";
-import { Dialog } from "front/@global/Bayadere/Dialog";
 import { Room } from "front/KKuTu/box/Room";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
@@ -24,9 +26,12 @@ export default class RobotProfileDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.render("profile_title", L.get("robot"))}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("profile_title", l("robot"))}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const room = Room.useStore((state) => state.room);
@@ -38,9 +43,7 @@ export default class RobotProfileDialog extends Dialog {
         <button
           key={footerButtons.length}
           onClick={async () => {
-            if (
-              !(await window.confirm(L.render("confirm_kick", L.get("robot"))))
-            ) {
+            if (!(await window.confirm(l("confirm_kick", l("robot"))))) {
               return;
             }
             socket.send(WebSocketMessage.Type.KickRobot, {
@@ -54,21 +57,11 @@ export default class RobotProfileDialog extends Dialog {
             } catch (e) {
               const { errorType } =
                 e as WebSocketError.Message[WebSocketError.Type];
-              switch (errorType) {
-                case WebSocketError.Type.BadRequest:
-                  window.alert(L.get("error_400"));
-                  break;
-                case WebSocketError.Type.NotFound:
-                  window.alert(L.get("error_404"));
-                  break;
-                case WebSocketError.Type.Forbidden:
-                  window.alert(L.get("error_403"));
-                  break;
-              }
+              window.alert(l("error", errorType));
             }
           }}
         >
-          {L.get("kick")}
+          {l("kick")}
         </button>
       );
     }
@@ -85,7 +78,7 @@ export default class RobotProfileDialog extends Dialog {
                   width={20}
                   height={20}
                 />
-                <div className="nickname ellipse">{L.get("robot")}</div>
+                <div className="nickname ellipse">{l("robot")}</div>
               </div>
               <div className="item">
                 <div className="level">
@@ -95,7 +88,7 @@ export default class RobotProfileDialog extends Dialog {
                     width={20}
                     height={20}
                   />
-                  {L.get("unitLevel", 1)}
+                  {l("unitLevel", 1)}
                 </div>
                 <div className="score">0 / 0점</div>
               </div>

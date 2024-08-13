@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { create } from "zustand";
 
 import Icon from "front/@block/Icon";
@@ -11,16 +11,26 @@ export abstract class Notification {
    * 따라서 Notification마다 고유값을 부여한다.
    */
   public readonly id = Notification.id++;
+  private _hide?: () => void;
 
   public readonly Component = React.memo(this.body.bind(this));
 
   protected abstract body(): React.ReactElement;
 
-  public onClick(): void {}
+  protected hide() {
+    this._hide?.();
+  }
+
+  public bind(hide: Notification.State["hide"]): void {
+    this._hide = () => hide(this);
+  }
+  public unbind(): void {
+    this._hide = undefined;
+  }
 }
 
 export namespace Notification {
-  interface State {
+  export interface State {
     notifications: Notification[];
     show: (notification: Notification) => void;
     hide: (notification: Notification) => void;
@@ -44,17 +54,19 @@ export namespace Notification {
   function Component({ instance }: Props) {
     const hide = useStore((state) => state.hide);
 
+    useEffect(() => {
+      return () => {
+        instance.unbind();
+      };
+    }, []);
+
+    useEffect(() => {
+      instance.bind(hide);
+    }, [hide]);
+
     return (
       <div className="notification">
-        <div
-          className="body"
-          onClick={() => {
-            instance.onClick?.();
-            hide(instance);
-          }}
-        >
-          <instance.Component />
-        </div>
+        <instance.Component />
         <div className="close" onClick={() => hide(instance)}>
           <Icon type={Icon.Type.NORMAL} name="xmark" />
         </div>

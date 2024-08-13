@@ -1,21 +1,21 @@
-import React from "react";
+import React, { useEffect } from "react";
 import ReactDOM from "react-dom/client";
 
 import { PROPS } from "front/@global/Utility";
-import L from "front/@global/Language";
-import { Nest } from "common/Nest";
-
 import Footer from "front/@global/Footer";
 import Header from "front/@global/Header";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import { Notification } from "front/@global/bayadere/Notification";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import LanguageLoader from "front/LanguageLoader";
+import { Nest } from "common/Nest";
 
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import { Notification } from "front/@global/Bayadere/Notification";
-import { Spinner } from "front/@global/Bayadere/Spinner";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
-
-import AlertDialog from "front/KKuTu/dialogs/Alert";
-import PromptDialog from "front/KKuTu/dialogs/Prompt";
-import ConfirmDialog from "front/KKuTu/dialogs/Confirm";
+import AlertDialog from "front/@global/bayadere/dialogs/Alert";
+import PromptDialog from "front/@global/bayadere/dialogs/Prompt";
+import ConfirmDialog from "front/@global/bayadere/dialogs/Confirm";
+import { useLexicon } from "@daldalso/i18n";
+import lCommon from "./@global/languages/l.common";
 
 if (typeof window !== "undefined") {
   window.alert = (content: React.ReactNode) => {
@@ -46,10 +46,6 @@ if (typeof window !== "undefined") {
   window.onselectstart = window.ondragstart = () => false;
 }
 
-interface State {
-  error?: Error;
-}
-
 export default function Bind(
   TargetClass: React.FC<any> | typeof React.PureComponent
 ) {
@@ -59,6 +55,10 @@ export default function Bind(
     React.createElement(Root, PROPS, React.createElement(TargetClass, PROPS))
   );
 }
+
+interface State {
+  error?: Error;
+}
 export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
   public static getDerivedStateFromError(error: Error): Partial<State> {
     return { error };
@@ -66,34 +66,19 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
   public readonly state: State = {};
   public render() {
     if (this.state.error !== undefined) {
-      if (this.props.mode === "production") {
-        window.setTimeout(() => location.reload(), 3000);
-        return (
-          <article id="main" className="error-production">
-            {L.render("error_production")}
-          </article>
-        );
-      }
       return (
-        <article id="main" className="error-development">
-          {this.state.error.stack ? (
-            <ul>
-              {this.state.error.stack.split(" at ").map((trace, index) => (
-                <li key={index}>
-                  {index !== 0 ? "at " : null}
-                  {trace}
-                </li>
-              ))}
-            </ul>
+        <LanguageLoader locale={this.props.locale}>
+          {this.props.mode === "production" ? (
+            <Error.Production />
           ) : (
-            <p>{this.state.error.message}</p>
+            <Error.Development error={this.state.error} />
           )}
-        </article>
+        </LanguageLoader>
       );
     }
 
     return (
-      <>
+      <LanguageLoader locale={this.props.locale}>
         <img id="background" />
         <div id="bayadere">
           <Dialog.Manager />
@@ -104,7 +89,45 @@ export class Root extends React.PureComponent<Nest.Page.Props<any>, State> {
         <Header profile={this.props.session.profile} />
         {this.props.children}
         <Footer />
-      </>
+      </LanguageLoader>
+    );
+  }
+}
+
+namespace Error {
+  export function Production() {
+    const { l } = useLexicon(lCommon);
+
+    useEffect(() => {
+      window.setTimeout(() => location.reload(), 3000);
+    }, []);
+
+    return (
+      <article id="main" className="error-production">
+        {l("render_failed")}
+      </article>
+    );
+  }
+
+  interface Props {
+    error: Error;
+  }
+  export function Development(props: Props) {
+    return (
+      <article id="main" className="error-development">
+        {props.error.stack ? (
+          <ul>
+            {props.error.stack.split(" at ").map((trace, index) => (
+              <li key={index}>
+                {index !== 0 ? "at " : null}
+                {trace}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>{props.error.message}</p>
+        )}
+      </article>
     );
   }
 }

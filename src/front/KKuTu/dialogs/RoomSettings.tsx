@@ -1,9 +1,11 @@
 import React, { useCallback, useRef, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 import sha256 from "sha256";
 
-import L from "front/@global/Language";
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Checkbox from "front/@block/Checkbox";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import { Room } from "front/KKuTu/box/Room";
@@ -26,9 +28,12 @@ export default class RoomSettingsDialog extends Dialog {
     });
   }
   protected override head(): React.ReactElement {
-    return <>{L.get("roomSettings")}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("roomSettings")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const nickname = useStore((state) => state.me.nickname);
     const data = Room.useStore((state) => state.room!);
@@ -72,13 +77,13 @@ export default class RoomSettingsDialog extends Dialog {
         <form className="body">
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-title">
-              {L.get("roomTitle")}
+              {l("roomTitle")}
             </label>
             <input
               type="text"
               id="roomSettings-title"
               name="title"
-              placeholder={L.get("roomSettings_title_default", nickname)}
+              placeholder={l("roomSettings_title_default", nickname)}
               value={room.title}
               onChange={(e) => {
                 changed.current.add("title");
@@ -88,15 +93,15 @@ export default class RoomSettingsDialog extends Dialog {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-password">
-              {L.get("roomSettings_password")}
+              {l("roomSettings_password")}
             </label>
             <button
               type="button"
               id="roomSettings-password"
               onClick={async () => {
                 const password = await window.prompt(
-                  L.render("prompt_title_changePassword"),
-                  L.render("prompt_changePassword"),
+                  l("prompt_title_changePassword"),
+                  l("prompt_changePassword"),
                   "password"
                 );
                 if (password === null) {
@@ -106,19 +111,19 @@ export default class RoomSettingsDialog extends Dialog {
                 update({ password: sha256(password) });
               }}
             >
-              {L.get("change")}
+              {l("change")}
             </button>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-policy">
-              {L.get("roomPolicy")}
+              {l("roomPolicy")}
             </label>
             <div className="checkbox-group">
               {KKuTu.Room.POLICY_CHANGEABLE.map((policy, index) => (
                 <Checkbox
                   key={index}
                   id={`roomSettings-policy-${policy}`}
-                  tooltip={new Tooltip(L.render(`room_policy_${policy}_desc`))}
+                  tooltip={new Tooltip(l(`room_policy_${policy}_desc`))}
                   checked={room.policy[policy]}
                   onChange={(e) => {
                     changed.current.add("policy");
@@ -130,14 +135,14 @@ export default class RoomSettingsDialog extends Dialog {
                     });
                   }}
                 >
-                  {L.get(`room_policy_${policy}`)}
+                  {l(`room_policy_${policy}`)}
                 </Checkbox>
               ))}
             </div>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-limit">
-              {L.get("roomLimit")}
+              {l("roomLimit")}
             </label>
             <input
               type="number"
@@ -151,7 +156,7 @@ export default class RoomSettingsDialog extends Dialog {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-mode">
-              {L.get("roomMode")}
+              {l("roomMode")}
             </label>
             <select
               id="roomSettings-mode"
@@ -161,14 +166,14 @@ export default class RoomSettingsDialog extends Dialog {
             >
               {enumValues(KKuTu.Game.Mode).map((mode, index) => (
                 <option key={index} value={mode}>
-                  {L.get(`game_mode_${mode}`)}
+                  {l("game_mode", mode)}
                 </option>
               ))}
             </select>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-round">
-              {L.get("roomRound")}
+              {l("roomRound")}
             </label>
             <input
               type="number"
@@ -182,7 +187,7 @@ export default class RoomSettingsDialog extends Dialog {
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-roundTime">
-              {L.get("roomRoundTime")}
+              {l("roomRoundTime")}
             </label>
             <select
               id="roomSettings-roundTime"
@@ -192,21 +197,21 @@ export default class RoomSettingsDialog extends Dialog {
             >
               {KKuTu.Game.ROUND_TIMES.map((roundTime, index) => (
                 <option key={index} value={roundTime}>
-                  {L.get("unitSecond", roundTime)}
+                  {l("unitSecond", roundTime)}
                 </option>
               ))}
             </select>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="roomSettings-rules">
-              {L.get("roomRules")}
+              {l("roomRules")}
             </label>
             <div className="checkbox-group">
               {KKuTu.Game.MODES[room.mode].rules.map((rule, index) => (
                 <Checkbox
                   key={index}
                   id={`roomSettings-rules-${rule}`}
-                  tooltip={new Tooltip(L.get(`game_rule_${rule}_desc`))}
+                  tooltip={new Tooltip(l("game_rule_desc", rule))}
                   checked={room.rules[rule]}
                   onChange={(e) => {
                     changed.current.add("rules");
@@ -218,7 +223,7 @@ export default class RoomSettingsDialog extends Dialog {
                     });
                   }}
                 >
-                  {L.get(`game_rule_${rule}`)}
+                  {l("game_rule", rule)}
                 </Checkbox>
               ))}
             </div>
@@ -234,7 +239,7 @@ export default class RoomSettingsDialog extends Dialog {
                 id="roomSettings-themes"
                 onClick={() => show(themeSelectDialog)}
               >
-                {L.get("themeSelect")}
+                {l("themeSelect")}
               </button>
             </label>
           ) : null}
@@ -258,7 +263,7 @@ export default class RoomSettingsDialog extends Dialog {
               this.hide();
             }}
           >
-            {L.get("ok")}
+            {l("ok")}
           </button>
         </div>
       </div>

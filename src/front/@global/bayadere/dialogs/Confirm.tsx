@@ -1,7 +1,8 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import L from "front/@global/Language";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
 
 export default class ConfirmDialog extends Dialog.Asynchronous<boolean> {
   private content: React.ReactNode;
@@ -13,18 +14,22 @@ export default class ConfirmDialog extends Dialog.Asynchronous<boolean> {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.get("confirm")}</>;
+    const { l } = useLexicon(lCommon);
+
+    return <>{l("confirm")}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon);
+
     return (
       <>
         <div className="body dialog-confirm">{this.content}</div>
         <div className="footer buttons">
           <button type="button" onClick={() => this.resolve(true)}>
-            {L.get("yes")}
+            {l("yes")}
           </button>
           <button type="button" onClick={() => this.resolve(false)}>
-            {L.get("no")}
+            {l("no")}
           </button>
         </div>
       </>

@@ -1,11 +1,14 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
+import { LFunction } from "@daldalso/i18n/dist/types";
 
-import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
 import { getLevel } from "front/@global/Utility";
 import AudioContext from "front/@global/AudioContext";
 import WebSocket from "front/@global/WebSocket";
-import { Tooltip } from "front/@global/Bayadere/Tooltip";
+import { Tooltip } from "front/@global/bayadere/Tooltip";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import Moremi from "front/@block/Moremi";
 import Robot from "front/@block/Robot";
 import LevelIcon from "front/@block/LevelIcon";
@@ -21,6 +24,7 @@ import { KKuTu } from "../../../../../common/KKuTu";
 import { Database } from "common/Database";
 
 function General(props: Game.Props) {
+  const { l } = useLexicon(lCommon, lKKuTu);
   const [socket, disconnect] = useSocket((state) => [
     state.socket,
     state.disconnect,
@@ -68,7 +72,7 @@ function General(props: Game.Props) {
     [displacement]
   );
 
-  const decodeDisplay = General.getDisplayDecoder(props.mode);
+  const decodeDisplay = General.getDisplayDecoder(l, props.mode);
   function tick() {
     setNow(new Date().getTime());
     timer.current = window.requestAnimationFrame(tick);
@@ -81,7 +85,7 @@ function General(props: Game.Props) {
     }
     if (detector.detect().bot) {
       disconnect();
-      window.alert(L.get("alert_botdDetected"));
+      window.alert(l("alert_botdDetected"));
       return;
     }
 
@@ -140,7 +144,7 @@ function General(props: Game.Props) {
         const previous = display.content;
         setDisplay({
           type: Display.Type.Error,
-          content: L.get(`turnError_${errorType}`, content),
+          content: l("turnError", errorType, content),
           isAnimating: false,
           submitting: undefined,
         });
@@ -469,7 +473,7 @@ function General(props: Game.Props) {
               <label className="word ellipse">{word.data}</label>
               <div className="means ellipse">
                 {Object.entries(word.means).map(([theme, means], index) => {
-                  const display = L.get(`theme_${theme}`);
+                  const display = l("theme", theme);
                   return (
                     <React.Fragment key={index}>
                       {display.length === 0 ? null : (
@@ -484,16 +488,13 @@ function General(props: Game.Props) {
           ))}
         </div>
         {game.players[turn.player] === me.id ? (
-          <input
-            className="input"
-            placeholder={L.get("game_input_placeholder")}
-          />
+          <input className="input" placeholder={l("game_input_placeholder")} />
         ) : null}
       </div>
       <div className="body">
         {game.players.map((id, index) => {
           const nickname = room.members[id].isRobot
-            ? L.get("robot")
+            ? l("robot")
             : users[id].nickname;
           const level = getLevel(
             room.members[id].isRobot ? 0 : users[id].score
@@ -519,7 +520,7 @@ function General(props: Game.Props) {
               <div
                 className="profile"
                 onMouseEnter={createOnMouseEnter(
-                  new Tooltip(L.get("unitLevel", level))
+                  new Tooltip(l("unitLevel", level))
                 )}
                 onMouseMove={onMouseMove}
                 onMouseLeave={onMouseLeave}
@@ -568,12 +569,13 @@ namespace General {
   }
 
   export function getDisplayDecoder(
+    l: LFunction<[typeof lCommon]>,
     mode: KKuTu.Game.Mode
   ): (display: string) => string {
     switch (mode) {
       case KKuTu.Game.Mode.KoreanWordCompetition:
       case KKuTu.Game.Mode.EnglishWordCompetition:
-        return (display) => `〈${L.get(`theme_${display}`)}〉`;
+        return (display) => `〈${l("theme", display)}〉`;
       default:
         return (display) => display;
     }

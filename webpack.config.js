@@ -6,8 +6,6 @@ const MiniCSSExtractPlugin = require("mini-css-extract-plugin");
 const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 const TSCheckerPlugin = require("fork-ts-checker-webpack-plugin");
 
-const { SETTINGS } = require("./tools/lib/common.js");
-
 const DEVELOPMENT =
   process.argv[process.argv.indexOf("--mode") + 1] === "development";
 const REGEXP_PAGE = /^([A-Z]\w+?)+$/;
@@ -20,10 +18,6 @@ const WP_ENTRY_FRONT = WP_ENTRY.reduce((pv, v) => {
 }, {});
 const WP_ENTRY_STYLE = WP_ENTRY.reduce((pv, v) => {
   pv[v] = Path.resolve(__dirname, `src/front/${v}/style.scss`);
-  return pv;
-}, {});
-const WP_ENTRY_LANG = Object.keys(SETTINGS.languageSupport).reduce((pv, v) => {
-  pv[v] = Path.resolve(__dirname, `data/lang/${v}.json`);
   return pv;
 }, {});
 const ANCESTOR = {
@@ -132,23 +126,6 @@ module.exports = [
         cleanAfterEveryBuildPatterns: ["*.dummy.js"],
       }),
       new MiniCSSExtractPlugin(),
-    ],
-  },
-  {
-    ...ANCESTOR,
-    name: "lang",
-    entry: WP_ENTRY_LANG,
-    output: {
-      path: Path.join(__dirname, "dist", "strings"),
-      filename: "[name].dummy.js",
-    },
-    plugins: [
-      ...ANCESTOR.plugins,
-      new CleanWebpackPlugin({
-        protectWebpackAssets: false,
-        cleanOnceBeforeBuildPatterns: [],
-        cleanAfterEveryBuildPatterns: ["*.dummy.js"],
-      }),
     ],
   },
   {

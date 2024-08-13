@@ -17,7 +17,6 @@ export const config = {
   image: "",
   fontColor: "#FFFFFF",
   vendor: "naver",
-  displayName: "withNaver",
   useOAuthButtons: true,
 };
 export const options = {
@@ -36,3 +35,4 @@ export const createProfile: AuthModule["createProfile"] = (
   image: profile._json.profile_image,
   exordial: "",
 });
+

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import { Dialog } from "front/@global/Bayadere/Dialog";
-import L from "front/@global/Language";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
 
 export default class PromptDialog extends Dialog.Asynchronous<string | null> {
   private title: string;
@@ -24,6 +25,7 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
     return <>{this.title}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lCommon);
     const [input, setInput] = useState("");
 
     return (
@@ -38,10 +40,10 @@ export default class PromptDialog extends Dialog.Asynchronous<string | null> {
         </div>
         <div className="footer buttons">
           <button type="button" onClick={() => this.resolve(input)}>
-            {L.get("ok")}
+            {l("ok")}
           </button>
           <button type="button" onClick={() => this.resolve(null)}>
-            {L.get("cancel")}
+            {l("cancel")}
           </button>
         </div>
       </>

@@ -1,6 +1,7 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
+import lCommon from "front/@global/languages/l.common";
 
 interface Props {
   className?: string;
@@ -10,7 +11,7 @@ interface Props {
   height: number;
 }
 
-export default class TimeGauge extends React.Component<Props> {
+class TimeGauge extends React.Component<Props> {
   public shouldComponentUpdate(nextProps: Readonly<Props>): boolean {
     if (nextProps.value < 0) {
       return false;
@@ -32,12 +33,27 @@ export default class TimeGauge extends React.Component<Props> {
             width: `${(this.props.value / this.props.max) * 100}%`,
           }}
         >
-          <span className="gauge-text">
-            {L.get("unitSecond", (this.props.value / 1000).toFixed(1))}
-          </span>
+          <TimeGauge.Text value={this.props.value} />
         </span>
       </div>
     );
   }
 }
+
+namespace TimeGauge {
+  interface Props {
+    value: number;
+  }
+  export function Text(props: Props) {
+    const { l } = useLexicon(lCommon);
+
+    return (
+      <span className="gauge-text">
+        {l("unitSecond", props.value / 1000, 1)}
+      </span>
+    );
+  }
+}
+
+export default TimeGauge;
 

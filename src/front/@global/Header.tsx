@@ -1,11 +1,14 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
+import lCommon from "front/@global/languages/l.common";
 import { Schema } from "common/Schema";
-import L from "front/@global/Language";
 
 interface MenuItem {
-  key: string;
-  props: any;
+  key: any;
+  props: {
+    href: string;
+  };
   children: MenuItem[];
 }
 
@@ -34,49 +37,47 @@ const MENU: MenuItem[] = [
 interface Props {
   profile?: Schema.Profile;
 }
-export default class Header extends React.PureComponent<Props> {
-  public render(): React.ReactNode {
-    return (
-      <header>
-        <nav id="menu">
-          {MENU.map((item, index) => (
-            <React.Fragment key={index}>
-              <a className="menu-btn" {...item.props}>
-                {L.render(item.key)}
-              </a>
-              {item.children.length !== 0 ? (
-                <div id={`menu-item-${item.key}`} className="menu-btn">
-                  {L.render(item.key)}
-                  <div className="menu-sub-separator">
-                    {item.children.map((item, index) => (
-                      <a key={index} className="menu-btn" {...item.props}>
-                        {L.render(item.key)}
-                      </a>
-                    ))}
-                  </div>
+export default function Header(props: Props) {
+  const { l } = useLexicon(lCommon);
+
+  return (
+    <header>
+      <nav id="menu">
+        {MENU.map((item, index) => (
+          <React.Fragment key={index}>
+            <a className="menu-btn" {...item.props}>
+              {l(item.key)}
+            </a>
+            {item.children.length !== 0 ? (
+              <div id={`menu-item-${item.key}`} className="menu-btn">
+                {l(item.key)}
+                <div className="menu-sub-separator">
+                  {item.children.map((item, index) => (
+                    <a key={index} className="menu-btn" {...item.props}>
+                      {l(item.key)}
+                    </a>
+                  ))}
                 </div>
-              ) : null}
-            </React.Fragment>
-          ))}
-          <div
-            id="account-info"
-            onClick={async () => {
-              if (this.props.profile === undefined) {
-                location.href = "/login";
-                return;
-              }
-              if (await window.confirm(L.get("askLogout"))) {
-                location.href = "/logout";
-              }
-            }}
-          >
-            {this.props.profile === undefined
-              ? L.get("login")
-              : this.props.profile.name}
-          </div>
-        </nav>
-      </header>
-    );
-  }
+              </div>
+            ) : null}
+          </React.Fragment>
+        ))}
+        <div
+          id="account-info"
+          onClick={async () => {
+            if (props.profile === undefined) {
+              location.href = "/login";
+              return;
+            }
+            if (await window.confirm(l("askLogout"))) {
+              location.href = "/logout";
+            }
+          }}
+        >
+          {props.profile === undefined ? l("login") : props.profile.name}
+        </div>
+      </nav>
+    </header>
+  );
 }
 

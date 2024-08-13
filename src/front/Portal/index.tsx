@@ -1,16 +1,19 @@
 import React, { useEffect, useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import ClassName from "front/@global/ClassName";
-import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import lCommon from "front/@global/languages/l.common";
+import lPortal from "front/@global/languages/l.portal";
 import Icon from "front/@block/Icon";
 import GoogleAdvertisement from "front/@block/GoogleAdvertisement";
 import Bind from "front/ReactBootstrap";
 import { sum } from "../../common/Utility";
-import { Nest } from "common/Nest";
+import type { Nest } from "common/Nest";
 
 export default function Portal(props: Nest.Page.Props<"Portal">) {
-  const [list, setList] = useState<(number | null)[]>([]);
+  const { l } = useLexicon(lCommon, lPortal);
+  const [list, setList] = useState<Array<number | null>>([]);
   const [width, setWidth] = useState(window.innerWidth);
   const [visible, show, hide] = Spinner.useStore((state) => [
     state.visible,
@@ -43,10 +46,10 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
         const { list } = await res.json();
         setList(list);
       } catch (e) {
-        window.alert(L.get("error_500"));
+        window.alert(l("error", 500));
       }
     } else {
-      window.alert(L.get(`error_${res.status}`));
+      window.alert(l("error", res.status));
     }
     hide();
   }
@@ -80,7 +83,7 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
               }
             }}
           >
-            {L.render("gameStart")}
+            {l("gameStart")}
           </button>
         </div>
       </div>
@@ -101,14 +104,14 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
             target="_blank"
             href="http://daldal.so/"
           >
-            {L.get("daldalso")}
+            {l("daldalso")}
           </a>
           <a
             className="p_button discord"
             target="_blank"
             href="http://discord.gg/scPVHcE"
           >
-            {L.get("discord")}
+            {l("discord")}
           </a>
         </div>
         <div className="flex server-list-wrapper">
@@ -118,11 +121,11 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
                 <a id="server-refresh" onClick={() => seekServers()}>
                   <Icon type={Icon.Type.NORMAL} name="refresh" />
                 </a>
-                <label className="inline-flex">{L.render("serverList")}</label>
+                <label className="inline-flex">{l("serverList")}</label>
               </div>
               <label id="server-total">
-                {L.get("total")}{" "}
-                {L.get("unitPeople", sum(...list.filter((v) => v !== null)))}
+                {l("total")}{" "}
+                {l("unitPeople", sum(...list.filter((v) => v !== null)))}
               </label>
             </h3>
             <div id="server-list">
@@ -131,13 +134,9 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
                   return (
                     <div key={index} className="server">
                       <div className="server-status ss-x" />
-                      <div className="server-name">
-                        {L.render(`server_${index}`)}
-                      </div>
+                      <div className="server-name">{l("server", index)}</div>
                       <LegacyGraph className="server-people graph" />
-                      <div className="server-enter">
-                        {L.render("serverEnter")}
-                      </div>
+                      <div className="server-enter">{l("serverEnter")}</div>
                     </div>
                   );
                 }
@@ -155,13 +154,9 @@ export default function Portal(props: Nest.Page.Props<"Portal">) {
                         .else("ss-o")
                         .toString()}
                     />
-                    <div className="server-name">
-                      {L.render(`server_${index}`)}
-                    </div>
+                    <div className="server-name">{l("server", index)}</div>
                     <LegacyGraph className="server-people graph" value={v} />
-                    <div className="server-enter">
-                      {L.render("serverEnter")}
-                    </div>
+                    <div className="server-enter">{l("serverEnter")}</div>
                   </div>
                 );
               })}

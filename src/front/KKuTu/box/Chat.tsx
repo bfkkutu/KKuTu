@@ -1,12 +1,14 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Parser as HTMLParser } from "html-to-react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { useSocket, useStore } from "front/KKuTu/Store";
 import AudioContext from "front/@global/AudioContext";
-import ProfileDialog from "front/KKuTu/dialogs/Profile";
-import { Dialog } from "front/@global/Bayadere/Dialog";
 import { filterProfanities } from "front/@global/Utility";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
+import { useSocket, useStore } from "front/KKuTu/Store";
+import ProfileDialog from "front/KKuTu/dialogs/Profile";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
 
 export namespace Chat {
@@ -42,6 +44,7 @@ export namespace Chat {
   export type Item = Chat.Chat | Chat.Notice;
 
   export function Box() {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const [chatLog, appendChat] = useStore((state) => [
       state.chatLog,
@@ -107,7 +110,7 @@ export namespace Chat {
 
     return (
       <section id="box-chat" className="product">
-        <h5 className="product-title">{L.render("chatBox_title")}</h5>
+        <h5 className="product-title">{l("chatBox_title")}</h5>
         <div className="product-body">
           <div className="list" ref={$list}>
             {chatLog.map((chat, index) => {
@@ -127,7 +130,7 @@ export namespace Chat {
             onChange={(e) => setContent(e.currentTarget.value)}
           />
           <button type="button" className="button-send" onClick={send}>
-            {L.get("send")}
+            {l("send")}
           </button>
         </div>
       </section>
@@ -139,6 +142,7 @@ export namespace Chat {
     chat: Chat;
   }
   function Chat(props: Props) {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const socket = useSocket((state) => state.socket);
     const id = useStore((state) => state.me.id);
     const filterEnabled = useStore(
@@ -167,7 +171,7 @@ export namespace Chat {
                 ? users[props.chat.sender]
                 : await socket.queryUser(props.chat.sender);
             if (sender === undefined) {
-              window.alert(L.get("error_404"));
+              window.alert(l("error", 404));
               return;
             }
             toggle(new ProfileDialog(sender));
@@ -178,9 +182,7 @@ export namespace Chat {
         {props.chat.visible ? (
           <div className="content">{htmlParser.parse(content)}</div>
         ) : (
-          <div className="content invisible">
-            {L.get("notice_chatInvisible")}
-          </div>
+          <div className="content invisible">{l("notice_chatInvisible")}</div>
         )}
 
         {/* float: right */}
@@ -192,7 +194,7 @@ export namespace Chat {
             <button
               className="report"
               onClick={async () => {
-                if (!(await window.confirm(L.get("confirm_reportMessage")))) {
+                if (!(await window.confirm(l("confirm_reportMessage")))) {
                   return;
                 }
                 socket.send(WebSocketMessage.Type.ReportChat, {
@@ -202,30 +204,28 @@ export namespace Chat {
                   await socket.messageReceiver.wait(
                     WebSocketMessage.Type.ReportChat
                   );
-                  window.alert(L.get("alert_reportSubmitted"));
+                  window.alert(l("alert_reportSubmitted"));
                 } catch (e) {
                   const { errorType } =
                     e as WebSocketError.Message[WebSocketError.Type];
                   switch (errorType) {
                     case WebSocketError.Type.NotFound:
-                      window.alert(L.get("error_404"));
+                      window.alert(l("error", 404));
                       break;
                     case WebSocketError.Type.Conflict:
-                      window.alert(L.get("error_alreadyReportedMessage"));
+                      window.alert(l("error_alreadyReportedMessage"));
                       break;
                   }
                 }
               }}
             >
-              {L.render("icon_report")}
+              {l("icon_report")}
             </button>
             <button
               className="visible-toggle"
               onClick={() => toggleChatVisibility(props.id)}
             >
-              {props.chat.visible
-                ? L.render("icon_hide")
-                : L.render("icon_show")}
+              {props.chat.visible ? l("icon_hide") : l("icon_show")}
             </button>
           </div>
         ) : null}
@@ -234,10 +234,12 @@ export namespace Chat {
   }
 
   function Notice(notice: Notice) {
+    const { l } = useLexicon(lCommon);
+
     return (
       <div className="item notice">
         {/* float: left */}
-        <div className="head head-notice ellipse">{L.get("alert")}</div>
+        <div className="head head-notice ellipse">{l("alert")}</div>
         <div className="content">
           {htmlParser.parse(notice.content.replaceAll("\n", "<br>"))}
         </div>

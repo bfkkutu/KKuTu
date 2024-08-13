@@ -1,7 +1,8 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Notification } from "front/@global/Bayadere/Notification";
+import { Notification } from "front/@global/bayadere/Notification";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import { Database } from "common/Database";
 
@@ -17,13 +18,19 @@ export default class WhisperNotification extends Notification {
   }
 
   protected override body(): React.ReactElement {
-    return (
-      <>{L.get("notification_whisper", this.sender.nickname, this.length)}</>
-    );
-  }
+    const { l } = useLexicon(lKKuTu);
 
-  public override onClick(): void {
-    Whisper.show(this.sender);
+    return (
+      <div
+        className="body"
+        onClick={() => {
+          Whisper.show(this.sender);
+          this.hide();
+        }}
+      >
+        {l("notification_whisper", this.sender.nickname, this.length)}
+      </div>
+    );
   }
 }
 

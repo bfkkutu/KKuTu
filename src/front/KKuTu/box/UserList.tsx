@@ -1,8 +1,10 @@
 import React from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
 import { getLevel } from "front/@global/Utility";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lCommon from "front/@global/languages/l.common";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import LevelIcon from "front/@block/LevelIcon";
 import ProfileImage from "front/@block/ProfileImage";
 import { useStore } from "front/KKuTu/Store";
@@ -14,17 +16,14 @@ export namespace UserList {
     server: number;
   }
   export function Box(props: Props) {
+    const { l } = useLexicon(lCommon, lKKuTu);
     const blackList = useStore((state) => state.community.blackList);
     const users = useStore((state) => Object.values(state.users));
 
     return (
       <section id="box-user-list" className="product">
         <h5 className="product-title">
-          {L.render(
-            "userListBox_title",
-            <b>{L.get(`server_${props.server}`)}</b>,
-            users.length
-          )}
+          {l("userListBox_title", l("server", props.server), users.length)}
         </h5>
         <div className="product-body">
           {users

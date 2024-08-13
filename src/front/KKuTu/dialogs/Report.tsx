@@ -1,7 +1,8 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Dialog } from "front/@global/Bayadere/Dialog";
+import { Dialog } from "front/@global/bayadere/Dialog";
+import lKKuTu from "front/@global/languages/l.kkutu";
 import { useSocket } from "front/KKuTu/Store";
 import { Database } from "common/Database";
 import { Iterator } from "../../../common/Utility";
@@ -17,9 +18,12 @@ export default class ReportDialog extends Dialog {
   }
 
   protected override head(): React.ReactElement {
-    return <>{L.render("report_title", this.target.nickname)}</>;
+    const { l } = useLexicon(lKKuTu);
+
+    return <>{l("report_title", this.target.nickname)}</>;
   }
   protected override body(): React.ReactElement {
+    const { l } = useLexicon(lKKuTu);
     const socket = useSocket((state) => state.socket);
     const [reason, setReason] = useState(0);
     const [comment, setComment] = useState("");
@@ -29,13 +33,13 @@ export default class ReportDialog extends Dialog {
         <form className="body">
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="report-label-target">
-              {L.get("report_target")}
+              {l("report_target")}
             </label>
             <label id="report-label-target">{this.target.nickname}</label>
           </label>
           <label className="item-wrapper">
             <label className="dialog-desc" htmlFor="report-select-reason">
-              {L.get("report_reason")}
+              {l("report_reason")}
             </label>
             <select
               id="report-select-reason"
@@ -44,7 +48,7 @@ export default class ReportDialog extends Dialog {
             >
               {Iterator(4).map((_, index) => (
                 <option key={index} value={index}>
-                  {L.get(`report_reason_${index}`)}
+                  {l("report_reason", index)}
                 </option>
               ))}
             </select>
@@ -66,11 +70,11 @@ export default class ReportDialog extends Dialog {
                 comment,
               });
               await socket.messageReceiver.wait(WebSocketMessage.Type.Report);
-              window.alert(L.get("alert_reportSubmitted"));
+              window.alert(l("alert_reportSubmitted"));
               this.hide();
             }}
           >
-            {L.get("submit")}
+            {l("submit")}
           </button>
         </div>
       </div>

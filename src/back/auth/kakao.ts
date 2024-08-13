@@ -20,7 +20,6 @@ export const config = {
   image: "",
   fontColor: "#3C1E1E",
   vendor: "kakao",
-  displayName: "withKakao",
   useOAuthButtons: true,
 };
 export const options = {
@@ -40,3 +39,4 @@ export const createProfile: AuthModule["createProfile"] = (
   image: profile._json.properties.profile_image,
   exordial: "",
 });
+

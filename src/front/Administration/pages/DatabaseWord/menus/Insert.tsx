@@ -1,7 +1,9 @@
 import React, { useState } from "react";
+import { useLexicon } from "@daldalso/i18n";
 
-import L from "front/@global/Language";
-import { Spinner } from "front/@global/Bayadere/Spinner";
+import { Spinner } from "front/@global/bayadere/Spinner";
+import lCommon from "front/@global/languages/l.common";
+import lAdministration from "front/@global/languages/l.administration";
 import Checkbox from "front/@block/Checkbox";
 import WordEditor from "front/Administration/pages/DatabaseWord/WordEditor";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
@@ -9,13 +11,14 @@ import { KKuTu } from "../../../../../common/KKuTu";
 import API from "common/API";
 
 function Insert() {
+  const { l } = useLexicon(lAdministration);
   const [language, setLanguage] = useState(KKuTu.Game.Language.Korean);
 
   return (
     <article className="page-databaseWord insert">
-      <span>{L.get("departure4_desc_language")}</span>
+      <span>{l("departure4_desc_language")}</span>
       <label className="wrapper">
-        <label htmlFor="select-language">{L.get("language")}</label>
+        <label htmlFor="select-language">{l("language")}</label>
         <select
           id="select-language"
           value={language}
@@ -25,7 +28,7 @@ function Insert() {
         >
           {KKuTu.Game.LANGUAGES.map((language, index) => (
             <option key={index} value={language}>
-              {L.get(`language_${language}`)}
+              {l("language", language)}
             </option>
           ))}
         </select>
@@ -41,6 +44,7 @@ namespace Insert {
     language: KKuTu.Game.Language;
   }
   export function Direct({ language }: Props) {
+    const { l } = useLexicon(lCommon, lAdministration);
     const [word, setWord] = useState<
       State<API.POST["/admin/database/word"]["word"]>
     >({
@@ -51,10 +55,10 @@ namespace Insert {
 
     return (
       <form className="form-direct">
-        <h2>{L.get("departure4_menu0_title_direct")}</h2>
-        <span>{L.render("departure4_menu0_desc_direct")}</span>
+        <h2>{l("departure4_menu0_title_direct")}</h2>
+        <span>{l("departure4_menu0_desc_direct")}</span>
         <input
-          placeholder={L.get("departure4_menu0_direct_wordPlaceholder")}
+          placeholder={l("departure4_menu0_direct_wordPlaceholder")}
           value={word.data}
           onChange={(e) => setWord({ ...word, data: e.currentTarget.value })}
         />
@@ -66,7 +70,7 @@ namespace Insert {
           type="button"
           disabled={word.data.length === 0}
           onClick={async () => {
-            if (!(await window.confirm(L.render("alert_save")))) {
+            if (!(await window.confirm(l("alert_save")))) {
               return;
             }
             show();
@@ -82,18 +86,19 @@ namespace Insert {
             });
             hide();
             if (res.status === 200) {
-              window.alert(L.get("alert_saved"));
+              window.alert(l("alert_saved"));
             } else {
-              window.alert(L.render(`error_${res.status}`));
+              window.alert(l("error", res.status));
             }
           }}
         >
-          {L.get("save")}
+          {l("save")}
         </button>
       </form>
     );
   }
   export function FromList({ language }: Props) {
+    const { l } = useLexicon(lCommon, lAdministration);
     const [theme, setTheme] = useState("0");
     const [legacy, setLegacy] = useState(false);
     const [words, setWords] = useState<string[]>([]);
@@ -101,10 +106,10 @@ namespace Insert {
 
     return (
       <form className="form-fromList">
-        <h2>{L.get("departure4_menu0_title_fromList")}</h2>
-        <span>{L.render("departure4_menu0_desc_fromList")}</span>
+        <h2>{l("departure4_menu0_title_fromList")}</h2>
+        <span>{l("departure4_menu0_desc_fromList")}</span>
         <label className="wrapper">
-          <label>{L.get("departure4_theme")}</label>
+          <label>{l("departure4_theme")}</label>
           <select
             value={theme}
             onChange={(e) => setTheme(e.currentTarget.value)}
@@ -112,7 +117,7 @@ namespace Insert {
             {[...KKuTu.Game.THEMES, ...KKuTu.Game.THEMES_WIDE].map(
               (theme, index) => (
                 <option key={index} value={theme}>
-                  {renderTheme(theme)}
+                  {renderTheme(l, theme)}
                 </option>
               )
             )}
@@ -124,7 +129,7 @@ namespace Insert {
           checked={legacy}
           onChange={(e) => setLegacy(e.currentTarget.checked)}
         >
-          {L.get("departure4_menu0_fromList_legacyView")}
+          {l("departure4_menu0_fromList_legacyView")}
         </Checkbox>
         {legacy ? (
           <textarea
@@ -152,13 +157,13 @@ namespace Insert {
                     setWords(next);
                   }}
                 >
-                  {L.render("icon_remove")}
+                  {l("icon_remove")}
                 </button>
               </li>
             ))}
             <li>
               <button type="button" onClick={() => setWords([...words, ""])}>
-                {L.get("departure4_menu0_fromList_addWord")}
+                {l("departure4_menu0_fromList_addWord")}
               </button>
             </li>
           </ul>
@@ -167,7 +172,7 @@ namespace Insert {
           type="button"
           disabled={words.length === 0}
           onClick={async () => {
-            if (!(await window.confirm(L.render("alert_save")))) {
+            if (!(await window.confirm(l("alert_save")))) {
               return;
             }
             show();
@@ -184,13 +189,13 @@ namespace Insert {
             });
             hide();
             if (res.status === 200) {
-              window.alert(L.get("alert_saved"));
+              window.alert(l("alert_saved"));
             } else {
-              window.alert(L.render(`error_${res.status}`));
+              window.alert(l("error", res.status));
             }
           }}
         >
-          {L.get("save")}
+          {l("save")}
         </button>
       </form>
     );
