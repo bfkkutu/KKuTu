@@ -1,6 +1,7 @@
 import React, { useRef } from "react";
 import { create } from "zustand";
-import { bind } from "../Utility";
+
+import { bind } from "front/@global/Utility";
 
 export class Tooltip {
   public readonly content: React.ReactNode;

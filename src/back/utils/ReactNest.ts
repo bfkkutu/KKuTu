@@ -4,7 +4,7 @@ import ReactDOMServer from "react-dom/server";
 
 import { Root } from "front/ReactBootstrap";
 import { getProjectData, PACKAGE, SETTINGS } from "back/utils/System";
-import { Nest } from "common/Nest";
+import type { Nest } from "common/Nest";
 
 const HTML_TEMPLATE = getProjectData("template.html").toString();
 

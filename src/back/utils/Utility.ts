@@ -1,5 +1,5 @@
-import { Nest } from "common/Nest";
 import { DateUnit } from "back/enums/DateUnit";
+import type { Nest } from "common/Nest";
 
 /**
  * 클라이언트 설정 객체.

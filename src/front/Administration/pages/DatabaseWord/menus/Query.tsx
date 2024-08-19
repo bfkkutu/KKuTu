@@ -9,7 +9,7 @@ import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../../common/KKuTu";
 import { enumValues } from "../../../../../common/Utility";
 import API from "../../../../../common/API";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 function Query() {
   const { l } = useLexicon(lAdministration);

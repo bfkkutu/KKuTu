@@ -8,7 +8,7 @@ import Checkbox from "front/@block/Checkbox";
 import WordEditor from "front/Administration/pages/DatabaseWord/WordEditor";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../../common/KKuTu";
-import API from "common/API";
+import type API from "common/API";
 
 function Insert() {
   const { l } = useLexicon(lAdministration);

@@ -5,7 +5,7 @@ import lCommon from "front/@global/languages/l.common";
 import lAdministration from "front/@global/languages/l.administration";
 import { Spinner } from "front/@global/bayadere/Spinner";
 import { KKuTu } from "../../../../../common/KKuTu";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 function Delete() {
   const { l } = useLexicon(lAdministration);

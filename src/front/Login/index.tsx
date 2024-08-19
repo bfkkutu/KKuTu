@@ -4,7 +4,7 @@ import { useLexicon } from "@daldalso/i18n";
 import lCommon from "front/@global/languages/l.common";
 import lLogin from "front/@global/languages/l.login";
 import Bind from "front/ReactBootstrap";
-import { Nest } from "common/Nest";
+import type { Nest } from "common/Nest";
 
 export default function Login(props: Nest.Page.Props<"Login">) {
   const { l } = useLexicon(lCommon, lLogin);

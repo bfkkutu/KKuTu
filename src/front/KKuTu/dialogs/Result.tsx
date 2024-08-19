@@ -8,7 +8,7 @@ import lKKuTu from "front/@global/languages/l.kkutu";
 import LevelIcon from "front/@block/LevelIcon";
 import Gauge from "front/@block/Gauge";
 import { useStore } from "front/KKuTu/Store";
-import { KKuTu } from "common/KKuTu";
+import type { KKuTu } from "common/KKuTu";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class ResultDialog extends Dialog {

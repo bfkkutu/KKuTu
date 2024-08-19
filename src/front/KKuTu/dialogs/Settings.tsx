@@ -8,8 +8,8 @@ import lCommon from "front/@global/languages/l.common";
 import lKKuTu from "front/@global/languages/l.kkutu";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import { WebSocketMessage } from "../../../common/WebSocket";
-import { Database } from "../../../common/Database";
 import { Iterator } from "../../../common/Utility";
+import type { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class SettingsDialog extends Dialog {

@@ -1,12 +1,12 @@
 import Express from "express";
 import CookieParser from "cookie-parser";
 import passport from "passport";
+import { col, log } from "@daldalso/logger";
 
 import { resolve, SETTINGS } from "back/utils/System";
 import * as ReactNest from "back/utils/ReactNest";
 import { getLocale } from "back/utils/Language";
 import { send404 } from "back/utils/Middleware";
-import { Logger, LogStyle } from "back/utils/Logger";
 import { Schema } from "common/Schema";
 import { sessionParser } from "back/utils/ExpressSession";
 
@@ -54,22 +54,13 @@ export default function (App: Express.Application): void {
   App.use((req, res, next) => {
     req.address = req.ip || req.ips.join();
     if (req.xhr) {
-      Logger.log()
-        .putS(LogStyle.METHOD, req.method)
-        .putS(LogStyle.XHR, " XHR")
-        .next("URL")
-        .put(req.originalUrl)
-        .next("Address")
-        .put(req.address)
-        .out();
+      log`${col.yellow`${req.method}`} ${col.green`XHR`}`
+        ["URL"](req.originalUrl)
+        ["Address"](req.address);
     } else {
-      Logger.log()
-        .putS(LogStyle.METHOD, req.method)
-        .next("URL")
-        .put(req.originalUrl)
-        .next("Address")
-        .put(req.address)
-        .out();
+      log(col.yellow`${req.method}`)
+        ["URL"](req.originalUrl)
+        ["Address"](req.address);
     }
     next();
   });
@@ -115,3 +106,4 @@ function responseSetCookie(
     secure: true,
   });
 }
+

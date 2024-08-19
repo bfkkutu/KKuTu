@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { create, UseBoundStore, StoreApi } from "zustand";
 
-import { Point } from "front/@global/Point";
+import type { Point } from "front/@global/Point";
 import { bind, ChainedFunction } from "front/@global/Utility";
 
 export abstract class Dialog {

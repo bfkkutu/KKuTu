@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useLexicon } from "@daldalso/i18n";
-import { LFunction } from "@daldalso/i18n/dist/types";
+import type { LFunction } from "@daldalso/i18n/dist/types";
 
 import ClassName from "front/@global/ClassName";
 import { getLevel } from "front/@global/Utility";
@@ -21,7 +21,7 @@ import { Display } from "front/KKuTu/box/Game/Display";
 import { Iterator } from "../../../../../common/Utility";
 import { WebSocketMessage } from "../../../../../common/WebSocket";
 import { KKuTu } from "../../../../../common/KKuTu";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 function General(props: Game.Props) {
   const { l } = useLexicon(lCommon, lKKuTu);

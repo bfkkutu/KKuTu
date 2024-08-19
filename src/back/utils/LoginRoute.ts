@@ -1,12 +1,12 @@
 import Express from "express";
 import passport from "passport";
 import Strategy from "passport-oauth2";
+import { col, error, info } from "@daldalso/logger";
 
 import { AUTH_CONFIG } from "back/utils/System";
-import { Logger } from "back/utils/Logger";
 import DB from "back/utils/Database";
 import { PageBuilder } from "back/utils/ReactNest";
-import { Schema } from "common/Schema";
+import type { Schema } from "common/Schema";
 
 import User from "back/models/User";
 
@@ -115,6 +115,8 @@ export default async function LoginRoute(App: Express.Application) {
     return res.sendStatus(200);
   });
 
+  const loaded = [];
+  const failed = [];
   for (const vendor in AUTH_CONFIG) {
     try {
       const { config, options, createProfile }: AuthModule = await import(
@@ -152,14 +154,18 @@ export default async function LoginRoute(App: Express.Application) {
       );
       passport.use(strategy);
       strategyList.set(vendor, config);
-      Logger.info(`OAuth Strategy ${vendor} loaded successfully.`).out();
+      loaded.push(vendor);
     } catch (e) {
-      Logger.error(`OAuth Strategy ${vendor} is not loaded`).out();
       if (e instanceof Error) {
-        Logger.error(e.message).out();
+        error(e.message);
       }
+      failed.push(vendor);
     }
   }
+
+  info`Loaded OAuth strategies.`
+    [col.green`Succeed`](loaded.join(", "))
+    [col.red`Failed`](failed.join(", "));
 
   App.get("/logout", (req, res) => {
     if (req.session.profile === undefined) {
@@ -169,3 +175,4 @@ export default async function LoginRoute(App: Express.Application) {
     }
   });
 }
+

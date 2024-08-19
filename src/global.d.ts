@@ -1,7 +1,5 @@
 import React from "react";
 
-import { WebSocketMessage } from "./common/WebSocket";
-
 declare global {
   type key = string | number | symbol;
 

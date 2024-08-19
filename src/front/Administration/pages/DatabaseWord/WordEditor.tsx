@@ -7,7 +7,7 @@ import lAdministration from "front/@global/languages/l.administration";
 import ThemePromptDialog from "front/Administration/pages/DatabaseWord/ThemePromptDialog";
 import { renderTheme } from "front/Administration/pages/DatabaseWord/Utility";
 import { KKuTu } from "../../../../common/KKuTu";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 type Word = Omit<Database.Word, "id">;
 interface Props {

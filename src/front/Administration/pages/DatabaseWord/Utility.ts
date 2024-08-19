@@ -1,4 +1,4 @@
-import { LFunction } from "@daldalso/i18n/dist/types";
+import type { LFunction } from "@daldalso/i18n/dist/types";
 
 import lCommon from "front/@global/languages/l.common";
 import lAdministration from "front/@global/languages/l.administration";

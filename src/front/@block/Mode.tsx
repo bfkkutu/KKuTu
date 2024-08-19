@@ -2,7 +2,7 @@ import React from "react";
 import { useLexicon } from "@daldalso/i18n";
 
 import lKKuTu from "front/@global/languages/l.kkutu";
-import { KKuTu } from "common/KKuTu";
+import type { KKuTu } from "common/KKuTu";
 
 interface Props {
   room: KKuTu.Room;

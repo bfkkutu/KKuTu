@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Schema } from "common/Schema";
+import type { Schema } from "common/Schema";
 
 export default class KakaoAdvertisement extends React.PureComponent<Schema.KakaoAdvertisement> {
   public render(): React.ReactNode {
@@ -22,3 +22,4 @@ export default class KakaoAdvertisement extends React.PureComponent<Schema.Kakao
     );
   }
 }
+

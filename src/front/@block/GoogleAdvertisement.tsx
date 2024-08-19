@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Schema } from "common/Schema";
+import type { Schema } from "common/Schema";
 
 export default class GoogleAdvertisement extends React.PureComponent<Schema.GoogleAdvertisement> {
   public render(): React.ReactNode {
@@ -16,3 +16,4 @@ export default class GoogleAdvertisement extends React.PureComponent<Schema.Goog
     );
   }
 }
+

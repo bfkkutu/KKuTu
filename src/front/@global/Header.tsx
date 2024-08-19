@@ -2,7 +2,7 @@ import React from "react";
 import { useLexicon } from "@daldalso/i18n";
 
 import lCommon from "front/@global/languages/l.common";
-import { Schema } from "common/Schema";
+import type { Schema } from "common/Schema";
 
 interface MenuItem {
   key: any;

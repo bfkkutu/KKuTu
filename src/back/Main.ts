@@ -1,6 +1,8 @@
 import Express from "express";
 import https from "https";
+import { error, info, success } from "@daldalso/logger";
 
+import Channel from "back/game/Channel";
 import DB from "back/utils/Database";
 import ExpressAgent from "back/utils/ExpressAgent";
 import Route from "back/utils/Route";
@@ -9,10 +11,8 @@ import {
   SETTINGS,
   writeClientConstants,
 } from "back/utils/System";
-import { Logger } from "back/utils/Logger";
 import LoginRoute from "back/utils/LoginRoute";
 import { createSecureOptions } from "back/utils/Secure";
-import Channel from "back/game/Channel";
 
 const App = Express();
 
@@ -28,22 +28,24 @@ const App = Express();
     https
       .createServer(createSecureOptions(), App)
       .listen(SETTINGS.ports.https, () => {
-        Logger.success("HTTPS Server").put(SETTINGS.ports.https).out();
+        success`HTTPS Server`["Port"](SETTINGS.ports.https);
       });
   } else {
-    App.listen(SETTINGS.ports.http);
+    App.listen(SETTINGS.ports.http, () => {
+      success`HTTP Server`["Port"](SETTINGS.ports.http);
+    });
   }
   for (const idx in SETTINGS.channel) {
     Channel.instances[idx] = new Channel(
       SETTINGS.channel[idx].ports.internal,
       SETTINGS.secure.ssl
     );
-    Logger.info(`Channel #${idx} ready.`).out();
+    info`Channel #${idx} ready.`;
   }
 })();
 process.on("unhandledRejection", (err) => {
   const content = err instanceof Error ? err.stack : String(err);
 
-  Logger.error("Unhandled promise rejection").put(content).out();
+  error`Unhandled promise rejection`["Error"](content);
 });
 

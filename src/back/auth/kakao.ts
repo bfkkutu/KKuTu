@@ -1,7 +1,7 @@
 import { Strategy } from "passport-kakao";
 
 import { AUTH_CONFIG } from "back/utils/System";
-import { AuthModule } from "back/utils/LoginRoute";
+import type { AuthModule } from "back/utils/LoginRoute";
 
 interface Profile {
   id: number;

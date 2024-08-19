@@ -1,7 +1,7 @@
 import { Spinner } from "front/@global/bayadere/Spinner";
 import { WebSocketMessage } from "../../common/WebSocket";
 import { reduceToTable } from "../../common/Utility";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 const Super =
   typeof window === "undefined" ? (class Dummy {} as never) : window.WebSocket;

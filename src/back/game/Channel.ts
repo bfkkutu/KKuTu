@@ -1,11 +1,11 @@
 import marked from "marked";
 import sanitize from "sanitize-html";
+import { info } from "@daldalso/logger";
 
 import WebSocketServer from "back/utils/WebSocketServer";
 import DB from "back/utils/Database";
 import Room from "back/game/Room";
 import Robot from "back/game/Robot";
-import { Logger } from "back/utils/Logger";
 import { fillWithDefaults } from "back/utils/Utility";
 import ImprovedMap from "back/utils/ImprovedMap";
 import WebSocket from "back/utils/WebSocket";
@@ -109,7 +109,9 @@ export default class Channel extends WebSocketServer {
                 (client) =>
                   this.users.get(client.user.id)?.user.roomId === undefined
               );
-              Logger.info(`Lobby Chat #${user.id}: ${message.content}`).out();
+              info`Chat #${chat.id} is created.`["At"]`Lobby`
+                ["Sender"](user.id)
+                ["Content"](message.content);
             } else {
               const room = this.rooms.get(user.roomId);
               if (room === undefined) {
@@ -139,9 +141,9 @@ export default class Channel extends WebSocketServer {
               room.broadcast(WebSocketMessage.Type.Chat, {
                 chat: chat.serialize(),
               });
-              Logger.info(
-                `Room #${room.id} Chat #${user.id}: ${message.content}`
-              ).out();
+              info`Chat #${chat.id} is created.`["At"]`Room #${room.id}`
+                ["Sender"](user.id)
+                ["Content"](message.content);
             }
             break;
           case WebSocketMessage.Type.CreateRoom:
@@ -160,7 +162,7 @@ export default class Channel extends WebSocketServer {
               room.add(socket);
               user.isReady = true;
               this.rooms.set(id, room);
-              Logger.info(`Room #${id} created by user #${user.id}.`).out();
+              info`Room #${id} is created.`["Master"](user.id);
               socket.send(WebSocketMessage.Type.CreateRoom, {
                 room: room.serialize(),
               });
@@ -244,7 +246,7 @@ export default class Channel extends WebSocketServer {
               }
 
               room.add(socket);
-              Logger.info(`Room #${room.id}: user #${user.id} joined.`).out();
+              info`Room #${room.id}: user #${user.id} joined.`;
               socket.send(WebSocketMessage.Type.InitializeRoom, {
                 room: room.serialize(),
               });
@@ -282,7 +284,7 @@ export default class Channel extends WebSocketServer {
               if (!user.leaveRoom()) {
                 // TODO: 오류 처리
               }
-              Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
+              info`Room #${room.id}: user #${user.id} left.`;
               socket.send(WebSocketMessage.Type.UpdateRoomList, {
                 rooms: this.rooms.evaluate(Room.prototype.summarize),
               });
@@ -329,9 +331,7 @@ export default class Channel extends WebSocketServer {
               user.isReady = false;
               target.user.isReady = true;
               room.update();
-              Logger.info(
-                `Room #${room.id}: handover #${user.id} → #${target.user.id}`
-              ).out();
+              info`Room #${room.id}: handover #${user.id} → #${target.user.id}`;
             }
             break;
           case WebSocketMessage.Type.Kick:
@@ -370,7 +370,7 @@ export default class Channel extends WebSocketServer {
 
               room.remove(target.user.id);
               target.user.leaveRoom();
-              Logger.info(`Room #${room.id}: kick #${target.user.id}`).out();
+              info`Room #${room.id}: kick #${target.user.id}`;
               target.send(WebSocketMessage.Type.Kick, {});
             }
             break;
@@ -458,7 +458,7 @@ export default class Channel extends WebSocketServer {
                 });
               }
               room.start();
-              Logger.info(`Room #${room.id}: game started`).out();
+              info`Room #${room.id}: game started.`;
               this.updateRoomList();
             }
             break;
@@ -643,9 +643,10 @@ export default class Channel extends WebSocketServer {
               socket.send(WebSocketMessage.Type.Whisper, {
                 whisper: whisper.serialize(),
               });
-              Logger.info(
-                `Whisper #${user.id} → #${target.user.id}: ${whisper.content}`
-              ).out();
+              info`Whisper #${whisper.id} is created.`
+                ["Sender"](user.id)
+                ["Target"](target.user.id)
+                ["Content"](whisper.content);
 
               // black list에 있는 경우 자동 거절
               if (target.user.community.blackList.includes(user.id)) {
@@ -852,7 +853,7 @@ export default class Channel extends WebSocketServer {
             if (!user.leaveRoom()) {
               // TODO: 오류 처리
             }
-            Logger.info(`Room #${room.id}: user #${user.id} left.`).out();
+            info`Room #${room.id}: user #${user.id} left.`;
             this.broadcast(WebSocketMessage.Type.UpdateUser, {
               user: user.summarize(),
             });
@@ -860,12 +861,12 @@ export default class Channel extends WebSocketServer {
         }
 
         this.users.delete(user.id);
-        Logger.info(`User #${user.id} left.`).out();
+        info`User #${user.id} left.`;
         this.broadcast(WebSocketMessage.Type.Leave, {
           user: user.id,
         });
       });
-      Logger.info(`User #${user.id} joined.`).out();
+      info`User #${user.id} joined.`;
       socket.send(WebSocketMessage.Type.Initialize, {
         me: user.serialize(),
         users: this.users

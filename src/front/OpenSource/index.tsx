@@ -3,7 +3,7 @@ import { useLexicon } from "@daldalso/i18n";
 
 import lOpensource from "front/@global/languages/l.opensource";
 import Bind from "front/ReactBootstrap";
-import { Nest } from "common/Nest";
+import type { Nest } from "common/Nest";
 
 export default function OpenSource(props: Nest.Page.Props<"OpenSource">) {
   const { l } = useLexicon(lOpensource);

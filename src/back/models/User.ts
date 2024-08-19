@@ -1,8 +1,8 @@
 import * as TypeORM from "typeorm";
 
-import Robot from "back/game/Robot";
+import type Robot from "back/game/Robot";
 import { Database } from "../../common/Database";
-import { KKuTu } from "common/KKuTu";
+import type { KKuTu } from "common/KKuTu";
 
 @TypeORM.Entity({ name: "kkutu_users" })
 export default class User implements Serializable<Database.User> {
@@ -160,3 +160,4 @@ export default class User implements Serializable<Database.User> {
     };
   }
 }
+

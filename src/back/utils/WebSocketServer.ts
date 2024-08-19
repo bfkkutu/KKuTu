@@ -7,7 +7,7 @@ import qs from "qs";
 import { createSecureOptions } from "back/utils/Secure";
 import WebSocket from "back/utils/WebSocket";
 import { redisStore } from "back/utils/ExpressSession";
-import { WebSocketMessage } from "common/WebSocket";
+import type { WebSocketMessage } from "common/WebSocket";
 
 type IncomingMessage = Omit<typeof http.IncomingMessage, "constructor"> &
   Express.Request & {
@@ -64,3 +64,4 @@ export default class WebSocketServer extends SocketServer<
       if (filter === undefined || filter(client)) client.send(type, content);
   }
 }
+

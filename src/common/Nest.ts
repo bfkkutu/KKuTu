@@ -1,7 +1,7 @@
-import { Session, SessionData } from "express-session";
+import type { Session, SessionData } from "express-session";
 
-import { Schema } from "common/Schema";
-import { AuthModuleConfig } from "back/utils/LoginRoute";
+import type { Schema } from "common/Schema";
+import type { AuthModuleConfig } from "back/utils/LoginRoute";
 
 export namespace Nest {
   export namespace Page {

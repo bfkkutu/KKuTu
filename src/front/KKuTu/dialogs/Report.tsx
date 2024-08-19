@@ -4,9 +4,9 @@ import { useLexicon } from "@daldalso/i18n";
 import { Dialog } from "front/@global/bayadere/Dialog";
 import lKKuTu from "front/@global/languages/l.kkutu";
 import { useSocket } from "front/KKuTu/Store";
-import { Database } from "common/Database";
 import { Iterator } from "../../../common/Utility";
 import { WebSocketMessage } from "../../../common/WebSocket";
+import type { Database } from "common/Database";
 
 export default class ReportDialog extends Dialog {
   private target: Database.User.Summarized;

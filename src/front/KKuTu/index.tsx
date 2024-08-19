@@ -9,8 +9,8 @@ import Intro from "front/KKuTu/Intro";
 import { useSocket, useStore } from "front/KKuTu/Store";
 import { useVibration } from "front/KKuTu/Vibration";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
-import { Nest } from "common/Nest";
 import { WebSocketMessage } from "../../common/WebSocket";
+import type { Nest } from "common/Nest";
 
 import InviteNotification from "front/KKuTu/notifications/Invite";
 import WhisperNotification from "front/KKuTu/notifications/Whisper";
@@ -19,7 +19,7 @@ import { Room } from "front/KKuTu/box/Room";
 import ListBox from "front/KKuTu/box/RoomList";
 import { UserList } from "front/KKuTu/box/UserList";
 import { Profile } from "front/KKuTu/box/Profile";
-import { Chat } from "front/KKuTu/box/Chat";
+import Chat from "front/KKuTu/box/Chat";
 
 function Component(props: Nest.Page.Props<"KKuTu">) {
   const socket = useSocket((state) => state.socket);

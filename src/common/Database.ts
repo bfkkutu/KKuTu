@@ -1,4 +1,4 @@
-import { HasId } from "common/mixins/HasId";
+import type { HasId } from "common/mixins/HasId";
 
 export namespace Database {
   export type PaginateOptions = {

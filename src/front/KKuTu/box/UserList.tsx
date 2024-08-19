@@ -9,7 +9,7 @@ import LevelIcon from "front/@block/LevelIcon";
 import ProfileImage from "front/@block/ProfileImage";
 import { useStore } from "front/KKuTu/Store";
 import ProfileDialog from "front/KKuTu/dialogs/Profile";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 export namespace UserList {
   interface Props {

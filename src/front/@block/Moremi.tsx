@@ -1,8 +1,8 @@
 import React from "react";
 
-import { Database } from "common/Database";
-import { CLIENT_SETTINGS } from "back/utils/Utility";
+import type { Database } from "common/Database";
 import { omit } from "../../common/Utility";
+import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 interface Props
   extends React.DetailedHTMLProps<
@@ -29,3 +29,4 @@ export default class Moremi extends React.PureComponent<Props> {
     );
   }
 }
+

@@ -2,9 +2,9 @@ import { create } from "zustand";
 import { load } from "@fingerprintjs/botd";
 
 import WebSocket from "front/@global/WebSocket";
-import { Chat } from "front/KKuTu/box/Chat";
+import Chat from "front/KKuTu/box/Chat";
 import { Database } from "../../common/Database";
-import { KKuTu } from "common/KKuTu";
+import type { KKuTu } from "common/KKuTu";
 
 interface Socket {
   socket: WebSocket;
@@ -87,7 +87,7 @@ export const useStore = create<State>((setState) => ({
           content: chat.content,
           visible: !state.community.blackList.includes(chat.sender),
           createdAt: new Date(chat.createdAt),
-        } satisfies Chat.Chat,
+        } satisfies Chat,
       ];
       if (chatLog.length > 100) chatLog.shift();
       return { chatLog };

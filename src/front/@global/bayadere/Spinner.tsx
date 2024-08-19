@@ -1,6 +1,6 @@
 import React from "react";
-import { Oval } from "react-loader-spinner";
 import { create } from "zustand";
+import { Oval } from "react-loader-spinner";
 
 export namespace Spinner {
   interface State {

@@ -4,7 +4,7 @@ import { useLexicon } from "@daldalso/i18n";
 import { Notification } from "front/@global/bayadere/Notification";
 import lKKuTu from "front/@global/languages/l.kkutu";
 import { Whisper } from "front/KKuTu/dialogs/Whisper";
-import { Database } from "common/Database";
+import type { Database } from "common/Database";
 
 export default class WhisperNotification extends Notification {
   private length: number;

@@ -1,6 +1,5 @@
 import * as TypeORM from "typeorm";
 
-import { Transformer } from "back/utils/DatabaseAgent";
 import { KKuTu } from "../../../common/KKuTu";
 
 export default class Manner {

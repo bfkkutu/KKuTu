@@ -1,5 +1,5 @@
-import { Database } from "common/Database";
-import { KKuTu } from "common/KKuTu";
+import type { Database } from "common/Database";
+import type { KKuTu } from "common/KKuTu";
 
 export namespace WebSocketMessage {
   export enum Type {

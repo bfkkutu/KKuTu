@@ -1,12 +1,12 @@
-import { WebSocket as Socket } from "ws";
+import { WebSocket as Super } from "ws";
 
-import User from "back/models/User";
-import { WebSocketError, WebSocketMessage } from "../../common/WebSocket";
+import type User from "back/models/User";
+import { type WebSocketError, WebSocketMessage } from "../../common/WebSocket";
 
-export default class WebSocket extends Socket {
+export default class WebSocket extends Super {
   public user!: User;
 
-  private _send = Socket.prototype.send;
+  private _send = Super.prototype.send;
   public send<T extends WebSocketMessage.Type>(
     type: T,
     content: WebSocketMessage.Content.Server[T]
@@ -31,3 +31,4 @@ export default class WebSocket extends Socket {
     );
   }
 }
+

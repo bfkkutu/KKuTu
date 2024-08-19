@@ -1,5 +1,4 @@
 import "connect-redis";
-import { Session, SessionData } from "express-session";
 
 declare module "connect-redis" {
   export default interface RedisStore {
@@ -10,3 +9,4 @@ declare module "connect-redis" {
     ): Promise<void>;
   }
 }
+

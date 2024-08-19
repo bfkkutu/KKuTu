@@ -14,7 +14,7 @@ import { Whisper } from "front/KKuTu/dialogs/Whisper";
 import ReportDialog from "front/KKuTu/dialogs/Report";
 import { Room } from "front/KKuTu/box/Room";
 import { WebSocketError, WebSocketMessage } from "../../../common/WebSocket";
-import { Database } from "../../../common/Database";
+import type { Database } from "../../../common/Database";
 import { CLIENT_SETTINGS } from "back/utils/Utility";
 
 export default class ProfileDialog extends Dialog {

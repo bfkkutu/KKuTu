@@ -1,7 +1,7 @@
 import * as TypeORM from "typeorm";
+import { success } from "@daldalso/logger";
 
 import { gc, SETTINGS } from "back/utils/System";
-import { Logger } from "back/utils/Logger";
 import { random } from "back/utils/Utility";
 import { Database } from "common/Database";
 import { Iterator } from "../../common/Utility";
@@ -38,7 +38,7 @@ class DB {
   }
   public static async initialize(): Promise<void> {
     await DB.dataSource.initialize();
-    Logger.success("DB").put(SETTINGS["database"].host).out();
+    success`DB initialized.`["Host"](SETTINGS["database"].host);
   }
   public static paginate(
     length: number,

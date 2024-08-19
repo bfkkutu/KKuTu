@@ -5,9 +5,9 @@ import ClassName from "front/@global/ClassName";
 import lAdministration from "front/@global/languages/l.administration";
 import Bind from "front/ReactBootstrap";
 import Main from "front/Administration/pages";
-import { Nest } from "common/Nest";
 import { Database } from "../../common/Database";
 import { enumValues } from "../../common/Utility";
+import type { Nest } from "common/Nest";
 
 import Owner from "front/Administration/pages/Owner";
 import Management from "front/Administration/pages/Management";

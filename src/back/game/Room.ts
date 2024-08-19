@@ -6,7 +6,7 @@ import DB from "back/utils/Database";
 import ImprovedMap from "back/utils/ImprovedMap";
 import Channel from "back/game/Channel";
 import Game from "back/game/Game";
-import Robot from "back/game/Robot";
+import type Robot from "back/game/Robot";
 import { KKuTu } from "../../common/KKuTu";
 import { WebSocketMessage } from "../../common/WebSocket";
 

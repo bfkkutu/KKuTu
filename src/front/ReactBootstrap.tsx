@@ -9,7 +9,7 @@ import { Notification } from "front/@global/bayadere/Notification";
 import { Spinner } from "front/@global/bayadere/Spinner";
 import { Tooltip } from "front/@global/bayadere/Tooltip";
 import LanguageLoader from "front/LanguageLoader";
-import { Nest } from "common/Nest";
+import type { Nest } from "common/Nest";
 
 import AlertDialog from "front/@global/bayadere/dialogs/Alert";
 import PromptDialog from "front/@global/bayadere/dialogs/Prompt";

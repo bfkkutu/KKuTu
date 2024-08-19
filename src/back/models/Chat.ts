@@ -1,8 +1,8 @@
 import * as TypeORM from "typeorm";
 
-import { Database } from "common/Database";
 import User from "back/models/User";
 import { Transformer } from "back/utils/DatabaseAgent";
+import { Database } from "common/Database";
 
 @TypeORM.Entity({ name: "kkutu_log_chats" })
 export default class Chat implements Serializable<Database.Chat> {
@@ -44,3 +44,4 @@ export default class Chat implements Serializable<Database.Chat> {
     };
   }
 }
+

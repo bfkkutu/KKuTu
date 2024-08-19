@@ -1,6 +1,6 @@
-import WebSocket from "back/utils/WebSocket";
 import ImprovedMap from "back/utils/ImprovedMap";
-import { WebSocketMessage } from "common/WebSocket";
+import type WebSocket from "back/utils/WebSocket";
+import type { WebSocketMessage } from "common/WebSocket";
 
 export default class WebSocketGroup {
   protected readonly clients = new ImprovedMap<string, WebSocket>();

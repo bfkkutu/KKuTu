@@ -5,8 +5,8 @@ import { Dialog } from "front/@global/bayadere/Dialog";
 import lCommon from "front/@global/languages/l.common";
 import lKKuTu from "front/@global/languages/l.kkutu";
 import { useSocket } from "front/KKuTu/Store";
-import { Database } from "common/Database";
 import { WebSocketMessage } from "../../../common/WebSocket";
+import type { Database } from "common/Database";
 
 export default class DictionaryDialog extends Dialog {
   public static readonly instance = new DictionaryDialog();
