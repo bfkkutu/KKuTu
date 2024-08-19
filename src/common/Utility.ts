@@ -68,6 +68,9 @@ export function sum(arr: number | number[], ...args: number[]): number {
     }
     return sum;
   }
-  return sum(...arr);
+  if (Symbol.iterator in arr) {
+    return sum(...arr);
+  }
+  throw new Error(`Could not get summation of type '${typeof arr}'.`);
 }
 
