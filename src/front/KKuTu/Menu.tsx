@@ -1,5 +1,6 @@
 import React from "react";
 import { useLexicon } from "@daldalso/i18n";
+import type { LFunction } from "@daldalso/i18n/dist/types";
 
 import ClassName from "front/@global/ClassName";
 import { Dialog } from "front/@global/bayadere/Dialog";
@@ -51,7 +52,7 @@ export namespace Menu {
   interface Item {
     type: Type;
     isTiny: boolean;
-    label: React.FC<{}>;
+    label: React.FC<{ l: LFunction<[typeof lKKuTu]> }>;
     badge?: React.FC<{}>;
     contexts: Context[];
   }
@@ -99,121 +100,73 @@ export namespace Menu {
     {
       type: Type.Spectate,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_spectate")}</>;
-      },
+      label: ({ l }) => <>{l("menu_spectate")}</>,
       contexts: [Context.Room, Context.Master],
     },
     {
       type: Type.RoomSettings,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_roomSettings")}</>;
-      },
+      label: ({ l }) => <>{l("menu_roomSettings")}</>,
       contexts: [Context.Master],
     },
     {
       type: Type.CreateRoom,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("createRoom")}</>;
-      },
+      label: ({ l }) => <>{l("createRoom")}</>,
       contexts: [Context.Lobby],
     },
     {
       type: Type.SearchRoom,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_searchRoom")}</>;
-      },
+      label: ({ l }) => <>{l("menu_searchRoom")}</>,
       contexts: [Context.Lobby],
     },
     {
       type: Type.Shop,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_shop")}</>;
-      },
+      label: ({ l }) => <>{l("menu_shop")}</>,
       contexts: [Context.Lobby],
     },
     {
       type: Type.Dictionary,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_dict")}</>;
-      },
+      label: ({ l }) => <>{l("menu_dict")}</>,
       contexts: [Context.Lobby, Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Invite,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_invite")}</>;
-      },
+      label: ({ l }) => <>{l("menu_invite")}</>,
       contexts: [Context.Room, Context.Master],
     },
     {
       type: Type.Practice,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_practice")}</>;
-      },
+      label: ({ l }) => <>{l("menu_practice")}</>,
       contexts: [Context.Room, Context.Master],
     },
     {
       type: Type.Ready,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_ready")}</>;
-      },
+      label: ({ l }) => <>{l("menu_ready")}</>,
       contexts: [Context.Room],
     },
     {
       type: Type.Start,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_start")}</>;
-      },
+      label: ({ l }) => <>{l("menu_start")}</>,
       contexts: [Context.Master],
     },
     {
       type: Type.Leave,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_leave")}</>;
-      },
+      label: ({ l }) => <>{l("menu_leave")}</>,
       contexts: [Context.Room, Context.Master, Context.Gaming],
     },
     {
       type: Type.Replay,
       isTiny: false,
-      label: () => {
-        const { l } = useLexicon(lKKuTu);
-
-        return <>{l("menu_replay")}</>;
-      },
+      label: ({ l }) => <>{l("menu_replay")}</>,
       contexts: [Context.Lobby],
     },
   ];
@@ -384,7 +337,7 @@ export namespace Menu {
                 className={className.toString()}
               >
                 {config.badge === undefined ? null : <config.badge />}
-                <config.label />
+                <config.label l={l} />
               </button>
             );
           })}
